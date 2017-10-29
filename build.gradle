@@ -1,12 +1,15 @@
 buildscript {
+    ext.kotlin_version = '1.1.51'
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.0.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 repositories {
     mavenCentral()
@@ -31,11 +34,12 @@ dependencies {
     compile('de.psdev.licensesdialog:licensesdialog:1.8.1') {
         exclude module: 'support-v4'
     }
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26"
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         minSdkVersion 14
