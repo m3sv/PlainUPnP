@@ -2,6 +2,7 @@ buildscript {
     ext.kotlin_version = '1.1.51'
     repositories {
         mavenCentral()
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.0'
@@ -17,24 +18,25 @@ repositories {
     maven {
         url 'http://4thline.org/m2'
     }
+    google()
 }
 
 dependencies {
     // Android support
-    compile 'com.android.support:appcompat-v7:25.3.1'
-
+    implementation 'com.android.support:appcompat-v7:27.0.0'
+    implementation 'com.jakewharton.timber:timber:4.6.0'
     // Cling
-    compile group: 'org.fourthline.cling', name: 'cling-core', version:'2.1.1'
-    compile group: 'org.fourthline.cling', name: 'cling-support', version:'2.1.1'
-    compile group: 'org.eclipse.jetty', name: 'jetty-server', version:'8.1.18.v20150929'
-    compile group: 'org.eclipse.jetty', name: 'jetty-servlet', version:'8.1.18.v20150929'
-    compile group: 'org.eclipse.jetty', name: 'jetty-client', version:'8.1.18.v20150929'
-    compile group: 'org.slf4j', name: 'slf4j-jdk14', version:'1.7.14'
+    implementation group: 'org.fourthline.cling', name: 'cling-core', version: '2.1.1'
+    implementation group: 'org.fourthline.cling', name: 'cling-support', version: '2.1.1'
+    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '8.1.18.v20150929'
+    implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '8.1.18.v20150929'
+    implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: '8.1.18.v20150929'
+    implementation group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.14'
 
-    compile('de.psdev.licensesdialog:licensesdialog:1.8.1') {
+    implementation('de.psdev.licensesdialog:licensesdialog:1.8.1') {
         exclude module: 'support-v4'
     }
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
 }
 
 android {
@@ -75,7 +77,7 @@ android {
 
 File propFile = file('signing.properties');
 if (propFile.exists()) {
-    def Properties props = new Properties()
+    Properties props = new Properties()
     props.load(new FileInputStream(propFile))
 
     if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
@@ -88,5 +90,5 @@ if (propFile.exists()) {
         android.buildTypes.release.signingConfig = null
     }
 } else {
-        android.buildTypes.release.signingConfig = null
+    android.buildTypes.release.signingConfig = null
 }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-import org.droidupnp.MainActivity;
+import com.m3sv.presentation.MainActivity;
 import org.droidupnp.R;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
 import org.droidupnp.model.upnp.IUpnpDevice;

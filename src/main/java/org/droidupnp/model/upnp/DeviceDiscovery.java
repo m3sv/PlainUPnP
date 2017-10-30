@@ -22,7 +22,7 @@ package org.droidupnp.model.upnp;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.droidupnp.MainActivity;
+import com.m3sv.presentation.MainActivity;
 
 import android.util.Log;
 

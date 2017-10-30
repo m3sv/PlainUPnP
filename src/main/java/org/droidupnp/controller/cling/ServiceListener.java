@@ -24,7 +24,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.droidupnp.MainActivity;
 import org.droidupnp.model.cling.CDevice;
 import org.droidupnp.model.cling.CRegistryListener;
 import org.droidupnp.model.mediaserver.MediaServer;
@@ -44,6 +43,8 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.m3sv.common.Utils;
 
 @SuppressWarnings("rawtypes")
 public class ServiceListener implements IServiceListener
@@ -119,7 +120,7 @@ public class ServiceListener implements IServiceListener
 					// Local content directory
 					if(mediaServer == null)
 					{
-						mediaServer = new MediaServer(MainActivity.getLocalIpAddress(ctx), ctx);
+						mediaServer = new MediaServer(Utils.getLocalIpAddress(ctx), ctx);
 						mediaServer.start();
 					}
 					else
@@ -168,7 +169,7 @@ public class ServiceListener implements IServiceListener
 	};
 
 	@Override
-	public ServiceConnection getServiceConnexion()
+	public ServiceConnection getServiceConnection()
 	{
 		return serviceConnection;
 	}

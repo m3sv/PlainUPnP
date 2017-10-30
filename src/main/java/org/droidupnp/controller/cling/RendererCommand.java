@@ -19,7 +19,7 @@
 
 package org.droidupnp.controller.cling;
 
-import org.droidupnp.MainActivity;
+import com.m3sv.presentation.MainActivity;
 import org.droidupnp.model.cling.CDevice;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.cling.TrackMetadata;

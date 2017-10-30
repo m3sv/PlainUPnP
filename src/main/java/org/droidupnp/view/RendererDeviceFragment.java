@@ -19,7 +19,7 @@
 
 package org.droidupnp.view;
 
-import org.droidupnp.MainActivity;
+import com.m3sv.presentation.MainActivity;
 import org.droidupnp.model.upnp.IUpnpDevice;
 
 import android.app.Activity;

@@ -21,7 +21,7 @@ package org.droidupnp.controller.cling;
 
 import android.content.Context;
 
-import org.droidupnp.MainActivity;
+import com.m3sv.presentation.MainActivity;
 import org.droidupnp.controller.upnp.IUpnpServiceController;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.upnp.ARendererState;

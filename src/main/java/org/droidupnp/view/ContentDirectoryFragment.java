@@ -43,7 +43,7 @@ import android.widget.Toast;
 
 import com.m3sv.common.Utils;
 
-import org.droidupnp.MainActivity;
+import com.m3sv.presentation.MainActivity;
 import org.droidupnp.R;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;

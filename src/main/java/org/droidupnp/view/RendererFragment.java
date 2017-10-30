@@ -23,7 +23,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Callable;
 
-import org.droidupnp.MainActivity;
+import com.m3sv.presentation.MainActivity;
 import org.droidupnp.R;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.upnp.ARendererState;

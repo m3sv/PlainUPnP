@@ -57,7 +57,7 @@ public class ServiceController extends UpnpServiceController
 	public void pause()
 	{
 		super.pause();
-		activity.unbindService(upnpServiceListener.getServiceConnexion());
+		activity.unbindService(upnpServiceListener.getServiceConnection());
 		activity = null;
 	}
 
@@ -69,7 +69,7 @@ public class ServiceController extends UpnpServiceController
 
 		// This will start the UPnP service if it wasn't already started
 		Log.d(TAG, "Start upnp service");
-		activity.bindService(new Intent(activity, UpnpService.class), upnpServiceListener.getServiceConnexion(),
+		activity.bindService(new Intent(activity, UpnpService.class), upnpServiceListener.getServiceConnection(),
 				Context.BIND_AUTO_CREATE);
 	}
 

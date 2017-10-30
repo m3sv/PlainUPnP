@@ -19,7 +19,7 @@
 
 package org.droidupnp.model.upnp;
 
-import org.droidupnp.MainActivity;
+import com.m3sv.presentation.MainActivity;
 
 public class ContentDirectoryDiscovery extends DeviceDiscovery {
 
