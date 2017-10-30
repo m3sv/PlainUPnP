@@ -19,7 +19,7 @@
 
 package org.droidupnp.controller.cling;
 
-import org.droidupnp.Main;
+import org.droidupnp.MainActivity;
 import org.droidupnp.model.cling.CDevice;
 import org.droidupnp.model.cling.didl.ClingAudioItem;
 import org.droidupnp.model.cling.didl.ClingDIDLContainer;
@@ -66,19 +66,19 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand
 	@SuppressWarnings("unused")
 	private Service getMediaReceiverRegistarService()
 	{
-		if (Main.upnpServiceController.getSelectedContentDirectory() == null)
+		if (MainActivity.upnpServiceController.getSelectedContentDirectory() == null)
 			return null;
 
-		return ((CDevice) Main.upnpServiceController.getSelectedContentDirectory()).getDevice().findService(
+		return ((CDevice) MainActivity.upnpServiceController.getSelectedContentDirectory()).getDevice().findService(
 				new UDAServiceType("X_MS_MediaReceiverRegistar"));
 	}
 
 	private Service getContentDirectoryService()
 	{
-		if (Main.upnpServiceController.getSelectedContentDirectory() == null)
+		if (MainActivity.upnpServiceController.getSelectedContentDirectory() == null)
 			return null;
 
-		return ((CDevice) Main.upnpServiceController.getSelectedContentDirectory()).getDevice().findService(
+		return ((CDevice) MainActivity.upnpServiceController.getSelectedContentDirectory()).getDevice().findService(
 				new UDAServiceType("ContentDirectory"));
 	}
 

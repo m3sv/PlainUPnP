@@ -19,7 +19,7 @@
 
 package org.droidupnp.controller.cling;
 
-import org.droidupnp.Main;
+import org.droidupnp.MainActivity;
 import org.droidupnp.model.cling.CDevice;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.cling.TrackMetadata;
@@ -103,19 +103,19 @@ public class RendererCommand implements Runnable, IRendererCommand {
 
 	public static Service getRenderingControlService()
 	{
-		if (Main.upnpServiceController.getSelectedRenderer() == null)
+		if (MainActivity.upnpServiceController.getSelectedRenderer() == null)
 			return null;
 
-		return ((CDevice) Main.upnpServiceController.getSelectedRenderer()).getDevice().findService(
+		return ((CDevice) MainActivity.upnpServiceController.getSelectedRenderer()).getDevice().findService(
 				new UDAServiceType("RenderingControl"));
 	}
 
 	public static Service getAVTransportService()
 	{
-		if (Main.upnpServiceController.getSelectedRenderer() == null)
+		if (MainActivity.upnpServiceController.getSelectedRenderer() == null)
 			return null;
 
-		return ((CDevice) Main.upnpServiceController.getSelectedRenderer()).getDevice().findService(
+		return ((CDevice) MainActivity.upnpServiceController.getSelectedRenderer()).getDevice().findService(
 				new UDAServiceType("AVTransport"));
 	}
 

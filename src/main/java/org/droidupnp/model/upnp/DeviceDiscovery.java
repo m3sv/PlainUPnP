@@ -22,7 +22,7 @@ package org.droidupnp.model.upnp;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.droidupnp.Main;
+import org.droidupnp.MainActivity;
 
 import android.util.Log;
 
@@ -99,7 +99,7 @@ public abstract class DeviceDiscovery {
 	{
 		observerList.add(o);
 
-		final Collection<IUpnpDevice> upnpDevices = Main.upnpServiceController.getServiceListener()
+		final Collection<IUpnpDevice> upnpDevices = MainActivity.upnpServiceController.getServiceListener()
 				.getFilteredDeviceList(getCallableFilter());
 		for (IUpnpDevice d : upnpDevices)
 			o.addedDevice(d);

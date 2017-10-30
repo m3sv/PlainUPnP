@@ -36,7 +36,7 @@
         android:icon="@drawable/logo"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="org.droidupnp.Main"
+            android:name="org.droidupnp.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,7 +48,7 @@
             android:label="@string/app_name" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="org.droidupnp.Main" />
+                android:value="org.droidupnp.MainActivity" />
         </activity>
         <service android:name="org.droidupnp.model.cling.UpnpService" />
     </application>

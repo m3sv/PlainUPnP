@@ -47,9 +47,9 @@ import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-public class Main extends AppCompatActivity
+public class MainActivity extends AppCompatActivity
 {
-	private static final String TAG = "Main";
+	private static final String TAG = "MainActivity";
 	private static final int REQUEST_READ_EXT_STORAGE = 12345;
 
 	// Controller

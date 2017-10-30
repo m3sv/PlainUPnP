@@ -21,7 +21,7 @@ package org.droidupnp.controller.cling;
 
 import android.content.Context;
 
-import org.droidupnp.Main;
+import org.droidupnp.MainActivity;
 import org.droidupnp.controller.upnp.IUpnpServiceController;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.upnp.ARendererState;
@@ -37,7 +37,7 @@ public class Factory implements IFactory {
 	@Override
 	public IContentDirectoryCommand createContentDirectoryCommand()
 	{
-		AndroidUpnpService aus = ((ServiceListener) Main.upnpServiceController.getServiceListener()).getUpnpService();
+		AndroidUpnpService aus = ((ServiceListener) MainActivity.upnpServiceController.getServiceListener()).getUpnpService();
 		ControlPoint cp = null;
 		if (aus != null)
 			cp = aus.getControlPoint();
@@ -50,7 +50,7 @@ public class Factory implements IFactory {
 	@Override
 	public IRendererCommand createRendererCommand(IRendererState rs)
 	{
-		AndroidUpnpService aus = ((ServiceListener) Main.upnpServiceController.getServiceListener()).getUpnpService();
+		AndroidUpnpService aus = ((ServiceListener) MainActivity.upnpServiceController.getServiceListener()).getUpnpService();
 		ControlPoint cp = null;
 		if (aus != null)
 			cp = aus.getControlPoint();

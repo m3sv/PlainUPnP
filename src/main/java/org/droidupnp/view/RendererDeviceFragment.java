@@ -19,7 +19,7 @@
 
 package org.droidupnp.view;
 
-import org.droidupnp.Main;
+import org.droidupnp.MainActivity;
 import org.droidupnp.model.upnp.IUpnpDevice;
 
 import android.app.Activity;
@@ -44,8 +44,8 @@ public class RendererDeviceFragment extends UpnpDeviceListFragment implements Ob
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-		Main.upnpServiceController.getRendererDiscovery().addObserver(this);
-		Main.upnpServiceController.addSelectedRendererObserver(this);
+		MainActivity.upnpServiceController.getRendererDiscovery().addObserver(this);
+		MainActivity.upnpServiceController.addSelectedRendererObserver(this);
 		Log.d(TAG, "onActivityCreated");
 	}
 
@@ -53,16 +53,16 @@ public class RendererDeviceFragment extends UpnpDeviceListFragment implements Ob
 	public void onDestroy()
 	{
 		super.onDestroy();
-		Main.upnpServiceController.getRendererDiscovery().removeObserver(this);
-		Main.upnpServiceController.delSelectedRendererObserver(this);
+		MainActivity.upnpServiceController.getRendererDiscovery().removeObserver(this);
+		MainActivity.upnpServiceController.delSelectedRendererObserver(this);
 		Log.d(TAG, "onDestroy");
 	}
 
 	@Override
 	protected boolean isSelected(IUpnpDevice device)
 	{
-		if (Main.upnpServiceController != null && Main.upnpServiceController.getSelectedRenderer() != null)
-			return device.equals(Main.upnpServiceController.getSelectedRenderer());
+		if (MainActivity.upnpServiceController != null && MainActivity.upnpServiceController.getSelectedRenderer() != null)
+			return device.equals(MainActivity.upnpServiceController.getSelectedRenderer());
 
 		return false;
 	}
@@ -76,7 +76,7 @@ public class RendererDeviceFragment extends UpnpDeviceListFragment implements Ob
 	@Override
 	protected void select(IUpnpDevice device, boolean force)
 	{
-		Main.upnpServiceController.setSelectedRenderer(device, force);
+		MainActivity.upnpServiceController.setSelectedRenderer(device, force);
 	}
 
 	@Override
@@ -98,7 +98,7 @@ public class RendererDeviceFragment extends UpnpDeviceListFragment implements Ob
 			@Override
 			public void run()
 			{
-				IUpnpDevice device = Main.upnpServiceController.getSelectedRenderer();
+				IUpnpDevice device = MainActivity.upnpServiceController.getSelectedRenderer();
 				if (device == null)
 				{
 					// Uncheck device

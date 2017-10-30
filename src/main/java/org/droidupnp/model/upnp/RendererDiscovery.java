@@ -19,7 +19,7 @@
 
 package org.droidupnp.model.upnp;
 
-import org.droidupnp.Main;
+import org.droidupnp.MainActivity;
 
 public class RendererDiscovery extends DeviceDiscovery {
 
@@ -39,8 +39,8 @@ public class RendererDiscovery extends DeviceDiscovery {
 	@Override
 	protected boolean isSelected(IUpnpDevice device)
 	{
-		if (Main.upnpServiceController != null && Main.upnpServiceController.getSelectedRenderer() != null)
-			return device.equals(Main.upnpServiceController.getSelectedRenderer());
+		if (MainActivity.upnpServiceController != null && MainActivity.upnpServiceController.getSelectedRenderer() != null)
+			return device.equals(MainActivity.upnpServiceController.getSelectedRenderer());
 
 		return false;
 	}
@@ -54,15 +54,15 @@ public class RendererDiscovery extends DeviceDiscovery {
 	@Override
 	protected void select(IUpnpDevice device, boolean force)
 	{
-		Main.upnpServiceController.setSelectedRenderer(device, force);
+		MainActivity.upnpServiceController.setSelectedRenderer(device, force);
 	}
 
 	@Override
 	protected void removed(IUpnpDevice d)
 	{
-		if (Main.upnpServiceController != null && Main.upnpServiceController.getSelectedRenderer() != null
-				&& d.equals(Main.upnpServiceController.getSelectedRenderer()))
-			Main.upnpServiceController.setSelectedRenderer(null);
+		if (MainActivity.upnpServiceController != null && MainActivity.upnpServiceController.getSelectedRenderer() != null
+				&& d.equals(MainActivity.upnpServiceController.getSelectedRenderer()))
+			MainActivity.upnpServiceController.setSelectedRenderer(null);
 	}
 
 }
