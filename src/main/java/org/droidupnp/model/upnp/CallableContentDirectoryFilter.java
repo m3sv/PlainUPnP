@@ -2,9 +2,9 @@ package org.droidupnp.model.upnp;
 
 public class CallableContentDirectoryFilter implements ICallableFilter {
 
-	private IUpnpDevice device;
+	private IUPnPDevice device;
 
-	public void setDevice(IUpnpDevice device)
+	public void setDevice(IUPnPDevice device)
 	{
 		this.device = device;
 	}

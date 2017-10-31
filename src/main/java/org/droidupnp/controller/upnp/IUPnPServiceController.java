@@ -23,24 +23,24 @@ import java.util.Observer;
 
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery;
 import org.droidupnp.model.upnp.IServiceListener;
-import org.droidupnp.model.upnp.IUpnpDevice;
+import org.droidupnp.model.upnp.IUPnPDevice;
 import org.droidupnp.model.upnp.RendererDiscovery;
 import org.fourthline.cling.model.meta.LocalDevice;
 
 import android.app.Activity;
 
-public interface IUpnpServiceController {
-	public void setSelectedRenderer(IUpnpDevice renderer);
+public interface IUPnPServiceController {
+	public void setSelectedRenderer(IUPnPDevice renderer);
 
-	public void setSelectedRenderer(IUpnpDevice renderer, boolean force);
+	public void setSelectedRenderer(IUPnPDevice renderer, boolean force);
 
-	public void setSelectedContentDirectory(IUpnpDevice contentDirectory);
+	public void setSelectedContentDirectory(IUPnPDevice contentDirectory);
 
-	public void setSelectedContentDirectory(IUpnpDevice contentDirectory, boolean force);
+	public void setSelectedContentDirectory(IUPnPDevice contentDirectory, boolean force);
 
-	public IUpnpDevice getSelectedRenderer();
+	public IUPnPDevice getSelectedRenderer();
 
-	public IUpnpDevice getSelectedContentDirectory();
+	public IUPnPDevice getSelectedContentDirectory();
 
 	public void addSelectedRendererObserver(Observer o);
 

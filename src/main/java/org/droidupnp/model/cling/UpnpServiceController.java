@@ -21,21 +21,21 @@ package org.droidupnp.model.cling;
 
 import java.util.Observer;
 
-import org.droidupnp.controller.upnp.IUpnpServiceController;
+import org.droidupnp.controller.upnp.IUPnPServiceController;
 import org.droidupnp.model.CObservable;
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery;
-import org.droidupnp.model.upnp.IUpnpDevice;
+import org.droidupnp.model.upnp.IUPnPDevice;
 import org.droidupnp.model.upnp.RendererDiscovery;
 
 import android.app.Activity;
 import android.util.Log;
 
-public abstract class UpnpServiceController implements IUpnpServiceController {
+public abstract class UpnpServiceController implements IUPnPServiceController {
 
 	private static final String TAG = "UpnpServiceController";
 
-	protected IUpnpDevice renderer;
-	protected IUpnpDevice contentDirectory;
+	protected IUPnPDevice renderer;
+	protected IUPnPDevice contentDirectory;
 
 	protected CObservable rendererObservable;
 	protected CObservable contentDirectoryObservable;
@@ -65,13 +65,13 @@ public abstract class UpnpServiceController implements IUpnpServiceController {
 	}
 
 	@Override
-	public void setSelectedRenderer(IUpnpDevice renderer)
+	public void setSelectedRenderer(IUPnPDevice renderer)
 	{
 		setSelectedRenderer(renderer, false);
 	}
 
 	@Override
-	public void setSelectedRenderer(IUpnpDevice renderer, boolean force)
+	public void setSelectedRenderer(IUPnPDevice renderer, boolean force)
 	{
 		// Skip if no change and no force
 		if (!force && renderer != null && this.renderer != null && this.renderer.equals(renderer))
@@ -82,13 +82,13 @@ public abstract class UpnpServiceController implements IUpnpServiceController {
 	}
 
 	@Override
-	public void setSelectedContentDirectory(IUpnpDevice contentDirectory)
+	public void setSelectedContentDirectory(IUPnPDevice contentDirectory)
 	{
 		setSelectedContentDirectory(contentDirectory, false);
 	}
 
 	@Override
-	public void setSelectedContentDirectory(IUpnpDevice contentDirectory, boolean force)
+	public void setSelectedContentDirectory(IUPnPDevice contentDirectory, boolean force)
 	{
 		// Skip if no change and no force
 		if (!force && contentDirectory != null && this.contentDirectory != null
@@ -100,13 +100,13 @@ public abstract class UpnpServiceController implements IUpnpServiceController {
 	}
 
 	@Override
-	public IUpnpDevice getSelectedRenderer()
+	public IUPnPDevice getSelectedRenderer()
 	{
 		return renderer;
 	}
 
 	@Override
-	public IUpnpDevice getSelectedContentDirectory()
+	public IUPnPDevice getSelectedContentDirectory()
 	{
 		return contentDirectory;
 	}

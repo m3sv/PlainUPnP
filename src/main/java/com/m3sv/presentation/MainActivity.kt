@@ -13,7 +13,7 @@ import android.view.MenuItem
 import org.droidupnp.DrawerFragment
 import org.droidupnp.R
 import org.droidupnp.controller.cling.Factory
-import org.droidupnp.controller.upnp.IUpnpServiceController
+import org.droidupnp.controller.upnp.IUPnPServiceController
 import org.droidupnp.model.upnp.IFactory
 import org.droidupnp.view.ContentDirectoryFragment
 import org.droidupnp.view.SettingsActivity
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
         val REQUEST_READ_EXT_STORAGE = 12345
 
         @JvmField
-        var upnpServiceController: IUpnpServiceController? = null
+        var upnpServiceController: IUPnPServiceController? = null
 
         @JvmField
         var factory: IFactory? = null

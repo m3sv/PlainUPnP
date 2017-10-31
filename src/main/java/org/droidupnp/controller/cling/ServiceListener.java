@@ -30,7 +30,7 @@ import org.droidupnp.model.mediaserver.MediaServer;
 import org.droidupnp.model.upnp.ICallableFilter;
 import org.droidupnp.model.upnp.IRegistryListener;
 import org.droidupnp.model.upnp.IServiceListener;
-import org.droidupnp.model.upnp.IUpnpDevice;
+import org.droidupnp.model.upnp.IUPnPDevice;
 import org.droidupnp.view.SettingsActivity;
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.model.ValidationException;
@@ -70,9 +70,9 @@ public class ServiceListener implements IServiceListener
 	}
 
 	@Override
-	public Collection<IUpnpDevice> getDeviceList()
+	public Collection<IUPnPDevice> getDeviceList()
 	{
-		ArrayList<IUpnpDevice> deviceList = new ArrayList<IUpnpDevice>();
+		ArrayList<IUPnPDevice> deviceList = new ArrayList<IUPnPDevice>();
 		if(upnpService != null && upnpService.getRegistry() != null) {
 			for (Device device : upnpService.getRegistry().getDevices()) {
 				deviceList.add(new CDevice(device));
@@ -82,14 +82,14 @@ public class ServiceListener implements IServiceListener
 	}
 
 	@Override
-	public Collection<IUpnpDevice> getFilteredDeviceList(ICallableFilter filter)
+	public Collection<IUPnPDevice> getFilteredDeviceList(ICallableFilter filter)
 	{
-		ArrayList<IUpnpDevice> deviceList = new ArrayList<IUpnpDevice>();
+		ArrayList<IUPnPDevice> deviceList = new ArrayList<IUPnPDevice>();
 		try
 		{
 			if(upnpService != null && upnpService.getRegistry() != null) {
 				for (Device device : upnpService.getRegistry().getDevices()) {
-					IUpnpDevice upnpDevice = new CDevice(device);
+					IUPnPDevice upnpDevice = new CDevice(device);
 					filter.setDevice(upnpDevice);
 
 					if (filter.call())

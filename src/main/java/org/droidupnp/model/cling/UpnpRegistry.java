@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.droidupnp.model.upnp.IRegistryListener;
-import org.droidupnp.model.upnp.IUpnpDevice;
+import org.droidupnp.model.upnp.IUPnPDevice;
 import org.droidupnp.model.upnp.IUpnpRegistry;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.registry.RegistryImpl;
@@ -34,9 +34,9 @@ public class UpnpRegistry implements IUpnpRegistry {
 	RegistryImpl clingRegistry;
 
 	@Override
-	public Collection<IUpnpDevice> getDevicesList()
+	public Collection<IUPnPDevice> getDevicesList()
 	{
-		Collection<IUpnpDevice> devices = new ArrayList<IUpnpDevice>();
+		Collection<IUPnPDevice> devices = new ArrayList<IUPnPDevice>();
 		for (Device d : clingRegistry.getDevices())
 			devices.add(new CDevice(d));
 

@@ -22,7 +22,7 @@ package org.droidupnp.controller.cling;
 import android.content.Context;
 
 import com.m3sv.presentation.MainActivity;
-import org.droidupnp.controller.upnp.IUpnpServiceController;
+import org.droidupnp.controller.upnp.IUPnPServiceController;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.upnp.ARendererState;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;
@@ -61,7 +61,7 @@ public class Factory implements IFactory {
 	}
 
 	@Override
-	public IUpnpServiceController createUpnpServiceController(Context ctx)
+	public IUPnPServiceController createUpnpServiceController(Context ctx)
 	{
 		return new ServiceController(ctx);
 	}

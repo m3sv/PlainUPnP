@@ -19,25 +19,25 @@
 
 package org.droidupnp.view;
 
-import org.droidupnp.model.upnp.IUpnpDevice;
+import org.droidupnp.model.upnp.IUPnPDevice;
 
 public class DeviceDisplay {
 
-	private final IUpnpDevice device;
+	private final IUPnPDevice device;
 	private final boolean extendedInformation;
 
-	public DeviceDisplay(IUpnpDevice device, boolean extendedInformation)
+	public DeviceDisplay(IUPnPDevice device, boolean extendedInformation)
 	{
 		this.device = device;
 		this.extendedInformation = extendedInformation;
 	}
 
-	public DeviceDisplay(IUpnpDevice device)
+	public DeviceDisplay(IUPnPDevice device)
 	{
 		this(device, false);
 	}
 
-	public IUpnpDevice getDevice()
+	public IUPnPDevice getDevice()
 	{
 		return device;
 	}

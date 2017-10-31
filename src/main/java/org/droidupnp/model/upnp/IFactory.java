@@ -21,12 +21,12 @@ package org.droidupnp.model.upnp;
 
 import android.content.Context;
 
-import org.droidupnp.controller.upnp.IUpnpServiceController;
+import org.droidupnp.controller.upnp.IUPnPServiceController;
 
 public interface IFactory {
 	public IContentDirectoryCommand createContentDirectoryCommand();
 
-	public IUpnpServiceController createUpnpServiceController(Context ctx);
+	public IUPnPServiceController createUpnpServiceController(Context ctx);
 
 	public ARendererState createRendererState();
 

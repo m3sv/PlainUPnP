@@ -33,9 +33,9 @@ public interface IServiceListener {
 
 	public void refresh();
 
-	public Collection<IUpnpDevice> getDeviceList();
+	public Collection<IUPnPDevice> getDeviceList();
 
-	public Collection<IUpnpDevice> getFilteredDeviceList(ICallableFilter filter);
+	public Collection<IUPnPDevice> getFilteredDeviceList(ICallableFilter filter);
 
 	public ServiceConnection getServiceConnection();
 }

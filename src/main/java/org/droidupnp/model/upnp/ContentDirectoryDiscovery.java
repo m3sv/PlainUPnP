@@ -1,67 +1,61 @@
 /**
  * Copyright (C) 2013 Aurélien Chabot <aurelien@chabot.fr>
- * 
+ * <p>
  * This file is part of DroidUPNP.
- * 
+ * <p>
  * DroidUPNP is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * DroidUPNP is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.droidupnp.model.upnp;
 
-import com.m3sv.presentation.MainActivity;
+import org.droidupnp.controller.upnp.IUPnPServiceController;
 
 public class ContentDirectoryDiscovery extends DeviceDiscovery {
 
-	protected static final String TAG = "ContentDirectoryDeviceFragment";
+    protected static final String TAG = "ContentDirectoryDeviceFragment";
 
-	public ContentDirectoryDiscovery(IServiceListener serviceListener)
-	{
-		super(serviceListener);
-	}
+    public ContentDirectoryDiscovery(IUPnPServiceController controller, IServiceListener serviceListener) {
+        super(controller, serviceListener);
+    }
 
-	@Override
-	protected ICallableFilter getCallableFilter()
-	{
-		return new CallableContentDirectoryFilter();
-	}
+    @Override
+    protected ICallableFilter getCallableFilter() {
+        return new CallableContentDirectoryFilter();
+    }
 
-	@Override
-	protected boolean isSelected(IUpnpDevice device)
-	{
-		if (MainActivity.upnpServiceController != null && MainActivity.upnpServiceController.getSelectedContentDirectory() != null)
-			return device.equals(MainActivity.upnpServiceController.getSelectedContentDirectory());
+    @Override
+    protected boolean isSelected(IUPnPDevice device) {
+        if (controller != null && controller.getSelectedContentDirectory() != null)
+            return device.equals(controller.getSelectedContentDirectory());
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	protected void select(IUpnpDevice device)
-	{
-		select(device, false);
-	}
+    @Override
+    protected void select(IUPnPDevice device) {
+        select(device, false);
+    }
 
-	@Override
-	protected void select(IUpnpDevice device, boolean force)
-	{
-		MainActivity.upnpServiceController.setSelectedContentDirectory(device, force);
-	}
+    @Override
+    protected void select(IUPnPDevice device, boolean force) {
+        controller.setSelectedContentDirectory(device, force);
+    }
 
-	@Override
-	protected void removed(IUpnpDevice d)
-	{
-		if (MainActivity.upnpServiceController != null && MainActivity.upnpServiceController.getSelectedContentDirectory() != null
-				&& d.equals(MainActivity.upnpServiceController.getSelectedContentDirectory()))
-			MainActivity.upnpServiceController.setSelectedContentDirectory(null);
-	}
+    @Override
+    protected void removed(IUPnPDevice d) {
+        if (controller != null && controller.getSelectedContentDirectory() != null
+                && d.equals(controller.getSelectedContentDirectory()))
+            controller.setSelectedContentDirectory(null);
+    }
 }

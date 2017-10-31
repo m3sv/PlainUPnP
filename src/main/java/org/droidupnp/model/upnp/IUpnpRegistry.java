@@ -23,7 +23,7 @@ import java.util.Collection;
 
 public interface IUpnpRegistry {
 
-	public Collection<IUpnpDevice> getDevicesList();
+	public Collection<IUPnPDevice> getDevicesList();
 
 	public void addListener(IRegistryListener r);
 

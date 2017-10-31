@@ -21,7 +21,7 @@ package org.droidupnp.view;
 
 import org.droidupnp.R;
 import org.droidupnp.model.upnp.IDeviceDiscoveryObserver;
-import org.droidupnp.model.upnp.IUpnpDevice;
+import org.droidupnp.model.upnp.IUPnPDevice;
 
 import android.app.DialogFragment;
 import android.app.FragmentTransaction;
@@ -35,7 +35,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public abstract class UpnpDeviceListFragment extends ListFragment implements IDeviceDiscoveryObserver {
 
@@ -114,7 +113,7 @@ public abstract class UpnpDeviceListFragment extends ListFragment implements IDe
 	}
 
 	@Override
-	public void addedDevice(IUpnpDevice device)
+	public void addedDevice(IUPnPDevice device)
 	{
 		Log.v(TAG, "New device detected : " + device.getDisplayString());
 
@@ -152,7 +151,7 @@ public abstract class UpnpDeviceListFragment extends ListFragment implements IDe
 	}
 
 	@Override
-	public void removedDevice(IUpnpDevice device)
+	public void removedDevice(IUPnPDevice device)
 	{
 		Log.v(TAG, "Device removed : " + device.getFriendlyName());
 
@@ -179,14 +178,14 @@ public abstract class UpnpDeviceListFragment extends ListFragment implements IDe
 	 * @param d
 	 * @return
 	 */
-	protected abstract boolean isSelected(IUpnpDevice d);
+	protected abstract boolean isSelected(IUPnPDevice d);
 
 	/**
 	 * Select a device
 	 * 
 	 * @param device
 	 */
-	protected abstract void select(IUpnpDevice device);
+	protected abstract void select(IUPnPDevice device);
 
 	/**
 	 * Select a device
@@ -194,5 +193,5 @@ public abstract class UpnpDeviceListFragment extends ListFragment implements IDe
 	 * @param device
 	 * @param force
 	 */
-	protected abstract void select(IUpnpDevice device, boolean force);
+	protected abstract void select(IUPnPDevice device, boolean force);
 }

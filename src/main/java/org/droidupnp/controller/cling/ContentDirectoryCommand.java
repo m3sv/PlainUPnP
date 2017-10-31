@@ -1,25 +1,27 @@
 /**
  * Copyright (C) 2013 Aurélien Chabot <aurelien@chabot.fr>
- * 
+ * <p>
  * This file is part of DroidUPNP.
- * 
+ * <p>
  * DroidUPNP is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * DroidUPNP is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.droidupnp.controller.cling;
 
-import com.m3sv.presentation.MainActivity;
+import android.util.Log;
+
+import org.droidupnp.controller.upnp.IUPnPServiceController;
 import org.droidupnp.model.cling.CDevice;
 import org.droidupnp.model.cling.didl.ClingAudioItem;
 import org.droidupnp.model.cling.didl.ClingDIDLContainer;
@@ -47,160 +49,139 @@ import org.fourthline.cling.support.model.item.ImageItem;
 import org.fourthline.cling.support.model.item.Item;
 import org.fourthline.cling.support.model.item.VideoItem;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 
 @SuppressWarnings("rawtypes")
-public class ContentDirectoryCommand implements IContentDirectoryCommand
-{
-	private static final String TAG = "ContentDirectoryCommand";
+public class ContentDirectoryCommand implements IContentDirectoryCommand {
+    private static final String TAG = "ContentDirectoryCommand";
 
-	private final ControlPoint controlPoint;
+    private final ControlPoint controlPoint;
+    private final IUPnPServiceController controller;
 
-	public ContentDirectoryCommand(ControlPoint controlPoint)
-	{
-		this.controlPoint = controlPoint;
-	}
+    public ContentDirectoryCommand(ControlPoint controlPoint, IUPnPServiceController controller) {
+        this.controlPoint = controlPoint;
+        this.controller = controller;
+    }
 
-	@SuppressWarnings("unused")
-	private Service getMediaReceiverRegistarService()
-	{
-		if (MainActivity.upnpServiceController.getSelectedContentDirectory() == null)
-			return null;
+    @SuppressWarnings("unused")
+    private Service getMediaReceiverRegistarService() {
+        if (controller.getSelectedContentDirectory() == null)
+            return null;
 
-		return ((CDevice) MainActivity.upnpServiceController.getSelectedContentDirectory()).getDevice().findService(
-				new UDAServiceType("X_MS_MediaReceiverRegistar"));
-	}
+        return ((CDevice) controller.getSelectedContentDirectory()).getDevice().findService(
+                new UDAServiceType("X_MS_MediaReceiverRegistar"));
+    }
 
-	private Service getContentDirectoryService()
-	{
-		if (MainActivity.upnpServiceController.getSelectedContentDirectory() == null)
-			return null;
+    private Service getContentDirectoryService() {
+        if (controller.getSelectedContentDirectory() == null)
+            return null;
 
-		return ((CDevice) MainActivity.upnpServiceController.getSelectedContentDirectory()).getDevice().findService(
-				new UDAServiceType("ContentDirectory"));
-	}
+        return ((CDevice) controller.getSelectedContentDirectory()).getDevice().findService(
+                new UDAServiceType("ContentDirectory"));
+    }
 
-	private ArrayList<DIDLObjectDisplay> buildContentList(String parent, DIDLContent didl)
-	{
-		ArrayList<DIDLObjectDisplay> list = new ArrayList<DIDLObjectDisplay>();
+    private ArrayList<DIDLObjectDisplay> buildContentList(String parent, DIDLContent didl) {
+        ArrayList<DIDLObjectDisplay> list = new ArrayList<DIDLObjectDisplay>();
 
-		if (parent != null)
-			list.add(new DIDLObjectDisplay(new ClingDIDLParentContainer(parent)));
+        if (parent != null)
+            list.add(new DIDLObjectDisplay(new ClingDIDLParentContainer(parent)));
 
-		for (Container item : didl.getContainers())
-		{
-			list.add(new DIDLObjectDisplay(new ClingDIDLContainer(item)));
-			Log.v(TAG, "Add container : " + item.getTitle());
-		}
+        for (Container item : didl.getContainers()) {
+            list.add(new DIDLObjectDisplay(new ClingDIDLContainer(item)));
+            Log.v(TAG, "Add container : " + item.getTitle());
+        }
 
-		for (Item item : didl.getItems())
-		{
-			ClingDIDLItem clingItem = null;
-			if(item instanceof VideoItem)
-				clingItem = new ClingVideoItem((VideoItem)item);
-			else if(item instanceof AudioItem)
-				clingItem = new ClingAudioItem((AudioItem)item);
-			else if(item instanceof ImageItem)
-				clingItem = new ClingImageItem((ImageItem)item);
-			else
-				clingItem = new ClingDIDLItem(item);
+        for (Item item : didl.getItems()) {
+            ClingDIDLItem clingItem = null;
+            if (item instanceof VideoItem)
+                clingItem = new ClingVideoItem((VideoItem) item);
+            else if (item instanceof AudioItem)
+                clingItem = new ClingAudioItem((AudioItem) item);
+            else if (item instanceof ImageItem)
+                clingItem = new ClingImageItem((ImageItem) item);
+            else
+                clingItem = new ClingDIDLItem(item);
 
-			list.add(new DIDLObjectDisplay(clingItem));
-			Log.v(TAG, "Add item : " + item.getTitle());
+            list.add(new DIDLObjectDisplay(clingItem));
+            Log.v(TAG, "Add item : " + item.getTitle());
 
-			for (DIDLObject.Property p : item.getProperties())
-				Log.v(TAG, p.getDescriptorName() + " " + p.toString());
-		}
+            for (DIDLObject.Property p : item.getProperties())
+                Log.v(TAG, p.getDescriptorName() + " " + p.toString());
+        }
 
-		return list;
-	}
+        return list;
+    }
 
-	@Override
-	public void browse(String directoryID, final String parent, final ContentDirectoryFragment.ContentCallback callback)
-	{
-		if (getContentDirectoryService() == null)
-			return;
+    @Override
+    public void browse(String directoryID, final String parent, final ContentDirectoryFragment.ContentCallback callback) {
+        if (getContentDirectoryService() == null)
+            return;
 
-		controlPoint.execute(new Browse(getContentDirectoryService(), directoryID, BrowseFlag.DIRECT_CHILDREN, "*", 0,
-				null, new SortCriterion(true, "dc:title"))
-		{
-			@Override
-			public void received(ActionInvocation actionInvocation, final DIDLContent didl)
-			{
-				callBack(didl);
-			}
+        controlPoint.execute(new Browse(getContentDirectoryService(), directoryID, BrowseFlag.DIRECT_CHILDREN, "*", 0,
+                null, new SortCriterion(true, "dc:title")) {
+            @Override
+            public void received(ActionInvocation actionInvocation, final DIDLContent didl) {
+                callBack(didl);
+            }
 
-			@Override
-			public void updateStatus(Status status)
-			{
-				Log.v(TAG, "updateStatus ! ");
-			}
+            @Override
+            public void updateStatus(Status status) {
+                Log.v(TAG, "updateStatus ! ");
+            }
 
-			@Override
-			public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg)
-			{
-				Log.w(TAG, "Fail to browse ! " + defaultMsg);
-				callBack(null);
-			}
+            @Override
+            public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
+                Log.w(TAG, "Fail to browse ! " + defaultMsg);
+                callBack(null);
+            }
 
-			public void callBack(final DIDLContent didl)
-			{
-				if(callback!=null)
-				{
-					try {
-						if(didl!=null)
-							callback.setContent(buildContentList(parent, didl));
-							callback.call();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-	}
+            public void callBack(final DIDLContent didl) {
+                if (callback != null) {
+                    try {
+                        if (didl != null)
+                            callback.setContent(buildContentList(parent, didl));
+                        callback.call();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+    }
 
-	public void search(String search, final String parent, final ContentDirectoryFragment.ContentCallback callback)
-	{
-		if (getContentDirectoryService() == null)
-			return;
+    public void search(String search, final String parent, final ContentDirectoryFragment.ContentCallback callback) {
+        if (getContentDirectoryService() == null)
+            return;
 
-		controlPoint.execute(new Search(getContentDirectoryService(), parent, search)
-		{
-			@Override
-			public void received(ActionInvocation actionInvocation, final DIDLContent didl)
-			{
-				if(callback!=null)
-				{
-					try {
-						callback.setContent(buildContentList(parent, didl));
-						callback.call();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			}
+        controlPoint.execute(new Search(getContentDirectoryService(), parent, search) {
+            @Override
+            public void received(ActionInvocation actionInvocation, final DIDLContent didl) {
+                if (callback != null) {
+                    try {
+                        callback.setContent(buildContentList(parent, didl));
+                        callback.call();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
-			@Override
-			public void updateStatus(Status status)
-			{
-				Log.v(TAG, "updateStatus ! ");
-			}
+            @Override
+            public void updateStatus(Status status) {
+                Log.v(TAG, "updateStatus ! ");
+            }
 
-			@Override
-			public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg)
-			{
-				Log.w(TAG, "Fail to browse ! " + defaultMsg);
-			}
-		});
-	}
+            @Override
+            public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
+                Log.w(TAG, "Fail to browse ! " + defaultMsg);
+            }
+        });
+    }
 
-	public boolean isSearchAvailable()
-	{
-		if (getContentDirectoryService() == null)
-			return false;
+    public boolean isSearchAvailable() {
+        if (getContentDirectoryService() == null)
+            return false;
 
-		return false;
-	}
+        return false;
+    }
 }

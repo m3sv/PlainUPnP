@@ -20,19 +20,19 @@
 package org.droidupnp.model.upnp.didl;
 
 import org.droidupnp.R;
-import org.droidupnp.model.upnp.IUpnpDevice;
+import org.droidupnp.model.upnp.IUPnPDevice;
 import org.droidupnp.view.DeviceDisplay;
 
 public class DIDLDevice implements IDIDLObject {
 
-	IUpnpDevice device;
+	IUPnPDevice device;
 
-	public DIDLDevice(IUpnpDevice device)
+	public DIDLDevice(IUPnPDevice device)
 	{
 		this.device = device;
 	}
 
-	public IUpnpDevice getDevice()
+	public IUPnPDevice getDevice()
 	{
 		return device;
 	}

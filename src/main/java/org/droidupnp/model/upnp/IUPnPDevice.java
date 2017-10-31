@@ -19,7 +19,7 @@
 
 package org.droidupnp.model.upnp;
 
-public interface IUpnpDevice {
+public interface IUPnPDevice {
 
 	public String getDisplayString();
 
@@ -47,7 +47,7 @@ public interface IUpnpDevice {
 
 	public String getUDN();
 
-	public boolean equals(IUpnpDevice otherDevice);
+	public boolean equals(IUPnPDevice otherDevice);
 
 	public String getUID();
 

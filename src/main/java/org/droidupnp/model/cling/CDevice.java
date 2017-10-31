@@ -19,7 +19,7 @@
 
 package org.droidupnp.model.cling;
 
-import org.droidupnp.model.upnp.IUpnpDevice;
+import org.droidupnp.model.upnp.IUPnPDevice;
 import org.fourthline.cling.model.meta.Action;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.Service;
@@ -29,7 +29,7 @@ import org.fourthline.cling.model.types.UDAServiceType;
 import android.util.Log;
 
 @SuppressWarnings("rawtypes")
-public class CDevice implements IUpnpDevice {
+public class CDevice implements IUPnPDevice {
 
 	private static final String TAG = "ClingDevice";
 
@@ -59,7 +59,7 @@ public class CDevice implements IUpnpDevice {
 	}
 
 	@Override
-	public boolean equals(IUpnpDevice otherDevice)
+	public boolean equals(IUPnPDevice otherDevice)
 	{
 		return device.getIdentity().getUdn().equals(((CDevice) otherDevice).getDevice().getIdentity().getUdn());
 	}

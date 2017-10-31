@@ -1,184 +1,168 @@
 /**
  * Copyright (C) 2013 Aurélien Chabot <aurelien@chabot.fr>
- * 
+ * <p>
  * This file is part of DroidUPNP.
- * 
+ * <p>
  * DroidUPNP is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * DroidUPNP is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.droidupnp.model.upnp;
 
+import android.util.Log;
+
+import org.droidupnp.controller.upnp.IUPnPServiceController;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.m3sv.presentation.MainActivity;
-
-import android.util.Log;
-
 public abstract class DeviceDiscovery {
 
-	protected static final String TAG = "DeviceDiscovery";
+    protected static final String TAG = "DeviceDiscovery";
 
-	private final BrowsingRegistryListener browsingRegistryListener;
+    private final BrowsingRegistryListener browsingRegistryListener;
 
-	protected boolean extendedInformation;
+    protected boolean extendedInformation;
 
-	private final ArrayList<IDeviceDiscoveryObserver> observerList;
+    private final ArrayList<IDeviceDiscoveryObserver> observerList;
 
-	public DeviceDiscovery(IServiceListener serviceListener, boolean extendedInformation)
-	{
-		browsingRegistryListener = new BrowsingRegistryListener();
-		this.extendedInformation = extendedInformation;
-		observerList = new ArrayList<IDeviceDiscoveryObserver>();
-	}
+    protected final IUPnPServiceController controller;
 
-	public DeviceDiscovery(IServiceListener serviceListener)
-	{
-		this(serviceListener, false);
-	}
+    public DeviceDiscovery(IUPnPServiceController controller, IServiceListener serviceListener, boolean extendedInformation) {
+        this.controller = controller;
+        browsingRegistryListener = new BrowsingRegistryListener();
+        this.extendedInformation = extendedInformation;
+        observerList = new ArrayList<>();
+    }
 
-	public void resume(IServiceListener serviceListener)
-	{
-		serviceListener.addListener(browsingRegistryListener);
-	}
+    public DeviceDiscovery(IUPnPServiceController controller, IServiceListener serviceListener) {
+        this(controller, serviceListener, false);
+    }
 
-	public void pause(IServiceListener serviceListener)
-	{
-		serviceListener.removeListener(browsingRegistryListener);
-	}
+    public void resume(IServiceListener serviceListener) {
+        serviceListener.addListener(browsingRegistryListener);
+    }
 
-	public class BrowsingRegistryListener implements IRegistryListener {
+    public void pause(IServiceListener serviceListener) {
+        serviceListener.removeListener(browsingRegistryListener);
+    }
 
-		@Override
-		public void deviceAdded(final IUpnpDevice device)
-		{
-			Log.v(TAG, "New device detected : " + device.getDisplayString());
+    public class BrowsingRegistryListener implements IRegistryListener {
 
-			if (device.isFullyHydrated() && filter(device))
-			{
-				if (isSelected(device))
-				{
-					Log.i(TAG, "Reselect device to refresh it");
-					select(device, true);
-				}
+        @Override
+        public void deviceAdded(final IUPnPDevice device) {
+            Log.v(TAG, "New device detected : " + device.getDisplayString());
 
-				notifyAdded(device);
-			}
-		}
+            if (device.isFullyHydrated() && filter(device)) {
+                if (isSelected(device)) {
+                    Log.i(TAG, "Reselect device to refresh it");
+                    select(device, true);
+                }
 
-		@Override
-		public void deviceRemoved(final IUpnpDevice device)
-		{
-			Log.v(TAG, "Device removed : " + device.getFriendlyName());
+                notifyAdded(device);
+            }
+        }
 
-			if (filter(device))
-			{
-				if (isSelected(device))
-				{
-					Log.i(TAG, "Selected device have been removed");
-					removed(device);
-				}
+        @Override
+        public void deviceRemoved(final IUPnPDevice device) {
+            Log.v(TAG, "Device removed : " + device.getFriendlyName());
 
-				notifyRemoved(device);
-			}
-		}
-	}
+            if (filter(device)) {
+                if (isSelected(device)) {
+                    Log.i(TAG, "Selected device have been removed");
+                    removed(device);
+                }
 
-	public void addObserver(IDeviceDiscoveryObserver o)
-	{
-		observerList.add(o);
+                notifyRemoved(device);
+            }
+        }
+    }
 
-		final Collection<IUpnpDevice> upnpDevices = MainActivity.upnpServiceController.getServiceListener()
-				.getFilteredDeviceList(getCallableFilter());
-		for (IUpnpDevice d : upnpDevices)
-			o.addedDevice(d);
-	}
+    public void addObserver(IDeviceDiscoveryObserver o) {
+        observerList.add(o);
 
-	public void removeObserver(IDeviceDiscoveryObserver o)
-	{
-		observerList.remove(o);
-	}
+        final Collection<IUPnPDevice> upnpDevices = controller.getServiceListener()
+                .getFilteredDeviceList(getCallableFilter());
+        for (IUPnPDevice d : upnpDevices)
+            o.addedDevice(d);
+    }
 
-	public void notifyAdded(IUpnpDevice device)
-	{
-		for (IDeviceDiscoveryObserver o : observerList)
-			o.addedDevice(device);
-	}
+    public void removeObserver(IDeviceDiscoveryObserver o) {
+        observerList.remove(o);
+    }
 
-	public void notifyRemoved(IUpnpDevice device)
-	{
-		for (IDeviceDiscoveryObserver o : observerList)
-			o.removedDevice(device);
-	}
+    public void notifyAdded(IUPnPDevice device) {
+        for (IDeviceDiscoveryObserver o : observerList)
+            o.addedDevice(device);
+    }
 
-	/**
-	 * Filter device you want to add to this device list fragment
-	 * 
-	 * @param device
-	 *            the device to test
-	 * @return add it or not
-	 * @throws Exception
-	 */
-	protected boolean filter(IUpnpDevice device)
-	{
-		ICallableFilter filter = getCallableFilter();
-		filter.setDevice(device);
-		try
-		{
-			return filter.call();
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-		return false;
-	}
+    public void notifyRemoved(IUPnPDevice device) {
+        for (IDeviceDiscoveryObserver o : observerList)
+            o.removedDevice(device);
+    }
 
-	/**
-	 * Get a callable device filter
-	 * 
-	 * @return
-	 */
-	protected abstract ICallableFilter getCallableFilter();
+    /**
+     * Filter device you want to add to this device list fragment
+     *
+     * @param device the device to test
+     * @return add it or not
+     * @throws Exception
+     */
+    protected boolean filter(IUPnPDevice device) {
+        ICallableFilter filter = getCallableFilter();
+        filter.setDevice(device);
+        try {
+            return filter.call();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-	/**
-	 * Filter to know if device is selected
-	 * 
-	 * @param d
-	 * @return
-	 */
-	protected abstract boolean isSelected(IUpnpDevice d);
+    /**
+     * Get a callable device filter
+     *
+     * @return
+     */
+    protected abstract ICallableFilter getCallableFilter();
 
-	/**
-	 * Select a device
-	 * 
-	 * @param device
-	 */
-	protected abstract void select(IUpnpDevice device);
+    /**
+     * Filter to know if device is selected
+     *
+     * @param d
+     * @return
+     */
+    protected abstract boolean isSelected(IUPnPDevice d);
 
-	/**
-	 * Select a device
-	 * 
-	 * @param device
-	 * @param force
-	 */
-	protected abstract void select(IUpnpDevice device, boolean force);
+    /**
+     * Select a device
+     *
+     * @param device
+     */
+    protected abstract void select(IUPnPDevice device);
 
-	/**
-	 * Callback when device removed
-	 * 
-	 * @param d
-	 */
-	protected abstract void removed(IUpnpDevice d);
+    /**
+     * Select a device
+     *
+     * @param device
+     * @param force
+     */
+    protected abstract void select(IUPnPDevice device, boolean force);
+
+    /**
+     * Callback when device removed
+     *
+     * @param d
+     */
+    protected abstract void removed(IUPnPDevice d);
 }
