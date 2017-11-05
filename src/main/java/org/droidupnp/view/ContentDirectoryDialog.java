@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
-import com.m3sv.presentation.MainActivity;
 import org.droidupnp.R;
+import org.droidupnp.controller.upnp.IUPnPServiceController;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
 import org.droidupnp.model.upnp.IUPnPDevice;
 
@@ -19,13 +19,14 @@ import android.widget.ArrayAdapter;
 public class ContentDirectoryDialog extends DialogFragment {
 
 	private Callable<Void> callback = null;
+	IUPnPServiceController controller;
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-		final Collection<IUPnPDevice> upnpDevices = MainActivity.upnpServiceController.getServiceListener()
+		final Collection<IUPnPDevice> upnpDevices = controller.getServiceListener()
 				.getFilteredDeviceList(new CallableContentDirectoryFilter());
 
 		ArrayList<DeviceDisplay> list = new ArrayList<DeviceDisplay>();
@@ -38,7 +39,7 @@ public class ContentDirectoryDialog extends DialogFragment {
 			@Override
 			public void onClick(DialogInterface dialog, int which)
 			{
-				MainActivity.upnpServiceController.setSelectedContentDirectory((IUPnPDevice) upnpDevices.toArray()[which]);
+				controller.setSelectedContentDirectory((IUPnPDevice) upnpDevices.toArray()[which]);
 				try
 				{
 					if (callback != null)

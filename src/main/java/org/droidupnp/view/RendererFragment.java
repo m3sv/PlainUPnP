@@ -100,7 +100,7 @@ public class RendererFragment extends Fragment implements Observer {
         if (controller != null)
             controller.addSelectedRendererObserver(this);
         else
-            Log.w(TAG, "upnpServiceController was not ready !!!");
+            Log.w(TAG, "controller was not ready !!!");
 
         // Initially hide renderer
         hide();

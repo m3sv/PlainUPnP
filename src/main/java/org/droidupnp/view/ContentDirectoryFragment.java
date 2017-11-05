@@ -42,13 +42,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.m3sv.common.Utils;
-import com.m3sv.presentation.MainActivity;
+import com.m3sv.presentation.main.MainActivity;
 
 import org.droidupnp.R;
 import org.droidupnp.controller.upnp.IUPnPServiceController;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;
 import org.droidupnp.model.upnp.IDeviceDiscoveryObserver;
+import org.droidupnp.model.upnp.IFactory;
 import org.droidupnp.model.upnp.IRendererCommand;
 import org.droidupnp.model.upnp.IUPnPDevice;
 import org.droidupnp.model.upnp.didl.DIDLDevice;
@@ -82,6 +83,8 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
     static final String STATE_CURRENT = "current";
 
     IUPnPServiceController controller;
+
+    IFactory factory;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -197,7 +200,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
         if (controller != null)
             controller.addSelectedContentDirectoryObserver(this);
         else
-            Log.w(TAG, "upnpServiceController was not ready !!!");
+            Log.w(TAG, "controller was not ready !!!");
 
         if (savedInstanceState != null
                 && savedInstanceState.getStringArray(STATE_TREE) != null
@@ -211,7 +214,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
             currentID = savedInstanceState.getString(STATE_CURRENT);
 
             device = controller.getSelectedContentDirectory();
-            contentDirectoryCommand = MainActivity.factory.createContentDirectoryCommand();
+            contentDirectoryCommand = factory.createContentDirectoryCommand();
         }
 
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -432,7 +435,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
         Log.i(TAG, "device " + device + " device " + ((device != null) ? device.getDisplayString() : ""));
         Log.i(TAG, "contentDirectoryCommand : " + contentDirectoryCommand);
 
-        contentDirectoryCommand = MainActivity.factory.createContentDirectoryCommand();
+        contentDirectoryCommand = factory.createContentDirectoryCommand();
         if (contentDirectoryCommand == null)
             return; // Can't do anything if upnp not ready
 
@@ -524,7 +527,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
     }
 
     private void launchURIRenderer(IDIDLItem uri) {
-        IRendererCommand rendererCommand = MainActivity.factory.createRendererCommand(MainActivity.factory.createRendererState());
+        IRendererCommand rendererCommand = factory.createRendererCommand(factory.createRendererState());
         rendererCommand.launchItem(uri);
     }
 
