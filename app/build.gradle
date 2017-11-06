@@ -2,8 +2,19 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '26.0.2'
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
+
+    defaultConfig {
+        applicationId "com.m3sv.droidupnp"
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
 
     packagingOptions {
         exclude 'META-INF/beans.xml'
@@ -13,24 +24,21 @@ android {
         abortOnError false
     }
 
-
-    defaultConfig {
-        applicationId "com.m3sv.droidupnp"
-        minSdkVersion 16
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            applicationIdSuffix ".debug"
+        }
     }
 
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -39,8 +47,15 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-    implementation 'com.android.support:appcompat-v7:27.0.0'
-    implementation 'com.jakewharton.timber:timber:4.6.0'
+    implementation deps.support.appCompat
+    implementation deps.support.v4
+    implementation deps.support.design
+    implementation deps.support.recyclerView
+    implementation deps.support.cardView
+    implementation deps.support.constraintLayout
+
+    implementation deps.timber
+    implementation deps.kotlin
 
     // Cling
     implementation group: 'org.fourthline.cling', name: 'cling-core', version: '2.1.1'
@@ -53,9 +68,12 @@ dependencies {
     implementation('de.psdev.licensesdialog:licensesdialog:1.8.1') {
         exclude module: 'support-v4'
     }
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-
 }
+
+kapt {
+    generateStubs = true
+}
+
 
 File propFile = file('signing.properties');
 if (propFile.exists()) {
