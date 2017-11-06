@@ -1,0 +1,76 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '26.0.2'
+
+    packagingOptions {
+        exclude 'META-INF/beans.xml'
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+
+    defaultConfig {
+        applicationId "com.m3sv.droidupnp"
+        minSdkVersion 16
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
+    implementation 'com.android.support:appcompat-v7:27.0.0'
+    implementation 'com.jakewharton.timber:timber:4.6.0'
+
+    // Cling
+    implementation group: 'org.fourthline.cling', name: 'cling-core', version: '2.1.1'
+    implementation group: 'org.fourthline.cling', name: 'cling-support', version: '2.1.1'
+    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '8.1.18.v20150929'
+    implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '8.1.18.v20150929'
+    implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: '8.1.18.v20150929'
+    implementation group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.14'
+
+    implementation('de.psdev.licensesdialog:licensesdialog:1.8.1') {
+        exclude module: 'support-v4'
+    }
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+
+}
+
+File propFile = file('signing.properties');
+if (propFile.exists()) {
+    Properties props = new Properties()
+    props.load(new FileInputStream(propFile))
+
+    if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+        android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
+        android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
+        android.signingConfigs.release.keyAlias = props['KEY_ALIAS']
+        android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
+    } else {
+        android.buildTypes.release.signingConfig = null
+    }
+} else {
+    android.buildTypes.release.signingConfig = null
+}

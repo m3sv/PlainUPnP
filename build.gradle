@@ -9,86 +9,21 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-    maven {
-        url 'http://4thline.org/m2'
-    }
-    google()
-}
-
-dependencies {
-    // Android support
-    implementation 'com.android.support:appcompat-v7:27.0.0'
-    implementation 'com.jakewharton.timber:timber:4.6.0'
-    // Cling
-    implementation group: 'org.fourthline.cling', name: 'cling-core', version: '2.1.1'
-    implementation group: 'org.fourthline.cling', name: 'cling-support', version: '2.1.1'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '8.1.18.v20150929'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '8.1.18.v20150929'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: '8.1.18.v20150929'
-    implementation group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.14'
-
-    implementation('de.psdev.licensesdialog:licensesdialog:1.8.1') {
-        exclude module: 'support-v4'
-    }
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-}
-
-android {
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
-
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 26
-    }
-
-    packagingOptions {
-        exclude 'META-INF/beans.xml'
-    }
-
-    lintOptions {
-        abortOnError false
-    }
-
-    signingConfigs { release }
-
-    buildTypes {
-        release {
-            signingConfig signingConfigs.release
-        }
-    }
-
-    sourceSets {
-        main {
-            manifest.srcFile 'src/main/AndroidManifest.xml'
-            java.srcDirs = ['src/main/java']
-            resources.srcDirs = ['src/main/res']
-            res.srcDirs = ['src/main/res']
-            assets.srcDirs = ['src/main/assets']
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        maven { url 'https://maven.google.com' }
+        mavenCentral()
+        maven {
+            url 'http://4thline.org/m2'
         }
     }
 }
 
-File propFile = file('signing.properties');
-if (propFile.exists()) {
-    Properties props = new Properties()
-    props.load(new FileInputStream(propFile))
-
-    if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
-            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
-        android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
-        android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
-        android.signingConfigs.release.keyAlias = props['KEY_ALIAS']
-        android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
-    } else {
-        android.buildTypes.release.signingConfig = null
-    }
-} else {
-    android.buildTypes.release.signingConfig = null
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }
+
+
