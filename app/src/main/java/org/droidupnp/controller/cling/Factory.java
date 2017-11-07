@@ -31,9 +31,12 @@ import org.droidupnp.model.upnp.IRendererState;
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.controlpoint.ControlPoint;
 
+import javax.inject.Inject;
+
 public class Factory implements IFactory {
     private final IUPnPServiceController controller;
 
+    @Inject
     public Factory(IUPnPServiceController controller) {
         this.controller = controller;
     }

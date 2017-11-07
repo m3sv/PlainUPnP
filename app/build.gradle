@@ -63,6 +63,10 @@ dependencies {
     implementation deps.dagger.core
     provided deps.dagger.annotation
     kapt deps.dagger.compiler
+    implementation deps.dagger.android
+    implementation deps.dagger.androidSupport
+    kapt deps.dagger.androidProcessor
+
 
     // Cling
     implementation group: 'org.fourthline.cling', name: 'cling-core', version: '2.1.1'

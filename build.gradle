@@ -30,9 +30,12 @@ buildscript {
                     'binding': "com.jakewharton.rxbinding2:rxbinding:2.0.0",
             ],
             'dagger'                : [
-                    'core'      : "com.google.dagger:dagger:${versions.dagger}",
-                    'compiler'  : "com.google.dagger:dagger-compiler:${versions.dagger}",
-                    'annotation': "org.glassfish:javax.annotation:10.0-b28",
+                    'core'            : "com.google.dagger:dagger:${versions.dagger}",
+                    'compiler'        : "com.google.dagger:dagger-compiler:${versions.dagger}",
+                    'annotation'      : "org.glassfish:javax.annotation:10.0-b28",
+                    'android'         : "com.google.dagger:dagger-android:${versions.dagger}",
+                    'androidSupport'  : "com.google.dagger:dagger-android-support:${versions.dagger}",
+                    'androidProcessor': "com.google.dagger:dagger-android-processor:${versions.dagger}"
             ],
             'eventBus'              : "com.greenrobot:eventbus:3.0.0",
             'timber'                : "com.jakewharton.timber:timber:4.6.0",

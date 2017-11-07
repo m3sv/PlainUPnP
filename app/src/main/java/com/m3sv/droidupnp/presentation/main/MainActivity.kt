@@ -14,6 +14,7 @@ import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.droidupnp.presentation.main.MainViewModelFactory
 import com.m3sv.presentation.base.BaseActivity
+import dagger.android.AndroidInjection
 import org.droidupnp.view.SettingsActivity
 import javax.inject.Inject
 
@@ -28,15 +29,17 @@ class MainActivity : BaseActivity() {
     private lateinit var viewModel: MainActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXT_STORAGE)
-            }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXT_STORAGE)
+        }
     }
 
     override fun onResume() {
