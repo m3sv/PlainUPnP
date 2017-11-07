@@ -1,6 +1,7 @@
 package com.m3sv.presentation.main
 
 import android.Manifest
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -10,10 +11,10 @@ import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
 import com.m3sv.droidupnp.R
+import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.presentation.base.BaseActivity
 import org.droidupnp.DrawerFragment
 import org.droidupnp.controller.upnp.IUPnPServiceController
-import org.droidupnp.view.ContentDirectoryFragment
 import org.droidupnp.view.SettingsActivity
 
 
@@ -23,10 +24,14 @@ class MainActivity : BaseActivity() {
 
     lateinit var controller: IUPnPServiceController
 
+    private lateinit var viewModel: MainActivityViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+        
         if (fragmentManager.findFragmentById(R.id.main_navigation_drawer) is DrawerFragment) {
             drawerFragment = fragmentManager.findFragmentById(R.id.main_navigation_drawer) as DrawerFragment
             mainTitle = title
@@ -54,8 +59,6 @@ class MainActivity : BaseActivity() {
 
     private fun refresh() {
         controller.serviceListener?.refresh()
-        val contentDirectoryFragment = contentDirectoryFragment
-        contentDirectoryFragment?.refresh()
     }
 
     private fun restoreActionBar() {
@@ -83,21 +86,11 @@ class MainActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onBackPressed() {
-        val contentDirectoryFragment = contentDirectoryFragment
-        if (contentDirectoryFragment != null && !contentDirectoryFragment.goBack())
-            return
-        super.onBackPressed()
-    }
-
     companion object {
         val REQUEST_READ_EXT_STORAGE = 12345
 
         @JvmField
         var actionBarMenu: Menu? = null
-
-        @JvmStatic
-        var contentDirectoryFragment: ContentDirectoryFragment? = null
 
         @JvmStatic
         fun setSearchVisibility(visible: Boolean) {

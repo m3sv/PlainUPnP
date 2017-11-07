@@ -1,17 +1,18 @@
 buildscript {
     ext.kotlin_version = '1.1.51'
     ext.versions = [
-            'compileSdk'    : 26,
-            'buildTools'    : '26.0.2',
-            'minSdk'        : 19,
-            'targetSdk'     : 27,
+            'compileSdk'            : 26,
+            'buildTools'            : '26.0.2',
+            'minSdk'                : 19,
+            'targetSdk'             : 27,
 
-            'supportLibrary': '27.0.0',
-            'dagger'        : '2.11',
-            'glide'         : '4.2.0',
+            'supportLibrary'        : '27.0.0',
+            'architectureComponents': '1.0.0',
+            'dagger'                : '2.11',
+            'glide'                 : '4.2.0',
     ]
     ext.deps = [
-            'support'       : [
+            'support'               : [
                     'appCompat'       : "com.android.support:appcompat-v7:${versions.supportLibrary}",
                     'v4'              : "com.android.support:support-v4:${versions.supportLibrary}",
                     'design'          : "com.android.support:design:${versions.supportLibrary}",
@@ -19,24 +20,28 @@ buildscript {
                     'cardView'        : "com.android.support:cardview-v7:${versions.supportLibrary}",
                     'constraintLayout': "com.android.support.constraint:constraint-layout:1.1.0-beta3",
             ],
-            'rx'            : [
+            'architectureComponents': [
+                    'lifecycle'               : "android.arch.lifecycle:extensions:${versions.architectureComponents}",
+                    'lifecycleReactiveStreams': "android.arch.lifecycle:reactivestreams:${versions.architectureComponents}",
+            ],
+            'rx'                    : [
                     'core'   : "io.reactivex.rxjava2:rxjava:2.1.4",
                     'android': "io.reactivex.rxjava2:rxandroid:2.0.1",
                     'binding': "com.jakewharton.rxbinding2:rxbinding:2.0.0",
             ],
-            'dagger'        : [
+            'dagger'                : [
                     'core'      : "com.google.dagger:dagger:${versions.dagger}",
                     'compiler'  : "com.google.dagger:dagger-compiler:${versions.dagger}",
                     'annotation': "org.glassfish:javax.annotation:10.0-b28",
             ],
-            'eventBus'      : "com.greenrobot:eventbus:3.0.0",
-            'timber'        : "com.jakewharton.timber:timber:4.6.0",
-            'kotlin'        : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version",
-            'glide'         : [
+            'eventBus'              : "com.greenrobot:eventbus:3.0.0",
+            'timber'                : "com.jakewharton.timber:timber:4.6.0",
+            'kotlin'                : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version",
+            'glide'                 : [
                     'core'    : "com.github.bumptech.glide:glide:${versions.glide}",
                     'compiler': "com.github.bumptech.glide:compiler:${versions.glide}"
             ],
-            'slidingUpPanel': "com.sothree.slidinguppanel:library:3.4.0",
+            'slidingUpPanel'        : "com.sothree.slidinguppanel:library:3.4.0",
     ]
 
     repositories {

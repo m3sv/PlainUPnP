@@ -54,6 +54,9 @@ dependencies {
     implementation deps.support.cardView
     implementation deps.support.constraintLayout
 
+    implementation deps.architectureComponents.lifecycle
+    implementation deps.architectureComponents.lifecycleReactiveStreams
+
     implementation deps.timber
     implementation deps.kotlin
 

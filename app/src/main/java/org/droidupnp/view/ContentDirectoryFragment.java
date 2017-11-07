@@ -88,7 +88,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        MainActivity.setContentDirectoryFragment(this);
+//        MainActivity.setContentDirectoryFragment(this);
         super.onCreate(savedInstanceState);
     }
 
