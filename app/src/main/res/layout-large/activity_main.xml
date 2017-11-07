@@ -22,22 +22,6 @@
 	android:id="@+id/drawer_layout"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	tools:context="org.droidupnp.com.m3sv.presentation.MainActivity">
-
-	<fragment android:id="@+id/DeviceFragment"
-		android:name="org.droidupnp.view.DeviceFragment"
-		android:layout_width="@dimen/navigation_drawer_width"
-		android:layout_height="match_parent"
-		android:layout_alignParentLeft="true"
-		android:layout_alignParentStart="true" />
-
-	<fragment android:id="@+id/main_content_container"
-		android:name="org.droidupnp.view.Content"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_alignParentRight="true"
-		android:layout_alignParentEnd="true"
-		android:layout_toEndOf="@id/DeviceFragment"
-		android:layout_toRightOf="@id/DeviceFragment" />
+	tools:context="com.m3sv.presentation.main.MainActivity">
 
 </RelativeLayout>

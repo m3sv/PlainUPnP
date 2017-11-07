@@ -1,8 +1,7 @@
 package com.m3sv.droidupnp.presentation.main
 
-import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
+import android.arch.lifecycle.ViewModel
+import com.m3sv.droidupnp.upnp.UPnPManager
 
-class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
-    var counter: Int = 1
+class MainActivityViewModel(val manager: UPnPManager) : ViewModel() {
 }

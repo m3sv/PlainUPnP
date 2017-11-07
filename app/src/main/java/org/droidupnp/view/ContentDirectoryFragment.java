@@ -108,7 +108,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
                 @Override
                 public void run() {
                     try {
-                        MainActivity.setSearchVisibility(contentDirectoryCommand != null && contentDirectoryCommand.isSearchAvailable());
+//                        MainActivity.setSearchVisibility(contentDirectoryCommand != null && contentDirectoryCommand.isSearchAvailable());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

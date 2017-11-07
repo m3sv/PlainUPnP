@@ -12,17 +12,18 @@ import android.view.Menu
 import android.view.MenuItem
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
+import com.m3sv.droidupnp.presentation.main.MainViewModelFactory
 import com.m3sv.presentation.base.BaseActivity
-import org.droidupnp.DrawerFragment
-import org.droidupnp.controller.upnp.IUPnPServiceController
 import org.droidupnp.view.SettingsActivity
+import javax.inject.Inject
 
 
 class MainActivity : BaseActivity() {
-    private var drawerFragment: DrawerFragment? = null
+    private val REQUEST_READ_EXT_STORAGE = 12345
     private var mainTitle: CharSequence? = null
 
-    lateinit var controller: IUPnPServiceController
+    @Inject
+    lateinit var viewModelFactory: MainViewModelFactory
 
     private lateinit var viewModel: MainActivityViewModel
 
@@ -30,13 +31,7 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
-        
-        if (fragmentManager.findFragmentById(R.id.main_navigation_drawer) is DrawerFragment) {
-            drawerFragment = fragmentManager.findFragmentById(R.id.main_navigation_drawer) as DrawerFragment
-            mainTitle = title
-            drawerFragment?.setUp(R.id.main_navigation_drawer, findViewById(R.id.drawer_layout))
-        }
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -46,11 +41,11 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        controller.resume(this)
+        viewModel.manager.controller.resume(this)
     }
 
     override fun onPause() {
-        controller.run {
+        viewModel.manager.controller.run {
             pause()
             serviceListener?.serviceConnection?.onServiceDisconnected(null)
         }
@@ -58,7 +53,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun refresh() {
-        controller.serviceListener?.refresh()
+//        controller.serviceListener?.refresh()
     }
 
     private fun restoreActionBar() {
@@ -71,7 +66,6 @@ class MainActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
-        actionBarMenu = menu
         restoreActionBar()
         return super.onCreateOptionsMenu(menu)
     }
@@ -85,17 +79,4 @@ class MainActivity : BaseActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    companion object {
-        val REQUEST_READ_EXT_STORAGE = 12345
-
-        @JvmField
-        var actionBarMenu: Menu? = null
-
-        @JvmStatic
-        fun setSearchVisibility(visible: Boolean) {
-            actionBarMenu?.findItem(R.id.action_search)?.isVisible = visible
-        }
-    }
-
 }
