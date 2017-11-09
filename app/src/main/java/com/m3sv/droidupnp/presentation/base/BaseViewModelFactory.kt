@@ -1,12 +1,13 @@
-package com.m3sv.droidupnp.presentation.main
+package com.m3sv.droidupnp.presentation.base
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
+import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.droidupnp.upnp.UPnPManager
 import javax.inject.Inject
 
 
-class MainViewModelFactory @Inject constructor(val manager: UPnPManager) : ViewModelProvider.Factory {
+class BaseViewModelFactory @Inject constructor(private val manager: UPnPManager) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainActivityViewModel::class.java)) {
             return MainActivityViewModel(manager) as T

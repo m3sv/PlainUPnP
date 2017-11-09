@@ -12,7 +12,7 @@ import android.view.Menu
 import android.view.MenuItem
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
-import com.m3sv.droidupnp.presentation.main.MainViewModelFactory
+import com.m3sv.droidupnp.presentation.base.BaseViewModelFactory
 import com.m3sv.presentation.base.BaseActivity
 import dagger.android.AndroidInjection
 import org.droidupnp.view.SettingsActivity
@@ -20,11 +20,10 @@ import javax.inject.Inject
 
 
 class MainActivity : BaseActivity() {
-    private val REQUEST_READ_EXT_STORAGE = 12345
     private var mainTitle: CharSequence? = null
 
     @Inject
-    lateinit var viewModelFactory: MainViewModelFactory
+    lateinit var viewModelFactory: BaseViewModelFactory
 
     private lateinit var viewModel: MainActivityViewModel
 
@@ -81,5 +80,9 @@ class MainActivity : BaseActivity() {
             else -> super.onOptionsItemSelected(item)
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    companion object {
+        private val REQUEST_READ_EXT_STORAGE = 12345
     }
 }
