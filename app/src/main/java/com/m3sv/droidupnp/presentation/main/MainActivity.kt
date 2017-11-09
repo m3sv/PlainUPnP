@@ -20,8 +20,6 @@ import javax.inject.Inject
 
 
 class MainActivity : BaseActivity() {
-    private var mainTitle: CharSequence? = null
-
     @Inject
     lateinit var viewModelFactory: BaseViewModelFactory
 
@@ -58,17 +56,8 @@ class MainActivity : BaseActivity() {
 //        controller.serviceListener?.refresh()
     }
 
-    private fun restoreActionBar() {
-        val actionBar = supportActionBar
-        actionBar?.run {
-            setDisplayShowTitleEnabled(true)
-            title = mainTitle
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
-        restoreActionBar()
         return super.onCreateOptionsMenu(menu)
     }
 
