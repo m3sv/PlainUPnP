@@ -11,8 +11,8 @@ import android.support.v4.content.ContextCompat
 import android.view.Menu
 import android.view.MenuItem
 import com.m3sv.droidupnp.R
-import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.droidupnp.presentation.base.BaseViewModelFactory
+import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.presentation.base.BaseActivity
 import dagger.android.AndroidInjection
 import org.droidupnp.view.SettingsActivity
@@ -35,9 +35,9 @@ class MainActivity : BaseActivity() {
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        }
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXT_STORAGE)
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXT_STORAGE)
+            }
         }
     }
 
