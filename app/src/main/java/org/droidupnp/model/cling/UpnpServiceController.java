@@ -132,7 +132,7 @@ public abstract class UpnpServiceController implements IUPnPServiceController {
 
     // Resume the service
     @Override
-    public void resume(Activity activity) {
+    public void resume() {
         rendererDiscovery.resume(getServiceListener());
         contentDirectoryDiscovery.resume(getServiceListener());
     }

@@ -19,10 +19,8 @@
 
 package org.droidupnp.controller.cling;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import org.droidupnp.model.cling.UpnpService;
 import org.droidupnp.model.cling.UpnpServiceController;
@@ -30,16 +28,18 @@ import org.fourthline.cling.model.meta.LocalDevice;
 
 import javax.inject.Inject;
 
+import timber.log.Timber;
+
 public class ServiceController extends UpnpServiceController {
-    private static final String TAG = "Cling.ServiceController";
 
     private final ServiceListener upnpServiceListener;
-    private Activity activity = null;
+    private Context context;
 
     @Inject
-    public ServiceController(Context ctx) {
+    ServiceController(Context context) {
         super();
-        upnpServiceListener = new ServiceListener(ctx);
+        upnpServiceListener = new ServiceListener(context);
+        this.context = context;
     }
 
     @Override
@@ -55,18 +55,15 @@ public class ServiceController extends UpnpServiceController {
     @Override
     public void pause() {
         super.pause();
-        activity.unbindService(upnpServiceListener.getServiceConnection());
-        activity = null;
+        context.unbindService(upnpServiceListener.getServiceConnection());
     }
 
     @Override
-    public void resume(Activity activity) {
-        super.resume(activity);
-        this.activity = activity;
-
+    public void resume() {
+        super.resume();
         // This will start the UPnP service if it wasn't already started
-        Log.d(TAG, "Start upnp service");
-        activity.bindService(new Intent(activity, UpnpService.class), upnpServiceListener.getServiceConnection(),
+        Timber.d("Start upnp service");
+        context.bindService(new Intent(context, UpnpService.class), upnpServiceListener.getServiceConnection(),
                 Context.BIND_AUTO_CREATE);
     }
 

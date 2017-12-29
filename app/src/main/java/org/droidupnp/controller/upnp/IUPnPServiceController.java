@@ -60,7 +60,7 @@ public interface IUPnPServiceController {
 	public void pause();
 
 	// Resume the service
-	public void resume(Activity activity);
+	public void resume();
 
 	public void addDevice(LocalDevice localDevice);
 	public void removeDevice(LocalDevice localDevice);

@@ -60,6 +60,11 @@ dependencies {
     implementation deps.timber
     implementation deps.kotlin
 
+    implementation deps.rx.kotlin
+    implementation deps.rx.binding
+    implementation deps.rx.android
+
+
     implementation deps.dagger.core
     provided deps.dagger.annotation
     kapt deps.dagger.compiler

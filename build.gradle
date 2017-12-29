@@ -25,7 +25,7 @@ buildscript {
                     'lifecycleReactiveStreams': "android.arch.lifecycle:reactivestreams:${versions.architectureComponents}",
             ],
             'rx'                    : [
-                    'core'   : "io.reactivex.rxjava2:rxjava:2.1.4",
+                    'kotlin' : "com.github.ReactiveX:rxKotlin:2.2.0",
                     'android': "io.reactivex.rxjava2:rxandroid:2.0.1",
                     'binding': "com.jakewharton.rxbinding2:rxbinding:2.0.0",
             ],
@@ -67,6 +67,7 @@ allprojects {
         maven {
             url 'http://4thline.org/m2'
         }
+        maven { url 'https://jitpack.io' }
     }
 }
 

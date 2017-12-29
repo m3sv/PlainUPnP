@@ -5,6 +5,19 @@ import android.arch.lifecycle.ViewModel
 import com.m3sv.droidupnp.upnp.UPnPManager
 import org.droidupnp.view.DeviceDisplay
 
-class MainActivityViewModel(val manager: UPnPManager) : ViewModel() {
+class MainActivityViewModel(private val manager: UPnPManager) : ViewModel() {
     val contentDirectories = MutableLiveData<HashSet<DeviceDisplay>>()
+
+    fun resumeController() {
+        manager.controller.resume()
+        manager.addObservers()
+    }
+
+    fun pauseController() = manager.controller.run {
+        pause()
+        manager.removeObservers()
+        serviceListener?.serviceConnection?.onServiceDisconnected(null)
+    }
+
+    fun refreshServiceListener() = manager.controller.serviceListener?.refresh()
 }

@@ -41,20 +41,16 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        viewModel.manager.controller.resume(this)
+        viewModel.resumeController()
+        viewModel
     }
 
     override fun onPause() {
-        viewModel.manager.controller.run {
-            pause()
-            serviceListener?.serviceConnection?.onServiceDisconnected(null)
-        }
+        viewModel.pauseController()
         super.onPause()
     }
 
-    private fun refresh() {
-//        controller.serviceListener?.refresh()
-    }
+    private fun refresh() = viewModel.refreshServiceListener()
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
