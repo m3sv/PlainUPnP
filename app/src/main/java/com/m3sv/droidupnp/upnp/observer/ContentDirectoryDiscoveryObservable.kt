@@ -15,7 +15,8 @@ class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentD
     }
 
     private inner class ContentDeviceObserver(private val contentDirectoryDiscovery: ContentDirectoryDiscovery,
-                                              private val observer: Observer<in IUPnPDevice>) : MainThreadDisposable(), IDeviceDiscoveryObserver {
+                                              private val observer: Observer<in IUPnPDevice>) :
+            MainThreadDisposable(), IDeviceDiscoveryObserver {
         init {
             contentDirectoryDiscovery.addObserver(this)
         }
@@ -24,8 +25,8 @@ class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentD
             contentDirectoryDiscovery.removeObserver(this)
         }
 
-        override fun addedDevice(device: IUPnPDevice) {
-            if (!isDisposed)
+        override fun addedDevice(device: IUPnPDevice?) {
+            if (!isDisposed && device != null)
                 observer.onNext(device)
         }
 

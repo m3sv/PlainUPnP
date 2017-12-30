@@ -8,7 +8,6 @@ import org.droidupnp.model.upnp.IUPnPDevice
 import org.droidupnp.model.upnp.RendererDiscovery
 
 class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscovery) : Observable<IUPnPDevice>() {
-
     override fun subscribeActual(observer: Observer<in IUPnPDevice>) {
         val deviceObserver = RendererDeviceObserver(rendererDiscovery, observer)
         observer.onSubscribe(deviceObserver)
@@ -26,8 +25,8 @@ class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscove
             rendererDiscovery.removeObserver(this)
         }
 
-        override fun addedDevice(device: IUPnPDevice) {
-            if (!isDisposed)
+        override fun addedDevice(device: IUPnPDevice?) {
+            if (!isDisposed && device != null)
                 observer.onNext(device)
         }
 
