@@ -2,17 +2,16 @@ package com.m3sv.droidupnp.di
 
 import android.app.Application
 import com.m3sv.droidupnp.App
+import com.m3sv.droidupnp.di.scope.ApplicationScope
 import dagger.BindsInstance
 import dagger.Component
 import dagger.android.support.AndroidSupportInjectionModule
-import javax.inject.Singleton
 
-@Singleton
-@Component(modules = arrayOf(
-        AndroidSupportInjectionModule::class,
-        AppModule::class,
-        BuildersModule::class,
-        UPnPBinder::class))
+@ApplicationScope
+@Component(modules = [(AndroidSupportInjectionModule::class),
+    (AppModule::class),
+    (BuildersModule::class),
+    (UPnPBinder::class)])
 interface AppComponent {
     @Component.Builder
     interface Builder {

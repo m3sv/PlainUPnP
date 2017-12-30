@@ -1,7 +1,8 @@
 package com.m3sv.droidupnp.upnp
 
-import com.m3sv.droidupnp.upnp.observer.RendererObserver
-import io.reactivex.disposables.Disposable
+import com.m3sv.droidupnp.upnp.observer.ContentDirectoryDiscoveryObservable
+import com.m3sv.droidupnp.upnp.observer.RendererDiscoveryObservable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.subscribeBy
 import org.droidupnp.controller.upnp.IUPnPServiceController
 import org.droidupnp.model.upnp.IDeviceDiscoveryObserver
@@ -12,21 +13,24 @@ import java.util.*
 
 
 class UPnPManager constructor(val controller: IUPnPServiceController, val factory: IFactory) : Observable(), IDeviceDiscoveryObserver, Observer {
-    var rendererDisposable: Disposable? = null
+    lateinit var deviceDiscoveryDisposable: CompositeDisposable
 
     fun addObservers() = controller.run {
-        //        rendererDiscovery.addObserver(this@UPnPManager)
+        deviceDiscoveryDisposable = CompositeDisposable().apply {
+            add(RendererDiscoveryObservable(rendererDiscovery).subscribeBy(
+                    onNext = { Timber.d("Found Renderer: ${it.friendlyName}") },
+                    onError = { Timber.e("Error while discovering renderer: ${it.message}") }))
 
-        rendererDisposable = RendererObserver(rendererDiscovery).subscribeBy(
-                onNext = { Timber.d("Found Renderer: ${it.friendlyName}") },
-                onError = { Timber.e("Error while discovering renders: ${it.message}") })
-        contentDirectoryDiscovery.addObserver(this@UPnPManager)
+            add(ContentDirectoryDiscoveryObservable(contentDirectoryDiscovery).subscribeBy(
+                    onNext = {
+                        Timber.d("Found Content Directory: ${it.friendlyName}")
+                    }, onError = { Timber.e("Error while discovering content directory: ${it.message}") }))
+        }
         addSelectedContentDirectoryObserver(this@UPnPManager)
     }
 
     fun removeObservers() = controller.run {
-        rendererDisposable?.dispose()
-        contentDirectoryDiscovery.removeObserver(this@UPnPManager)
+        deviceDiscoveryDisposable.takeUnless { it.isDisposed }?.dispose()
         delSelectedContentDirectoryObserver(this@UPnPManager)
     }
 

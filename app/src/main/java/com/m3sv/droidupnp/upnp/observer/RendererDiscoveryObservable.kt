@@ -7,15 +7,16 @@ import org.droidupnp.model.upnp.IDeviceDiscoveryObserver
 import org.droidupnp.model.upnp.IUPnPDevice
 import org.droidupnp.model.upnp.RendererDiscovery
 
-class RendererObserver(private val rendererDiscovery: RendererDiscovery) : Observable<IUPnPDevice>() {
+class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscovery) : Observable<IUPnPDevice>() {
 
     override fun subscribeActual(observer: Observer<in IUPnPDevice>) {
-        val deviceObserver = DeviceObserver(rendererDiscovery, observer)
+        val deviceObserver = RendrerDeviceObserver(rendererDiscovery, observer)
         observer.onSubscribe(deviceObserver)
     }
 
-    class DeviceObserver(private val rendererDiscovery: RendererDiscovery,
-                         private val observer: Observer<in IUPnPDevice>) : MainThreadDisposable(), IDeviceDiscoveryObserver {
+    private inner class RendrerDeviceObserver(private val rendererDiscovery: RendererDiscovery,
+                                              private val observer: Observer<in IUPnPDevice>) :
+            MainThreadDisposable(), IDeviceDiscoveryObserver {
 
         init {
             rendererDiscovery.addObserver(this)
