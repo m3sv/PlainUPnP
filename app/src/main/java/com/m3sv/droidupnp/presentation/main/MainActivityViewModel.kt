@@ -21,6 +21,8 @@ class MainActivityViewModel(private val manager: UPnPManager) : ViewModel() {
     private val renderers = hashSetOf<DeviceDisplay>()
     private val contentDirectories = hashSetOf<DeviceDisplay>()
 
+    private val errorHandler: (Throwable) -> Unit = { Timber.e("Exception during discovery: ${it.message}") }
+
     fun resumeController() {
         discoveryDisposable = CompositeDisposable()
         manager.run {
@@ -29,20 +31,26 @@ class MainActivityViewModel(private val manager: UPnPManager) : ViewModel() {
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onNext = { renderer ->
-                                Timber.d("Found Renderer: ${renderer.friendlyName}")
+                                Timber.d("Found Renderer: ${renderer.displayString}")
                                 renderers += DeviceDisplay(renderer, false, DeviceType.RENDERER)
                                 renderersObservable.value = renderers
                             },
-                            onError = { Timber.e("Error while discovering renderer: ${it.message}") })
+                            onError = errorHandler)
             discoveryDisposable += contentDirectoryDiscoveryObservable.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeBy(
                             onNext = { contentDirectory ->
-                                Timber.d("Found Content Directory: ${contentDirectory.friendlyName}")
+                                Timber.d("Found Content Directory: ${contentDirectory.displayString}")
                                 contentDirectories += DeviceDisplay(contentDirectory, false, DeviceType.CONTENT_DIRECTORY)
                                 contentDirectoriesObservable.value = contentDirectories
-                            }, onError = { Timber.e("Error while discovering renderer: ${it.message}") })
-            addObservers()
+                            }, onError = errorHandler
+                    )
+
+            discoveryDisposable += contentDirectorySelectedObservable.subscribeBy(
+                    onNext = {
+                        Timber.d("Content directory selected: ${it.displayString}")
+                    }, onError = errorHandler
+            )
         }
     }
 
@@ -50,7 +58,6 @@ class MainActivityViewModel(private val manager: UPnPManager) : ViewModel() {
     fun pauseController() = manager.controller.run {
         pause()
         discoveryDisposable.takeUnless { it.isDisposed }?.dispose()
-        manager.removeObservers()
     }
 
     fun refreshServiceListener() = manager.controller.serviceListener?.refresh()
