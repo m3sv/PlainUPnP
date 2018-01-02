@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
+import timber.log.Timber;
+
 public class RendererDialog extends DialogFragment {
 
     private Callable<Void> callback = null;
@@ -56,7 +58,7 @@ public class RendererDialog extends DialogFragment {
                         if (callback != null)
                             callback.call();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Timber.e(e);
                     }
                 }
             });

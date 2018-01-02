@@ -1,6 +1,19 @@
 package fi.iki.elonen;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.RandomAccessFile;
+import java.io.SequenceInputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -9,7 +22,16 @@ import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+
+import timber.log.Timber;
 
 /**
  * A simple, tiny, nicely embeddable HTTP server in Java
@@ -96,6 +118,7 @@ public abstract class NanoHTTPD {
 
     /**
      * Start the server.
+     *
      * @throws IOException if the socket is in use.
      */
     public void start() throws IOException {
@@ -124,7 +147,7 @@ public abstract class NanoHTTPD {
                                             session.execute();
                                         }
                                     } catch (IOException e) {
-                                        e.printStackTrace();
+                                        Timber.e(e, e.getMessage());
                                     } finally {
                                         safeClose(outputStream);
                                         safeClose(inputStream);
@@ -151,7 +174,7 @@ public abstract class NanoHTTPD {
             safeClose(myServerSocket);
             myThread.join();
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 
@@ -161,9 +184,9 @@ public abstract class NanoHTTPD {
      * <p/>
      * (By default, this delegates to serveFile() and allows directory listing.)
      *
-     * @param uri    Percent-decoded URI without parameters, for example "/index.cgi"
-     * @param method "GET", "POST" etc.
-     * @param parms  Parsed, percent decoded parameters from URI and, in case of POST, data.
+     * @param uri     Percent-decoded URI without parameters, for example "/index.cgi"
+     * @param method  "GET", "POST" etc.
+     * @param parms   Parsed, percent decoded parameters from URI and, in case of POST, data.
      * @param headers Header entries, percent decoded
      * @return HTTP response, see class Response for details
      */
@@ -199,6 +222,7 @@ public abstract class NanoHTTPD {
 
     /**
      * Decode percent encoded <code>String</code> values.
+     *
      * @param str the percent encoded <code>String</code>
      * @return expanded form of the input, for example "foo%20bar" becomes "foo bar"
      */
@@ -280,6 +304,7 @@ public abstract class NanoHTTPD {
 
     /**
      * Pluggable strategy for asynchronously executing requests.
+     *
      * @param asyncRunner new strategy for handling threads.
      */
     public void setAsyncRunner(AsyncRunner asyncRunner) {
@@ -295,13 +320,14 @@ public abstract class NanoHTTPD {
 
     /**
      * Default threading strategy for NanoHttpd.
-     *
+     * <p>
      * <p>By default, the server spawns a new Thread for every incoming request.  These are set
      * to <i>daemon</i> status, and named according to the request number.  The name is
      * useful when profiling the application.</p>
      */
     public static class DefaultAsyncRunner implements AsyncRunner {
         private long requestCount;
+
         @Override
         public void exec(Runnable code) {
             ++requestCount;
@@ -325,6 +351,7 @@ public abstract class NanoHTTPD {
 
     /**
      * Pluggable strategy for creating and cleaning up temporary files.
+     *
      * @param tempFileManagerFactory new strategy for handling temp files.
      */
     public void setTempFileManagerFactory(TempFileManagerFactory tempFileManagerFactory) {
@@ -340,7 +367,7 @@ public abstract class NanoHTTPD {
 
     /**
      * Temp file manager.
-     *
+     * <p>
      * <p>Temp file managers are created 1-to-1 with incoming requests, to create and cleanup
      * temporary files created as a result of handling the request.</p>
      */
@@ -352,7 +379,7 @@ public abstract class NanoHTTPD {
 
     /**
      * A temp file.
-     *
+     * <p>
      * <p>Temp files are responsible for managing the actual temporary storage and cleaning
      * themselves up when no longer needed.</p>
      */
@@ -376,7 +403,7 @@ public abstract class NanoHTTPD {
 
     /**
      * Default strategy for creating and cleaning up temporary files.
-     *
+     * <p>
      * <p></p>This class stores its files in the standard location (that is,
      * wherever <code>java.io.tmpdir</code> points to).  Files are added
      * to an internal list, and deleted when no longer needed (that is,
@@ -413,7 +440,7 @@ public abstract class NanoHTTPD {
 
     /**
      * Default strategy for creating and cleaning up temporary files.
-     *
+     * <p>
      * <p></p></[>By default, files are created by <code>File.createTempFile()</code> in
      * the directory specified.</p>
      */
@@ -469,6 +496,7 @@ public abstract class NanoHTTPD {
          * The request method that spawned this response.
          */
         private Method requestMethod;
+
         /**
          * Default constructor: response = HTTP_OK, mime = MIME_HTML and your supplied message
          */
@@ -494,7 +522,7 @@ public abstract class NanoHTTPD {
             try {
                 this.data = txt != null ? new ByteArrayInputStream(txt.getBytes("UTF-8")) : null;
             } catch (java.io.UnsupportedEncodingException uee) {
-                uee.printStackTrace();
+                Timber.e(uee, uee.getMessage());
             }
         }
 
@@ -538,7 +566,7 @@ public abstract class NanoHTTPD {
                 int pending = data != null ? data.available() : -1; // This is to support partial sends, see serveFile()
                 if (pending > 0) {
                     pw.print("Connection: keep-alive\r\n");
-                    pw.print("Content-Length: "+pending+"\r\n");
+                    pw.print("Content-Length: " + pending + "\r\n");
                 }
 
                 pw.print("\r\n");
@@ -657,7 +685,7 @@ public abstract class NanoHTTPD {
                 rlen = 0;
                 {
                     int read = inputStream.read(buf, 0, BUFSIZE);
-                    if(read == -1){
+                    if (read == -1) {
                         // socket was been closed
                         throw new SocketException();
                     }
@@ -701,7 +729,7 @@ public abstract class NanoHTTPD {
                     r.setRequestMethod(method);
                     r.send(outputStream);
                 }
-            } catch(SocketException e) {
+            } catch (SocketException e) {
                 // throw it out to close socket object (finalAccept)
                 throw e;
             } catch (IOException ioe) {
@@ -949,7 +977,7 @@ public abstract class NanoHTTPD {
             int matchcount = 0;
             int matchbyte = -1;
             List<Integer> matchbytes = new ArrayList<Integer>();
-            for (int i=0; i<b.limit(); i++) {
+            for (int i = 0; i < b.limit(); i++) {
                 if (b.get(i) == boundary[matchcount]) {
                     if (matchcount == 0)
                         matchbyte = i;
@@ -975,7 +1003,7 @@ public abstract class NanoHTTPD {
         /**
          * Retrieves the content of a sent file and saves it to a temporary file. The full path to the saved file is returned.
          */
-        private String saveTmpFile(ByteBuffer  b, int offset, int len) {
+        private String saveTmpFile(ByteBuffer b, int offset, int len) {
             String path = "";
             if (len > 0) {
                 FileOutputStream fileOutputStream = null;
@@ -988,7 +1016,7 @@ public abstract class NanoHTTPD {
                     dest.write(src.slice());
                     path = tempFile.getName();
                 } catch (Exception e) { // Catch exception if any
-                    System.err.println("Error: " + e.getMessage());
+                    Timber.e(e, "Error: " + e.getMessage());
                 } finally {
                     safeClose(fileOutputStream);
                 }
@@ -1001,7 +1029,7 @@ public abstract class NanoHTTPD {
                 TempFile tempFile = tempFileManager.createTempFile();
                 return new RandomAccessFile(tempFile.getName(), "rw");
             } catch (Exception e) {
-                System.err.println("Error: " + e.getMessage());
+                Timber.e(e, "Error: " + e.getMessage());
             }
             return null;
         }
@@ -1011,7 +1039,7 @@ public abstract class NanoHTTPD {
          */
         private int stripMultipartHeaders(ByteBuffer b, int offset) {
             int i;
-            for (i=offset; i<b.limit(); i++) {
+            for (i = offset; i < b.limit(); i++) {
                 if (b.get(i) == '\r' && b.get(++i) == '\n' && b.get(++i) == '\r' && b.get(++i) == '\n') {
                     break;
                 }
@@ -1087,8 +1115,7 @@ public abstract class NanoHTTPD {
         if (serverSocket != null) {
             try {
                 serverSocket.close();
-            }
-            catch(IOException e) {
+            } catch (IOException e) {
             }
         }
     }
@@ -1097,8 +1124,7 @@ public abstract class NanoHTTPD {
         if (socket != null) {
             try {
                 socket.close();
-            }
-            catch(IOException e) {
+            } catch (IOException e) {
             }
         }
     }
@@ -1107,8 +1133,7 @@ public abstract class NanoHTTPD {
         if (closeable != null) {
             try {
                 closeable.close();
-            }
-            catch(IOException e) {
+            } catch (IOException e) {
             }
         }
     }

@@ -27,7 +27,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -47,6 +46,8 @@ import org.droidupnp.model.upnp.IUPnPDevice;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Callable;
+
+import timber.log.Timber;
 
 public class RendererFragment extends Fragment implements Observer {
     private static final String TAG = "RendererFragment";
@@ -159,7 +160,7 @@ public class RendererFragment extends Fragment implements Observer {
                         try {
                             hide();
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Timber.e(e, e.getMessage());
                         }
                     }
                 });
@@ -240,7 +241,7 @@ public class RendererFragment extends Fragment implements Observer {
                         volume.setProgress(rendererState.getVolume());
 
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Timber.e(e);
                     }
                 }
             });
@@ -346,40 +347,31 @@ public class RendererFragment extends Fragment implements Observer {
 
     private void SetupButtonListeners() {
         if (play_pauseButton != null) {
-            play_pauseButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        (new PlayPauseCallback(v)).call();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            play_pauseButton.setOnClickListener(v -> {
+                try {
+                    (new PlayPauseCallback(v)).call();
+                } catch (Exception e) {
+                    Timber.e(e);
                 }
             });
         }
 
         if (stopButton != null) {
-            stopButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        (new StopCallback(v)).call();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            stopButton.setOnClickListener(v -> {
+                try {
+                    (new StopCallback(v)).call();
+                } catch (Exception e) {
+                    Timber.e(e);
                 }
             });
         }
 
         if (volumeButton != null) {
-            volumeButton.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        (new MuteCallback(v)).call();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            volumeButton.setOnClickListener(v -> {
+                try {
+                    (new MuteCallback(v)).call();
+                } catch (Exception e) {
+                    Timber.e(e);
                 }
             });
         }
@@ -441,14 +433,11 @@ public class RendererFragment extends Fragment implements Observer {
 
         duration = (TextView) getActivity().findViewById(R.id.trackDurationRemaining);
         if (duration != null) {
-            duration.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        (new TimeSwitchCallback(v)).call();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            duration.setOnClickListener(v -> {
+                try {
+                    (new TimeSwitchCallback(v)).call();
+                } catch (Exception e) {
+                    Timber.e(e);
                 }
             });
         }

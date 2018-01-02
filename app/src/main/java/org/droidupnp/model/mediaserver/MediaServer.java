@@ -89,7 +89,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
 //			createLocalDevice();
 //			start();
 //		} catch (Exception e) {
-//			e.printStackTrace();
+//			Timber.e(e, e.getMessage());
 //		}
     }
 

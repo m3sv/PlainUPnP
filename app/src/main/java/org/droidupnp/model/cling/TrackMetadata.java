@@ -17,6 +17,8 @@ import org.xmlpull.v1.XmlSerializer;
 import android.util.Log;
 import android.util.Xml;
 
+import timber.log.Timber;
+
 public class TrackMetadata {
 
 	protected static final String TAG = "TrackMetadata";
@@ -83,7 +85,7 @@ public class TrackMetadata {
 		}
 		catch (Exception e)
 		{
-			// e.printStackTrace();
+			// Timber.e(e, e.getMessage());
 			Log.w(TAG, "Error while parsing metadata !");
 			Log.w(TAG, "XML : " + xml);
 		}
@@ -164,7 +166,7 @@ public class TrackMetadata {
 
 		} catch (Exception e) {
 			Log.e(TAG, "error occurred while creating xml file : " + e.toString() );
-			e.printStackTrace();
+			Timber.e(e);
 		}
 
 		String xml = sw.toString();

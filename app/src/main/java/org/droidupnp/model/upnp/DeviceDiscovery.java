@@ -26,6 +26,8 @@ import org.droidupnp.controller.upnp.IUPnPServiceController;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import timber.log.Timber;
+
 public abstract class DeviceDiscovery {
 
     protected static final String TAG = "DeviceDiscovery";
@@ -124,7 +126,7 @@ public abstract class DeviceDiscovery {
         try {
             return filter.call();
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e);
         }
         return false;
     }

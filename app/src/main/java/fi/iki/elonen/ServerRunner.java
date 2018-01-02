@@ -2,12 +2,14 @@ package fi.iki.elonen;
 
 import java.io.IOException;
 
+import timber.log.Timber;
+
 public class ServerRunner {
     public static void run(Class serverClass) {
         try {
             executeInstance((NanoHTTPD) serverClass.newInstance());
         } catch (Exception e) {
-            e.printStackTrace();
+            Timber.e(e, e.getMessage());
         }
     }
 
@@ -15,11 +17,11 @@ public class ServerRunner {
         try {
             server.start();
         } catch (IOException ioe) {
-            System.err.println("Couldn't start server:\n" + ioe);
+            Timber.e(ioe, "Couldn't start server: %s", ioe.getMessage());
             System.exit(-1);
         }
 
-        System.out.println("Server started, Hit Enter to stop.\n");
+        Timber.d("Server started, Hit Enter to stop.\n");
 
         try {
             System.in.read();
@@ -27,6 +29,6 @@ public class ServerRunner {
         }
 
         server.stop();
-        System.out.println("Server stopped.\n");
+        Timber.d("Server stopped.\n");
     }
 }

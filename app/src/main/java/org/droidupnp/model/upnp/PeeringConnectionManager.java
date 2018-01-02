@@ -29,6 +29,8 @@ import org.fourthline.cling.support.model.ConnectionInfo;
 import org.fourthline.cling.support.model.ProtocolInfo;
 import org.fourthline.cling.support.model.ProtocolInfos;
 
+import timber.log.Timber;
+
 public class PeeringConnectionManager extends AbstractPeeringConnectionManagerService {
 
 	PeeringConnectionManager(ProtocolInfos sourceProtocolInfo, ProtocolInfos sinkProtocolInfo) {
@@ -55,6 +57,6 @@ public class PeeringConnectionManager extends AbstractPeeringConnectionManagerSe
 
 	@Override
 	protected void peerFailure(ActionInvocation invocation, UpnpResponse operation, String defaultFailureMessage) {
-		System.err.println("Error managing connection with peer: " + defaultFailureMessage);
+		Timber.e(defaultFailureMessage, "Error managing connection with peer: " + defaultFailureMessage);
 	}
 }

@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
+import timber.log.Timber;
+
 public class ContentDirectoryDialog extends DialogFragment {
 
     private Callable<Void> callback = null;
@@ -43,7 +45,7 @@ public class ContentDirectoryDialog extends DialogFragment {
                     if (callback != null)
                         callback.call();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    Timber.e(e);
                 }
             }
         });

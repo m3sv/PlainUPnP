@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
 
+import timber.log.Timber;
+
 public class SimpleWebServer extends NanoHTTPD {
     /**
      * Hashtable mapping (String)FILENAME_EXTENSION -> (String)MIME_TYPE
@@ -164,8 +166,7 @@ public class SimpleWebServer extends NanoHTTPD {
                 if (mime == null) {
                     mime = NanoHTTPD.MIME_DEFAULT_BINARY;
                 }
-                if(res == null)
-                    res = serveFile(f, mime, header);
+                res = serveFile(f, mime, header);
             }
         } catch (IOException ioe) {
             res = new Response(Response.Status.FORBIDDEN, NanoHTTPD.MIME_PLAINTEXT, "FORBIDDEN: Reading file failed.");
@@ -173,8 +174,7 @@ public class SimpleWebServer extends NanoHTTPD {
         return res;
     }
 
-    protected Response serveFile(File f, String mime, Map<String, String> header)
-    {
+    protected Response serveFile(File f, String mime, Map<String, String> header) {
         Response res = null;
 
         try {
@@ -248,11 +248,11 @@ public class SimpleWebServer extends NanoHTTPD {
 
     protected String listDirectory(String uri, File f) {
         String heading = "Directory " + uri;
-        String msg = "<html><head><title>" + heading + "</title><style><!--\n"+
-                "span.dirname { font-weight: bold; }\n"+
-                "span.filesize { font-size: 75%; }\n"+
-                "// -->\n"+
-                "</style>"+
+        String msg = "<html><head><title>" + heading + "</title><style><!--\n" +
+                "span.dirname { font-weight: bold; }\n" +
+                "span.filesize { font-size: 75%; }\n" +
+                "// -->\n" +
+                "</style>" +
                 "</head><body><h1>" + heading + "</h1>";
 
         String up = null;
@@ -274,7 +274,7 @@ public class SimpleWebServer extends NanoHTTPD {
         List<String> directories = Arrays.asList(f.list(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                return new File (dir, name).isDirectory();
+                return new File(dir, name).isDirectory();
             }
         }));
         Collections.sort(directories);
@@ -319,22 +319,22 @@ public class SimpleWebServer extends NanoHTTPD {
     @Override
     public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> parms, Map<String, String> files) {
         if (!quiet) {
-            System.out.println(method + " '" + uri + "' ");
+            Timber.d(method + " '" + uri + "' ");
 
             Iterator<String> e = header.keySet().iterator();
             while (e.hasNext()) {
                 String value = e.next();
-                System.out.println("  HDR: '" + value + "' = '" + header.get(value) + "'");
+                Timber.d("  HDR: '" + value + "' = '" + header.get(value) + "'");
             }
             e = parms.keySet().iterator();
             while (e.hasNext()) {
                 String value = e.next();
-                System.out.println("  PRM: '" + value + "' = '" + parms.get(value) + "'");
+                Timber.d("  PRM: '" + value + "' = '" + parms.get(value) + "'");
             }
             e = files.keySet().iterator();
             while (e.hasNext()) {
                 String value = e.next();
-                System.out.println("  UPLOADED: '" + value + "' = '" + files.get(value) + "'");
+                Timber.d("  UPLOADED: '" + value + "' = '" + files.get(value) + "'");
             }
         }
         return serveFile(uri, header, getRootDir());
@@ -362,7 +362,7 @@ public class SimpleWebServer extends NanoHTTPD {
             } else if (args[i].equalsIgnoreCase("-d") || args[i].equalsIgnoreCase("--dir")) {
                 wwwroot = new File(args[i + 1]).getAbsoluteFile();
             } else if (args[i].equalsIgnoreCase("--licence")) {
-                System.out.println(LICENCE + "\n");
+                Timber.d(LICENCE + "\n");
                 break;
             }
         }

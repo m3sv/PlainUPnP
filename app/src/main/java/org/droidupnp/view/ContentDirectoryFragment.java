@@ -43,7 +43,6 @@ import android.widget.Toast;
 
 import com.m3sv.common.Utils;
 import com.m3sv.droidupnp.R;
-import com.m3sv.presentation.main.MainActivity;
 
 import org.droidupnp.controller.upnp.IUPnPServiceController;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
@@ -65,6 +64,8 @@ import java.util.LinkedList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Callable;
+
+import timber.log.Timber;
 
 public class ContentDirectoryFragment extends ListFragment implements Observer {
     private static final String TAG = ContentDirectoryFragment.class.getSimpleName();
@@ -104,14 +105,11 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
     public void updateSearchVisibility() {
         final Activity a = getActivity();
         if (a != null) {
-            a.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
+            a.runOnUiThread(() -> {
+                try {
 //                        MainActivity.setSearchVisibility(contentDirectoryCommand != null && contentDirectoryCommand.isSearchAvailable());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                } catch (Exception e) {
+                    Timber.e(e);
                 }
             });
         }
@@ -197,10 +195,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
         controller.getContentDirectoryDiscovery().addObserver(deviceObserver);
 
         // Listen to content directory change
-        if (controller != null)
-            controller.addSelectedContentDirectoryObserver(this);
-        else
-            Log.w(TAG, "controller was not ready !!!");
+        controller.addSelectedContentDirectoryObserver(this);
 
         if (savedInstanceState != null
                 && savedInstanceState.getStringArray(STATE_TREE) != null
@@ -338,14 +333,11 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
             Log.d(TAG, "Stop refresh");
             final Activity a = getActivity();
             if (a != null) {
-                a.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            swipeContainer.setRefreshing(false);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                a.runOnUiThread(() -> {
+                    try {
+                        swipeContainer.setRefreshing(false);
+                    } catch (Exception e) {
+                        Timber.e(e);
                     }
                 });
             }
@@ -378,7 +370,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
                             // Fill the list
                             contentList.addAll(content);
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            Timber.e(e);
                         }
                     }
                 });
@@ -426,7 +418,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
                 cc.setContent(list);
                 cc.call();
             } catch (Exception e) {
-                e.printStackTrace();
+                Timber.e(e);
             }
 
             return;
@@ -491,7 +483,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
             }
         } catch (Exception e) {
             Log.e(TAG, "Unable to finish action after item click");
-            e.printStackTrace();
+            Timber.e(e);
         }
     }
 
@@ -500,22 +492,16 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
             // No renderer selected yet, open a popup to select one
             final Activity a = getActivity();
             if (a != null) {
-                a.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            RendererDialog rendererDialog = new RendererDialog();
-                            rendererDialog.setCallback(new Callable<Void>() {
-                                @Override
-                                public Void call() throws Exception {
-                                    launchURIRenderer(uri);
-                                    return null;
-                                }
-                            });
-                            rendererDialog.show(getActivity().getFragmentManager(), "RendererDialog");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                a.runOnUiThread(() -> {
+                    try {
+                        RendererDialog rendererDialog = new RendererDialog();
+                        rendererDialog.setCallback(() -> {
+                            launchURIRenderer(uri);
+                            return null;
+                        });
+                        rendererDialog.show(getActivity().getFragmentManager(), "RendererDialog");
+                    } catch (Exception e) {
+                        Timber.e(e);
                     }
                 });
             }
@@ -540,12 +526,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
     public void update() {
         final Activity a = getActivity();
         if (a != null) {
-            a.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    refresh();
-                }
-            });
+            a.runOnUiThread(() -> refresh());
         }
     }
 }

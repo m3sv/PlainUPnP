@@ -51,6 +51,8 @@ import org.fourthline.cling.support.model.item.VideoItem;
 
 import java.util.ArrayList;
 
+import timber.log.Timber;
+
 @SuppressWarnings("rawtypes")
 public class ContentDirectoryCommand implements IContentDirectoryCommand {
     private static final String TAG = "ContentDirectoryCommand";
@@ -142,7 +144,7 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
                             callback.setContent(buildContentList(parent, didl));
                         callback.call();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Timber.e(e);
                     }
                 }
             }
@@ -161,7 +163,7 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
                         callback.setContent(buildContentList(parent, didl));
                         callback.call();
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Timber.e(e);
                     }
                 }
             }

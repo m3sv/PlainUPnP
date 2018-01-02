@@ -37,6 +37,8 @@ import com.m3sv.droidupnp.R;
 import org.droidupnp.model.upnp.IDeviceDiscoveryObserver;
 import org.droidupnp.model.upnp.IUPnPDevice;
 
+import timber.log.Timber;
+
 public abstract class UpnpDeviceListFragment extends ListFragment implements IDeviceDiscoveryObserver {
 
     protected static final String TAG = "UpnpDeviceListFragment";
@@ -129,7 +131,7 @@ public abstract class UpnpDeviceListFragment extends ListFragment implements IDe
                             Log.i(TAG, d.toString() + " is selected at position " + position);
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        Timber.e(e);
                     }
                 }
             });
@@ -142,15 +144,12 @@ public abstract class UpnpDeviceListFragment extends ListFragment implements IDe
         final DeviceDisplay d = new DeviceDisplay(device, extendedInformation);
 
         if (getActivity() != null) // Visible
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        // Remove device from list
-                        list.remove(d);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            getActivity().runOnUiThread(() -> {
+                try {
+                    // Remove device from list
+                    list.remove(d);
+                } catch (Exception e) {
+                    Timber.e(e);
                 }
             });
     }
