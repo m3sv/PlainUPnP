@@ -23,7 +23,6 @@ class ContentDirectorySelectedObservable(private val controller: IUPnPServiceCon
 
         override fun onDispose() {
             controller.delSelectedContentDirectoryObserver(this)
-
         }
 
         override fun update(o: java.util.Observable?, arg: Any?) {

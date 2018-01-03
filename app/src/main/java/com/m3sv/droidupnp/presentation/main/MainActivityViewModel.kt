@@ -13,6 +13,7 @@ import org.droidupnp.view.DeviceType
 import timber.log.Timber
 
 class MainActivityViewModel(private val manager: UPnPManager) : ViewModel() {
+
     val contentDirectoriesObservable = MutableLiveData<Set<DeviceDisplay>>()
     val renderersObservable = MutableLiveData<Set<DeviceDisplay>>()
 
@@ -48,12 +49,11 @@ class MainActivityViewModel(private val manager: UPnPManager) : ViewModel() {
 
             discoveryDisposable += contentDirectorySelectedObservable.subscribeBy(
                     onNext = {
-                        Timber.d("Content directory selected: ${it.displayString}")
+                        Timber.d("Content directory has been selected: ${it.displayString}")
                     }, onError = errorHandler
             )
         }
     }
-
 
     fun pauseController() = manager.controller.run {
         pause()

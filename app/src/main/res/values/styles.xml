@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (C) 2013 Aurélien Chabot <aurelien@chabot.fr>
 
   This file is part of DroidUPNP.
@@ -19,90 +18,81 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<color name="blue">#379293</color>
-	<color name="blue_dark">#1C7475</color>
-	<color name="blue_trans">#77379293</color>
-	<color name="grey">#DDDDDD</color>
-	<color name="greyer">#AACCCCCC</color>
-	<color name="light_grey">#E5E5E5</color>
-	<color name="dark">#444444</color>
-	<color name="darker">#222222</color>
+    <color name="blue">#379293</color>
+    <color name="blue_dark">#1C7475</color>
+    <color name="blue_trans">#77379293</color>
+    <color name="grey">#DDDDDD</color>
+    <color name="greyer">#AACCCCCC</color>
+    <color name="light_grey">#E5E5E5</color>
+    <color name="dark">#444444</color>
+    <color name="darker">#222222</color>
 
-	<drawable name="play">@drawable/ic_action_play</drawable>
-	<drawable name="pause">@drawable/ic_action_pause</drawable>
-	<drawable name="stop">@drawable/ic_action_stop</drawable>
-	<drawable name="volume">@drawable/ic_action_volume_on</drawable>
-	<drawable name="volume_mute">@drawable/ic_action_volume_muted</drawable>
+    <drawable name="play">@drawable/ic_action_play</drawable>
+    <drawable name="pause">@drawable/ic_action_pause</drawable>
+    <drawable name="stop">@drawable/ic_action_stop</drawable>
+    <drawable name="volume">@drawable/ic_action_volume_on</drawable>
+    <drawable name="volume_mute">@drawable/ic_action_volume_muted</drawable>
 
-	<!-- Drawer style -->
-	<style name="drawer">
-		<item name="android:background">@color/light_grey</item>
-	</style>
+    <!-- Drawer style -->
+    <style name="drawer">
+        <item name="android:background">@color/light_grey</item>
+    </style>
 
-	<style name="DrawerText" parent="@android:style/TextAppearance">
-		<item name="android:textColor">@color/darker</item>
-	</style>
+    <style name="DrawerText" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/darker</item>
+    </style>
 
-	<style name="deviceListLabel">
-		<item name="android:textColor">@color/dark</item>
-	</style>
+    <style name="deviceListLabel">
+        <item name="android:textColor">@color/dark</item>
+    </style>
 
-	<style name="deviceListSeparator">
-		<item name="android:background">@color/dark</item>
-	</style>
+    <style name="deviceListSeparator">
+        <item name="android:background">@color/dark</item>
+    </style>
 
-	<!-- Content browsing style -->
-	<style name="contentdirectory">
-		<item name="android:background">@color/grey</item>
-	</style>
+    <!-- Content browsing style -->
+    <style name="contentdirectory">
+        <item name="android:background">@color/grey</item>
+    </style>
 
-	<style name="browsingItemText" parent="@android:style/TextAppearance">
-		<item name="android:textColor">@color/darker</item>
-		<item name="android:textSize">12sp</item>
-	</style>
+    <style name="browsingItemText" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/darker</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 
-	<style name="browsingItemTitle" parent="@style/browsingItemText">
-		<item name="android:textSize">16sp</item>
-	</style>
+    <style name="browsingItemTitle" parent="@style/browsingItemText">
+        <item name="android:textSize">16sp</item>
+    </style>
 
-	<style name="browsingItemSubtitle" parent="@style/browsingItemText">
-	</style>
+    <style name="browsingItemSubtitle" parent="@style/browsingItemText"></style>
 
-	<style name="browsingItemCount" parent="@style/browsingItemText">
-		<item name="android:textColor">@color/blue</item>
-		<item name="android:textStyle">bold</item>
-	</style>
+    <style name="browsingItemCount" parent="@style/browsingItemText">
+        <item name="android:textColor">@color/blue</item>
+        <item name="android:textStyle">bold</item>
+    </style>
 
-	<!-- Renderer style -->
-	<style name="renderer">
-		<item name="android:background">?android:attr/colorBackground</item>
-	</style>
+    <!-- Renderer style -->
+    <style name="renderer">
+        <item name="android:background">?android:attr/colorBackground</item>
+    </style>
 
-	<style name="rendererText" parent="@android:style/TextAppearance">
-		<item name="android:textColor">@android:color/black</item>
-	</style>
+    <style name="rendererText" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
 
-	<style name="rendererTitle" parent="@style/rendererText">
-		<item name="android:textSize">18sp</item>
-	</style>
+    <style name="rendererTitle" parent="@style/rendererText">
+        <item name="android:textSize">18sp</item>
+    </style>
 
-	<style name="rendererSubtitle" parent="@style/rendererText">
-		<item name="android:textStyle">italic</item>
-		<item name="android:textSize">15sp</item>
-	</style>
+    <style name="rendererSubtitle" parent="@style/rendererText">
+        <item name="android:textStyle">italic</item>
+        <item name="android:textSize">15sp</item>
+    </style>
 
-	<!-- The app theme -->
-	<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-		<item name="colorPrimary">@color/blue</item>
-		<item name="colorPrimaryDark">@color/blue_dark</item>
-		<item name="colorAccent">@color/blue</item>
-	</style>
-
-
-	<style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-		<item name="android:textColorPrimary">@android:color/white</item>
-		<item name="actionMenuTextColor">@android:color/black</item>
-		<item name="colorAccent">@color/blue</item>
-	</style>
-
+    <!-- The app theme -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/blue</item>
+        <item name="colorPrimaryDark">@color/blue_dark</item>
+        <item name="colorAccent">@color/blue</item>
+    </style>
 </resources>

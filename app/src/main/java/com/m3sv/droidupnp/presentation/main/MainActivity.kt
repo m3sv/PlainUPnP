@@ -5,13 +5,16 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.databinding.DataBindingUtil
 import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.ActionBarDrawerToggle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.ArrayAdapter
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
@@ -32,7 +35,7 @@ class MainActivity : BaseActivity() {
 
     private lateinit var viewModel: MainActivityViewModel
     private lateinit var binding: MainActivityBinding
-    
+
     private lateinit var rendererAdapter: ArrayAdapter<String>
     private lateinit var contentDirectoryAdapter: ArrayAdapter<String>
 
@@ -58,11 +61,34 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private val drawerToggle by lazy {
+        object : ActionBarDrawerToggle(this, binding.drawerContainer,
+                R.string.navigation_drawer_open,
+                R.string.navigation_drawer_close) {
+            override fun onDrawerClosed(drawerView: View) {
+                super.onDrawerClosed(drawerView)
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                super.onDrawerOpened(drawerView)
+            }
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
+
+        setSupportActionBar(binding.toolbar)
+
+        supportActionBar?.run {
+            setDisplayHomeAsUpEnabled(true)
+            setHomeButtonEnabled(true)
+        }
+
+        binding.drawerContainer.addDrawerListener(drawerToggle)
 
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
         viewModel.let {
@@ -95,6 +121,11 @@ class MainActivity : BaseActivity() {
         super.onPause()
     }
 
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        drawerToggle.syncState()
+    }
+
     private fun refresh() = viewModel.refreshServiceListener()
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -102,7 +133,15 @@ class MainActivity : BaseActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration?) {
+        super.onConfigurationChanged(newConfig)
+        drawerToggle.onConfigurationChanged(newConfig)
+    }
+
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (drawerToggle.onOptionsItemSelected(item))
+            return true
+
         when (item?.itemId) {
             R.id.menu_refresh -> refresh()
             R.id.menu_settings -> startActivity(Intent(this, SettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP))
