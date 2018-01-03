@@ -12,7 +12,6 @@ android {
 
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -39,6 +38,10 @@ android {
         targetCompatibility 1.8
         sourceCompatibility 1.8
     }
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
@@ -64,21 +67,23 @@ dependencies {
     implementation deps.rx.binding
     implementation deps.rx.android
 
-
     implementation deps.dagger.core
     provided deps.dagger.annotation
     kapt deps.dagger.compiler
+
     implementation deps.dagger.android
     implementation deps.dagger.androidSupport
     kapt deps.dagger.androidProcessor
 
+    kapt deps.kotlinDataBinding
 
     // Cling
-    implementation group: 'org.fourthline.cling', name: 'cling-core', version: '2.1.1'
-    implementation group: 'org.fourthline.cling', name: 'cling-support', version: '2.1.1'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '8.1.18.v20150929'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: '8.1.18.v20150929'
-    implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: '8.1.18.v20150929'
+    implementation group: 'org.fourthline.cling', name: 'cling-core', version: versions.cling
+    implementation group: 'org.fourthline.cling', name: 'cling-support', version: versions.cling
+    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: versions.jetty
+    implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: versions.jetty
+    implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: versions.jetty
+
     implementation group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.14'
 
     implementation('de.psdev.licensesdialog:licensesdialog:1.8.1') {

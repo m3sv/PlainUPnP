@@ -12,5 +12,4 @@ class UPnPManager constructor(val controller: IUPnPServiceController, val factor
     val rendererDiscoveryObservable = RendererDiscoveryObservable(controller.rendererDiscovery)
     val contentDirectoryDiscoveryObservable = ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
     val contentDirectorySelectedObservable = ContentDirectorySelectedObservable(controller)
-
 }

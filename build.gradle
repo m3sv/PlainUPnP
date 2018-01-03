@@ -1,5 +1,6 @@
 buildscript {
-    ext.kotlin_version = '1.2.10'
+    ext.kotlinVersion = '1.2.10'
+    ext.gradleVersion = '3.0.1'
     ext.versions = [
             'compileSdk'            : 26,
             'buildTools'            : '26.0.2',
@@ -10,7 +11,10 @@ buildscript {
             'architectureComponents': '1.0.0',
             'dagger'                : '2.11',
             'glide'                 : '4.2.0',
+            'cling'                 : '2.1.1',
+            'jetty'                 : '8.2.0.v20160908'
     ]
+
     ext.deps = [
             'support'               : [
                     'appCompat'       : "com.android.support:appcompat-v7:${versions.supportLibrary}",
@@ -39,12 +43,13 @@ buildscript {
             ],
             'eventBus'              : "com.greenrobot:eventbus:3.0.0",
             'timber'                : "com.jakewharton.timber:timber:4.6.0",
-            'kotlin'                : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version",
+            'kotlin'                : "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion",
             'glide'                 : [
                     'core'    : "com.github.bumptech.glide:glide:${versions.glide}",
                     'compiler': "com.github.bumptech.glide:compiler:${versions.glide}"
             ],
             'slidingUpPanel'        : "com.sothree.slidinguppanel:library:3.4.0",
+            'kotlinDataBinding'     : "com.android.databinding:compiler:$gradleVersion"
     ]
 
     repositories {
@@ -54,8 +59,8 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "com.android.tools.build:gradle:$gradleVersion"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
 
