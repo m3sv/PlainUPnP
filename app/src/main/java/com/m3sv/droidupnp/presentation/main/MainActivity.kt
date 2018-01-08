@@ -20,10 +20,10 @@ import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
 import com.m3sv.droidupnp.presentation.base.BaseViewModelFactory
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
+import com.m3sv.droidupnp.presentation.settings.SettingsActivity
 import com.m3sv.presentation.base.BaseActivity
 import dagger.android.AndroidInjection
 import org.droidupnp.view.DeviceDisplay
-import org.droidupnp.view.SettingsActivity
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -38,28 +38,6 @@ class MainActivity : BaseActivity() {
 
     private lateinit var rendererAdapter: ArrayAdapter<String>
     private lateinit var contentDirectoryAdapter: ArrayAdapter<String>
-
-    private val renderersObserver = Observer<Set<DeviceDisplay>> {
-        it?.run {
-            Timber.d("Received new set of renderers: ${it.size}")
-            rendererAdapter.run {
-                clear()
-                addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-                notifyDataSetChanged()
-            }
-        }
-    }
-
-    private val contentDiscoveryObserver = Observer<Set<DeviceDisplay>> {
-        it?.run {
-            Timber.d("Received new set of content directories: ${it.size}")
-            contentDirectoryAdapter.run {
-                clear()
-                addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-                notifyDataSetChanged()
-            }
-        }
-    }
 
     private val drawerToggle by lazy {
         object : ActionBarDrawerToggle(this, binding.drawerContainer,
@@ -81,28 +59,9 @@ class MainActivity : BaseActivity() {
 
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
 
-        setSupportActionBar(binding.toolbar)
-
-        supportActionBar?.run {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeButtonEnabled(true)
-        }
-
-        binding.drawerContainer.addDrawerListener(drawerToggle)
-
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
-        viewModel.let {
-            it.renderersObservable.observe(this, renderersObserver)
-            it.contentDirectoriesObservable.observe(this, contentDiscoveryObserver)
-        }
-
-        rendererAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
-                .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
-        binding.mainRendererDevicePicker.adapter = rendererAdapter
-
-        contentDirectoryAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
-                .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
-        binding.mainContentDevicePicker.adapter = contentDirectoryAdapter
+        setupDrawerToolbar()
+        initViewModel()
+        setupPickers()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -111,8 +70,55 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun initViewModel() {
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
+        viewModel.let {
+            it.renderersObservable.observe(this, Observer<Set<DeviceDisplay>> {
+                it?.run {
+                    Timber.d("Received new set of renderers: ${it.size}")
+                    rendererAdapter.run {
+                        clear()
+                        addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
+                        notifyDataSetChanged()
+                    }
+                }
+            })
+            it.contentDirectoriesObservable.observe(this, Observer<Set<DeviceDisplay>> {
+                it?.run {
+                    Timber.d("Received new set of content directories: ${it.size}")
+                    contentDirectoryAdapter.run {
+                        clear()
+                        addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
+                        notifyDataSetChanged()
+                    }
+                }
+            })
+        }
+    }
+
+    private fun setupDrawerToolbar() {
+        setToolbarWithBackButton(binding.toolbar)
+        binding.drawerContainer.addDrawerListener(drawerToggle)
+    }
+
+    private fun setupPickers() {
+        rendererAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
+                .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+        binding.mainRendererDevicePicker.adapter = rendererAdapter
+
+        contentDirectoryAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
+                .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+        binding.mainContentDevicePicker.adapter = contentDirectoryAdapter
+    }
+
+    private fun clearPickers() {
+        rendererAdapter.clear()
+        contentDirectoryAdapter.clear()
+    }
+
     override fun onResume() {
         super.onResume()
+        clearPickers()
         viewModel.resumeController()
     }
 
@@ -125,8 +131,6 @@ class MainActivity : BaseActivity() {
         super.onPostCreate(savedInstanceState)
         drawerToggle.syncState()
     }
-
-    private fun refresh() = viewModel.refreshServiceListener()
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
@@ -143,7 +147,7 @@ class MainActivity : BaseActivity() {
             return true
 
         when (item?.itemId) {
-            R.id.menu_refresh -> refresh()
+            R.id.menu_refresh -> viewModel.refreshServiceListener()
             R.id.menu_settings -> startActivity(Intent(this, SettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP))
             R.id.menu_quit -> finish()
             else -> super.onOptionsItemSelected(item)

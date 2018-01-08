@@ -79,15 +79,10 @@ public class SettingsActivity extends PreferenceActivity {
         ViewGroup contentView = (ViewGroup) LayoutInflater.from(this).inflate(
                 R.layout.preference_activity, new LinearLayout(this), false);
 
-        mActionBar = (Toolbar) contentView.findViewById(R.id.action_bar);
-        mActionBar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        mActionBar = contentView.findViewById(R.id.action_bar);
+        mActionBar.setNavigationOnClickListener(v -> finish());
 
-        ViewGroup contentWrapper = (ViewGroup) contentView.findViewById(R.id.content_wrapper);
+        ViewGroup contentWrapper = contentView.findViewById(R.id.content_wrapper);
         LayoutInflater.from(this).inflate(layoutResID, contentWrapper, true);
 
         getWindow().setContentView(contentView);
@@ -96,7 +91,7 @@ public class SettingsActivity extends PreferenceActivity {
     public static String getSettingContentDirectoryName(Context ctx) {
         String value = PreferenceManager.getDefaultSharedPreferences(ctx)
                 .getString(SettingsActivity.CONTENTDIRECTORY_NAME, "");
-        return (value != "") ? value : android.os.Build.MODEL;
+        return (!value.equals("")) ? value : android.os.Build.MODEL;
     }
 
     private List<Header> mHeaders;
@@ -163,20 +158,6 @@ public class SettingsActivity extends PreferenceActivity {
 
             Switch actionBarSwitch = new Switch(activity);
 
-/*
-            if(activity instanceof PreferenceActivity)
-			{
-				PreferenceActivity preferenceActivity = (PreferenceActivity) activity;
-				if(preferenceActivity.onIsHidingHeaders() || !preferenceActivity.onIsMultiPane())
-				{
-					activity.getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM,
-							ActionBar.DISPLAY_SHOW_CUSTOM);
-					activity.getActionBar().setCustomView(actionBarSwitch, new ActionBar.LayoutParams(
-						ActionBar.LayoutParams.WRAP_CONTENT, ActionBar.LayoutParams.WRAP_CONTENT,
-						Gravity.CENTER_VERTICAL | Gravity.END));
-				}
-			}
-			*/
             enabler = new ContentDirectoryEnabler(getActivity(), actionBarSwitch);
             updateSettings();
 
@@ -235,29 +216,26 @@ public class SettingsActivity extends PreferenceActivity {
 
             // Dialog for external license
             Preference pref = findPreference("licenses_other");
-            pref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                public boolean onPreferenceClick(Preference preference) {
-                    Notices notices = new Notices();
-                    notices.addNotice(new Notice(
-                            "AppCompat", "http://developer.android.com/tools/support-library/",
-                            "Copyright (C) The Android Open Source Project", new ApacheSoftwareLicense20()));
-                    notices.addNotice(new Notice(
-                            "Cling", "http://4thline.org/projects/cling/",
-                            "Copyright (C) 4th Line GmbH", new GnuLesserGeneralPublicLicense21()));
-                    notices.addNotice(new Notice(
-                            "NanoHttpd", "https://github.com/NanoHttpd/nanohttpd",
-                            "Copyright (C) 2012-2013 by Paul S. Hawke, 2001,2005-2013 by Jarno Elonen, 2010 by Konstantinos Togias", new BSD3ClauseLicense()));
-                    notices.addNotice(new Notice(
-                            "LicenseDialog", "http://psdev.de/LicensesDialog/",
-                            "Copyright (C) Philip Schiffer", new ApacheSoftwareLicense20()));
+            pref.setOnPreferenceClickListener(preference -> {
+                Notices notices = new Notices();
+                notices.addNotice(new Notice(
+                        "AppCompat", "http://developer.android.com/tools/support-library/",
+                        "Copyright (C) The Android Open Source Project", new ApacheSoftwareLicense20()));
+                notices.addNotice(new Notice(
+                        "Cling", "http://4thline.org/projects/cling/",
+                        "Copyright (C) 4th Line GmbH", new GnuLesserGeneralPublicLicense21()));
+                notices.addNotice(new Notice(
+                        "NanoHttpd", "https://github.com/NanoHttpd/nanohttpd",
+                        "Copyright (C) 2012-2013 by Paul S. Hawke, 2001,2005-2013 by Jarno Elonen, 2010 by Konstantinos Togias", new BSD3ClauseLicense()));
+                notices.addNotice(new Notice(
+                        "LicenseDialog", "http://psdev.de/LicensesDialog/",
+                        "Copyright (C) Philip Schiffer", new ApacheSoftwareLicense20()));
 
-                    LicensesDialog.Builder licensesDialog = new LicensesDialog.Builder(getActivity());
-                    licensesDialog.setNotices(notices);
-                    licensesDialog.setTitle(R.string.licenses_other);
-                    licensesDialog.build().show();
-                    return false;
-                }
-
+                LicensesDialog.Builder licensesDialog = new LicensesDialog.Builder(getActivity());
+                licensesDialog.setNotices(notices);
+                licensesDialog.setTitle(R.string.licenses_other);
+                licensesDialog.build().show();
+                return false;
             });
         }
     }
@@ -295,7 +273,7 @@ public class SettingsActivity extends PreferenceActivity {
 
                     if (header.id == R.id.contentdirectory_settings)
                         mContentDirectoryEnabler = new ContentDirectoryEnabler(getContext(),
-                                (Switch) view.findViewById(R.id.switchWidget));
+                                view.findViewById(R.id.switchWidget));
                     break;
 
                 case HEADER_TYPE_NORMAL:
@@ -309,7 +287,7 @@ public class SettingsActivity extends PreferenceActivity {
             return view;
         }
 
-        public static int getHeaderType(Header header) {
+        static int getHeaderType(Header header) {
             if ((header.fragment == null) && (header.intent == null)) {
                 return HEADER_TYPE_CATEGORY;
             } else if (header.id == R.id.contentdirectory_settings) {

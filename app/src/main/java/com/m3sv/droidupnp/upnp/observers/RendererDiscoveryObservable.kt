@@ -1,4 +1,4 @@
-package com.m3sv.droidupnp.upnp.observer
+package com.m3sv.droidupnp.upnp.observers
 
 import io.reactivex.Observable
 import io.reactivex.Observer

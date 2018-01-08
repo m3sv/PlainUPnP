@@ -46,17 +46,12 @@ class MainActivityViewModel(private val manager: UPnPManager) : ViewModel() {
                                 contentDirectoriesObservable.value = contentDirectories
                             }, onError = errorHandler
                     )
-
-            discoveryDisposable += contentDirectorySelectedObservable.subscribeBy(
-                    onNext = {
-                        Timber.d("Content directory has been selected: ${it.displayString}")
-                    }, onError = errorHandler
-            )
         }
     }
 
     fun pauseController() = manager.controller.run {
         pause()
+        serviceListener.serviceConnection.onServiceDisconnected(null)
         discoveryDisposable.takeUnless { it.isDisposed }?.dispose()
     }
 

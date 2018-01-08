@@ -1,8 +1,8 @@
-package com.m3sv.droidupnp.upnp.observer
+package com.m3sv.droidupnp.upnp.observers
 
 import io.reactivex.Observable
 import io.reactivex.Observer
-import io.reactivex.android.MainThreadDisposable
+import io.reactivex.disposables.Disposable
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery
 import org.droidupnp.model.upnp.IDeviceDiscoveryObserver
 import org.droidupnp.model.upnp.IUPnPDevice
@@ -16,12 +16,14 @@ class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentD
 
     private inner class ContentDeviceObserver(private val contentDirectoryDiscovery: ContentDirectoryDiscovery,
                                               private val observer: Observer<in IUPnPDevice>) :
-            MainThreadDisposable(), IDeviceDiscoveryObserver {
+            Disposable, IDeviceDiscoveryObserver {
         init {
             contentDirectoryDiscovery.addObserver(this)
         }
 
-        override fun onDispose() {
+        override fun isDisposed(): Boolean = !contentDirectoryDiscovery.hasObserver(this)
+
+        override fun dispose() {
             contentDirectoryDiscovery.removeObserver(this)
         }
 

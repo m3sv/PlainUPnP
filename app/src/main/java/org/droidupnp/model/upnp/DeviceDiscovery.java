@@ -90,6 +90,10 @@ public abstract class DeviceDiscovery {
         }
     }
 
+    public boolean hasObserver(IDeviceDiscoveryObserver o) {
+        return observerList.contains(o);
+    }
+
     public void addObserver(IDeviceDiscoveryObserver o) {
         observerList.add(o);
 

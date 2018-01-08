@@ -1,14 +1,12 @@
-@file:Suppress("IllegalIdentifier")
+@file:Suppress("IllegalIdentifier", "UNCHECKED_CAST")
 
 import android.arch.lifecycle.Observer
-import android.view.Display
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.droidupnp.upnp.UPnPManager
 import org.droidupnp.view.DeviceDisplay
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verifyNoMoreInteractions
 
@@ -19,28 +17,26 @@ import org.mockito.Mockito.verifyNoMoreInteractions
  */
 class ExampleUnitTest {
 
-    lateinit var upnpManager: UPnPManager
+    lateinit var manager: UPnPManager
 
     lateinit var mainActivityViewModel: MainActivityViewModel
 
     @Before
     fun setup() {
-        upnpManager = mock(UPnPManager::class.java)
-        mainActivityViewModel = MainActivityViewModel(upnpManager)
+        manager = mock(UPnPManager::class.java)
+        mainActivityViewModel = MainActivityViewModel(manager)
     }
 
     @Test
-    @Suppress("UNCHECKED_CAST")
     fun empty() {
         val observer: Observer<Set<DeviceDisplay>> = mock(Observer::class.java) as Observer<Set<DeviceDisplay>>
         mainActivityViewModel.renderersObservable.observeForever(observer)
-        verifyNoMoreInteractions(upnpManager)
-
+        verifyNoMoreInteractions(manager)
     }
 
     @Test
     @Throws(Exception::class)
     fun `is addition correct`() {
-        assertEquals(4, (2 + 2).toLong())
+        assertEquals(4, 2 + 2)
     }
 }

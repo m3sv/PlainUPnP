@@ -34,7 +34,9 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize" />
+                android:outlineProvider="bounds"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="4dp" />
 
             <Spinner
                 android:id="@+id/main_content_device_picker"
@@ -68,8 +70,7 @@
 
             <Button
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="hello world" />
+                android:layout_height="wrap_content" />
         </android.support.design.widget.NavigationView>
     </android.support.v4.widget.DrawerLayout>
 </layout>

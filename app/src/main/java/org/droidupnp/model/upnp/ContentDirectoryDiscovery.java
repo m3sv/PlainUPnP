@@ -36,10 +36,9 @@ public class ContentDirectoryDiscovery extends DeviceDiscovery {
 
     @Override
     protected boolean isSelected(IUPnPDevice device) {
-        if (controller != null && controller.getSelectedContentDirectory() != null)
-            return device.equals(controller.getSelectedContentDirectory());
-
-        return false;
+        return controller != null
+                && controller.getSelectedContentDirectory() != null
+                && device.equals(controller.getSelectedContentDirectory());
     }
 
     @Override
