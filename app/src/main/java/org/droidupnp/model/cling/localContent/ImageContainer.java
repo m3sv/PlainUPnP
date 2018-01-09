@@ -62,7 +62,7 @@ public class ImageContainer extends DynamicContainer
 			MediaStore.Images.Media.MIME_TYPE,
 			MediaStore.Images.Media.SIZE,
 			MediaStore.Images.Media.HEIGHT,
-			MediaStore.Images.Media.WIDTH,
+			MediaStore.Images.Media.WIDTH
 		};
 
 		Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, orderBy);
