@@ -16,11 +16,11 @@
   You should have received a copy of the GNU General Public License
   along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
 -->
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -34,33 +34,31 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:background="#FFFFFF"
                 android:layout_height="?attr/actionBarSize"
+                android:background="#FFFFFF"
                 android:elevation="4dp" />
 
             <Spinner
                 android:id="@+id/main_content_device_picker"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_height="48dp"
+
                 app:layout_constraintEnd_toStartOf="@+id/main_renderer_device_picker"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toolbar" />
+                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
 
             <Spinner
                 android:id="@+id/main_renderer_device_picker"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_height="48dp"
+                android:layout_marginBottom="8dp"
                 android:layout_marginTop="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/main_content_device_picker"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/main_content_device_picker"
-                app:layout_constraintTop_toBottomOf="@id/toolbar" />
+                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
         </android.support.constraint.ConstraintLayout>
 
         <android.support.design.widget.NavigationView
