@@ -35,7 +35,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="#FFFFFF"
+                android:background="?attr/colorPrimary"
                 android:elevation="4dp" />
 
             <Spinner
@@ -67,8 +67,10 @@
             android:layout_gravity="start">
 
             <Button
+                android:id="@+id/change_theme"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="@string/switch_theme" />
         </android.support.design.widget.NavigationView>
     </android.support.v4.widget.DrawerLayout>
 </layout>

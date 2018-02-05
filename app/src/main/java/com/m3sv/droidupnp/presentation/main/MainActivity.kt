@@ -9,6 +9,7 @@ import android.content.res.Configuration
 import android.databinding.DataBindingUtil
 import android.os.Build
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.ActionBarDrawerToggle
@@ -22,6 +23,7 @@ import com.m3sv.droidupnp.presentation.base.BaseViewModelFactory
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.droidupnp.presentation.settings.SettingsActivity
 import com.m3sv.presentation.base.BaseActivity
+import com.m3sv.presentation.base.THEME_KEY
 import dagger.android.AndroidInjection
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
@@ -56,7 +58,6 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
 
         setupDrawerToolbar()
@@ -66,6 +67,18 @@ class MainActivity : BaseActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXT_STORAGE)
+            }
+        }
+
+        binding.changeTheme.setOnClickListener {
+            if (isLightTheme) {
+                setTheme(R.style.AppTheme_Dark)
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(THEME_KEY, false).apply()
+                recreate()
+            } else {
+                setTheme(R.style.AppTheme)
+                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(THEME_KEY, true).apply()
+                recreate()
             }
         }
     }
@@ -156,6 +169,6 @@ class MainActivity : BaseActivity() {
     }
 
     companion object {
-        private val REQUEST_READ_EXT_STORAGE = 12345
+        private const val REQUEST_READ_EXT_STORAGE = 12345
     }
 }

@@ -101,5 +101,6 @@
 	<string name="source_url" translatable="false">http://github.com/trishika/droidupnp</string>
     <string name="active_content_directory_description">Activate a local Content Directory server</string>
 	<string name="content_directory_title">Content Directory</string>
+    <string name="switch_theme">Switch theme</string>
 
 </resources>

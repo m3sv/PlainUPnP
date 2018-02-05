@@ -95,4 +95,6 @@
         <item name="colorPrimaryDark">@color/blue_dark</item>
         <item name="colorAccent">@color/blue</item>
     </style>
+
+    <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar" />
 </resources>
