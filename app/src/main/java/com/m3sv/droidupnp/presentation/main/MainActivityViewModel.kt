@@ -11,8 +11,9 @@ import io.reactivex.schedulers.Schedulers
 import org.droidupnp.view.DeviceDisplay
 import org.droidupnp.view.DeviceType
 import timber.log.Timber
+import javax.inject.Inject
 
-class MainActivityViewModel(private val manager: UPnPManager) : ViewModel() {
+class MainActivityViewModel @Inject constructor(private val manager: UPnPManager) : ViewModel() {
 
     val contentDirectoriesObservable = MutableLiveData<Set<DeviceDisplay>>()
     val renderersObservable = MutableLiveData<Set<DeviceDisplay>>()
@@ -22,30 +23,36 @@ class MainActivityViewModel(private val manager: UPnPManager) : ViewModel() {
     private val renderers = hashSetOf<DeviceDisplay>()
     private val contentDirectories = hashSetOf<DeviceDisplay>()
 
-    private val errorHandler: (Throwable) -> Unit = { Timber.e("Exception during discovery: ${it.message}") }
+    private val errorHandler: (Throwable) -> Unit =
+        { Timber.e("Exception during discovery: ${it.message}") }
 
     fun resumeController() {
         discoveryDisposable = CompositeDisposable()
         manager.run {
             controller.resume()
             discoveryDisposable += rendererDiscoveryObservable.subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy(
-                            onNext = { renderer ->
-                                Timber.d("Found Renderer: ${renderer.displayString}")
-                                renderers += DeviceDisplay(renderer, false, DeviceType.RENDERER)
-                                renderersObservable.value = renderers
-                            },
-                            onError = errorHandler)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onNext = { renderer ->
+                        Timber.d("Found Renderer: ${renderer.displayString}")
+                        renderers += DeviceDisplay(renderer, false, DeviceType.RENDERER)
+                        renderersObservable.value = renderers
+                    },
+                    onError = errorHandler
+                )
             discoveryDisposable += contentDirectoryDiscoveryObservable.subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeBy(
-                            onNext = { contentDirectory ->
-                                Timber.d("Found Content Directory: ${contentDirectory.displayString}")
-                                contentDirectories += DeviceDisplay(contentDirectory, false, DeviceType.CONTENT_DIRECTORY)
-                                contentDirectoriesObservable.value = contentDirectories
-                            }, onError = errorHandler
-                    )
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeBy(
+                    onNext = { contentDirectory ->
+                        Timber.d("Found Content Directory: ${contentDirectory.displayString}")
+                        contentDirectories += DeviceDisplay(
+                            contentDirectory,
+                            false,
+                            DeviceType.CONTENT_DIRECTORY
+                        )
+                        contentDirectoriesObservable.value = contentDirectories
+                    }, onError = errorHandler
+                )
         }
     }
 

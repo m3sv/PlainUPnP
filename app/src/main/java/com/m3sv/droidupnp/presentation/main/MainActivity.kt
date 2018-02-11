@@ -2,7 +2,6 @@ package com.m3sv.presentation.main
 
 import android.Manifest
 import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -19,7 +18,6 @@ import android.view.View
 import android.widget.ArrayAdapter
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
-import com.m3sv.droidupnp.presentation.base.BaseViewModelFactory
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.droidupnp.presentation.settings.SettingsActivity
 import com.m3sv.presentation.base.BaseActivity
@@ -31,20 +29,20 @@ import javax.inject.Inject
 
 
 class MainActivity : BaseActivity() {
-
     @Inject
-    lateinit var viewModelFactory: BaseViewModelFactory
+    lateinit var viewModel: MainActivityViewModel
 
-    private lateinit var viewModel: MainActivityViewModel
     private lateinit var binding: MainActivityBinding
 
     private lateinit var rendererAdapter: ArrayAdapter<String>
     private lateinit var contentDirectoryAdapter: ArrayAdapter<String>
 
     private val drawerToggle by lazy {
-        object : ActionBarDrawerToggle(this, binding.drawerContainer,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close) {
+        object : ActionBarDrawerToggle(
+            this, binding.drawerContainer,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
+        ) {
             override fun onDrawerClosed(drawerView: View) {
                 super.onDrawerClosed(drawerView)
             }
@@ -65,26 +63,36 @@ class MainActivity : BaseActivity() {
         setupPickers()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_READ_EXT_STORAGE)
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    REQUEST_READ_EXT_STORAGE
+                )
             }
         }
 
         binding.changeTheme.setOnClickListener {
             if (isLightTheme) {
                 setTheme(R.style.AppTheme_Dark)
-                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(THEME_KEY, false).apply()
+                PreferenceManager.getDefaultSharedPreferences(this).edit()
+                    .putBoolean(THEME_KEY, false).apply()
                 recreate()
             } else {
                 setTheme(R.style.AppTheme)
-                PreferenceManager.getDefaultSharedPreferences(this).edit().putBoolean(THEME_KEY, true).apply()
+                PreferenceManager.getDefaultSharedPreferences(this).edit()
+                    .putBoolean(THEME_KEY, true).apply()
                 recreate()
             }
         }
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
+//        viewModel =
+//                ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
         viewModel.let {
             it.renderersObservable.observe(this, Observer<Set<DeviceDisplay>> {
                 it?.run {
@@ -116,11 +124,11 @@ class MainActivity : BaseActivity() {
 
     private fun setupPickers() {
         rendererAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
-                .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+            .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
         binding.mainRendererDevicePicker.adapter = rendererAdapter
 
         contentDirectoryAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
-                .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+            .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
         binding.mainContentDevicePicker.adapter = contentDirectoryAdapter
     }
 
@@ -161,7 +169,11 @@ class MainActivity : BaseActivity() {
 
         when (item?.itemId) {
             R.id.menu_refresh -> viewModel.refreshServiceListener()
-            R.id.menu_settings -> startActivity(Intent(this, SettingsActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP))
+            R.id.menu_settings -> startActivity(
+                Intent(this, SettingsActivity::class.java).addFlags(
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP
+                )
+            )
             R.id.menu_quit -> finish()
             else -> super.onOptionsItemSelected(item)
         }

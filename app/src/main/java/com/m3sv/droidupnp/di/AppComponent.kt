@@ -8,10 +8,12 @@ import dagger.Component
 import dagger.android.support.AndroidSupportInjectionModule
 
 @ApplicationScope
-@Component(modules = [(AndroidSupportInjectionModule::class),
-    (AppModule::class),
-    (BuildersModule::class),
-    (UPnPBinder::class)])
+@Component(
+    modules = [AndroidSupportInjectionModule::class,
+        MainActivityBuilder::class,
+        AppModule::class,
+        UPnPBinder::class]
+)
 interface AppComponent {
     @Component.Builder
     interface Builder {
