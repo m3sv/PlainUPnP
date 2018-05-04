@@ -48,7 +48,7 @@ import org.droidupnp.controller.upnp.IUPnPServiceController;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;
 import org.droidupnp.model.upnp.IDeviceDiscoveryObserver;
-import org.droidupnp.model.upnp.IFactory;
+import org.droidupnp.model.upnp.Factory;
 import org.droidupnp.model.upnp.IRendererCommand;
 import org.droidupnp.model.upnp.IUPnPDevice;
 import org.droidupnp.model.upnp.didl.DIDLDevice;
@@ -85,7 +85,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
 
     IUPnPServiceController controller;
 
-    IFactory factory;
+    Factory factory;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

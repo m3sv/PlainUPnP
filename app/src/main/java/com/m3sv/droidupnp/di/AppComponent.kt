@@ -2,19 +2,23 @@ package com.m3sv.droidupnp.di
 
 import android.app.Application
 import com.m3sv.droidupnp.App
+import com.m3sv.droidupnp.di.activity.MainActivityBuilder
+import com.m3sv.droidupnp.di.activity.SettingsActivityBuilder
 import com.m3sv.droidupnp.di.scope.ApplicationScope
 import dagger.BindsInstance
 import dagger.Component
+import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
 
 @ApplicationScope
 @Component(
     modules = [AndroidSupportInjectionModule::class,
         MainActivityBuilder::class,
+        SettingsActivityBuilder::class,
         AppModule::class,
         UPnPBinder::class]
 )
-interface AppComponent {
+interface AppComponent : AndroidInjector<App> {
     @Component.Builder
     interface Builder {
         @BindsInstance
@@ -23,5 +27,5 @@ interface AppComponent {
         fun build(): AppComponent
     }
 
-    fun inject(application: App)
+    override fun inject(instance: App)
 }

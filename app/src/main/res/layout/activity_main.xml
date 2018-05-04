@@ -20,13 +20,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data class="MainActivityBinding" />
+
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <android.support.constraint.ConstraintLayout
-            android:id="@+id/drawer_layout"
+            android:id="@+id/main_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:context="com.m3sv.presentation.main.MainActivity">
@@ -38,39 +40,8 @@
                 android:background="?attr/colorPrimary"
                 android:elevation="4dp" />
 
-            <Spinner
-                android:id="@+id/main_content_device_picker"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-
-                app:layout_constraintEnd_toStartOf="@+id/main_renderer_device_picker"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
-
-            <Spinner
-                android:id="@+id/main_renderer_device_picker"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/main_content_device_picker"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/main_content_device_picker"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar" />
         </android.support.constraint.ConstraintLayout>
 
-        <android.support.design.widget.NavigationView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="start">
-
-            <Button
-                android:id="@+id/change_theme"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/switch_theme" />
-        </android.support.design.widget.NavigationView>
+        <include layout="@layout/drawer_layout" android:id="@+id/drawer_content_container"/>
     </android.support.v4.widget.DrawerLayout>
 </layout>

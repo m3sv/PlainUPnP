@@ -1,7 +1,8 @@
-package com.m3sv.droidupnp.di
+package com.m3sv.droidupnp.di.activity
 
 import android.arch.lifecycle.ViewModel
 import android.support.v7.app.AppCompatActivity
+import com.m3sv.droidupnp.di.ViewModelKey
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.presentation.main.MainActivity
 import dagger.Binds

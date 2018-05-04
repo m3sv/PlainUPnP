@@ -39,7 +39,7 @@ import com.m3sv.droidupnp.R;
 import org.droidupnp.controller.upnp.IUPnPServiceController;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.upnp.ARendererState;
-import org.droidupnp.model.upnp.IFactory;
+import org.droidupnp.model.upnp.Factory;
 import org.droidupnp.model.upnp.IRendererCommand;
 import org.droidupnp.model.upnp.IUPnPDevice;
 
@@ -69,7 +69,7 @@ public class RendererFragment extends Fragment implements Observer {
     boolean durationRemaining;
 
     IUPnPServiceController controller;
-    IFactory factory;
+    Factory factory;
 
     public RendererFragment() {
         super();

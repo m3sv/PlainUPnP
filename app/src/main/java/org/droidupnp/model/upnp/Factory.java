@@ -23,7 +23,7 @@ import android.content.Context;
 
 import org.droidupnp.controller.upnp.IUPnPServiceController;
 
-public interface IFactory {
+public interface Factory {
 	public IContentDirectoryCommand createContentDirectoryCommand();
 
 	public IUPnPServiceController createUpnpServiceController(Context ctx);

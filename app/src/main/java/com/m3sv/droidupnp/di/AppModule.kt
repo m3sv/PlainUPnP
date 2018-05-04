@@ -7,7 +7,7 @@ import com.m3sv.droidupnp.upnp.UPnPManager
 import dagger.Module
 import dagger.Provides
 import org.droidupnp.controller.upnp.IUPnPServiceController
-import org.droidupnp.model.upnp.IFactory
+import org.droidupnp.model.upnp.Factory
 
 
 @Module
@@ -19,5 +19,5 @@ class AppModule {
 
     @Provides
     @ApplicationScope
-    fun provideUPnPManager(controller: IUPnPServiceController, factory: IFactory) = UPnPManager(controller, factory)
+    fun provideUPnPManager(controller: IUPnPServiceController, factory: Factory) = UPnPManager(controller, factory)
 }

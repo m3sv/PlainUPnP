@@ -60,7 +60,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
 
-
     implementation deps.support.appCompat
     implementation deps.support.v4
     implementation deps.support.design
@@ -79,14 +78,12 @@ dependencies {
     implementation deps.rx.android
 
     implementation deps.dagger.core
-    provided deps.dagger.annotation
+    compileOnly deps.dagger.annotation
     kapt deps.dagger.compiler
 
     implementation deps.dagger.android
     implementation deps.dagger.androidSupport
     kapt deps.dagger.androidProcessor
-
-    kapt deps.kotlinDataBinding
 
     // Cling
     implementation group: 'org.fourthline.cling', name: 'cling-core', version: versions.cling

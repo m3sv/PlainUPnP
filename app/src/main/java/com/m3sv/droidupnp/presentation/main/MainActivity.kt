@@ -22,7 +22,6 @@ import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.droidupnp.presentation.settings.SettingsActivity
 import com.m3sv.presentation.base.BaseActivity
 import com.m3sv.presentation.base.THEME_KEY
-import dagger.android.AndroidInjection
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
 import javax.inject.Inject
@@ -36,6 +35,28 @@ class MainActivity : BaseActivity() {
 
     private lateinit var rendererAdapter: ArrayAdapter<String>
     private lateinit var contentDirectoryAdapter: ArrayAdapter<String>
+
+    private val renderersObserver = Observer<Set<DeviceDisplay>> {
+        it?.run {
+            Timber.d("Received new set of renderers: ${it.size}")
+            rendererAdapter.run {
+                clear()
+                addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
+                notifyDataSetChanged()
+            }
+        }
+    }
+
+    private val contentDirectoriesObserver = Observer<Set<DeviceDisplay>> {
+        it?.run {
+            Timber.d("Received new set of content directories: ${it.size}")
+            contentDirectoryAdapter.run {
+                clear()
+                addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
+                notifyDataSetChanged()
+            }
+        }
+    }
 
     private val drawerToggle by lazy {
         object : ActionBarDrawerToggle(
@@ -54,12 +75,12 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        AndroidInjection.inject(this)
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
+        viewModel = getViewModel()
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
         setupDrawerToolbar()
-        initViewModel()
+        initObservers()
         setupPickers()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -75,7 +96,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        binding.changeTheme.setOnClickListener {
+        binding.drawerContentContainer?.changeTheme?.setOnClickListener {
             if (isLightTheme) {
                 setTheme(R.style.AppTheme_Dark)
                 PreferenceManager.getDefaultSharedPreferences(this).edit()
@@ -90,30 +111,10 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun initViewModel() {
-//        viewModel =
-//                ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
-        viewModel.let {
-            it.renderersObservable.observe(this, Observer<Set<DeviceDisplay>> {
-                it?.run {
-                    Timber.d("Received new set of renderers: ${it.size}")
-                    rendererAdapter.run {
-                        clear()
-                        addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-                        notifyDataSetChanged()
-                    }
-                }
-            })
-            it.contentDirectoriesObservable.observe(this, Observer<Set<DeviceDisplay>> {
-                it?.run {
-                    Timber.d("Received new set of content directories: ${it.size}")
-                    contentDirectoryAdapter.run {
-                        clear()
-                        addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-                        notifyDataSetChanged()
-                    }
-                }
-            })
+    private fun initObservers() {
+        with(viewModel) {
+            renderersObservable.observe(this@MainActivity, renderersObserver)
+            contentDirectoriesObservable.observe(this@MainActivity, contentDirectoriesObserver)
         }
     }
 
@@ -123,13 +124,17 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupPickers() {
-        rendererAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
-            .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
-        binding.mainRendererDevicePicker.adapter = rendererAdapter
+        binding.drawerContentContainer?.run {
+            rendererAdapter =
+                    ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
+                        .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+            mainRendererDevicePicker.adapter = rendererAdapter
 
-        contentDirectoryAdapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1)
-            .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
-        binding.mainContentDevicePicker.adapter = contentDirectoryAdapter
+            contentDirectoryAdapter =
+                    ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
+                        .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+            mainContentDevicePicker.adapter = contentDirectoryAdapter
+        }
     }
 
     private fun clearPickers() {

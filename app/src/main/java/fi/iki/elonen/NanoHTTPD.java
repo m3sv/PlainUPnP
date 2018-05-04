@@ -359,7 +359,7 @@ public abstract class NanoHTTPD {
     }
 
     /**
-     * Factory to create temp file managers.
+     * UPnPFactory to create temp file managers.
      */
     public interface TempFileManagerFactory {
         TempFileManager create();

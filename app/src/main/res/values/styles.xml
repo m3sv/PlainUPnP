@@ -89,6 +89,10 @@
         <item name="android:textSize">15sp</item>
     </style>
 
+    <style name="AppTheme.LightToolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
     <!-- The app theme -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/blue</item>
