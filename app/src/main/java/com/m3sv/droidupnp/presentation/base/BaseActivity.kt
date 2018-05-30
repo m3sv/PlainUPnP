@@ -1,4 +1,4 @@
-package com.m3sv.presentation.base
+package com.m3sv.droidupnp.presentation.base
 
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProviders
@@ -31,7 +31,7 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
         super.onCreate(savedInstanceState)
     }
 
-    protected fun setToolbarWithBackButton(toolbar: Toolbar) {
+    protected fun setAsHomeUp(toolbar: Toolbar) {
         setSupportActionBar(toolbar)
         supportActionBar?.run {
             setDisplayHomeAsUpEnabled(true)

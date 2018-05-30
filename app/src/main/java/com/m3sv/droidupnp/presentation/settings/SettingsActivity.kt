@@ -4,7 +4,7 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.SettingsActivityBinding
-import com.m3sv.presentation.base.BaseActivity
+import com.m3sv.droidupnp.presentation.base.BaseActivity
 
 
 class SettingsActivity : BaseActivity() {
@@ -15,7 +15,7 @@ class SettingsActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_settings)
-        setToolbarWithBackButton(binding.toolbar)
+        setAsHomeUp(binding.toolbar)
         binding.toolbar.setNavigationOnClickListener { finish() }
         binding.toolbar.title = "Hello world"
     }

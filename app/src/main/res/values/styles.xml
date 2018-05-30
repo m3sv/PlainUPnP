@@ -33,11 +33,6 @@
     <drawable name="volume">@drawable/ic_action_volume_on</drawable>
     <drawable name="volume_mute">@drawable/ic_action_volume_muted</drawable>
 
-    <!-- Drawer style -->
-    <style name="drawer">
-        <item name="android:background">@color/light_grey</item>
-    </style>
-
     <style name="DrawerText" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/darker</item>
     </style>
@@ -95,9 +90,8 @@
 
     <!-- The app theme -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/blue</item>
-        <item name="colorPrimaryDark">@color/blue_dark</item>
-        <item name="colorAccent">@color/blue</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar" />

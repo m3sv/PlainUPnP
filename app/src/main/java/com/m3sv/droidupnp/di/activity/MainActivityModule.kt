@@ -4,9 +4,11 @@ import android.arch.lifecycle.ViewModel
 import android.support.v7.app.AppCompatActivity
 import com.m3sv.droidupnp.di.ViewModelKey
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
-import com.m3sv.presentation.main.MainActivity
+import com.m3sv.droidupnp.presentation.main.MainActivity
+import com.m3sv.droidupnp.presentation.main.MainFragment
 import dagger.Binds
 import dagger.Module
+import dagger.android.ContributesAndroidInjector
 import dagger.multibindings.IntoMap
 
 
@@ -19,4 +21,7 @@ interface MainActivityModule {
     @IntoMap
     @ViewModelKey(MainActivityViewModel::class)
     fun bindMainActivityViewModel(mainActivityViewModel: MainActivityViewModel): ViewModel
+
+    @ContributesAndroidInjector
+    fun contributeMainFragment(): MainFragment
 }

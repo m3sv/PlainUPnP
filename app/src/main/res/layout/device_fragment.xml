@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   Copyright (C) 2013 Aurélien Chabot <aurelien@chabot.fr>
 
   This file is part of DroidUPNP.
@@ -18,51 +17,54 @@
   along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
-	android:id="@+id/device_fragment"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:orientation="vertical"
-	android:drawSelectorOnTop="false"
-	style="@style/drawer"
-	tools:context="org.droidupnp.DrawerFragment" >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/device_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:drawSelectorOnTop="false"
+    android:orientation="vertical"
+    tools:context="org.droidupnp.DrawerFragment">
 
-	<TextView
-		android:id="@+id/label_contentDirectory"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_margin="5dp"
-		android:text="@string/contentdirectory"
-		style="@style/deviceListLabel" />
-	<View
-		android:layout_width="fill_parent"
-		android:layout_height="1dp"
-		style="@style/deviceListSeparator" />
-	<fragment
-		android:id="@+id/ContentDirectoryDeviceFragment"
-		android:name="org.droidupnp.view.ContentDirectoryDeviceFragment"
-		android:layout_weight="1"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		tools:layout="@layout/sub_device_fragment"/>
+    <TextView
+        android:id="@+id/label_contentDirectory"
+        style="@style/deviceListLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="@string/contentdirectory" />
 
-	<TextView
-		android:id="@+id/label_renderer"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_margin="5dp"
-		android:text="@string/renderer"
-		style="@style/deviceListLabel" />
-	<View
-		android:layout_width="fill_parent"
-		android:layout_height="1dp"
-		style="@style/deviceListSeparator" />
-	<fragment
-		android:id="@+id/RendererDeviceFragment"
-		android:name="org.droidupnp.view.RendererDeviceFragment"
-		android:layout_weight="1"
-		android:layout_width="fill_parent"
-		android:layout_height="fill_parent"
-		tools:layout="@layout/sub_device_fragment"/>
+    <View
+        style="@style/deviceListSeparator"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp" />
+
+    <fragment
+        android:id="@+id/ContentDirectoryDeviceFragment"
+        android:name="org.droidupnp.view.ContentDirectoryDeviceFragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        tools:layout="@layout/sub_device_fragment" />
+
+    <TextView
+        android:id="@+id/label_renderer"
+        style="@style/deviceListLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:text="@string/renderer" />
+
+    <View
+        style="@style/deviceListSeparator"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp" />
+
+    <fragment
+        android:id="@+id/RendererDeviceFragment"
+        android:name="org.droidupnp.view.RendererDeviceFragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        tools:layout="@layout/sub_device_fragment" />
 
 </LinearLayout>
