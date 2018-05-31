@@ -2,7 +2,6 @@ package com.m3sv.droidupnp.presentation.main
 
 import android.Manifest
 import android.arch.lifecycle.Observer
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.os.Build
@@ -10,14 +9,11 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.ArrayAdapter
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
 import com.m3sv.droidupnp.presentation.base.BaseActivity
 import com.m3sv.droidupnp.presentation.base.THEME_KEY
-import com.m3sv.droidupnp.presentation.settings.SettingsActivity
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
 import javax.inject.Inject

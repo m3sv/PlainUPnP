@@ -3,7 +3,6 @@ package com.m3sv.droidupnp.di
 import android.app.Application
 import com.m3sv.droidupnp.App
 import com.m3sv.droidupnp.di.activity.MainActivityBuilder
-import com.m3sv.droidupnp.di.activity.SettingsActivityBuilder
 import com.m3sv.droidupnp.di.scope.ApplicationScope
 import dagger.BindsInstance
 import dagger.Component
@@ -14,7 +13,6 @@ import dagger.android.support.AndroidSupportInjectionModule
 @Component(
     modules = [AndroidSupportInjectionModule::class,
         MainActivityBuilder::class,
-        SettingsActivityBuilder::class,
         AppModule::class,
         UPnPBinder::class]
 )
