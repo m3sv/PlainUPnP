@@ -6,6 +6,7 @@ import com.m3sv.droidupnp.di.ViewModelKey
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.droidupnp.presentation.main.MainActivity
 import com.m3sv.droidupnp.presentation.main.MainFragment
+import com.m3sv.droidupnp.presentation.settings.SettingsFragment
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -24,4 +25,7 @@ interface MainActivityModule {
 
     @ContributesAndroidInjector
     fun contributeMainFragment(): MainFragment
+
+    @ContributesAndroidInjector
+    fun contritubeSettingsFragment(): SettingsFragment
 }

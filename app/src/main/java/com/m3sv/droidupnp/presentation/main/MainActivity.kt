@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.widget.ArrayAdapter
@@ -14,6 +15,7 @@ import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
 import com.m3sv.droidupnp.presentation.base.BaseActivity
 import com.m3sv.droidupnp.presentation.base.THEME_KEY
+import com.m3sv.droidupnp.presentation.settings.SettingsFragment
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
 import javax.inject.Inject
@@ -56,9 +58,10 @@ class MainActivity : BaseActivity() {
         viewModel = getViewModel()
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        initMainFragment()
+        navigateToMain()
         initObservers()
         setupPickers()
+        setupBottomNavigation(binding.bottomNav)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(
@@ -73,7 +76,7 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        binding.changeTheme.setOnClickListener {
+        binding.controlsSheet.changeTheme.setOnClickListener {
             if (isLightTheme) {
                 setTheme(R.style.AppTheme_Dark)
                 PreferenceManager.getDefaultSharedPreferences(this).edit()
@@ -88,6 +91,25 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun setupBottomNavigation(bottomNavigation: BottomNavigationView) {
+        bottomNavigation.setOnNavigationItemSelectedListener {
+            when (it.itemId) {
+                R.id.nav_home -> {
+                    navigateToMain()
+                    true
+                }
+
+                R.id.nav_settings -> {
+                    navigateToSettings()
+                    true
+                }
+
+                else -> false
+            }
+
+        }
+    }
+
     private fun initObservers() {
         with(viewModel) {
             renderersObservable.observe(this@MainActivity, renderersObserver)
@@ -96,7 +118,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun setupPickers() {
-        binding.run {
+        binding.controlsSheet.run {
             rendererAdapter =
                     ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
                         .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
@@ -138,9 +160,16 @@ class MainActivity : BaseActivity() {
 //        return super.onOptionsItemSelected(item)
 //    }
 
-    private fun initMainFragment() {
+    private fun navigateToMain() {
         supportFragmentManager.beginTransaction().apply {
-            add(R.id.container, MainFragment.newInstance())
+            replace(R.id.container, MainFragment.newInstance())
+            commit()
+        }
+    }
+
+    private fun navigateToSettings() {
+        supportFragmentManager.beginTransaction().apply {
+            replace(R.id.container, SettingsFragment.newInstance())
             commit()
         }
     }
