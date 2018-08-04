@@ -1,20 +1,34 @@
 package com.m3sv.droidupnp.presentation.main
 
-import android.app.Activity
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.provider.MediaStore
+import com.m3sv.droidupnp.di.scope.ApplicationScope
+import com.m3sv.droidupnp.presentation.main.data.ImageInfo
+import com.m3sv.droidupnp.presentation.main.data.VideoInfo
 import io.reactivex.Single
-import java.util.HashSet
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.rxkotlin.subscribeBy
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import javax.inject.Inject
 
 
+@ApplicationScope
 class GalleryRepository @Inject constructor(private val context: Context) {
 
-    data class ImageInfo(val data: String, val title: String)
+    private val _images: MutableLiveData<HashSet<ImageInfo>> = MutableLiveData()
 
-    data class VideoInfo(val data: String, val title: String)
+    fun getImages(): LiveData<HashSet<ImageInfo>> {
+        getAllImages()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeBy(onSuccess = _images::postValue, onError = Timber::e)
+        return _images
+    }
 
-    fun getAllImages(): Single<HashSet<ImageInfo>> {
+    private fun getAllImages(): Single<HashSet<ImageInfo>> {
         return Single.create {
             val imagesHashSet = HashSet<ImageInfo>()
             val projection =
@@ -45,7 +59,7 @@ class GalleryRepository @Inject constructor(private val context: Context) {
         }
     }
 
-    fun getAllVideos(): Single<HashSet<VideoInfo>> {
+    private fun getAllVideos(): Single<HashSet<VideoInfo>> {
         return Single.create {
             val videoItemHashSet = HashSet<VideoInfo>()
             val projection =

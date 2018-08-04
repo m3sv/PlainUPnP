@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.m3sv.droidupnp.databinding.MainFragmentBinding
 import com.m3sv.droidupnp.presentation.base.BaseFragment
+import com.m3sv.droidupnp.presentation.main.data.ImageInfo
+import com.m3sv.droidupnp.presentation.settings.SettingsFragment
 
 
 class MainFragment : BaseFragment() {
@@ -16,7 +18,7 @@ class MainFragment : BaseFragment() {
 
     private lateinit var binding: MainFragmentBinding
 
-    private val imagesObserver = Observer<HashSet<GalleryRepository.ImageInfo>> {
+    private val imagesObserver = Observer<HashSet<ImageInfo>> {
         it?.let {
             contentAdapter.setWithDiff(
                 GalleryContentAdapter.DiffCallback(
@@ -32,7 +34,6 @@ class MainFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
-        viewModel.images.observe(imagesObserver)
     }
 
     override fun onCreateView(
@@ -54,12 +55,14 @@ class MainFragment : BaseFragment() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewModel.updateImageList()
+    override fun onStart() {
+        super.onStart()
+        viewModel.getAllImages().observe(imagesObserver)
     }
 
     companion object {
+        val TAG = MainFragment::class.java.simpleName
+
         fun newInstance(): MainFragment = MainFragment().apply {
             arguments = Bundle()
         }

@@ -9,11 +9,12 @@ import com.m3sv.droidupnp.databinding.GalleryContentItemBinding
 import com.m3sv.droidupnp.presentation.base.BaseAdapter
 import com.m3sv.droidupnp.presentation.base.BaseViewHolder
 import com.m3sv.droidupnp.presentation.main.data.ContentType
+import com.m3sv.droidupnp.presentation.main.data.ImageInfo
 import com.m3sv.droidupnp.presentation.main.data.Item
 
 
 class GalleryContentAdapter :
-    BaseAdapter<GalleryRepository.ImageInfo, GalleryContentItemBinding>() {
+    BaseAdapter<ImageInfo, GalleryContentItemBinding>() {
     override fun createViewHolder(
         layoutInflater: LayoutInflater,
         parent: ViewGroup?
@@ -35,10 +36,10 @@ class GalleryContentAdapter :
     }
 
     class DiffCallback(
-        oldItems: List<GalleryRepository.ImageInfo>,
-        newItems: List<GalleryRepository.ImageInfo>
+        oldItems: List<ImageInfo>,
+        newItems: List<ImageInfo>
     ) :
-        ItemsDiffCallback<GalleryRepository.ImageInfo>(oldItems, newItems) {
+        ItemsDiffCallback<ImageInfo>(oldItems, newItems) {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldItems[oldItemPosition].data == newItems[newItemPosition].data
         }

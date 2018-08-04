@@ -17,22 +17,27 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(private val manager: UPnPManager) :
     BaseViewModel() {
 
+    var lastFragmentTag: String? = null
+
     val contentDirectoriesObservable = MutableLiveData<Set<DeviceDisplay>>()
+
     val renderersObservable = MutableLiveData<Set<DeviceDisplay>>()
 
-    private lateinit var discoveryDisposable: CompositeDisposable
+    private val discoveryDisposable: CompositeDisposable = CompositeDisposable()
 
     private val renderers = hashSetOf<DeviceDisplay>()
+
     private val contentDirectories = hashSetOf<DeviceDisplay>()
 
     private val errorHandler: (Throwable) -> Unit =
         { Timber.e("Exception during discovery: ${it.message}") }
 
     fun resumeController() {
-        discoveryDisposable = CompositeDisposable()
         manager.run {
             controller.resume()
-            discoveryDisposable += rendererDiscoveryObservable.subscribeOn(Schedulers.io())
+
+            discoveryDisposable += rendererDiscoveryObservable
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onNext = { renderer ->
@@ -42,7 +47,9 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
                     },
                     onError = errorHandler
                 )
-            discoveryDisposable += contentDirectoryDiscoveryObservable.subscribeOn(Schedulers.io())
+
+            discoveryDisposable += contentDirectoryDiscoveryObservable
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onNext = { contentDirectory ->
@@ -61,7 +68,7 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
     fun pauseController() = manager.controller.run {
         pause()
         serviceListener.serviceConnection.onServiceDisconnected(null)
-        discoveryDisposable.takeUnless { it.isDisposed }?.dispose()
+        discoveryDisposable.clear()
     }
 
     fun refreshServiceListener() = manager.controller.serviceListener?.refresh()

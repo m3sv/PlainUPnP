@@ -11,13 +11,11 @@ import javax.inject.Inject
 
 abstract class BaseFragment : DaggerFragment() {
 
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
-
     protected inline fun <reified T : ViewModel> BaseFragment.getViewModel(): T {
-        return ViewModelProviders.of(this, viewModelFactory).get(T::class.java)
+        return ViewModelProviders.of(requireActivity(), viewModelFactory).get(T::class.java)
     }
 
     protected inline fun <T> LiveData<T>.observe(observer: Observer<T>) {

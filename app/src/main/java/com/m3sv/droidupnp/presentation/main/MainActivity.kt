@@ -56,12 +56,15 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
+        binding.vm = viewModel
+        binding.setLifecycleOwner(this)
 
-        navigateToMain()
+        restoreFragmentState()
         initObservers()
         setupPickers()
         setupBottomNavigation(binding.bottomNav)
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(
@@ -160,18 +163,42 @@ class MainActivity : BaseActivity() {
 //        return super.onOptionsItemSelected(item)
 //    }
 
-    private fun navigateToMain() {
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.container, MainFragment.newInstance())
-            commit()
+
+    private fun restoreFragmentState() {
+        when (viewModel.lastFragmentTag) {
+            MainFragment.TAG -> navigateToMain()
+            SettingsFragment.TAG -> navigateToSettings()
+            else -> navigateToMain()
         }
     }
 
-    private fun navigateToSettings() {
-        supportFragmentManager.beginTransaction().apply {
-            replace(R.id.container, SettingsFragment.newInstance())
-            commit()
+    private fun navigateToMain() {
+        if (supportFragmentManager.findFragmentByTag(MainFragment.TAG) == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.container, MainFragment.newInstance(), MainFragment.TAG)
+                .commit()
         }
+
+        viewModel.lastFragmentTag = MainFragment.TAG
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (supportFragmentManager.backStackEntryCount == 0)
+            binding.bottomNav.selectedItemId = R.id.nav_home
+    }
+
+    private fun navigateToSettings() {
+        if (supportFragmentManager.findFragmentByTag(SettingsFragment.TAG) == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.container, SettingsFragment.newInstance(), SettingsFragment.TAG)
+                .addToBackStack(null)
+                .commit()
+        }
+
+        viewModel.lastFragmentTag = SettingsFragment.TAG
     }
 
     companion object {
