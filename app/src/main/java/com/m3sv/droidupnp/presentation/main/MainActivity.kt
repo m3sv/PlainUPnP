@@ -9,7 +9,9 @@ import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.BottomNavigationView
 import android.support.v4.app.ActivityCompat
+import android.support.v4.app.FragmentManager
 import android.support.v4.content.ContextCompat
+import android.view.View
 import android.widget.ArrayAdapter
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
@@ -18,6 +20,7 @@ import com.m3sv.droidupnp.presentation.base.THEME_KEY
 import com.m3sv.droidupnp.presentation.settings.SettingsFragment
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 
@@ -64,7 +67,6 @@ class MainActivity : BaseActivity() {
         initObservers()
         setupPickers()
         setupBottomNavigation(binding.bottomNav)
-
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(
@@ -139,15 +141,15 @@ class MainActivity : BaseActivity() {
         contentDirectoryAdapter.clear()
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         clearPickers()
         viewModel.resumeController()
     }
 
-    override fun onPause() {
+    override fun onStop() {
         viewModel.pauseController()
-        super.onPause()
+        super.onStop()
     }
 
 //    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -163,7 +165,6 @@ class MainActivity : BaseActivity() {
 //        return super.onOptionsItemSelected(item)
 //    }
 
-
     private fun restoreFragmentState() {
         when (viewModel.lastFragmentTag) {
             MainFragment.TAG -> navigateToMain()
@@ -173,20 +174,20 @@ class MainActivity : BaseActivity() {
     }
 
     private fun navigateToMain() {
-        if (supportFragmentManager.findFragmentByTag(MainFragment.TAG) == null) {
+        val fragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG)
+        if (fragment == null) {
             supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.container, MainFragment.newInstance(), MainFragment.TAG)
                 .commit()
+        } else {
+            supportFragmentManager.popBackStack(
+                null,
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
         }
 
         viewModel.lastFragmentTag = MainFragment.TAG
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        if (supportFragmentManager.backStackEntryCount == 0)
-            binding.bottomNav.selectedItemId = R.id.nav_home
     }
 
     private fun navigateToSettings() {
@@ -199,6 +200,12 @@ class MainActivity : BaseActivity() {
         }
 
         viewModel.lastFragmentTag = SettingsFragment.TAG
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (supportFragmentManager.backStackEntryCount == 0)
+            binding.bottomNav.selectedItemId = R.id.nav_home
     }
 
     companion object {
