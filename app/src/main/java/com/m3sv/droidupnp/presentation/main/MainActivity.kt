@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 
 class MainActivity : BaseActivity() {
-    @Inject
+
     lateinit var viewModel: MainActivityViewModel
 
     private lateinit var binding: MainActivityBinding
@@ -63,7 +63,7 @@ class MainActivity : BaseActivity() {
         binding.vm = viewModel
         binding.setLifecycleOwner(this)
 
-        restoreFragmentState()
+        restoreFragmentState(savedInstanceState)
         initObservers()
         setupPickers()
         setupBottomNavigation(binding.bottomNav)
@@ -165,12 +165,12 @@ class MainActivity : BaseActivity() {
 //        return super.onOptionsItemSelected(item)
 //    }
 
-    private fun restoreFragmentState() {
-        when (viewModel.lastFragmentTag) {
-            MainFragment.TAG -> navigateToMain()
-            SettingsFragment.TAG -> navigateToSettings()
-            else -> navigateToMain()
+    private fun restoreFragmentState(savedInstanceState: Bundle?) {
+        Timber.d("Last fragment tag: ${viewModel.lastFragmentTag}")
+
+        if (savedInstanceState == null) {
         }
+        navigateToMain()
     }
 
     private fun navigateToMain() {
@@ -181,31 +181,40 @@ class MainActivity : BaseActivity() {
                 .replace(R.id.container, MainFragment.newInstance(), MainFragment.TAG)
                 .commit()
         } else {
-            supportFragmentManager.popBackStack(
-                null,
-                FragmentManager.POP_BACK_STACK_INCLUSIVE
-            )
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.container, fragment, MainFragment.TAG)
+                .commit()
         }
-
-        viewModel.lastFragmentTag = MainFragment.TAG
     }
 
     private fun navigateToSettings() {
-        if (supportFragmentManager.findFragmentByTag(SettingsFragment.TAG) == null) {
+        val fragment = supportFragmentManager.findFragmentByTag(SettingsFragment.TAG)
+
+        if (fragment == null) {
             supportFragmentManager
                 .beginTransaction()
                 .replace(R.id.container, SettingsFragment.newInstance(), SettingsFragment.TAG)
                 .addToBackStack(null)
                 .commit()
+        } else {
+            supportFragmentManager
+                .beginTransaction()
+                .replace(R.id.container, fragment, SettingsFragment.TAG)
+                .commit()
         }
+    }
 
-        viewModel.lastFragmentTag = SettingsFragment.TAG
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("LAST_FRAGMENT_TAG", viewModel.lastFragmentTag)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
-        if (supportFragmentManager.backStackEntryCount == 0)
-            binding.bottomNav.selectedItemId = R.id.nav_home
+        if (supportFragmentManager.backStackEntryCount == 0) {
+        }
+        binding.bottomNav.selectedItemId = R.id.nav_home
     }
 
     companion object {

@@ -5,8 +5,8 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import android.provider.MediaStore
 import com.m3sv.droidupnp.di.scope.ApplicationScope
-import com.m3sv.droidupnp.presentation.main.data.ImageInfo
-import com.m3sv.droidupnp.presentation.main.data.VideoInfo
+import com.m3sv.droidupnp.presentation.main.data.ContentType
+import com.m3sv.droidupnp.presentation.main.data.Item
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.subscribeBy
@@ -18,19 +18,27 @@ import javax.inject.Inject
 @ApplicationScope
 class GalleryRepository @Inject constructor(private val context: Context) {
 
-    private val _images: MutableLiveData<HashSet<ImageInfo>> = MutableLiveData()
+    private val _images: MutableLiveData<Set<Item>> = MutableLiveData()
 
-    fun getImages(): LiveData<HashSet<ImageInfo>> {
+    private val _videos: MutableLiveData<Set<Item>> = MutableLiveData()
+
+    fun getImages(): LiveData<Set<Item>> {
         getAllImages()
             .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(onSuccess = _images::postValue, onError = Timber::e)
         return _images
     }
 
-    private fun getAllImages(): Single<HashSet<ImageInfo>> {
+    fun getVideos(): LiveData<Set<Item>> {
+        getAllVideos()
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(onSuccess = _videos::postValue, onError = Timber::e)
+        return _videos
+    }
+
+    private fun getAllImages(): Single<HashSet<Item>> {
         return Single.create {
-            val imagesHashSet = HashSet<ImageInfo>()
+            val imagesHashSet = HashSet<Item>()
             val projection =
                 arrayOf(MediaStore.Images.ImageColumns.DATA, MediaStore.Images.Media.TITLE)
             val cursor = context.contentResolver.query(
@@ -48,20 +56,21 @@ class GalleryRepository @Inject constructor(private val context: Context) {
                             getString(getColumnIndexOrThrow(android.provider.MediaStore.Images.ImageColumns.DATA))
                         val title =
                             getString(getColumnIndexOrThrow(android.provider.MediaStore.Images.Media.TITLE))
-                        imagesHashSet.add(ImageInfo(data, title))
+                        imagesHashSet.add(Item(data, title, ContentType.IMAGE))
                     } while (cursor.moveToNext())
                     close()
                 } catch (e: Exception) {
                     it.onError(e)
                 }
             }
-            it.onSuccess(imagesHashSet)
+            if (!it.isDisposed)
+                it.onSuccess(imagesHashSet)
         }
     }
 
-    private fun getAllVideos(): Single<HashSet<VideoInfo>> {
+    private fun getAllVideos(): Single<HashSet<Item>> {
         return Single.create {
-            val videoItemHashSet = HashSet<VideoInfo>()
+            val videoItemHashSet = HashSet<Item>()
             val projection =
                 arrayOf(MediaStore.Video.VideoColumns.DATA, MediaStore.Video.Media.TITLE)
             val cursor = context.contentResolver.query(
@@ -78,14 +87,15 @@ class GalleryRepository @Inject constructor(private val context: Context) {
                         val data =
                             getString(getColumnIndexOrThrow(MediaStore.Video.VideoColumns.DATA))
                         val title = getString(getColumnIndexOrThrow(MediaStore.Video.Media.TITLE))
-                        videoItemHashSet.add(VideoInfo(data, title))
+                        videoItemHashSet.add(Item(data, title, ContentType.VIDEO))
                     } while (cursor.moveToNext())
                     close()
                 } catch (e: Exception) {
                     it.onError(e)
                 }
             }
-            it.onSuccess(videoItemHashSet)
+            if (!it.isDisposed)
+                it.onSuccess(videoItemHashSet)
         }
     }
 }

@@ -20,7 +20,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-
     <data>
 
         <variable
@@ -43,7 +42,7 @@
             android:id="@+id/controls_sheet"
             layout="@layout/controls_sheet"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottom_nav"

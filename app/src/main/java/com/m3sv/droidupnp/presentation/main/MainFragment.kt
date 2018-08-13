@@ -8,8 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.m3sv.droidupnp.databinding.MainFragmentBinding
 import com.m3sv.droidupnp.presentation.base.BaseFragment
-import com.m3sv.droidupnp.presentation.main.data.ImageInfo
-import com.m3sv.droidupnp.presentation.settings.SettingsFragment
+import com.m3sv.droidupnp.presentation.main.data.Item
 
 
 class MainFragment : BaseFragment() {
@@ -18,8 +17,19 @@ class MainFragment : BaseFragment() {
 
     private lateinit var binding: MainFragmentBinding
 
-    private val imagesObserver = Observer<HashSet<ImageInfo>> {
-        it?.let {
+    private val imagesObserver = Observer<Set<Item>> { images ->
+        images?.let {
+            contentAdapter.setWithDiff(
+                GalleryContentAdapter.DiffCallback(
+                    contentAdapter.items,
+                    it.toList()
+                )
+            )
+        }
+    }
+
+    private val videosObserver = Observer<Set<Item>> { videos ->
+        videos?.let {
             contentAdapter.setWithDiff(
                 GalleryContentAdapter.DiffCallback(
                     contentAdapter.items,
@@ -58,6 +68,7 @@ class MainFragment : BaseFragment() {
     override fun onStart() {
         super.onStart()
         viewModel.getAllImages().observe(imagesObserver)
+        viewModel.getAllVideos().observe(videosObserver)
     }
 
     companion object {

@@ -1,7 +1,10 @@
 package com.m3sv.droidupnp.presentation.main
 
+import android.support.annotation.DrawableRes
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.common.ItemsDiffCallback
@@ -9,12 +12,11 @@ import com.m3sv.droidupnp.databinding.GalleryContentItemBinding
 import com.m3sv.droidupnp.presentation.base.BaseAdapter
 import com.m3sv.droidupnp.presentation.base.BaseViewHolder
 import com.m3sv.droidupnp.presentation.main.data.ContentType
-import com.m3sv.droidupnp.presentation.main.data.ImageInfo
 import com.m3sv.droidupnp.presentation.main.data.Item
 
 
 class GalleryContentAdapter :
-    BaseAdapter<ImageInfo, GalleryContentItemBinding>() {
+    BaseAdapter<Item, GalleryContentItemBinding>() {
     override fun createViewHolder(
         layoutInflater: LayoutInflater,
         parent: ViewGroup?
@@ -30,18 +32,36 @@ class GalleryContentAdapter :
         val item = items[position]
 
         holder.binding.run {
-            Glide.with(holder.itemView.context).load(item.data).into(thumbnail)
-            contentType.setImageResource(R.drawable.ic_image)
+
+            when (item.type) {
+                ContentType.IMAGE -> {
+                    loadData(holder, item.uri, R.drawable.ic_image)
+                }
+                ContentType.VIDEO -> {
+                    loadData(holder, item.uri, R.drawable.ic_video)
+                }
+                ContentType.SOUND -> {
+                    loadData(holder, item.uri, R.drawable.ic_music)
+                }
+            }
         }
     }
 
+    private fun loadData(
+        holder: BaseViewHolder<GalleryContentItemBinding>,
+        data: String, @DrawableRes contentType: Int
+    ) {
+        Glide.with(holder.itemView.context).load(data).into(holder.binding.thumbnail)
+        holder.binding.contentType.setImageResource(contentType)
+    }
+
     class DiffCallback(
-        oldItems: List<ImageInfo>,
-        newItems: List<ImageInfo>
+        oldItems: List<Item>,
+        newItems: List<Item>
     ) :
-        ItemsDiffCallback<ImageInfo>(oldItems, newItems) {
+        ItemsDiffCallback<Item>(oldItems, newItems) {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldItems[oldItemPosition].data == newItems[newItemPosition].data
+            return oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
         }
     }
 }

@@ -1,9 +1,8 @@
 package com.m3sv.droidupnp.presentation.main
 
 import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
-import com.m3sv.droidupnp.presentation.main.data.ImageInfo
+import com.m3sv.droidupnp.presentation.main.data.Item
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -11,8 +10,12 @@ import javax.inject.Inject
 class MainFragmentViewModel @Inject constructor(private val repository: GalleryRepository) :
     BaseViewModel() {
 
-    fun getAllImages(): LiveData<HashSet<ImageInfo>> {
+    fun getAllImages(): LiveData<Set<Item>> {
         return repository.getImages()
+    }
+
+    fun getAllVideos(): LiveData<Set<Item>> {
+        return repository.getVideos()
     }
 
     override fun onCleared() {
