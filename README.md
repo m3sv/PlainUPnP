@@ -16,7 +16,7 @@ It is licensed under the **GPLv3**.
 BUILD
 =====
 
-Application can be build using [gragle](http://www.gradle.org).
+Application can be build using [gradle](http://www.gradle.org).
 
 To generate the apk :
 
@@ -29,8 +29,8 @@ To install on your android device via adb :
 Dependencies
 ============
 
-The main dependence of DroidUPnP is **Cling** which is the an
-upnp stack made in java and with an android support layer.
+The main dependence of DroidUPnP is **Cling** which is the a
+UPnP stack made in Java with Android support layer.
 Cling in licensed under the **LGPLv2**.
 Source code is available at [4thline.org](http://4thline.org/projects/cling/)
 
