@@ -31,7 +31,7 @@ Dependencies
 
 The main dependence of DroidUPnP is **Cling** which is the a
 UPnP stack made in Java with Android support layer.
-Cling in licensed under the **LGPLv2**.
+Cling is licensed under the **LGPLv2**.
 Source code is available at [4thline.org](http://4thline.org/projects/cling/)
 
 Other dependencies are :
