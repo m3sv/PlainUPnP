@@ -10,15 +10,5 @@ import javax.inject.Inject
 class MainFragmentViewModel @Inject constructor(private val repository: GalleryRepository) :
     BaseViewModel() {
 
-    fun getAllImages(): LiveData<Set<Item>> {
-        return repository.getImages()
-    }
-
-    fun getAllVideos(): LiveData<Set<Item>> {
-        return repository.getVideos()
-    }
-
-    override fun onCleared() {
-        Timber.d("onCleared called")
-    }
+    fun getAll(): LiveData<Set<Item>> = repository.getAll()
 }

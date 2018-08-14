@@ -41,7 +41,6 @@
         <include
             android:id="@+id/controls_sheet"
             layout="@layout/controls_sheet"
-            android:visibility="gone"
             tools:visibility="visible" />
 
         <android.support.design.widget.BottomNavigationView

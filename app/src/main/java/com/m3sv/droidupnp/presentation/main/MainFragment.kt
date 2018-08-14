@@ -17,7 +17,9 @@ class MainFragment : BaseFragment() {
 
     private lateinit var binding: MainFragmentBinding
 
-    private val imagesObserver = Observer<Set<Item>> { images ->
+    private lateinit var contentAdapter: GalleryContentAdapter
+
+    private val contentObserver = Observer<Set<Item>> { images ->
         images?.let {
             contentAdapter.setWithDiff(
                 GalleryContentAdapter.DiffCallback(
@@ -27,19 +29,6 @@ class MainFragment : BaseFragment() {
             )
         }
     }
-
-    private val videosObserver = Observer<Set<Item>> { videos ->
-        videos?.let {
-            contentAdapter.setWithDiff(
-                GalleryContentAdapter.DiffCallback(
-                    contentAdapter.items,
-                    it.toList()
-                )
-            )
-        }
-    }
-
-    private val contentAdapter = GalleryContentAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +47,10 @@ class MainFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        contentAdapter = GalleryContentAdapter() {
+
+        }
+
         binding.content.run {
             layoutManager =
                     GridLayoutManager(requireActivity(), 3, GridLayoutManager.VERTICAL, false)
@@ -67,8 +60,7 @@ class MainFragment : BaseFragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.getAllImages().observe(imagesObserver)
-        viewModel.getAllVideos().observe(videosObserver)
+        viewModel.getAll().observe(contentObserver)
     }
 
     companion object {

@@ -9,9 +9,11 @@ import com.m3sv.droidupnp.presentation.main.data.ContentType
 import com.m3sv.droidupnp.presentation.main.data.Item
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 
@@ -21,6 +23,20 @@ class GalleryRepository @Inject constructor(private val context: Context) {
     private val _images: MutableLiveData<Set<Item>> = MutableLiveData()
 
     private val _videos: MutableLiveData<Set<Item>> = MutableLiveData()
+
+    private val _all: MutableLiveData<Set<Item>> = MutableLiveData()
+
+    fun getAll(): LiveData<Set<Item>> {
+        Single.zip(
+            getAllImages(),
+            getAllVideos(),
+            BiFunction<MutableSet<Item>, MutableSet<Item>, Set<Item>> { t1, t2 ->
+                t1.addAll(t2)
+                t1
+            })
+            .subscribeBy(onSuccess = _all::postValue, onError = Timber::e)
+        return _all
+    }
 
     fun getImages(): LiveData<Set<Item>> {
         getAllImages()

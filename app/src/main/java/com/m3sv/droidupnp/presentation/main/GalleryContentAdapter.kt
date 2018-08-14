@@ -1,10 +1,9 @@
 package com.m3sv.droidupnp.presentation.main
 
 import android.support.annotation.DrawableRes
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.common.ItemsDiffCallback
@@ -13,10 +12,12 @@ import com.m3sv.droidupnp.presentation.base.BaseAdapter
 import com.m3sv.droidupnp.presentation.base.BaseViewHolder
 import com.m3sv.droidupnp.presentation.main.data.ContentType
 import com.m3sv.droidupnp.presentation.main.data.Item
+import timber.log.Timber
 
 
-class GalleryContentAdapter :
+class GalleryContentAdapter(private val onClick: (String) -> Unit) :
     BaseAdapter<Item, GalleryContentItemBinding>() {
+
     override fun createViewHolder(
         layoutInflater: LayoutInflater,
         parent: ViewGroup?
@@ -32,7 +33,6 @@ class GalleryContentAdapter :
         val item = items[position]
 
         holder.binding.run {
-
             when (item.type) {
                 ContentType.IMAGE -> {
                     loadData(holder, item.uri, R.drawable.ic_image)
@@ -44,6 +44,13 @@ class GalleryContentAdapter :
                     loadData(holder, item.uri, R.drawable.ic_music)
                 }
             }
+
+            val itemClickListener = View.OnClickListener {
+                Timber.d("On item clicked: uri:${item.uri}, name:${item.name}")
+            }
+
+            thumbnail.setOnClickListener(itemClickListener)
+            contentType.setOnClickListener(itemClickListener)
         }
     }
 
