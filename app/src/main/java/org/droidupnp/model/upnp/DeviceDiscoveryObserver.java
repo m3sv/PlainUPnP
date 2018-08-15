@@ -1,6 +1,6 @@
 package org.droidupnp.model.upnp;
 
-public interface IDeviceDiscoveryObserver {
+public interface DeviceDiscoveryObserver {
 
 	public void addedDevice(IUPnPDevice device);
 

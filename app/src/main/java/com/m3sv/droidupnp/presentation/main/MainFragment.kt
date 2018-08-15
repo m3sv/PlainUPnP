@@ -19,8 +19,8 @@ class MainFragment : BaseFragment() {
 
     private lateinit var contentAdapter: GalleryContentAdapter
 
-    private val contentObserver = Observer<Set<Item>> { images ->
-        images?.let {
+    private val contentObserver = Observer<Set<Item>> { content ->
+        content?.let {
             contentAdapter.setWithDiff(
                 GalleryContentAdapter.DiffCallback(
                     contentAdapter.items,

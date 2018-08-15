@@ -22,6 +22,8 @@ package org.droidupnp.view;
 import android.app.ListFragment;
 import android.widget.ArrayAdapter;
 
+import com.m3sv.droidupnp.upnp.DIDLObjectDisplay;
+
 public class PlaylistFragment extends ListFragment {
 
 	private ArrayAdapter<DIDLObjectDisplay> contentList;

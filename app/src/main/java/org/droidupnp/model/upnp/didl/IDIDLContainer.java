@@ -19,6 +19,8 @@
 
 package org.droidupnp.model.upnp.didl;
 
+import com.m3sv.droidupnp.upnp.IDIDLObject;
+
 public interface IDIDLContainer extends IDIDLObject {
 	public int getChildCount();
 }

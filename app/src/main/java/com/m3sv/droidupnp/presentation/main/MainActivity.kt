@@ -145,9 +145,11 @@ class MainActivity : BaseActivity() {
         super.onStart()
         clearPickers()
         viewModel.resumeController()
+        viewModel.addObservers()
     }
 
     override fun onStop() {
+        viewModel.removeObservers()
         viewModel.pauseController()
         super.onStop()
     }
@@ -169,8 +171,8 @@ class MainActivity : BaseActivity() {
         Timber.d("Last fragment tag: ${viewModel.lastFragmentTag}")
 
         if (savedInstanceState == null) {
+            navigateToMain()
         }
-        navigateToMain()
     }
 
     private fun navigateToMain() {

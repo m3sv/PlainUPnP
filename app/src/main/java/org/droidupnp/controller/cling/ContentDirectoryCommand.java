@@ -21,6 +21,9 @@ package org.droidupnp.controller.cling;
 
 import android.util.Log;
 
+import com.m3sv.droidupnp.upnp.ContentCallback;
+import com.m3sv.droidupnp.upnp.DIDLObjectDisplay;
+
 import org.droidupnp.controller.upnp.IUPnPServiceController;
 import org.droidupnp.model.cling.CDevice;
 import org.droidupnp.model.cling.didl.ClingAudioItem;
@@ -30,8 +33,6 @@ import org.droidupnp.model.cling.didl.ClingDIDLParentContainer;
 import org.droidupnp.model.cling.didl.ClingImageItem;
 import org.droidupnp.model.cling.didl.ClingVideoItem;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;
-import org.droidupnp.view.ContentDirectoryFragment;
-import org.droidupnp.view.DIDLObjectDisplay;
 import org.fourthline.cling.controlpoint.ControlPoint;
 import org.fourthline.cling.model.action.ActionInvocation;
 import org.fourthline.cling.model.message.UpnpResponse;
@@ -115,7 +116,7 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
     }
 
     @Override
-    public void browse(String directoryID, final String parent, final ContentDirectoryFragment.ContentCallback callback) {
+    public void browse(String directoryID, String parent, ContentCallback callback) {
         if (getContentDirectoryService() == null)
             return;
 
@@ -142,7 +143,7 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
                     try {
                         if (didl != null)
                             callback.setContent(buildContentList(parent, didl));
-                        callback.call();
+                        callback.run();
                     } catch (Exception e) {
                         Timber.e(e);
                     }
@@ -151,7 +152,8 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
         });
     }
 
-    public void search(String search, final String parent, final ContentDirectoryFragment.ContentCallback callback) {
+    @Override
+    public void search(String search, String parent, ContentCallback callback) {
         if (getContentDirectoryService() == null)
             return;
 
@@ -161,7 +163,7 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
                 if (callback != null) {
                     try {
                         callback.setContent(buildContentList(parent, didl));
-                        callback.call();
+                        callback.run();
                     } catch (Exception e) {
                         Timber.e(e);
                     }

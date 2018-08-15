@@ -34,12 +34,12 @@ import android.widget.ListView;
 
 import com.m3sv.droidupnp.R;
 
-import org.droidupnp.model.upnp.IDeviceDiscoveryObserver;
+import org.droidupnp.model.upnp.DeviceDiscoveryObserver;
 import org.droidupnp.model.upnp.IUPnPDevice;
 
 import timber.log.Timber;
 
-public abstract class UpnpDeviceListFragment extends ListFragment implements IDeviceDiscoveryObserver {
+public abstract class UpnpDeviceListFragment extends ListFragment implements DeviceDiscoveryObserver {
 
     protected static final String TAG = "UpnpDeviceListFragment";
 

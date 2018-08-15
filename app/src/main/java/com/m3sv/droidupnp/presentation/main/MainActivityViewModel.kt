@@ -32,25 +32,27 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
     private val errorHandler: (Throwable) -> Unit =
         { Timber.e("Exception during discovery: ${it.message}") }
 
+    fun addObservers() = manager.addObservers()
+
+    fun removeObservers() = manager.removeObservers()
+
     fun resumeController() {
         manager.run {
             controller.resume()
 
             discoveryDisposable += rendererDiscoveryObservable
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onNext = { renderer ->
                         Timber.d("Found Renderer: ${renderer.displayString}")
                         renderers += DeviceDisplay(renderer, false, DeviceType.RENDERER)
-                        renderersObservable.value = renderers
+                        renderersObservable.postValue(renderers)
                     },
                     onError = errorHandler
                 )
 
             discoveryDisposable += contentDirectoryDiscoveryObservable
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeBy(
                     onNext = { contentDirectory ->
                         Timber.d("Found Content Directory: ${contentDirectory.displayString}")
@@ -59,7 +61,7 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
                             false,
                             DeviceType.CONTENT_DIRECTORY
                         )
-                        contentDirectoriesObservable.value = contentDirectories
+                        contentDirectoriesObservable.postValue(contentDirectories)
                     }, onError = errorHandler
                 )
         }

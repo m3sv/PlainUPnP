@@ -43,18 +43,19 @@ import android.widget.Toast;
 
 import com.m3sv.common.Utils;
 import com.m3sv.droidupnp.R;
+import com.m3sv.droidupnp.upnp.DIDLObjectDisplay;
+import com.m3sv.droidupnp.upnp.IDIDLObject;
 
 import org.droidupnp.controller.upnp.IUPnPServiceController;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;
-import org.droidupnp.model.upnp.IDeviceDiscoveryObserver;
+import org.droidupnp.model.upnp.DeviceDiscoveryObserver;
 import org.droidupnp.model.upnp.Factory;
 import org.droidupnp.model.upnp.IRendererCommand;
 import org.droidupnp.model.upnp.IUPnPDevice;
 import org.droidupnp.model.upnp.didl.DIDLDevice;
 import org.droidupnp.model.upnp.didl.IDIDLContainer;
 import org.droidupnp.model.upnp.didl.IDIDLItem;
-import org.droidupnp.model.upnp.didl.IDIDLObject;
 import org.droidupnp.model.upnp.didl.IDIDLParentContainer;
 
 import java.util.ArrayList;
@@ -117,7 +118,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
 
     private DeviceObserver deviceObserver;
 
-    public class DeviceObserver implements IDeviceDiscoveryObserver {
+    public class DeviceObserver implements DeviceDiscoveryObserver {
         ContentDirectoryFragment cdf;
 
         public DeviceObserver(ContentDirectoryFragment cdf) {
@@ -440,15 +441,15 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
             tree = new LinkedList<String>();
 
             Log.i(TAG, "Browse root of a new device");
-            contentDirectoryCommand.browse("0", null, new ContentCallback(contentList));
+//            contentDirectoryCommand.browse("0", null, new ContentCallback(contentList));
         } else {
             if (tree != null && tree.size() > 0) {
                 String parentID = (tree.size() > 0) ? tree.getLast() : null;
                 Log.i(TAG, "Browse, currentID : " + currentID + ", parentID : " + parentID);
-                contentDirectoryCommand.browse(currentID, parentID, new ContentCallback(contentList));
+//                contentDirectoryCommand.browse(currentID, parentID, new ContentCallback(contentList));
             } else {
                 Log.i(TAG, "Browse root");
-                contentDirectoryCommand.browse("0", null, new ContentCallback(contentList));
+//                contentDirectoryCommand.browse("0", null, new ContentCallback(contentList));
             }
         }
     }

@@ -17,56 +17,44 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.model.cling.didl;
+package com.m3sv.droidupnp.upnp;
 
-import com.m3sv.droidupnp.upnp.IDIDLObject;
 
-import org.fourthline.cling.support.model.DIDLObject;
+public class DIDLObjectDisplay {
 
-public class ClingDIDLObject implements IDIDLObject {
+    protected static final String TAG = "DIDLContentDisplay";
 
-    protected DIDLObject item;
+    private final IDIDLObject didl;
 
-    ClingDIDLObject(DIDLObject item) {
-        this.item = item;
+    public DIDLObjectDisplay(IDIDLObject didl) {
+        this.didl = didl;
     }
 
-    public DIDLObject getObject() {
-        return item;
+    public IDIDLObject getDIDLObject() {
+        return didl;
     }
 
-    @Override
-    public String getDataType() {
-        return "";
-    }
-
-    @Override
     public String getTitle() {
-        return item.getTitle();
+        return didl.getTitle();
     }
 
-    @Override
     public String getDescription() {
-        return "";
+        return didl.getDescription();
     }
 
-    @Override
     public String getCount() {
-        return "";
+        return didl.getCount();
     }
 
-    @Override
     public int getIcon() {
-        return android.R.color.transparent;
+        return didl.getIcon();
     }
 
     @Override
-    public String getParentID() {
-        return item.getParentID();
-    }
+    public String toString() {
+        if (didl instanceof IDIDLContainer)
+            return didl.getTitle() + " (" + ((IDIDLContainer) didl).getChildCount() + ")";
 
-    @Override
-    public String getId() {
-        return item.getId();
+        return didl.getTitle();
     }
 }

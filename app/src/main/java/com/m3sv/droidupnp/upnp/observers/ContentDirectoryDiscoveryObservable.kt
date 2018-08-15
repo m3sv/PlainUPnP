@@ -4,7 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery
-import org.droidupnp.model.upnp.IDeviceDiscoveryObserver
+import org.droidupnp.model.upnp.DeviceDiscoveryObserver
 import org.droidupnp.model.upnp.IUPnPDevice
 
 
@@ -16,7 +16,7 @@ class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentD
 
     private inner class ContentDeviceObserver(private val contentDirectoryDiscovery: ContentDirectoryDiscovery,
                                               private val observer: Observer<in IUPnPDevice>) :
-            Disposable, IDeviceDiscoveryObserver {
+            Disposable, DeviceDiscoveryObserver {
         init {
             contentDirectoryDiscovery.addObserver(this)
         }

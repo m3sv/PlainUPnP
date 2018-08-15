@@ -36,7 +36,7 @@ public abstract class DeviceDiscovery {
 
     protected boolean extendedInformation;
 
-    private final ArrayList<IDeviceDiscoveryObserver> observerList;
+    private final ArrayList<DeviceDiscoveryObserver> observerList;
 
     protected final IUPnPServiceController controller;
 
@@ -90,11 +90,11 @@ public abstract class DeviceDiscovery {
         }
     }
 
-    public boolean hasObserver(IDeviceDiscoveryObserver o) {
+    public boolean hasObserver(DeviceDiscoveryObserver o) {
         return observerList.contains(o);
     }
 
-    public void addObserver(IDeviceDiscoveryObserver o) {
+    public void addObserver(DeviceDiscoveryObserver o) {
         observerList.add(o);
 
         final Collection<IUPnPDevice> upnpDevices = controller.getServiceListener()
@@ -103,17 +103,17 @@ public abstract class DeviceDiscovery {
             o.addedDevice(d);
     }
 
-    public void removeObserver(IDeviceDiscoveryObserver o) {
+    public void removeObserver(DeviceDiscoveryObserver o) {
         observerList.remove(o);
     }
 
     public void notifyAdded(IUPnPDevice device) {
-        for (IDeviceDiscoveryObserver o : observerList)
+        for (DeviceDiscoveryObserver o : observerList)
             o.addedDevice(device);
     }
 
     public void notifyRemoved(IUPnPDevice device) {
-        for (IDeviceDiscoveryObserver o : observerList)
+        for (DeviceDiscoveryObserver o : observerList)
             o.removedDevice(device);
     }
 
