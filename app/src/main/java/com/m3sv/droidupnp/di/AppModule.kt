@@ -19,5 +19,6 @@ class AppModule {
 
     @Provides
     @ApplicationScope
-    fun provideUPnPManager(controller: IUPnPServiceController, factory: Factory) = UPnPManager(controller, factory)
+    fun provideUPnPManager(context: Context, factory: Factory) =
+        UPnPManager(factory.createUpnpServiceController(context), factory)
 }

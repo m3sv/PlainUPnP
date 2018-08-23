@@ -1,8 +1,10 @@
 package com.m3sv.droidupnp.presentation.main
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
+import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
 import com.m3sv.droidupnp.upnp.UPnPManager
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -22,6 +24,7 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
     val contentDirectoriesObservable = MutableLiveData<Set<DeviceDisplay>>()
 
     val renderersObservable = MutableLiveData<Set<DeviceDisplay>>()
+
 
     private val discoveryDisposable: CompositeDisposable = CompositeDisposable()
 

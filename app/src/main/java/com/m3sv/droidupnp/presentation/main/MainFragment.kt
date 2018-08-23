@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.m3sv.droidupnp.databinding.MainFragmentBinding
 import com.m3sv.droidupnp.presentation.base.BaseFragment
 import com.m3sv.droidupnp.presentation.main.data.Item
+import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
 
 
 class MainFragment : BaseFragment() {
@@ -19,7 +20,18 @@ class MainFragment : BaseFragment() {
 
     private lateinit var contentAdapter: GalleryContentAdapter
 
-    private val contentObserver = Observer<Set<Item>> { content ->
+    private val upnpContentObserver = Observer<List<DIDLObjectDisplay>> { content ->
+        content?.let {
+            contentAdapter.setWithDiff(
+                GalleryContentAdapter.DiffCallback(
+                    contentAdapter.items,
+                    Item.fromDIDLObjectDisplay(content)
+                )
+            )
+        }
+    }
+
+    private val localContentObserver = Observer<Set<Item>> { content ->
         content?.let {
             contentAdapter.setWithDiff(
                 GalleryContentAdapter.DiffCallback(
@@ -56,11 +68,21 @@ class MainFragment : BaseFragment() {
                     GridLayoutManager(requireActivity(), 3, GridLayoutManager.VERTICAL, false)
             adapter = contentAdapter
         }
+
+        viewModel.contentData.observe(upnpContentObserver)
+        viewModel.contentData.value?.let {
+            contentAdapter.setWithDiff(
+                GalleryContentAdapter.DiffCallback(
+                    contentAdapter.items,
+                    Item.fromDIDLObjectDisplay(it)
+                )
+            )
+        }
     }
 
     override fun onStart() {
         super.onStart()
-        viewModel.getAll().observe(contentObserver)
+        viewModel.getAll().observe(localContentObserver)
     }
 
     companion object {

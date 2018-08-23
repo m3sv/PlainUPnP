@@ -12,6 +12,7 @@ import com.m3sv.droidupnp.presentation.base.BaseAdapter
 import com.m3sv.droidupnp.presentation.base.BaseViewHolder
 import com.m3sv.droidupnp.presentation.main.data.ContentType
 import com.m3sv.droidupnp.presentation.main.data.Item
+import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
 import timber.log.Timber
 
 
@@ -35,13 +36,16 @@ class GalleryContentAdapter(private val onClick: (String) -> Unit) :
         holder.binding.run {
             when (item.type) {
                 ContentType.IMAGE -> {
-                    loadData(holder, item.uri, R.drawable.ic_image)
+                    loadData(holder, item.uri, item.name, R.drawable.ic_image)
                 }
                 ContentType.VIDEO -> {
-                    loadData(holder, item.uri, R.drawable.ic_video)
+                    loadData(holder, item.uri, item.name, R.drawable.ic_video)
                 }
                 ContentType.SOUND -> {
-                    loadData(holder, item.uri, R.drawable.ic_music)
+                    loadData(holder, item.uri, item.name, R.drawable.ic_music)
+                }
+                ContentType.DIRECTORY -> {
+                    loadDirectory(holder, item.uri, item.name, item.didlObjectDisplay)
                 }
             }
 
@@ -56,10 +60,24 @@ class GalleryContentAdapter(private val onClick: (String) -> Unit) :
 
     private fun loadData(
         holder: BaseViewHolder<GalleryContentItemBinding>,
-        data: String, @DrawableRes contentType: Int
+        data: String,
+        title: String,
+        @DrawableRes contentType: Int
     ) {
         Glide.with(holder.itemView.context).load(data).into(holder.binding.thumbnail)
+        holder.binding.title.text = title
         holder.binding.contentType.setImageResource(contentType)
+    }
+
+    private fun loadDirectory(
+        holder: BaseViewHolder<GalleryContentItemBinding>,
+        uri: String,
+        title: String,
+        item: List<DIDLObjectDisplay>?
+    ) {
+//        Glide.with(holder.itemView.context).load(R.drawable.ic_folder).into(holder.binding.thumbnail)
+        holder.binding.title.text = title
+        holder.binding.thumbnail.setImageResource(R.drawable.ic_folder)
     }
 
     class DiffCallback(

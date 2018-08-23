@@ -7,11 +7,11 @@ import android.databinding.DataBindingUtil
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
+import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomNavigationView
+import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.FragmentManager
 import android.support.v4.content.ContextCompat
-import android.view.View
 import android.widget.ArrayAdapter
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
@@ -20,8 +20,6 @@ import com.m3sv.droidupnp.presentation.base.THEME_KEY
 import com.m3sv.droidupnp.presentation.settings.SettingsFragment
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
-import java.util.*
-import javax.inject.Inject
 
 
 class MainActivity : BaseActivity() {
@@ -56,12 +54,16 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
         binding.vm = viewModel
         binding.setLifecycleOwner(this)
+
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container)
 
         restoreFragmentState(savedInstanceState)
         initObservers()
@@ -177,6 +179,9 @@ class MainActivity : BaseActivity() {
 
     private fun navigateToMain() {
         val fragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG)
+
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+        bottomSheetBehavior.isHideable = false
         if (fragment == null) {
             supportFragmentManager
                 .beginTransaction()
@@ -192,6 +197,9 @@ class MainActivity : BaseActivity() {
 
     private fun navigateToSettings() {
         val fragment = supportFragmentManager.findFragmentByTag(SettingsFragment.TAG)
+
+        bottomSheetBehavior.isHideable = true
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         if (fragment == null) {
             supportFragmentManager

@@ -1,5 +1,7 @@
 package com.m3sv.droidupnp.upnp
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import org.droidupnp.controller.upnp.IUPnPServiceController
@@ -30,12 +32,16 @@ class UPnPManager constructor(val controller: IUPnPServiceController, val factor
         delSelectedContentDirectoryObserver(this@UPnPManager)
     }
 
-    val contentCallback: ContentCallback =
+    private val _contentData = MutableLiveData<List<DIDLObjectDisplay>>()
+
+    val contentData: LiveData<List<DIDLObjectDisplay>> = _contentData
+
+    private val contentCallback: ContentCallback =
         object : ContentCallback {
             private var content: List<DIDLObjectDisplay>? = null
 
             override fun setContent(content: ArrayList<DIDLObjectDisplay>) {
-                this.content = content
+                _contentData.postValue(content)
             }
 
             override fun run() {
