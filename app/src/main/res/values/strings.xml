@@ -103,5 +103,6 @@
     <string name="active_content_directory_description">Activate a local Content Directory server</string>
 	<string name="content_directory_title">Content Directory</string>
     <string name="switch_theme">Switch theme</string>
+    <string name="filter">Filter…</string>
 
 </resources>

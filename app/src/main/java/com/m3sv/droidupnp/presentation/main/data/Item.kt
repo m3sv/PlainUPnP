@@ -9,8 +9,8 @@ data class Item(
     val didlObjectDisplay: List<DIDLObjectDisplay>? = null
 ) {
     companion object {
-        fun fromDIDLObjectDisplay(objects: List<DIDLObjectDisplay>) =
-            objects.map { Item(it.didlObject.id, it.title, ContentType.DIRECTORY, objects) }
+        fun fromDIDLObjectDisplay(objects: List<DIDLObjectDisplay>?) = objects
+            ?.map { Item(it.didlObject.id, it.title, ContentType.DIRECTORY, objects) } ?: listOf()
     }
 }
 

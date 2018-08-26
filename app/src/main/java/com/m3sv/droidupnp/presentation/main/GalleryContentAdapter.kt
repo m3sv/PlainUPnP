@@ -7,77 +7,108 @@ import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.common.ItemsDiffCallback
+import com.m3sv.droidupnp.databinding.GalleryContentFolderItemBinding
 import com.m3sv.droidupnp.databinding.GalleryContentItemBinding
 import com.m3sv.droidupnp.presentation.base.BaseAdapter
 import com.m3sv.droidupnp.presentation.base.BaseViewHolder
 import com.m3sv.droidupnp.presentation.main.data.ContentType
 import com.m3sv.droidupnp.presentation.main.data.Item
-import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
 import timber.log.Timber
 
 
 class GalleryContentAdapter(private val onClick: (String) -> Unit) :
-    BaseAdapter<Item, GalleryContentItemBinding>() {
+    BaseAdapter<Item>(GalleryContentAdapter.diffCallback) {
 
-    override fun createViewHolder(
-        layoutInflater: LayoutInflater,
-        parent: ViewGroup?
-    ): BaseViewHolder<GalleryContentItemBinding> {
-        val binding = GalleryContentItemBinding.inflate(layoutInflater, parent, false)
-        return BaseViewHolder(binding)
+    override fun getItemViewType(position: Int): Int = items[position].type.ordinal
+
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): BaseViewHolder<*> = when (ContentType.values()[viewType]) {
+        ContentType.DIRECTORY -> BaseViewHolder(
+            GalleryContentFolderItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
+
+        else -> BaseViewHolder(
+            GalleryContentItemBinding.inflate(
+                LayoutInflater.from(parent.context),
+                parent,
+                false
+            )
+        )
     }
 
-    override fun onBindViewHolder(
-        holder: BaseViewHolder<GalleryContentItemBinding>,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
         val item = items[position]
 
-        holder.binding.run {
-            when (item.type) {
-                ContentType.IMAGE -> {
-                    loadData(holder, item.uri, item.name, R.drawable.ic_image)
-                }
-                ContentType.VIDEO -> {
-                    loadData(holder, item.uri, item.name, R.drawable.ic_video)
-                }
-                ContentType.SOUND -> {
-                    loadData(holder, item.uri, item.name, R.drawable.ic_music)
-                }
-                ContentType.DIRECTORY -> {
-                    loadDirectory(holder, item.uri, item.name, item.didlObjectDisplay)
-                }
-            }
+        val itemClickListener = View.OnClickListener {
+            Timber.d("On item clicked: uri:${item.uri}, name:${item.name}")
+        }
 
-            val itemClickListener = View.OnClickListener {
-                Timber.d("On item clicked: uri:${item.uri}, name:${item.name}")
+        when (item.type) {
+            ContentType.IMAGE -> {
+                loadData(holder, item, R.drawable.ic_image, itemClickListener)
             }
-
-            thumbnail.setOnClickListener(itemClickListener)
-            contentType.setOnClickListener(itemClickListener)
+            ContentType.VIDEO -> {
+                loadData(holder, item, R.drawable.ic_video, itemClickListener)
+            }
+            ContentType.SOUND -> {
+                loadData(holder, item, R.drawable.ic_music, itemClickListener)
+            }
+            ContentType.DIRECTORY -> {
+                loadDirectory(holder, item)
+            }
         }
     }
 
     private fun loadData(
-        holder: BaseViewHolder<GalleryContentItemBinding>,
-        data: String,
-        title: String,
-        @DrawableRes contentType: Int
+        holder: BaseViewHolder<*>,
+        item: Item,
+        @DrawableRes contentTypeIcon: Int,
+        onClick: View.OnClickListener
     ) {
-        Glide.with(holder.itemView.context).load(data).into(holder.binding.thumbnail)
-        holder.binding.title.text = title
-        holder.binding.contentType.setImageResource(contentType)
+        with((holder as BaseViewHolder<GalleryContentItemBinding>).binding) {
+            Glide.with(holder.itemView.context).load(item.uri).into(thumbnail)
+            title.text = item.name
+            title.setOnClickListener(onClick)
+            thumbnail.setOnClickListener(onClick)
+
+            contentType.setImageResource(contentTypeIcon)
+            contentType.setOnClickListener(onClick)
+        }
+
     }
 
     private fun loadDirectory(
-        holder: BaseViewHolder<GalleryContentItemBinding>,
-        uri: String,
-        title: String,
-        item: List<DIDLObjectDisplay>?
+        holder: BaseViewHolder<*>,
+        item: Item
     ) {
-//        Glide.with(holder.itemView.context).load(R.drawable.ic_folder).into(holder.binding.thumbnail)
-        holder.binding.title.text = title
-        holder.binding.thumbnail.setImageResource(R.drawable.ic_folder)
+        with((holder as BaseViewHolder<GalleryContentFolderItemBinding>).binding) {
+            val itemClickListener = View.OnClickListener {
+                Timber.d("On item clicked: uri:${item.uri}, name:${item.name}")
+            }
+            title.text = item.name
+            title.setOnClickListener(itemClickListener)
+            thumbnail.setImageResource(R.drawable.ic_folder)
+            thumbnail.setOnClickListener(itemClickListener)
+        }
+    }
+
+    fun filter(text: CharSequence) {
+        if (text.isEmpty()) {
+            resetItems()
+            return
+        }
+
+        filterWithDiff { it.name.toLowerCase().contains(text) }
+    }
+
+    companion object {
+        val diffCallback = DiffCallback(listOf(), listOf())
     }
 
     class DiffCallback(

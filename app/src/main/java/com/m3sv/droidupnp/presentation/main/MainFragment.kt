@@ -6,10 +6,14 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.jakewharton.rxbinding2.widget.RxTextView
 import com.m3sv.droidupnp.databinding.MainFragmentBinding
 import com.m3sv.droidupnp.presentation.base.BaseFragment
 import com.m3sv.droidupnp.presentation.main.data.Item
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
+import timber.log.Timber
 
 
 class MainFragment : BaseFragment() {
@@ -21,25 +25,11 @@ class MainFragment : BaseFragment() {
     private lateinit var contentAdapter: GalleryContentAdapter
 
     private val upnpContentObserver = Observer<List<DIDLObjectDisplay>> { content ->
-        content?.let {
-            contentAdapter.setWithDiff(
-                GalleryContentAdapter.DiffCallback(
-                    contentAdapter.items,
-                    Item.fromDIDLObjectDisplay(content)
-                )
-            )
-        }
+        content?.let { contentAdapter.setWithDiff(Item.fromDIDLObjectDisplay(content)) }
     }
 
     private val localContentObserver = Observer<Set<Item>> { content ->
-        content?.let {
-            contentAdapter.setWithDiff(
-                GalleryContentAdapter.DiffCallback(
-                    contentAdapter.items,
-                    it.toList()
-                )
-            )
-        }
+        content?.let { contentAdapter.setWithDiff(it.toList()) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,20 +53,23 @@ class MainFragment : BaseFragment() {
 
         }
 
+
         binding.content.run {
             layoutManager =
                     GridLayoutManager(requireActivity(), 3, GridLayoutManager.VERTICAL, false)
             adapter = contentAdapter
         }
 
-        viewModel.contentData.observe(upnpContentObserver)
-        viewModel.contentData.value?.let {
-            contentAdapter.setWithDiff(
-                GalleryContentAdapter.DiffCallback(
-                    contentAdapter.items,
-                    Item.fromDIDLObjectDisplay(it)
-                )
-            )
+        disposables += RxTextView.textChanges(binding.filter)
+            .subscribeBy(onNext = {
+                contentAdapter.filter(it)
+            }, onError = Timber::e)
+
+        with(viewModel.contentData) {
+            observe(upnpContentObserver)
+            value?.let {
+                contentAdapter.setWithDiff(Item.fromDIDLObjectDisplay(it))
+            }
         }
     }
 

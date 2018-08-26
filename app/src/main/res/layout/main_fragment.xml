@@ -25,22 +25,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <LinearLayout
+            <EditText
+                android:id="@+id/filter"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <EditText
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:backgroundTint="@color/transparent" />
-
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="sort" />
-            </LinearLayout>
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:backgroundTint="@color/transparent"
+                android:hint="@string/filter" />
         </android.support.v7.widget.Toolbar>
 
         <android.support.v7.widget.RecyclerView
