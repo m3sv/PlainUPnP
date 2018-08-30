@@ -16,7 +16,9 @@ import java.util.*
 
 class UPnPManager constructor(val controller: IUPnPServiceController, val factory: Factory) :
     DeviceDiscoveryObserver, Observer {
+
     val rendererDiscoveryObservable = RendererDiscoveryObservable(controller.rendererDiscovery)
+
     val contentDirectoryDiscoveryObservable =
         ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
 
@@ -49,6 +51,10 @@ class UPnPManager constructor(val controller: IUPnPServiceController, val factor
             }
         }
 
+    fun selectDevice(device: IUPnPDevice?) {
+        controller.selectedContentDirectory = device
+    }
+
     fun launchItem(item: IDIDLItem) {
         val rendererState = factory.createRendererState()
         val rendererCommand = factory.createRendererCommand(rendererState)
@@ -61,7 +67,6 @@ class UPnPManager constructor(val controller: IUPnPServiceController, val factor
     }
 
     override fun addedDevice(device: IUPnPDevice?) {
-        controller.selectedContentDirectory = device
     }
 
     fun browseHome() {

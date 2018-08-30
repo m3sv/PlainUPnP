@@ -72,11 +72,6 @@ class MainFragment : BaseFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.getAll().observe(localContentObserver)
-    }
-
     companion object {
         val TAG = MainFragment::class.java.simpleName
 

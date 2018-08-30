@@ -11,6 +11,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import org.droidupnp.model.upnp.IUPnPDevice
 import org.droidupnp.view.DeviceDisplay
 import org.droidupnp.view.DeviceType
 import timber.log.Timber
@@ -21,7 +22,7 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
 
     var lastFragmentTag: String? = null
 
-    val contentDirectoriesObservable = MutableLiveData<Set<DeviceDisplay>>()
+    val contentDirectoriesObservable = MutableLiveData<List<DeviceDisplay>>()
 
     val renderersObservable = MutableLiveData<Set<DeviceDisplay>>()
 
@@ -64,7 +65,7 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
                             false,
                             DeviceType.CONTENT_DIRECTORY
                         )
-                        contentDirectoriesObservable.postValue(contentDirectories)
+                        contentDirectoriesObservable.postValue(contentDirectories.toList())
                     }, onError = errorHandler
                 )
         }
@@ -79,5 +80,9 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
     fun refreshServiceListener() = manager.controller.serviceListener?.refresh()
     fun navigateHome() {
         manager.browseHome()
+    }
+
+    fun selectDevice(device: IUPnPDevice?) {
+        manager.selectDevice(device)
     }
 }

@@ -45,7 +45,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private val contentDirectoriesObserver = Observer<Set<DeviceDisplay>> {
+    private val contentDirectoriesObserver = Observer<List<DeviceDisplay>> {
         it?.run {
             Timber.d("Received new set of content directories: ${it.size}")
             contentDirectoryAdapter.run {
@@ -137,19 +137,23 @@ class MainActivity : BaseActivity() {
                     ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
                         .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
             mainContentDevicePicker.adapter = contentDirectoryAdapter
-            mainContentDevicePicker.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                }
+            mainContentDevicePicker.onItemSelectedListener =
+                    object : AdapterView.OnItemSelectedListener {
+                        override fun onNothingSelected(parent: AdapterView<*>?) {
+                        }
 
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    viewModel.navigateHome()
-                }
-            }
+                        override fun onItemSelected(
+                            parent: AdapterView<*>?,
+                            view: View?,
+                            position: Int,
+                            id: Long
+                        ) {
+                            with(viewModel) {
+                                selectDevice(contentDirectoriesObservable.value?.get(position)?.device)
+                                navigateHome()
+                            }
+                        }
+                    }
         }
     }
 
