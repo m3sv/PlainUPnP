@@ -62,19 +62,18 @@ class UPnPManager constructor(val controller: IUPnPServiceController, val factor
 
     override fun addedDevice(device: IUPnPDevice?) {
         controller.selectedContentDirectory = device
-        browseHome()
     }
 
-    private fun browseHome() {
+    fun browseHome() {
         browseTo("0")
     }
 
     fun browseTo(id: String, title: String?) {
-        browseTo(id)
+        factory.createContentDirectoryCommand()?.browse(id, null, contentCallback)
     }
 
-    private fun browseTo(id: String) {
-        factory.createContentDirectoryCommand()?.browse(id, null, contentCallback)
+    fun browseTo(id: String) {
+        browseTo(id, null)
     }
 
     override fun removedDevice(device: IUPnPDevice?) {

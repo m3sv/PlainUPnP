@@ -77,4 +77,7 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
     }
 
     fun refreshServiceListener() = manager.controller.serviceListener?.refresh()
+    fun navigateHome() {
+        manager.browseHome()
+    }
 }

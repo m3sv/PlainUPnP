@@ -5,7 +5,6 @@ import com.m3sv.droidupnp.presentation.base.BaseViewModel
 import com.m3sv.droidupnp.presentation.main.data.Item
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
 import com.m3sv.droidupnp.upnp.UPnPManager
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -18,4 +17,8 @@ class MainFragmentViewModel @Inject constructor(
     val contentData: LiveData<List<DIDLObjectDisplay>> = uPnPManager.contentData
 
     fun getAll(): LiveData<Set<Item>> = repository.getAll()
+
+    fun navigateToDirectory(directoryId: String) {
+        uPnPManager.browseTo(directoryId)
+    }
 }

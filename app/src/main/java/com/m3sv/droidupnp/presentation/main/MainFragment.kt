@@ -49,10 +49,9 @@ class MainFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        contentAdapter = GalleryContentAdapter() {
-
+        contentAdapter = GalleryContentAdapter {
+            viewModel.navigateToDirectory(it)
         }
-
 
         binding.content.run {
             layoutManager =

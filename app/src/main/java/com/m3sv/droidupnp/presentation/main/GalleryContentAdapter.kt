@@ -16,7 +16,7 @@ import com.m3sv.droidupnp.presentation.main.data.Item
 import timber.log.Timber
 
 
-class GalleryContentAdapter(private val onClick: (String) -> Unit) :
+class GalleryContentAdapter(private val onDirectoryClick: (String) -> Unit) :
     BaseAdapter<Item>(GalleryContentAdapter.diffCallback) {
 
     override fun getItemViewType(position: Int): Int = items[position].type.ordinal
@@ -56,7 +56,7 @@ class GalleryContentAdapter(private val onClick: (String) -> Unit) :
             ContentType.VIDEO -> {
                 loadData(holder, item, R.drawable.ic_video, itemClickListener)
             }
-            ContentType.SOUND -> {
+            ContentType.AUDIO -> {
                 loadData(holder, item, R.drawable.ic_music, itemClickListener)
             }
             ContentType.DIRECTORY -> {
@@ -92,9 +92,9 @@ class GalleryContentAdapter(private val onClick: (String) -> Unit) :
                 Timber.d("On item clicked: uri:${item.uri}, name:${item.name}")
             }
             title.text = item.name
-            title.setOnClickListener(itemClickListener)
             thumbnail.setImageResource(R.drawable.ic_folder)
-            thumbnail.setOnClickListener(itemClickListener)
+            title.setOnClickListener { onDirectoryClick(item.uri) }
+            thumbnail.setOnClickListener { onDirectoryClick(item.uri) }
         }
     }
 

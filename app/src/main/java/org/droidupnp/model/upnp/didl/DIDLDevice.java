@@ -24,6 +24,7 @@ import com.m3sv.droidupnp.upnp.IDIDLObject;
 
 import org.droidupnp.model.upnp.IUPnPDevice;
 import org.droidupnp.view.DeviceDisplay;
+import org.jetbrains.annotations.Nullable;
 
 public class DIDLDevice implements IDIDLObject {
 

@@ -1,6 +1,11 @@
 package com.m3sv.droidupnp.presentation.main.data
 
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
+import org.droidupnp.model.cling.didl.ClingAudioItem
+import org.droidupnp.model.cling.didl.ClingDIDLContainer
+import org.droidupnp.model.cling.didl.ClingImageItem
+import org.droidupnp.model.cling.didl.ClingVideoItem
+import timber.log.Timber
 
 data class Item(
     val uri: String,
@@ -9,11 +14,46 @@ data class Item(
     val didlObjectDisplay: List<DIDLObjectDisplay>? = null
 ) {
     companion object {
-        fun fromDIDLObjectDisplay(objects: List<DIDLObjectDisplay>?) = objects
-            ?.map { Item(it.didlObject.id, it.title, ContentType.DIRECTORY, objects) } ?: listOf()
+        fun fromDIDLObjectDisplay(objects: List<DIDLObjectDisplay>?) =
+            objects?.map {
+                when (it.didlObject) {
+                    is ClingDIDLContainer -> {
+                        Item(it.didlObject.id, it.title, ContentType.DIRECTORY, objects)
+                    }
+
+                    is ClingImageItem -> {
+                        Item(
+                            (it.didlObject as ClingImageItem).uri,
+                            it.title,
+                            ContentType.IMAGE,
+                            objects
+                        )
+                    }
+
+                    is ClingVideoItem -> {
+                        Item(
+                            (it.didlObject as ClingVideoItem).uri,
+                            it.title,
+                            ContentType.VIDEO,
+                            objects
+                        )
+                    }
+
+                    is ClingAudioItem -> {
+                        Item(
+                            (it.didlObject as ClingAudioItem).uri,
+                            it.title,
+                            ContentType.AUDIO,
+                            objects
+                        )
+                    }
+
+                    else -> throw IllegalStateException("Unknown DIDLObject")
+                }
+            } ?: listOf()
     }
 }
 
 enum class ContentType {
-    IMAGE, SOUND, VIDEO, DIRECTORY
+    IMAGE, AUDIO, VIDEO, DIRECTORY
 }

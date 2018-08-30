@@ -12,6 +12,8 @@ import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.view.View
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
@@ -135,6 +137,19 @@ class MainActivity : BaseActivity() {
                     ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
                         .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
             mainContentDevicePicker.adapter = contentDirectoryAdapter
+            mainContentDevicePicker.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                }
+
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    viewModel.navigateHome()
+                }
+            }
         }
     }
 

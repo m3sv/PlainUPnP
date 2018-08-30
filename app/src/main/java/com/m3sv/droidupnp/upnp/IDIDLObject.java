@@ -19,6 +19,8 @@
 
 package com.m3sv.droidupnp.upnp;
 
+import org.jetbrains.annotations.Nullable;
+
 public interface IDIDLObject {
 
     String getDataType();
