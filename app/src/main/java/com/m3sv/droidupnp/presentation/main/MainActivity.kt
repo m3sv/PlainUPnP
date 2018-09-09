@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.support.constraint.ConstraintLayout
 import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomSheetBehavior
@@ -18,7 +17,6 @@ import android.widget.ArrayAdapter
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
 import com.m3sv.droidupnp.presentation.base.BaseActivity
-import com.m3sv.droidupnp.presentation.base.THEME_KEY
 import com.m3sv.droidupnp.presentation.settings.SettingsFragment
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
@@ -34,6 +32,24 @@ class MainActivity : BaseActivity() {
 
     private lateinit var contentDirectoryAdapter: ArrayAdapter<String>
 
+    private val contentDirectoryClickListener = object : AdapterView.OnItemSelectedListener {
+
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+        }
+
+        override fun onItemSelected(
+            parent: AdapterView<*>?,
+            view: View?,
+            position: Int,
+            id: Long
+        ) {
+            with(viewModel) {
+                selectDevice(contentDirectoriesObservable.value?.toList()?.get(position)?.device)
+                navigateHome()
+            }
+        }
+    }
+
     private val renderersObserver = Observer<Set<DeviceDisplay>> {
         it?.run {
             Timber.d("Received new set of renderers: ${it.size}")
@@ -45,10 +61,10 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private val contentDirectoriesObserver = Observer<List<DeviceDisplay>> {
+    private val contentDirectoriesObserver = Observer<Set<DeviceDisplay>> {
         it?.run {
             Timber.d("Received new set of content directories: ${it.size}")
-            contentDirectoryAdapter.run {
+            with(contentDirectoryAdapter) {
                 clear()
                 addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
                 notifyDataSetChanged()
@@ -62,10 +78,16 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
         binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
-        binding.vm = viewModel
-        binding.setLifecycleOwner(this)
 
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container)
+        with(binding) {
+            vm = viewModel
+            setLifecycleOwner(this@MainActivity)
+        }
+
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container).also {
+            it.isHideable = true
+            it.state = BottomSheetBehavior.STATE_HIDDEN
+        }
 
         restoreFragmentState(savedInstanceState)
         initObservers()
@@ -85,37 +107,25 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        binding.controlsSheet.changeTheme.setOnClickListener {
-            if (isLightTheme) {
-                setTheme(R.style.AppTheme_Dark)
-                PreferenceManager.getDefaultSharedPreferences(this).edit()
-                    .putBoolean(THEME_KEY, false).apply()
-                recreate()
-            } else {
-                setTheme(R.style.AppTheme)
-                PreferenceManager.getDefaultSharedPreferences(this).edit()
-                    .putBoolean(THEME_KEY, true).apply()
-                recreate()
-            }
-        }
     }
 
     private fun setupBottomNavigation(bottomNavigation: BottomNavigationView) {
         bottomNavigation.setOnNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.nav_home -> {
-                    navigateToMain()
-                    true
+            if (it.itemId != binding.bottomNav.selectedItemId)
+                when (it.itemId) {
+                    R.id.nav_home -> {
+                        navigateToMain()
+                        true
+                    }
+
+                    R.id.nav_settings -> {
+                        navigateToSettings()
+                        true
+                    }
+
+                    else -> false
                 }
-
-                R.id.nav_settings -> {
-                    navigateToSettings()
-                    true
-                }
-
-                else -> false
-            }
-
+            else false
         }
     }
 
@@ -137,56 +147,26 @@ class MainActivity : BaseActivity() {
                     ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
                         .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
             mainContentDevicePicker.adapter = contentDirectoryAdapter
-            mainContentDevicePicker.onItemSelectedListener =
-                    object : AdapterView.OnItemSelectedListener {
-                        override fun onNothingSelected(parent: AdapterView<*>?) {
-                        }
-
-                        override fun onItemSelected(
-                            parent: AdapterView<*>?,
-                            view: View?,
-                            position: Int,
-                            id: Long
-                        ) {
-                            with(viewModel) {
-                                selectDevice(contentDirectoriesObservable.value?.get(position)?.device)
-                                navigateHome()
-                            }
-                        }
-                    }
+            mainContentDevicePicker.onItemSelectedListener = contentDirectoryClickListener
         }
-    }
-
-    private fun clearPickers() {
-        rendererAdapter.clear()
-        contentDirectoryAdapter.clear()
     }
 
     override fun onStart() {
         super.onStart()
-        clearPickers()
-        viewModel.resumeController()
-        viewModel.addObservers()
+        with(viewModel) {
+            resetDevices()
+            resumeController()
+            addObservers()
+        }
     }
 
     override fun onStop() {
-        viewModel.removeObservers()
-        viewModel.pauseController()
+        with(viewModel) {
+            removeObservers()
+            pauseController()
+        }
         super.onStop()
     }
-
-//    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-//        when (item?.itemId) {
-//            R.id.menu_refresh -> viewModel.refreshServiceListener()
-//            R.id.menu_settings -> startActivity(
-//                Intent(this, SettingsActivity::class.java).addFlags(
-//                    Intent.FLAG_ACTIVITY_SINGLE_TOP
-//                )
-//            )
-//            else -> super.onOptionsItemSelected(item)
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
 
     private fun restoreFragmentState(savedInstanceState: Bundle?) {
         Timber.d("Last fragment tag: ${viewModel.lastFragmentTag}")
@@ -197,6 +177,8 @@ class MainActivity : BaseActivity() {
     }
 
     private fun navigateToMain() {
+        supportFragmentManager.popBackStackImmediate()
+
         val fragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG)
 
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -240,10 +222,18 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        if (supportFragmentManager.backStackEntryCount == 0) {
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            binding.bottomNav.selectedItemId = R.id.nav_home
+            return
         }
-        binding.bottomNav.selectedItemId = R.id.nav_home
+
+        if (supportFragmentManager.backStackEntryCount == 0)
+            super.onBackPressed()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Timber.d("onDestroy")
     }
 
     companion object {

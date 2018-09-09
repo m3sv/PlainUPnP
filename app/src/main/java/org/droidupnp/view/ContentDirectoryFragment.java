@@ -46,7 +46,7 @@ import com.m3sv.droidupnp.R;
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay;
 import com.m3sv.droidupnp.upnp.IDIDLObject;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver;
@@ -84,7 +84,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
     static final String STATE_TREE = "tree";
     static final String STATE_CURRENT = "current";
 
-    IUPnPServiceController controller;
+    UPnPServiceController controller;
 
     Factory factory;
 

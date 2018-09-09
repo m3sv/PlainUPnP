@@ -21,7 +21,7 @@ package org.droidupnp.controller.cling;
 
 import android.util.Log;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 import org.droidupnp.model.cling.CDevice;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.cling.TrackMetadata;
@@ -67,7 +67,7 @@ public class RendererCommand implements Runnable, IRendererCommand {
     public Thread thread;
     boolean pause = false;
 
-    IUPnPServiceController controller;
+    UPnPServiceController controller;
 
     public RendererCommand(ControlPoint controlPoint, RendererState rendererState) {
         this.rendererState = rendererState;

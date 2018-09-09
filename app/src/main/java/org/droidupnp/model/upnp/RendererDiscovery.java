@@ -19,13 +19,13 @@
 
 package org.droidupnp.model.upnp;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 
 public class RendererDiscovery extends DeviceDiscovery {
 
     protected static final String TAG = "RendererDeviceFragment";
 
-    public RendererDiscovery(IUPnPServiceController controller, IServiceListener serviceListener) {
+    public RendererDiscovery(UPnPServiceController controller, IServiceListener serviceListener) {
         super(controller, serviceListener);
     }
 

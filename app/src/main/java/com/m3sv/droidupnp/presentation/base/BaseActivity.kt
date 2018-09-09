@@ -14,7 +14,8 @@ import javax.inject.Inject
 const val THEME_KEY = "is_light_theme"
 
 abstract class BaseActivity : DaggerAppCompatActivity() {
-    protected var isLightTheme: Boolean = false
+    var isLightTheme: Boolean = false
+        protected set
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory

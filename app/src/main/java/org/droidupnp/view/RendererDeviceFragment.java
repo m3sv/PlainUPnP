@@ -25,7 +25,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 import org.droidupnp.model.upnp.IUPnPDevice;
 
 import java.util.Observable;
@@ -35,7 +35,7 @@ public class RendererDeviceFragment extends UpnpDeviceListFragment implements Ob
 
     protected static final String TAG = "RendererDeviceFragment";
 
-    IUPnPServiceController controller;
+    UPnPServiceController controller;
 
     public RendererDeviceFragment() {
         super();

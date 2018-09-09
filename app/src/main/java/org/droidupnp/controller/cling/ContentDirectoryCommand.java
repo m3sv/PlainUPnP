@@ -24,7 +24,7 @@ import android.util.Log;
 import com.m3sv.droidupnp.upnp.ContentCallback;
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 import org.droidupnp.model.cling.CDevice;
 import org.droidupnp.model.cling.didl.ClingAudioItem;
 import org.droidupnp.model.cling.didl.ClingDIDLContainer;
@@ -59,9 +59,9 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
     private static final String TAG = "ContentDirectoryCommand";
 
     private final ControlPoint controlPoint;
-    private final IUPnPServiceController controller;
+    private final UPnPServiceController controller;
 
-    public ContentDirectoryCommand(ControlPoint controlPoint, IUPnPServiceController controller) {
+    public ContentDirectoryCommand(ControlPoint controlPoint, UPnPServiceController controller) {
         this.controlPoint = controlPoint;
         this.controller = controller;
     }

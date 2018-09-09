@@ -29,7 +29,7 @@ import org.fourthline.cling.model.meta.LocalDevice;
 
 import android.app.Activity;
 
-public interface IUPnPServiceController {
+public interface UPnPServiceController {
     void setSelectedRenderer(IUPnPDevice renderer);
 
     void setSelectedRenderer(IUPnPDevice renderer, boolean force);

@@ -4,17 +4,16 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
-import org.droidupnp.controller.upnp.IUPnPServiceController
+import org.droidupnp.controller.upnp.UPnPServiceController
 import org.droidupnp.model.upnp.Factory
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver
-import org.droidupnp.model.upnp.IContentDirectoryCommand
 import org.droidupnp.model.upnp.IUPnPDevice
 import org.droidupnp.model.upnp.didl.IDIDLItem
 import timber.log.Timber
 import java.util.*
 
 
-class UPnPManager constructor(val controller: IUPnPServiceController, val factory: Factory) :
+class UPnPManager constructor(val controller: UPnPServiceController, val factory: Factory) :
     DeviceDiscoveryObserver, Observer {
 
     val rendererDiscoveryObservable = RendererDiscoveryObservable(controller.rendererDiscovery)
@@ -82,6 +81,7 @@ class UPnPManager constructor(val controller: IUPnPServiceController, val factor
     }
 
     override fun removedDevice(device: IUPnPDevice?) {
+        Timber.d("Removed $device")
     }
 
     override fun update(o: Observable?, arg: Any?) {

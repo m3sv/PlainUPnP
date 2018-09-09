@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 
 import com.m3sv.droidupnp.R;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 import org.droidupnp.model.upnp.CallableRendererFilter;
 import org.droidupnp.model.upnp.IUPnPDevice;
 
@@ -23,7 +23,7 @@ public class RendererDialog extends DialogFragment {
 
     private Callable<Void> callback = null;
 
-    IUPnPServiceController controller;
+    UPnPServiceController controller;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

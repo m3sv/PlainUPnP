@@ -6,7 +6,6 @@ import com.m3sv.droidupnp.di.scope.ApplicationScope
 import com.m3sv.droidupnp.upnp.UPnPManager
 import dagger.Module
 import dagger.Provides
-import org.droidupnp.controller.upnp.IUPnPServiceController
 import org.droidupnp.model.upnp.Factory
 
 

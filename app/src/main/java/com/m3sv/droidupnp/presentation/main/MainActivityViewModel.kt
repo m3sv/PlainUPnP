@@ -1,12 +1,8 @@
 package com.m3sv.droidupnp.presentation.main
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
-import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
 import com.m3sv.droidupnp.upnp.UPnPManager
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -22,10 +18,9 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
 
     var lastFragmentTag: String? = null
 
-    val contentDirectoriesObservable = MutableLiveData<List<DeviceDisplay>>()
+    val contentDirectoriesObservable = MutableLiveData<Set<DeviceDisplay>>()
 
     val renderersObservable = MutableLiveData<Set<DeviceDisplay>>()
-
 
     private val discoveryDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -36,48 +31,55 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
     private val errorHandler: (Throwable) -> Unit =
         { Timber.e("Exception during discovery: ${it.message}") }
 
+    init {
+        discoveryDisposable += manager.rendererDiscoveryObservable
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = { renderer ->
+                    Timber.d("Found Renderer: ${renderer.displayString}")
+                    renderers += DeviceDisplay(renderer, false, DeviceType.RENDERER)
+                    renderersObservable.postValue(renderers)
+                },
+                onError = errorHandler
+            )
+
+        discoveryDisposable += manager.contentDirectoryDiscoveryObservable
+            .subscribeOn(Schedulers.io())
+            .subscribeBy(
+                onNext = { contentDirectory ->
+                    Timber.d("Found Content Directory: ${contentDirectory.displayString}")
+                    contentDirectories += DeviceDisplay(
+                        contentDirectory,
+                        false,
+                        DeviceType.CONTENT_DIRECTORY
+                    )
+                    contentDirectoriesObservable.postValue(contentDirectories)
+                }, onError = errorHandler
+            )
+    }
+
+    fun resetDevices() {
+        renderers.clear()
+        contentDirectories.clear()
+    }
+
     fun addObservers() = manager.addObservers()
 
     fun removeObservers() = manager.removeObservers()
 
     fun resumeController() {
-        manager.run {
-            controller.resume()
+        manager.controller.resume()
+    }
 
-            discoveryDisposable += rendererDiscoveryObservable
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                    onNext = { renderer ->
-                        Timber.d("Found Renderer: ${renderer.displayString}")
-                        renderers += DeviceDisplay(renderer, false, DeviceType.RENDERER)
-                        renderersObservable.postValue(renderers)
-                    },
-                    onError = errorHandler
-                )
-
-            discoveryDisposable += contentDirectoryDiscoveryObservable
-                .subscribeOn(Schedulers.io())
-                .subscribeBy(
-                    onNext = { contentDirectory ->
-                        Timber.d("Found Content Directory: ${contentDirectory.displayString}")
-                        contentDirectories += DeviceDisplay(
-                            contentDirectory,
-                            false,
-                            DeviceType.CONTENT_DIRECTORY
-                        )
-                        contentDirectoriesObservable.postValue(contentDirectories.toList())
-                    }, onError = errorHandler
-                )
+    fun pauseController() {
+        with(manager.controller) {
+            pause()
+            serviceListener.serviceConnection.onServiceDisconnected(null)
         }
     }
 
-    fun pauseController() = manager.controller.run {
-        pause()
-        serviceListener.serviceConnection.onServiceDisconnected(null)
-        discoveryDisposable.clear()
-    }
-
     fun refreshServiceListener() = manager.controller.serviceListener?.refresh()
+
     fun navigateHome() {
         manager.browseHome()
     }

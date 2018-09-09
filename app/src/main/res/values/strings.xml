@@ -97,12 +97,12 @@
 	<string name="about_license" translatable="false">GPLv3</string>
 	<string name="link_license" translatable="false">http://www.gnu.org/licenses/gpl-3.0.html</string>
 	<string name="licenses_other">Library licenses</string>
-	<string name="about_licenses_other"></string>
 	<string name="source">Source Code</string>
 	<string name="source_url" translatable="false">http://github.com/trishika/droidupnp</string>
     <string name="active_content_directory_description">Activate a local Content Directory server</string>
 	<string name="content_directory_title">Content Directory</string>
     <string name="switch_theme">Switch theme</string>
     <string name="filter">Filter…</string>
+    <string name="empty_content" translatable="false">-</string>
 
 </resources>

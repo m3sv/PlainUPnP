@@ -21,7 +21,7 @@ package org.droidupnp.model.upnp;
 
 import android.util.Log;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -38,16 +38,16 @@ public abstract class DeviceDiscovery {
 
     private final ArrayList<DeviceDiscoveryObserver> observerList;
 
-    protected final IUPnPServiceController controller;
+    protected final UPnPServiceController controller;
 
-    public DeviceDiscovery(IUPnPServiceController controller, IServiceListener serviceListener, boolean extendedInformation) {
+    public DeviceDiscovery(UPnPServiceController controller, IServiceListener serviceListener, boolean extendedInformation) {
         this.controller = controller;
         browsingRegistryListener = new BrowsingRegistryListener();
         this.extendedInformation = extendedInformation;
         observerList = new ArrayList<>();
     }
 
-    public DeviceDiscovery(IUPnPServiceController controller, IServiceListener serviceListener) {
+    public DeviceDiscovery(UPnPServiceController controller, IServiceListener serviceListener) {
         this(controller, serviceListener, false);
     }
 
@@ -56,7 +56,8 @@ public abstract class DeviceDiscovery {
     }
 
     public void pause(IServiceListener serviceListener) {
-        serviceListener.removeListener(browsingRegistryListener);
+//        serviceListener.removeListener(browsingRegistryListener);
+        serviceListener.clearListener();
     }
 
     public class BrowsingRegistryListener implements IRegistryListener {

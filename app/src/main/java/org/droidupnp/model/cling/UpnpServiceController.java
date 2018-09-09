@@ -19,10 +19,9 @@
 
 package org.droidupnp.model.cling;
 
-import android.app.Activity;
 import android.util.Log;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 import org.droidupnp.model.CObservable;
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery;
 import org.droidupnp.model.upnp.IUPnPDevice;
@@ -30,7 +29,7 @@ import org.droidupnp.model.upnp.RendererDiscovery;
 
 import java.util.Observer;
 
-public abstract class UpnpServiceController implements IUPnPServiceController {
+public abstract class UpnpServiceController implements UPnPServiceController {
 
     private static final String TAG = "UpnpServiceController";
 

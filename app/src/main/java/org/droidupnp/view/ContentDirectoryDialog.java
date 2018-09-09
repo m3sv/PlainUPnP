@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 
 import com.m3sv.droidupnp.R;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
 import org.droidupnp.model.upnp.IUPnPDevice;
 
@@ -22,7 +22,7 @@ import timber.log.Timber;
 public class ContentDirectoryDialog extends DialogFragment {
 
     private Callable<Void> callback = null;
-    IUPnPServiceController controller;
+    UPnPServiceController controller;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {

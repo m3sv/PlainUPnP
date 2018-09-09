@@ -19,13 +19,13 @@
 
 package org.droidupnp.model.upnp;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 
 public class ContentDirectoryDiscovery extends DeviceDiscovery {
 
     protected static final String TAG = "ContentDirectoryDeviceFragment";
 
-    public ContentDirectoryDiscovery(IUPnPServiceController controller, IServiceListener serviceListener) {
+    public ContentDirectoryDiscovery(UPnPServiceController controller, IServiceListener serviceListener) {
         super(controller, serviceListener);
     }
 

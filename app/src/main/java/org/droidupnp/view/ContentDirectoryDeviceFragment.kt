@@ -3,14 +3,14 @@ package org.droidupnp.view
 import android.os.Bundle
 import android.view.View
 import android.widget.ListView
-import org.droidupnp.controller.upnp.IUPnPServiceController
+import org.droidupnp.controller.upnp.UPnPServiceController
 import org.droidupnp.model.upnp.IUPnPDevice
 import java.util.*
 
 
 class ContentDirectoryDeviceFragment : UpnpDeviceListFragment(), Observer {
 
-    lateinit var controller: IUPnPServiceController
+    lateinit var controller: UPnPServiceController
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)

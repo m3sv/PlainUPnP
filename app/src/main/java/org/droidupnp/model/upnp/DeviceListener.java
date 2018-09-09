@@ -1,7 +1,7 @@
 package org.droidupnp.model.upnp;
 
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 
 public class DeviceListener {
 
@@ -9,7 +9,7 @@ public class DeviceListener {
     private RendererDiscovery rendererDiscovery = null;
     private ContentDirectoryDiscovery contentDirectoryDiscovery = null;
 
-    public DeviceListener(IUPnPServiceController controller, IServiceListener serviceListener) {
+    public DeviceListener(UPnPServiceController controller, IServiceListener serviceListener) {
         rendererDiscovery = new RendererDiscovery(controller, serviceListener);
         contentDirectoryDiscovery = new ContentDirectoryDiscovery(controller, serviceListener);
     }

@@ -36,7 +36,7 @@ import android.widget.Toast;
 
 import com.m3sv.droidupnp.R;
 
-import org.droidupnp.controller.upnp.IUPnPServiceController;
+import org.droidupnp.controller.upnp.UPnPServiceController;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.upnp.ARendererState;
 import org.droidupnp.model.upnp.Factory;
@@ -68,7 +68,7 @@ public class RendererFragment extends Fragment implements Observer {
     TextView duration;
     boolean durationRemaining;
 
-    IUPnPServiceController controller;
+    UPnPServiceController controller;
     Factory factory;
 
     public RendererFragment() {
