@@ -6,23 +6,22 @@ import com.hub.common.Toaster
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
 import com.m3sv.droidupnp.presentation.main.data.Item
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
-import com.m3sv.droidupnp.upnp.UPnPManager
+import com.m3sv.droidupnp.upnp.UpnpManager
 import javax.inject.Inject
 
 
 class MainFragmentViewModel @Inject constructor(
-    private val uPnPManager: UPnPManager,
+    private val upnpManager: UpnpManager,
     private val repository: GalleryRepository,
     toaster: Toaster
 ) :
     BaseViewModel(), Toastable by toaster {
 
-    val contentData: LiveData<List<DIDLObjectDisplay>> = uPnPManager.contentData
+    val contentData: LiveData<List<DIDLObjectDisplay>> = upnpManager.contentData
 
     fun getAll(): LiveData<Set<Item>> = repository.getAll()
 
-    fun navigateToDirectory(directoryId: String) {
-        toast("Navigating to: $directoryId")
-        uPnPManager.browseTo(directoryId)
+    fun navigateToDirectory(directoryId: String, parentId: String?) {
+        upnpManager.browseTo(directoryId, parentId)
     }
 }

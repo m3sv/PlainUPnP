@@ -25,6 +25,7 @@ import org.droidupnp.controller.upnp.UPnPServiceController;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import timber.log.Timber;
 
@@ -36,7 +37,7 @@ public abstract class DeviceDiscovery {
 
     protected boolean extendedInformation;
 
-    private final ArrayList<DeviceDiscoveryObserver> observerList;
+    private final CopyOnWriteArrayList<DeviceDiscoveryObserver> observerList;
 
     protected final UPnPServiceController controller;
 
@@ -44,7 +45,7 @@ public abstract class DeviceDiscovery {
         this.controller = controller;
         browsingRegistryListener = new BrowsingRegistryListener();
         this.extendedInformation = extendedInformation;
-        observerList = new ArrayList<>();
+        observerList = new CopyOnWriteArrayList<>();
     }
 
     public DeviceDiscovery(UPnPServiceController controller, IServiceListener serviceListener) {

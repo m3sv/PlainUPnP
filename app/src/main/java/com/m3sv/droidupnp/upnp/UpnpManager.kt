@@ -4,6 +4,8 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
+import io.reactivex.BackpressureStrategy
+import io.reactivex.subjects.PublishSubject
 import org.droidupnp.controller.upnp.UPnPServiceController
 import org.droidupnp.model.upnp.Factory
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver
@@ -13,7 +15,12 @@ import timber.log.Timber
 import java.util.*
 
 
-class UPnPManager constructor(val controller: UPnPServiceController, val factory: Factory) :
+sealed class Directory {
+    object Home : Directory()
+    data class SubDirectory(val id: String, val parentId: String?) : Directory()
+}
+
+class UpnpManager constructor(val controller: UPnPServiceController, val factory: Factory) :
     DeviceDiscoveryObserver, Observer {
 
     val rendererDiscoveryObservable = RendererDiscoveryObservable(controller.rendererDiscovery)
@@ -21,16 +28,21 @@ class UPnPManager constructor(val controller: UPnPServiceController, val factory
     val contentDirectoryDiscoveryObservable =
         ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
 
+    private val selectedDirectory = PublishSubject.create<Directory>()
+
+    val selectedDirectoryObservable
+        get() = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
+
     fun addObservers() = controller.run {
-        rendererDiscovery.addObserver(this@UPnPManager)
-        contentDirectoryDiscovery.addObserver(this@UPnPManager)
-        addSelectedContentDirectoryObserver(this@UPnPManager)
+        rendererDiscovery.addObserver(this@UpnpManager)
+        contentDirectoryDiscovery.addObserver(this@UpnpManager)
+        addSelectedContentDirectoryObserver(this@UpnpManager)
     }
 
     fun removeObservers() = controller.run {
-        rendererDiscovery.removeObserver(this@UPnPManager)
-        contentDirectoryDiscovery.removeObserver(this@UPnPManager)
-        delSelectedContentDirectoryObserver(this@UPnPManager)
+        rendererDiscovery.removeObserver(this@UpnpManager)
+        contentDirectoryDiscovery.removeObserver(this@UpnpManager)
+        delSelectedContentDirectoryObserver(this@UpnpManager)
     }
 
     private val _contentData = MutableLiveData<List<DIDLObjectDisplay>>()
@@ -54,6 +66,8 @@ class UPnPManager constructor(val controller: UPnPServiceController, val factory
         controller.selectedContentDirectory = device
     }
 
+    private var directoriesStructure = LinkedList<Directory>()
+
     fun launchItem(item: IDIDLItem) {
         val rendererState = factory.createRendererState()
         val rendererCommand = factory.createRendererCommand(rendererState)
@@ -69,15 +83,38 @@ class UPnPManager constructor(val controller: UPnPServiceController, val factory
     }
 
     fun browseHome() {
-        browseTo("0")
+        browseTo("0", null)
     }
 
-    fun browseTo(id: String, title: String?) {
+    fun browseTo(id: String, parentId: String?, addToStructure: Boolean = true) {
+        Timber.d("Browse: $id")
         factory.createContentDirectoryCommand()?.browse(id, null, contentCallback)
+        when (id) {
+            "0" -> {
+                selectedDirectory.onNext(Directory.Home)
+                directoriesStructure = LinkedList<Directory>().also { it.add(Directory.Home) }
+            }
+            else -> {
+                val subDirectory = Directory.SubDirectory(id, parentId)
+                selectedDirectory.onNext(subDirectory)
+                if (addToStructure)
+                    directoriesStructure.addFirst(subDirectory)
+                Timber.d("Adding subdirectory: $subDirectory")
+            }
+        }
     }
 
-    fun browseTo(id: String) {
-        browseTo(id, null)
+    fun browsePrevious() {
+        val element = directoriesStructure.pop()
+        when (element) {
+            is Directory.Home -> {
+                browseTo("0", null)
+            }
+            is Directory.SubDirectory -> {
+                browseTo(element.parentId!!, element.parentId, false)
+            }
+        }
+        Timber.d(element.toString())
     }
 
     override fun removedDevice(device: IUPnPDevice?) {

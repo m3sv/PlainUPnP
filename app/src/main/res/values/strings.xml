@@ -104,5 +104,6 @@
     <string name="switch_theme">Switch theme</string>
     <string name="filter">Filter…</string>
     <string name="empty_content" translatable="false">-</string>
+	<string name="to_exit">Double tap back button to exit</string>
 
 </resources>

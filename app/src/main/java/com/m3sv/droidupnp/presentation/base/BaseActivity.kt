@@ -8,12 +8,15 @@ import android.support.v7.widget.Toolbar
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.di.ViewModelFactory
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 
 const val THEME_KEY = "is_light_theme"
 
 abstract class BaseActivity : DaggerAppCompatActivity() {
+    protected val disposables = CompositeDisposable()
+
     var isLightTheme: Boolean = false
         protected set
 
@@ -30,6 +33,11 @@ abstract class BaseActivity : DaggerAppCompatActivity() {
             setTheme(R.style.AppTheme_Dark)
         }
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.clear()
     }
 
     protected fun setAsHomeUp(toolbar: Toolbar) {

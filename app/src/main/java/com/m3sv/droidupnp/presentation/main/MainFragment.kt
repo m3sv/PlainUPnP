@@ -1,6 +1,7 @@
 package com.m3sv.droidupnp.presentation.main
 
 import android.arch.lifecycle.Observer
+import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
@@ -49,13 +50,17 @@ class MainFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        contentAdapter = GalleryContentAdapter {
-            viewModel.navigateToDirectory(it)
+
+        contentAdapter = GalleryContentAdapter { id, parentId ->
+            viewModel.navigateToDirectory(id, parentId)
         }
 
         binding.content.run {
+            val spanCount =
+                if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 3
+                else 5
             layoutManager =
-                    GridLayoutManager(requireActivity(), 3, GridLayoutManager.VERTICAL, false)
+                    GridLayoutManager(requireActivity(), spanCount, GridLayoutManager.VERTICAL, false)
             adapter = contentAdapter
         }
 

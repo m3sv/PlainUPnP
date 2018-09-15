@@ -14,10 +14,14 @@ import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
 import com.m3sv.droidupnp.presentation.base.BaseActivity
 import com.m3sv.droidupnp.presentation.settings.SettingsFragment
+import com.m3sv.droidupnp.upnp.Directory
+import io.reactivex.rxkotlin.plusAssign
+import io.reactivex.rxkotlin.subscribeBy
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
 
@@ -44,6 +48,7 @@ class MainActivity : BaseActivity() {
             id: Long
         ) {
             with(viewModel) {
+                Timber.d("Selected item: $position")
                 selectDevice(contentDirectoriesObservable.value?.toList()?.get(position)?.device)
                 navigateHome()
             }
@@ -56,7 +61,6 @@ class MainActivity : BaseActivity() {
             rendererAdapter.run {
                 clear()
                 addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-                notifyDataSetChanged()
             }
         }
     }
@@ -67,12 +71,13 @@ class MainActivity : BaseActivity() {
             with(contentDirectoryAdapter) {
                 clear()
                 addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-                notifyDataSetChanged()
             }
         }
     }
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+
+    private var currentDirectory: Directory? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,10 +89,7 @@ class MainActivity : BaseActivity() {
             setLifecycleOwner(this@MainActivity)
         }
 
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container).also {
-            it.isHideable = true
-            it.state = BottomSheetBehavior.STATE_HIDDEN
-        }
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container)
 
         restoreFragmentState(savedInstanceState)
         initObservers()
@@ -107,6 +109,14 @@ class MainActivity : BaseActivity() {
             }
         }
 
+        disposables += viewModel
+            .selectedDirectoryObservable
+            .subscribeBy(
+                onNext = {
+                    currentDirectory = it
+                },
+                onError = Timber::e
+            )
     }
 
     private fun setupBottomNavigation(bottomNavigation: BottomNavigationView) {
@@ -154,9 +164,9 @@ class MainActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
         with(viewModel) {
-            resetDevices()
-            resumeController()
             addObservers()
+            resumeController()
+
         }
     }
 
@@ -181,8 +191,6 @@ class MainActivity : BaseActivity() {
 
         val fragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG)
 
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-        bottomSheetBehavior.isHideable = false
         if (fragment == null) {
             supportFragmentManager
                 .beginTransaction()
@@ -198,9 +206,6 @@ class MainActivity : BaseActivity() {
 
     private fun navigateToSettings() {
         val fragment = supportFragmentManager.findFragmentByTag(SettingsFragment.TAG)
-
-        bottomSheetBehavior.isHideable = true
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         if (fragment == null) {
             supportFragmentManager
@@ -221,19 +226,25 @@ class MainActivity : BaseActivity() {
         super.onSaveInstanceState(outState)
     }
 
+    private var lastBackClick = System.currentTimeMillis()
+
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount == 1) {
             binding.bottomNav.selectedItemId = R.id.nav_home
             return
         }
 
-        if (supportFragmentManager.backStackEntryCount == 0)
-            super.onBackPressed()
-    }
+        if (supportFragmentManager.backStackEntryCount == 0 && currentDirectory is Directory.Home) {
+            val currentTime = System.currentTimeMillis()
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Timber.d("onDestroy")
+            if (currentTime - lastBackClick < 500)
+                finish()
+
+            lastBackClick = currentTime
+            Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
+        } else {
+            viewModel.pop()
+        }
     }
 
     companion object {

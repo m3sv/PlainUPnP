@@ -2,7 +2,7 @@ package com.m3sv.droidupnp.presentation.main
 
 import android.arch.lifecycle.MutableLiveData
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
-import com.m3sv.droidupnp.upnp.UPnPManager
+import com.m3sv.droidupnp.upnp.UpnpManager
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -13,7 +13,7 @@ import org.droidupnp.view.DeviceType
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivityViewModel @Inject constructor(private val manager: UPnPManager) :
+class MainActivityViewModel @Inject constructor(private val manager: UpnpManager) :
     BaseViewModel() {
 
     var lastFragmentTag: String? = null
@@ -22,11 +22,13 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
 
     val renderersObservable = MutableLiveData<Set<DeviceDisplay>>()
 
+    val selectedDirectoryObservable = manager.selectedDirectoryObservable
+
     private val discoveryDisposable: CompositeDisposable = CompositeDisposable()
 
-    private val renderers = hashSetOf<DeviceDisplay>()
+    private val renderers = LinkedHashSet<DeviceDisplay>()
 
-    private val contentDirectories = hashSetOf<DeviceDisplay>()
+    private val contentDirectories = LinkedHashSet<DeviceDisplay>()
 
     private val errorHandler: (Throwable) -> Unit =
         { Timber.e("Exception during discovery: ${it.message}") }
@@ -53,12 +55,14 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
                         false,
                         DeviceType.CONTENT_DIRECTORY
                     )
+
                     contentDirectoriesObservable.postValue(contentDirectories)
                 }, onError = errorHandler
             )
     }
 
     fun resetDevices() {
+        Timber.d("Resetting devices")
         renderers.clear()
         contentDirectories.clear()
     }
@@ -68,10 +72,13 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
     fun removeObservers() = manager.removeObservers()
 
     fun resumeController() {
+        Timber.d("Resuming UPnP controller")
         manager.controller.resume()
     }
 
     fun pauseController() {
+        Timber.d("Pausing UPnP controller")
+
         with(manager.controller) {
             pause()
             serviceListener.serviceConnection.onServiceDisconnected(null)
@@ -81,10 +88,18 @@ class MainActivityViewModel @Inject constructor(private val manager: UPnPManager
     fun refreshServiceListener() = manager.controller.serviceListener?.refresh()
 
     fun navigateHome() {
+        Timber.d("Navigating home")
         manager.browseHome()
     }
 
     fun selectDevice(device: IUPnPDevice?) {
+        Timber.d("Selected device: ${device?.displayString}")
         manager.selectDevice(device)
     }
+
+    fun pop() {
+        manager.browsePrevious()
+    }
+
+
 }

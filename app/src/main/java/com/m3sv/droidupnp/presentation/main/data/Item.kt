@@ -11,14 +11,20 @@ data class Item(
     val uri: String,
     val name: String,
     val type: ContentType,
-    val didlObjectDisplay: List<DIDLObjectDisplay>? = null
+    val didlObjectDisplay: List<DIDLObjectDisplay>? = null,
+    val parentId: String? = null
 ) {
     companion object {
         fun fromDIDLObjectDisplay(objects: List<DIDLObjectDisplay>?) =
             objects?.map {
                 when (it.didlObject) {
                     is ClingDIDLContainer -> {
-                        Item(it.didlObject.id, it.title, ContentType.DIRECTORY, objects)
+                        Item(
+                            it.didlObject.id,
+                            it.title,
+                            ContentType.DIRECTORY,
+                            objects,
+                            it.didlObject.parentID)
                     }
 
                     is ClingImageItem -> {

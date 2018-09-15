@@ -29,9 +29,10 @@
                 android:id="@+id/filter"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
                 android:backgroundTint="@color/transparent"
-                android:hint="@string/filter" />
+                android:hint="@string/filter"
+                android:inputType="text"
+                android:singleLine="true" />
         </android.support.v7.widget.Toolbar>
 
         <android.support.v7.widget.RecyclerView

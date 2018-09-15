@@ -2,7 +2,7 @@
 
 import android.arch.lifecycle.Observer
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
-import com.m3sv.droidupnp.upnp.UPnPManager
+import com.m3sv.droidupnp.upnp.UpnpManager
 import org.droidupnp.view.DeviceDisplay
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -17,13 +17,13 @@ import org.mockito.Mockito.verifyNoMoreInteractions
  */
 class ExampleUnitTest {
 
-    lateinit var manager: UPnPManager
+    lateinit var manager: UpnpManager
 
     lateinit var mainActivityViewModel: MainActivityViewModel
 
     @Before
     fun setup() {
-        manager = mock(UPnPManager::class.java)
+        manager = mock(UpnpManager::class.java)
         mainActivityViewModel = MainActivityViewModel(manager)
     }
 
