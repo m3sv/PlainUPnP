@@ -15,35 +15,6 @@ It also allows you to use your android device as an UPnP content provider.
 
 It is licensed under the **GPLv3**.
 
-BUILD
-=====
-
-Application can be build using [gradle](http://www.gradle.org).
-
-To generate the apk :
-
-	gradle build
-
-To install on your android device via adb :
-
-	gradle installDebug
-
-Dependencies
-============
-
-The main dependence of DroidUPnP is **Cling** which is the a
-UPnP stack made in Java with Android support layer.
-Cling is licensed under the **LGPLv2**.
-Source code is available at [4thline.org](http://4thline.org/projects/cling/)
-
-Other dependencies are :
-
- * **NanoHttpd**, under a modify **BSD license**.
-   Source code is available on [GitHub](https://github.com/NanoHttpd/nanohttpd).
-
- * **Licensesdialog**, under the **Apache license, Version 2.0**.
-   Source code is available on [GitHub](https://github.com/PSDev/LicensesDialog).
-
 Copying
 =======
 
