@@ -6,10 +6,10 @@ import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.PublishSubject
-import org.droidupnp.controller.upnp.UPnPServiceController
+import org.droidupnp.controller.upnp.UpnpServiceController
 import org.droidupnp.model.upnp.Factory
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver
-import org.droidupnp.model.upnp.IUPnPDevice
+import org.droidupnp.model.upnp.IUpnpDevice
 import org.droidupnp.model.upnp.didl.IDIDLItem
 import timber.log.Timber
 import java.util.*
@@ -20,7 +20,7 @@ sealed class Directory {
     data class SubDirectory(val id: String, val parentId: String?) : Directory()
 }
 
-class UpnpManager constructor(val controller: UPnPServiceController, val factory: Factory) :
+class UpnpManager constructor(val controller: UpnpServiceController, val factory: Factory) :
     DeviceDiscoveryObserver, Observer {
 
     val rendererDiscoveryObservable = RendererDiscoveryObservable(controller.rendererDiscovery)
@@ -62,8 +62,14 @@ class UpnpManager constructor(val controller: UPnPServiceController, val factory
             }
         }
 
-    fun selectDevice(device: IUPnPDevice?) {
-        controller.selectedContentDirectory = device
+    fun selectContentDirectory(contentDirectory: IUpnpDevice?) {
+        Timber.d("Selected contentDirectory: ${contentDirectory?.displayString}")
+        controller.selectedContentDirectory = contentDirectory
+    }
+
+    fun selectRenderer(renderer: IUpnpDevice?) {
+        Timber.d("Selected renderer: ${renderer?.displayString}")
+        controller.selectedRenderer = renderer
     }
 
     private var directoriesStructure = LinkedList<Directory>()
@@ -79,7 +85,7 @@ class UpnpManager constructor(val controller: UPnPServiceController, val factory
         }
     }
 
-    override fun addedDevice(device: IUPnPDevice?) {
+    override fun addedDevice(device: IUpnpDevice?) {
     }
 
     fun browseHome() {
@@ -117,7 +123,7 @@ class UpnpManager constructor(val controller: UPnPServiceController, val factory
         Timber.d(element.toString())
     }
 
-    override fun removedDevice(device: IUPnPDevice?) {
+    override fun removedDevice(device: IUpnpDevice?) {
         Timber.d("Removed $device")
     }
 

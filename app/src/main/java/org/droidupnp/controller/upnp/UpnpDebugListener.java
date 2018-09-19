@@ -20,7 +20,7 @@
 package org.droidupnp.controller.upnp;
 
 import org.droidupnp.model.upnp.IRegistryListener;
-import org.droidupnp.model.upnp.IUPnPDevice;
+import org.droidupnp.model.upnp.IUpnpDevice;
 
 import android.util.Log;
 
@@ -29,13 +29,13 @@ public class UpnpDebugListener implements IRegistryListener {
 	protected static final String TAG = "ClingDebugListener";
 
 	@Override
-	public void deviceAdded(final IUPnPDevice device)
+	public void deviceAdded(final IUpnpDevice device)
 	{
 		Log.i(TAG, "New device detected : " + device.getDisplayString());
 	}
 
 	@Override
-	public void deviceRemoved(final IUPnPDevice device)
+	public void deviceRemoved(final IUpnpDevice device)
 	{
 		Log.i(TAG, "Device removed : " + device.getDisplayString());
 	}

@@ -5,17 +5,17 @@ import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver
-import org.droidupnp.model.upnp.IUPnPDevice
+import org.droidupnp.model.upnp.IUpnpDevice
 
 
-class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentDirectoryDiscovery) : Observable<IUPnPDevice>() {
-    override fun subscribeActual(observer: Observer<in IUPnPDevice>) {
+class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentDirectoryDiscovery) : Observable<IUpnpDevice>() {
+    override fun subscribeActual(observer: Observer<in IUpnpDevice>) {
         val deviceObserver = ContentDeviceObserver(contentDiscovery, observer)
         observer.onSubscribe(deviceObserver)
     }
 
     private inner class ContentDeviceObserver(private val contentDirectoryDiscovery: ContentDirectoryDiscovery,
-                                              private val observer: Observer<in IUPnPDevice>) :
+                                              private val observer: Observer<in IUpnpDevice>) :
             Disposable, DeviceDiscoveryObserver {
         init {
             contentDirectoryDiscovery.addObserver(this)
@@ -27,12 +27,12 @@ class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentD
             contentDirectoryDiscovery.removeObserver(this)
         }
 
-        override fun addedDevice(device: IUPnPDevice?) {
+        override fun addedDevice(device: IUpnpDevice?) {
             if (!isDisposed && device != null)
                 observer.onNext(device)
         }
 
-        override fun removedDevice(device: IUPnPDevice?) {
+        override fun removedDevice(device: IUpnpDevice?) {
         }
     }
 }

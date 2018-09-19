@@ -4,17 +4,17 @@ import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver
-import org.droidupnp.model.upnp.IUPnPDevice
+import org.droidupnp.model.upnp.IUpnpDevice
 import org.droidupnp.model.upnp.RendererDiscovery
 
-class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscovery) : Observable<IUPnPDevice>() {
-    override fun subscribeActual(observer: Observer<in IUPnPDevice>) {
+class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscovery) : Observable<IUpnpDevice>() {
+    override fun subscribeActual(observer: Observer<in IUpnpDevice>) {
         val deviceObserver = RendererDeviceObserver(rendererDiscovery, observer)
         observer.onSubscribe(deviceObserver)
     }
 
     private inner class RendererDeviceObserver(private val rendererDiscovery: RendererDiscovery,
-                                               private val observer: Observer<in IUPnPDevice>) :
+                                               private val observer: Observer<in IUpnpDevice>) :
             MainThreadDisposable(), DeviceDiscoveryObserver {
 
         init {
@@ -25,12 +25,12 @@ class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscove
             rendererDiscovery.removeObserver(this)
         }
 
-        override fun addedDevice(device: IUPnPDevice?) {
+        override fun addedDevice(device: IUpnpDevice?) {
             if (!isDisposed && device != null)
                 observer.onNext(device)
         }
 
-        override fun removedDevice(device: IUPnPDevice?) {
+        override fun removedDevice(device: IUpnpDevice?) {
         }
     }
 }

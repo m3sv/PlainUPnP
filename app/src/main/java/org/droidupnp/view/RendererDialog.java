@@ -9,9 +9,9 @@ import android.widget.ArrayAdapter;
 
 import com.m3sv.droidupnp.R;
 
-import org.droidupnp.controller.upnp.UPnPServiceController;
+import org.droidupnp.controller.upnp.UpnpServiceController;
 import org.droidupnp.model.upnp.CallableRendererFilter;
-import org.droidupnp.model.upnp.IUPnPDevice;
+import org.droidupnp.model.upnp.IUpnpDevice;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,17 +23,17 @@ public class RendererDialog extends DialogFragment {
 
     private Callable<Void> callback = null;
 
-    UPnPServiceController controller;
+    UpnpServiceController controller;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        final Collection<IUPnPDevice> upnpDevices = controller.getServiceListener()
+        final Collection<IUpnpDevice> upnpDevices = controller.getServiceListener()
                 .getFilteredDeviceList(new CallableRendererFilter());
 
         ArrayList<DeviceDisplay> list = new ArrayList<DeviceDisplay>();
-        for (IUPnPDevice upnpDevice : upnpDevices)
+        for (IUpnpDevice upnpDevice : upnpDevices)
             list.add(new DeviceDisplay(upnpDevice));
 
         final DialogFragment dialog = this;
@@ -53,7 +53,7 @@ public class RendererDialog extends DialogFragment {
             builder.setTitle(R.string.selectRenderer).setAdapter(rendererList, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    controller.setSelectedRenderer((IUPnPDevice) upnpDevices.toArray()[which]);
+                    controller.setSelectedRenderer((IUpnpDevice) upnpDevices.toArray()[which]);
                     try {
                         if (callback != null)
                             callback.call();

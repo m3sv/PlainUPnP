@@ -2,9 +2,9 @@ package org.droidupnp.model.upnp;
 
 public class CallableRendererFilter implements ICallableFilter {
 
-	private IUPnPDevice device;
+	private IUpnpDevice device;
 
-	public void setDevice(IUPnPDevice device)
+	public void setDevice(IUpnpDevice device)
 	{
 		this.device = device;
 	}

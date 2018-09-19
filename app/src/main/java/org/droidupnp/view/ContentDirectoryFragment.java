@@ -46,13 +46,13 @@ import com.m3sv.droidupnp.R;
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay;
 import com.m3sv.droidupnp.upnp.IDIDLObject;
 
-import org.droidupnp.controller.upnp.UPnPServiceController;
+import org.droidupnp.controller.upnp.UpnpServiceController;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver;
 import org.droidupnp.model.upnp.Factory;
 import org.droidupnp.model.upnp.IRendererCommand;
-import org.droidupnp.model.upnp.IUPnPDevice;
+import org.droidupnp.model.upnp.IUpnpDevice;
 import org.droidupnp.model.upnp.didl.DIDLDevice;
 import org.droidupnp.model.upnp.didl.IDIDLContainer;
 import org.droidupnp.model.upnp.didl.IDIDLItem;
@@ -74,7 +74,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
     private ArrayAdapter<DIDLObjectDisplay> contentList;
     private LinkedList<String> tree = null;
     private String currentID = null;
-    private IUPnPDevice device;
+    private IUpnpDevice device;
 
     private IContentDirectoryCommand contentDirectoryCommand;
 
@@ -84,7 +84,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
     static final String STATE_TREE = "tree";
     static final String STATE_CURRENT = "current";
 
-    UPnPServiceController controller;
+    UpnpServiceController controller;
 
     Factory factory;
 
@@ -126,13 +126,13 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
         }
 
         @Override
-        public void addedDevice(IUPnPDevice device) {
+        public void addedDevice(IUpnpDevice device) {
             if (controller.getSelectedContentDirectory() == null)
                 cdf.update();
         }
 
         @Override
-        public void removedDevice(IUPnPDevice device) {
+        public void removedDevice(IUpnpDevice device) {
             if (controller.getSelectedContentDirectory() == null)
                 cdf.update();
         }
@@ -407,11 +407,11 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
             }
 
             // Fill with the content directory list
-            final Collection<IUPnPDevice> upnpDevices = controller.getServiceListener()
+            final Collection<IUpnpDevice> upnpDevices = controller.getServiceListener()
                     .getFilteredDeviceList(new CallableContentDirectoryFilter());
 
             ArrayList<DIDLObjectDisplay> list = new ArrayList<DIDLObjectDisplay>();
-            for (IUPnPDevice upnpDevice : upnpDevices)
+            for (IUpnpDevice upnpDevice : upnpDevices)
                 list.add(new DIDLObjectDisplay(new DIDLDevice(upnpDevice)));
 
             try {

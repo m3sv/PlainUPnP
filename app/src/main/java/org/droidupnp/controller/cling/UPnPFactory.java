@@ -21,7 +21,7 @@ package org.droidupnp.controller.cling;
 
 import android.content.Context;
 
-import org.droidupnp.controller.upnp.UPnPServiceController;
+import org.droidupnp.controller.upnp.UpnpServiceController;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.upnp.ARendererState;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;
@@ -34,10 +34,10 @@ import org.fourthline.cling.controlpoint.ControlPoint;
 import javax.inject.Inject;
 
 public class UPnPFactory implements Factory {
-    private final UPnPServiceController controller;
+    private final UpnpServiceController controller;
 
     @Inject
-    public UPnPFactory(UPnPServiceController controller) {
+    public UPnPFactory(UpnpServiceController controller) {
         this.controller = controller;
     }
 
@@ -60,13 +60,13 @@ public class UPnPFactory implements Factory {
         if (aus != null)
             cp = aus.getControlPoint();
         if (cp != null)
-            return new RendererCommand(cp, (RendererState) rs);
+            return new RendererCommand(controller, cp, (RendererState) rs);
 
         return null;
     }
 
     @Override
-    public UPnPServiceController createUpnpServiceController(Context ctx) {
+    public UpnpServiceController createUpnpServiceController(Context ctx) {
         return controller;
     }
 

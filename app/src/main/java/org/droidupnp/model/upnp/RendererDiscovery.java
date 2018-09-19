@@ -19,13 +19,13 @@
 
 package org.droidupnp.model.upnp;
 
-import org.droidupnp.controller.upnp.UPnPServiceController;
+import org.droidupnp.controller.upnp.UpnpServiceController;
 
 public class RendererDiscovery extends DeviceDiscovery {
 
     protected static final String TAG = "RendererDeviceFragment";
 
-    public RendererDiscovery(UPnPServiceController controller, IServiceListener serviceListener) {
+    public RendererDiscovery(UpnpServiceController controller, IServiceListener serviceListener) {
         super(controller, serviceListener);
     }
 
@@ -35,7 +35,7 @@ public class RendererDiscovery extends DeviceDiscovery {
     }
 
     @Override
-    protected boolean isSelected(IUPnPDevice device) {
+    protected boolean isSelected(IUpnpDevice device) {
         if (controller != null && controller.getSelectedRenderer() != null)
             return device.equals(controller.getSelectedRenderer());
 
@@ -43,17 +43,17 @@ public class RendererDiscovery extends DeviceDiscovery {
     }
 
     @Override
-    protected void select(IUPnPDevice device) {
+    protected void select(IUpnpDevice device) {
         select(device, false);
     }
 
     @Override
-    protected void select(IUPnPDevice device, boolean force) {
+    protected void select(IUpnpDevice device, boolean force) {
         controller.setSelectedRenderer(device, force);
     }
 
     @Override
-    protected void removed(IUPnPDevice d) {
+    protected void removed(IUpnpDevice d) {
         if (controller != null && controller.getSelectedRenderer() != null
                 && d.equals(controller.getSelectedRenderer()))
             controller.setSelectedRenderer(null);

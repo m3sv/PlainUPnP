@@ -36,12 +36,12 @@ import android.widget.Toast;
 
 import com.m3sv.droidupnp.R;
 
-import org.droidupnp.controller.upnp.UPnPServiceController;
+import org.droidupnp.controller.upnp.UpnpServiceController;
 import org.droidupnp.model.cling.RendererState;
 import org.droidupnp.model.upnp.ARendererState;
 import org.droidupnp.model.upnp.Factory;
 import org.droidupnp.model.upnp.IRendererCommand;
-import org.droidupnp.model.upnp.IUPnPDevice;
+import org.droidupnp.model.upnp.IUpnpDevice;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -52,7 +52,7 @@ import timber.log.Timber;
 public class RendererFragment extends Fragment implements Observer {
     private static final String TAG = "RendererFragment";
 
-    private IUPnPDevice device;
+    private IUpnpDevice device;
     private ARendererState rendererState;
     private IRendererCommand rendererCommand;
 
@@ -68,7 +68,7 @@ public class RendererFragment extends Fragment implements Observer {
     TextView duration;
     boolean durationRemaining;
 
-    UPnPServiceController controller;
+    UpnpServiceController controller;
     Factory factory;
 
     public RendererFragment() {

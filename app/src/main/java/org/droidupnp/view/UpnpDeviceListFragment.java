@@ -35,7 +35,7 @@ import android.widget.ListView;
 import com.m3sv.droidupnp.R;
 
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver;
-import org.droidupnp.model.upnp.IUPnPDevice;
+import org.droidupnp.model.upnp.IUpnpDevice;
 
 import timber.log.Timber;
 
@@ -106,7 +106,7 @@ public abstract class UpnpDeviceListFragment extends ListFragment implements Dev
     }
 
     @Override
-    public void addedDevice(IUPnPDevice device) {
+    public void addedDevice(IUpnpDevice device) {
         Log.v(TAG, "New device detected : " + device.getDisplayString());
 
         final DeviceDisplay d = new DeviceDisplay(device, extendedInformation);
@@ -138,7 +138,7 @@ public abstract class UpnpDeviceListFragment extends ListFragment implements Dev
     }
 
     @Override
-    public void removedDevice(IUPnPDevice device) {
+    public void removedDevice(IUpnpDevice device) {
         Log.v(TAG, "Device removed : " + device.getFriendlyName());
 
         final DeviceDisplay d = new DeviceDisplay(device, extendedInformation);
@@ -160,14 +160,14 @@ public abstract class UpnpDeviceListFragment extends ListFragment implements Dev
      * @param d
      * @return
      */
-    protected abstract boolean isSelected(IUPnPDevice d);
+    protected abstract boolean isSelected(IUpnpDevice d);
 
     /**
      * Select a device
      *
      * @param device
      */
-    protected abstract void select(IUPnPDevice device);
+    protected abstract void select(IUpnpDevice device);
 
     /**
      * Select a device
@@ -175,5 +175,5 @@ public abstract class UpnpDeviceListFragment extends ListFragment implements Dev
      * @param device
      * @param force
      */
-    protected abstract void select(IUPnPDevice device, boolean force);
+    protected abstract void select(IUpnpDevice device, boolean force);
 }

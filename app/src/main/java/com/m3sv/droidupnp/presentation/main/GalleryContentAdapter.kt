@@ -13,10 +13,17 @@ import com.m3sv.droidupnp.presentation.base.BaseAdapter
 import com.m3sv.droidupnp.presentation.base.BaseViewHolder
 import com.m3sv.droidupnp.presentation.main.data.ContentType
 import com.m3sv.droidupnp.presentation.main.data.Item
+import org.droidupnp.model.upnp.didl.IDIDLItem
 import timber.log.Timber
 
 
-class GalleryContentAdapter(private val onDirectoryClick: (String, String?) -> Unit) :
+interface OnItemClickListener {
+    fun onDirectoryClick(itemUri: String, parentId: String?)
+
+    fun onItemClick(item: IDIDLItem)
+}
+
+class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener) :
     BaseAdapter<Item>(GalleryContentAdapter.diffCallback) {
 
     override fun getItemViewType(position: Int): Int = items[position].type.ordinal
@@ -46,7 +53,9 @@ class GalleryContentAdapter(private val onDirectoryClick: (String, String?) -> U
         val item = items[position]
 
         val itemClickListener = View.OnClickListener {
-            Timber.d("On item clicked: uri:${item.uri}, name:${item.name}")
+            item.didlObjectDisplay?.get(holder.adapterPosition)?.let {
+                onItemClickListener.onItemClick(it.didlObject as IDIDLItem)
+            }
         }
 
         when (item.type) {
@@ -90,7 +99,12 @@ class GalleryContentAdapter(private val onDirectoryClick: (String, String?) -> U
         with((holder as BaseViewHolder<GalleryContentFolderItemBinding>).binding) {
             title.text = item.name
             thumbnail.setImageResource(R.drawable.ic_folder)
-            container.setOnClickListener { onDirectoryClick(item.uri, item.parentId) }
+            container.setOnClickListener {
+                onItemClickListener.onDirectoryClick(
+                    item.uri,
+                    item.parentId
+                )
+            }
         }
     }
 

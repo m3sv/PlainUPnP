@@ -7,6 +7,7 @@ import com.m3sv.droidupnp.presentation.base.BaseViewModel
 import com.m3sv.droidupnp.presentation.main.data.Item
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
 import com.m3sv.droidupnp.upnp.UpnpManager
+import org.droidupnp.model.upnp.didl.IDIDLItem
 import javax.inject.Inject
 
 
@@ -23,5 +24,9 @@ class MainFragmentViewModel @Inject constructor(
 
     fun navigateToDirectory(directoryId: String, parentId: String?) {
         upnpManager.browseTo(directoryId, parentId)
+    }
+
+    fun launchItem(item: IDIDLItem) {
+        upnpManager.launchItem(item)
     }
 }

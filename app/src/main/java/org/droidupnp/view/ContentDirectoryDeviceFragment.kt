@@ -3,14 +3,14 @@ package org.droidupnp.view
 import android.os.Bundle
 import android.view.View
 import android.widget.ListView
-import org.droidupnp.controller.upnp.UPnPServiceController
-import org.droidupnp.model.upnp.IUPnPDevice
+import org.droidupnp.controller.upnp.UpnpServiceController
+import org.droidupnp.model.upnp.IUpnpDevice
 import java.util.*
 
 
 class ContentDirectoryDeviceFragment : UpnpDeviceListFragment(), Observer {
 
-    lateinit var controller: UPnPServiceController
+    lateinit var controller: UpnpServiceController
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -24,15 +24,15 @@ class ContentDirectoryDeviceFragment : UpnpDeviceListFragment(), Observer {
         super.onDestroy()
     }
 
-    override fun isSelected(device: IUPnPDevice?): Boolean {
+    override fun isSelected(device: IUpnpDevice?): Boolean {
         return if (controller.selectedContentDirectory != null)
             device!!.equals(controller.selectedContentDirectory)
         else false
     }
 
-    override fun select(device: IUPnPDevice?) = select(device, false)
+    override fun select(device: IUpnpDevice?) = select(device, false)
 
-    override fun select(device: IUPnPDevice?, force: Boolean) = controller.setSelectedContentDirectory(device, force)
+    override fun select(device: IUpnpDevice?, force: Boolean) = controller.setSelectedContentDirectory(device, force)
 
     override fun update(p0: Observable?, p1: Any?) {
         val device = controller.selectedContentDirectory

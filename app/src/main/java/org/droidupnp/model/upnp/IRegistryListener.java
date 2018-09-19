@@ -21,8 +21,8 @@ package org.droidupnp.model.upnp;
 
 public interface IRegistryListener {
 
-	public void deviceAdded(final IUPnPDevice device);
+	public void deviceAdded(final IUpnpDevice device);
 
-	public void deviceRemoved(final IUPnPDevice device);
+	public void deviceRemoved(final IUpnpDevice device);
 
 }

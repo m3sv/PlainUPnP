@@ -19,7 +19,7 @@
 
 package org.droidupnp.view;
 
-import org.droidupnp.model.upnp.IUPnPDevice;
+import org.droidupnp.model.upnp.IUpnpDevice;
 
 import android.util.Log;
 import android.view.View;
@@ -29,7 +29,7 @@ public class ServiceDiscoveryFragment extends UpnpDeviceListFragment {
 
 	protected static final String TAG = "ServiceDiscoveryFragment";
 
-	private IUPnPDevice selectedDevice;
+	private IUpnpDevice selectedDevice;
 
 	public ServiceDiscoveryFragment()
 	{
@@ -47,18 +47,18 @@ public class ServiceDiscoveryFragment extends UpnpDeviceListFragment {
 	}
 
 	@Override
-	protected boolean isSelected(IUPnPDevice device)
+	protected boolean isSelected(IUpnpDevice device)
 	{
 		return false;
 	}
 
 	@Override
-	protected void select(IUPnPDevice device)
+	protected void select(IUpnpDevice device)
 	{
 	}
 
 	@Override
-	protected void select(IUPnPDevice device, boolean force)
+	protected void select(IUpnpDevice device, boolean force)
 	{
 	}
 }

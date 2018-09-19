@@ -14,6 +14,7 @@ import com.m3sv.droidupnp.presentation.main.data.Item
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import org.droidupnp.model.upnp.didl.IDIDLItem
 import timber.log.Timber
 
 
@@ -51,16 +52,27 @@ class MainFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        contentAdapter = GalleryContentAdapter { id, parentId ->
-            viewModel.navigateToDirectory(id, parentId)
-        }
+        contentAdapter = GalleryContentAdapter(object : OnItemClickListener {
+            override fun onDirectoryClick(itemUri: String, parentId: String?) {
+                viewModel.navigateToDirectory(itemUri, parentId)
+            }
+
+            override fun onItemClick(item: IDIDLItem) {
+                viewModel.launchItem(item)
+            }
+        })
 
         binding.content.run {
             val spanCount =
                 if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 3
                 else 5
             layoutManager =
-                    GridLayoutManager(requireActivity(), spanCount, GridLayoutManager.VERTICAL, false)
+                    GridLayoutManager(
+                        requireActivity(),
+                        spanCount,
+                        GridLayoutManager.VERTICAL,
+                        false
+                    )
             adapter = contentAdapter
         }
 

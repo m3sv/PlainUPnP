@@ -25,8 +25,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 
-import org.droidupnp.controller.upnp.UPnPServiceController;
-import org.droidupnp.model.upnp.IUPnPDevice;
+import org.droidupnp.controller.upnp.UpnpServiceController;
+import org.droidupnp.model.upnp.IUpnpDevice;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -35,7 +35,7 @@ public class RendererDeviceFragment extends UpnpDeviceListFragment implements Ob
 
     protected static final String TAG = "RendererDeviceFragment";
 
-    UPnPServiceController controller;
+    UpnpServiceController controller;
 
     public RendererDeviceFragment() {
         super();
@@ -58,7 +58,7 @@ public class RendererDeviceFragment extends UpnpDeviceListFragment implements Ob
     }
 
     @Override
-    protected boolean isSelected(IUPnPDevice device) {
+    protected boolean isSelected(IUpnpDevice device) {
         if (controller != null && controller.getSelectedRenderer() != null)
             return device.equals(controller.getSelectedRenderer());
 
@@ -66,12 +66,12 @@ public class RendererDeviceFragment extends UpnpDeviceListFragment implements Ob
     }
 
     @Override
-    protected void select(IUPnPDevice device) {
+    protected void select(IUpnpDevice device) {
         select(device, false);
     }
 
     @Override
-    protected void select(IUPnPDevice device, boolean force) {
+    protected void select(IUpnpDevice device, boolean force) {
         controller.setSelectedRenderer(device, force);
     }
 
@@ -91,7 +91,7 @@ public class RendererDeviceFragment extends UpnpDeviceListFragment implements Ob
         a.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                IUPnPDevice device = controller.getSelectedRenderer();
+                IUpnpDevice device = controller.getSelectedRenderer();
                 if (device == null) {
                     // Uncheck device
                     getListView().clearChoices();

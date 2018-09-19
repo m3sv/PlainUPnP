@@ -21,9 +21,8 @@ package org.droidupnp.model.upnp;
 
 import android.util.Log;
 
-import org.droidupnp.controller.upnp.UPnPServiceController;
+import org.droidupnp.controller.upnp.UpnpServiceController;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -39,16 +38,16 @@ public abstract class DeviceDiscovery {
 
     private final CopyOnWriteArrayList<DeviceDiscoveryObserver> observerList;
 
-    protected final UPnPServiceController controller;
+    protected final UpnpServiceController controller;
 
-    public DeviceDiscovery(UPnPServiceController controller, IServiceListener serviceListener, boolean extendedInformation) {
+    public DeviceDiscovery(UpnpServiceController controller, IServiceListener serviceListener, boolean extendedInformation) {
         this.controller = controller;
         browsingRegistryListener = new BrowsingRegistryListener();
         this.extendedInformation = extendedInformation;
         observerList = new CopyOnWriteArrayList<>();
     }
 
-    public DeviceDiscovery(UPnPServiceController controller, IServiceListener serviceListener) {
+    public DeviceDiscovery(UpnpServiceController controller, IServiceListener serviceListener) {
         this(controller, serviceListener, false);
     }
 
@@ -64,7 +63,7 @@ public abstract class DeviceDiscovery {
     public class BrowsingRegistryListener implements IRegistryListener {
 
         @Override
-        public void deviceAdded(final IUPnPDevice device) {
+        public void deviceAdded(final IUpnpDevice device) {
             Log.v(TAG, "New device detected : " + device.getDisplayString());
 
             if (device.isFullyHydrated() && filter(device)) {
@@ -78,7 +77,7 @@ public abstract class DeviceDiscovery {
         }
 
         @Override
-        public void deviceRemoved(final IUPnPDevice device) {
+        public void deviceRemoved(final IUpnpDevice device) {
             Log.v(TAG, "Device removed : " + device.getFriendlyName());
 
             if (filter(device)) {
@@ -99,9 +98,9 @@ public abstract class DeviceDiscovery {
     public void addObserver(DeviceDiscoveryObserver o) {
         observerList.add(o);
 
-        final Collection<IUPnPDevice> upnpDevices = controller.getServiceListener()
+        final Collection<IUpnpDevice> upnpDevices = controller.getServiceListener()
                 .getFilteredDeviceList(getCallableFilter());
-        for (IUPnPDevice d : upnpDevices)
+        for (IUpnpDevice d : upnpDevices)
             o.addedDevice(d);
     }
 
@@ -109,12 +108,12 @@ public abstract class DeviceDiscovery {
         observerList.remove(o);
     }
 
-    public void notifyAdded(IUPnPDevice device) {
+    public void notifyAdded(IUpnpDevice device) {
         for (DeviceDiscoveryObserver o : observerList)
             o.addedDevice(device);
     }
 
-    public void notifyRemoved(IUPnPDevice device) {
+    public void notifyRemoved(IUpnpDevice device) {
         for (DeviceDiscoveryObserver o : observerList)
             o.removedDevice(device);
     }
@@ -126,7 +125,7 @@ public abstract class DeviceDiscovery {
      * @return add it or not
      * @throws Exception
      */
-    protected boolean filter(IUPnPDevice device) {
+    protected boolean filter(IUpnpDevice device) {
         ICallableFilter filter = getCallableFilter();
         filter.setDevice(device);
         try {
@@ -150,14 +149,14 @@ public abstract class DeviceDiscovery {
      * @param d
      * @return
      */
-    protected abstract boolean isSelected(IUPnPDevice d);
+    protected abstract boolean isSelected(IUpnpDevice d);
 
     /**
      * Select a device
      *
      * @param device
      */
-    protected abstract void select(IUPnPDevice device);
+    protected abstract void select(IUpnpDevice device);
 
     /**
      * Select a device
@@ -165,12 +164,12 @@ public abstract class DeviceDiscovery {
      * @param device
      * @param force
      */
-    protected abstract void select(IUPnPDevice device, boolean force);
+    protected abstract void select(IUpnpDevice device, boolean force);
 
     /**
      * Callback when device removed
      *
      * @param d
      */
-    protected abstract void removed(IUPnPDevice d);
+    protected abstract void removed(IUpnpDevice d);
 }

@@ -11,6 +11,7 @@ import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.transition.TransitionManager
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -36,7 +37,7 @@ class MainActivity : BaseActivity() {
 
     private lateinit var contentDirectoryAdapter: ArrayAdapter<String>
 
-    private val contentDirectoryClickListener = object : AdapterView.OnItemSelectedListener {
+    private val contentDirectorySpinnerClickListener = object : AdapterView.OnItemSelectedListener {
 
         override fun onNothingSelected(parent: AdapterView<*>?) {
         }
@@ -49,8 +50,20 @@ class MainActivity : BaseActivity() {
         ) {
             with(viewModel) {
                 Timber.d("Selected item: $position")
-                selectDevice(contentDirectoriesObservable.value?.toList()?.get(position)?.device)
+                selectContentDirectory(contentDirectoriesObservable.value?.toList()?.get(position)?.device)
                 navigateHome()
+            }
+        }
+    }
+
+    private val rendererSpinnerClickListener = object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+        }
+
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            with(viewModel) {
+                Timber.d("Selected item: $position")
+                selectRenderer(renderersObservable.value?.toList()?.get(position)?.device)
             }
         }
     }
@@ -152,12 +165,13 @@ class MainActivity : BaseActivity() {
                     ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
                         .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
             mainRendererDevicePicker.adapter = rendererAdapter
+            mainRendererDevicePicker.onItemSelectedListener = rendererSpinnerClickListener
 
             contentDirectoryAdapter =
                     ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
                         .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
             mainContentDevicePicker.adapter = contentDirectoryAdapter
-            mainContentDevicePicker.onItemSelectedListener = contentDirectoryClickListener
+            mainContentDevicePicker.onItemSelectedListener = contentDirectorySpinnerClickListener
         }
     }
 
@@ -166,8 +180,12 @@ class MainActivity : BaseActivity() {
         with(viewModel) {
             addObservers()
             resumeController()
-
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+
     }
 
     override fun onStop() {
@@ -189,6 +207,9 @@ class MainActivity : BaseActivity() {
     private fun navigateToMain() {
         supportFragmentManager.popBackStackImmediate()
 
+        binding.controlsSheet.container.visibility = View.VISIBLE
+
+
         val fragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG)
 
         if (fragment == null) {
@@ -206,6 +227,9 @@ class MainActivity : BaseActivity() {
 
     private fun navigateToSettings() {
         val fragment = supportFragmentManager.findFragmentByTag(SettingsFragment.TAG)
+
+        binding.controlsSheet.container.visibility = View.GONE
+
 
         if (fragment == null) {
             supportFragmentManager

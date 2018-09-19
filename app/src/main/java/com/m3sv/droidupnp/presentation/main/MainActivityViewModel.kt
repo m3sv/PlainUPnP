@@ -7,7 +7,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import org.droidupnp.model.upnp.IUPnPDevice
+import org.droidupnp.model.upnp.IUpnpDevice
 import org.droidupnp.view.DeviceDisplay
 import org.droidupnp.view.DeviceType
 import timber.log.Timber
@@ -92,14 +92,15 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
         manager.browseHome()
     }
 
-    fun selectDevice(device: IUPnPDevice?) {
-        Timber.d("Selected device: ${device?.displayString}")
-        manager.selectDevice(device)
+    fun selectContentDirectory(contentDirectory: IUpnpDevice?) {
+        manager.selectContentDirectory(contentDirectory)
+    }
+
+    fun selectRenderer(renderer: IUpnpDevice?) {
+        manager.selectRenderer(renderer)
     }
 
     fun pop() {
         manager.browsePrevious()
     }
-
-
 }

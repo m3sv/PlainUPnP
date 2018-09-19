@@ -2,7 +2,7 @@ package org.droidupnp.model.upnp;
 
 public interface DeviceDiscoveryObserver {
 
-	public void addedDevice(IUPnPDevice device);
+	public void addedDevice(IUpnpDevice device);
 
-	public void removedDevice(IUPnPDevice device);
+	public void removedDevice(IUpnpDevice device);
 }
