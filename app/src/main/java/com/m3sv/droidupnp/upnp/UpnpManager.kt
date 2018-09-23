@@ -6,9 +6,11 @@ import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.PublishSubject
+import org.droidupnp.controller.cling.RendererCommand
 import org.droidupnp.controller.upnp.UpnpServiceController
 import org.droidupnp.model.upnp.Factory
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver
+import org.droidupnp.model.upnp.IRendererCommand
 import org.droidupnp.model.upnp.IUpnpDevice
 import org.droidupnp.model.upnp.didl.IDIDLItem
 import timber.log.Timber
@@ -32,6 +34,8 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
 
     val selectedDirectoryObservable
         get() = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
+
+    private var rendererCommand: IRendererCommand? = null
 
     fun addObservers() = controller.run {
         rendererDiscovery.addObserver(this@UpnpManager)
@@ -75,14 +79,22 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
     private var directoriesStructure = LinkedList<Directory>()
 
     fun launchItem(item: IDIDLItem) {
+        rendererCommand?.pause()
         val rendererState = factory.createRendererState()
-        val rendererCommand = factory.createRendererCommand(rendererState)
-
+        rendererCommand = factory.createRendererCommand(rendererState)
         rendererCommand?.run {
             resume()
             updateFull()
             launchItem(item)
         }
+    }
+
+    fun resumeRendererCommand() {
+        rendererCommand?.resume()
+    }
+
+    fun pauseRendererCommand() {
+        rendererCommand?.pause()
     }
 
     override fun addedDevice(device: IUpnpDevice?) {

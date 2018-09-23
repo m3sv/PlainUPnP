@@ -29,4 +29,12 @@ class MainFragmentViewModel @Inject constructor(
     fun launchItem(item: IDIDLItem) {
         upnpManager.launchItem(item)
     }
+
+    fun pauseRendererCommand() {
+        upnpManager.pauseRendererCommand()
+    }
+
+    fun resumeRendererCommand() {
+        upnpManager.resumeRendererCommand()
+    }
 }

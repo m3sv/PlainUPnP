@@ -47,7 +47,8 @@ buildscript {
                     'core'    : "com.github.bumptech.glide:glide:${versions.glide}",
                     'compiler': "com.github.bumptech.glide:compiler:${versions.glide}"
             ],
-            'kotlinDataBinding'     : "com.android.databinding:compiler:$gradleVersion"
+            'kotlinDataBinding'     : "com.android.databinding:compiler:$gradleVersion",
+            'coroutines'            : "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.+"
     ]
 
     repositories {

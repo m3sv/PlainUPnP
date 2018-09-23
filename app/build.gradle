@@ -77,6 +77,9 @@ dependencies {
     implementation deps.rx.binding
     implementation deps.rx.android
 
+    implementation deps.coroutines
+
+
     implementation(deps.glide.core) {
         exclude group: "com.android.support"
     }
@@ -125,4 +128,10 @@ if (propFile.exists()) {
     }
 } else {
     android.buildTypes.release.signingConfig = null
+}
+
+kotlin {
+    experimental {
+        coroutines 'enable'
+    }
 }
