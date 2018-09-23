@@ -88,17 +88,14 @@ public class RendererDeviceFragment extends UpnpDeviceListFragment implements Ob
         if (a == null)
             return;
 
-        a.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                IUpnpDevice device = controller.getSelectedRenderer();
-                if (device == null) {
-                    // Uncheck device
-                    getListView().clearChoices();
-                    list.notifyDataSetChanged();
-                } else {
-                    addedDevice(device);
-                }
+        a.runOnUiThread(() -> {
+            IUpnpDevice device = controller.getSelectedRenderer();
+            if (device == null) {
+                // Uncheck device
+                getListView().clearChoices();
+                list.notifyDataSetChanged();
+            } else {
+                addedDevice(device);
             }
         });
     }
