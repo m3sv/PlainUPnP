@@ -24,37 +24,31 @@ import org.fourthline.cling.support.renderingcontrol.callback.GetVolume
 import org.fourthline.cling.support.renderingcontrol.callback.SetMute
 import org.fourthline.cling.support.renderingcontrol.callback.SetVolume
 import timber.log.Timber
+import kotlin.coroutines.experimental.CoroutineContext
 
 
 class RendererCommand(
     private val controller: UpnpServiceController,
     private val controlPoint: ControlPoint,
     private val rendererState: RendererState
-) : IRendererCommand {
+) : IRendererCommand, CoroutineScope {
 
-    private var job: Job? = null
+    private var job: Job = Job()
 
-    init {
-        initJob()
-    }
-
-    private fun initJob() {
-        job?.cancel()
-        job = GlobalScope.launch(Dispatchers.Default,
-            CoroutineStart.DEFAULT,
-            null, {
-                updateInfo()
-            })
-    }
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     override fun pause() {
         Timber.v("Interrupt")
-        job?.cancel()
+        job.cancel()
     }
 
     override fun resume() {
         Timber.v("Resume")
-        initJob()
+        job = Job()
+        launch {
+            updateInfo()
+        }
     }
 
     fun getRenderingControlService(): Service<*, *>? {
@@ -268,9 +262,9 @@ class RendererCommand(
         if (getAVTransportService() == null)
             return
 
-        controlPoint.execute(object : GetPositionInfo(getAVTransportService()!!) {
+        controlPoint.execute(object : GetPositionInfo(getAVTransportService()) {
             override fun received(arg0: ActionInvocation<*>, arg1: PositionInfo) {
-                Timber.d("Receive position info ! $arg1")
+                Timber.d("Update position info: $arg1")
                 rendererState.setPositionInfo(arg1)
             }
 
@@ -284,13 +278,13 @@ class RendererCommand(
         if (getAVTransportService() == null)
             return
 
-        controlPoint.execute(object : GetTransportInfo(getAVTransportService()!!) {
+        controlPoint.execute(object : GetTransportInfo(getAVTransportService()) {
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
                 Timber.w("Fail to get position info ! $arg2")
             }
 
             override fun received(arg0: ActionInvocation<*>, arg1: TransportInfo) {
-                Timber.d("Receive position info ! $arg1")
+                Timber.d("Transport info: $arg1")
                 rendererState.transportInfo = arg1
             }
         })
@@ -300,7 +294,7 @@ class RendererCommand(
         if (getRenderingControlService() == null)
             return
 
-        controlPoint.execute(object : GetVolume(getRenderingControlService()!!) {
+        controlPoint.execute(object : GetVolume(getRenderingControlService()) {
             override fun received(arg0: ActionInvocation<*>, arg1: Int) {
                 Timber.d("Receive volume ! $arg1")
                 rendererState.volume = arg1

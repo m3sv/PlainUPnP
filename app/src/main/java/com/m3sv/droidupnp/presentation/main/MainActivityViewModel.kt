@@ -1,5 +1,6 @@
 package com.m3sv.droidupnp.presentation.main
 
+import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
 import com.m3sv.droidupnp.upnp.UpnpManager
@@ -23,6 +24,8 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
     val renderersObservable = MutableLiveData<Set<DeviceDisplay>>()
 
     val selectedDirectoryObservable = manager.selectedDirectoryObservable
+
+    val rendererState: LiveData<UpnpManager.RendererState> = manager.rendererState
 
     private val discoveryDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -78,11 +81,9 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
 
     fun pauseController() {
         Timber.d("Pausing UPnP controller")
-
-        with(manager.controller) {
-            pause()
-            serviceListener.serviceConnection.onServiceDisconnected(null)
-        }
+//        with(manager.controller) {
+//            pause()
+//        }
     }
 
     fun refreshServiceListener() = manager.controller.serviceListener?.refresh()

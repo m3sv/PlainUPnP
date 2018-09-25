@@ -5,4 +5,5 @@
     <color name="colorPrimaryLight">#be9c91</color>
     <color name="colorAccent">#FF4081</color>
     <color name="transparent">#00000000</color>
+    <color name="whiteHalfTransparent">#66E2E2E2</color>
 </resources>

@@ -21,8 +21,10 @@ import com.m3sv.droidupnp.databinding.MainActivityBinding
 import com.m3sv.droidupnp.presentation.base.BaseActivity
 import com.m3sv.droidupnp.presentation.settings.SettingsFragment
 import com.m3sv.droidupnp.upnp.Directory
+import com.m3sv.droidupnp.upnp.UpnpManager
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
+import org.droidupnp.model.upnp.IRendererState
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
 
@@ -62,7 +64,7 @@ class MainActivity : BaseActivity() {
 
         override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
             with(viewModel) {
-                Timber.d("Selected item: $position")
+                Timber.d("Selected renderer: $position")
                 selectRenderer(renderersObservable.value?.toList()?.get(position)?.device)
             }
         }
@@ -88,6 +90,15 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private val rendererStateObserver = Observer<UpnpManager.RendererState> {
+        it?.let {
+            with(binding.controlsSheet) {
+                progress.isEnabled = it.state != IRendererState.State.STOP
+                progress.progress = it.progress
+            }
+        }
+    }
+
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     private var currentDirectory: Directory? = null
@@ -103,6 +114,8 @@ class MainActivity : BaseActivity() {
         }
 
         bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container)
+
+        binding.controlsSheet.progress.isEnabled = false
 
         restoreFragmentState(savedInstanceState)
         initObservers()
@@ -156,6 +169,7 @@ class MainActivity : BaseActivity() {
         with(viewModel) {
             renderersObservable.observe(this@MainActivity, renderersObserver)
             contentDirectoriesObservable.observe(this@MainActivity, contentDirectoriesObserver)
+            rendererState.observe(this@MainActivity, rendererStateObserver)
         }
     }
 

@@ -6,12 +6,8 @@ import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.PublishSubject
-import org.droidupnp.controller.cling.RendererCommand
 import org.droidupnp.controller.upnp.UpnpServiceController
-import org.droidupnp.model.upnp.Factory
-import org.droidupnp.model.upnp.DeviceDiscoveryObserver
-import org.droidupnp.model.upnp.IRendererCommand
-import org.droidupnp.model.upnp.IUpnpDevice
+import org.droidupnp.model.upnp.*
 import org.droidupnp.model.upnp.didl.IDIDLItem
 import timber.log.Timber
 import java.util.*
@@ -36,6 +32,20 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
         get() = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private var rendererCommand: IRendererCommand? = null
+
+    data class RendererState(
+        val durationRemaining: String?,
+        val durationElapse: String?,
+        val progress: Int,
+        val title: String?,
+        val artist: String?,
+        val state: IRendererState.State?
+    )
+
+    private val _rendererState: MutableLiveData<RendererState> = MutableLiveData()
+
+    val rendererState: LiveData<RendererState>
+        get() = _rendererState
 
     fun addObservers() = controller.run {
         rendererDiscovery.addObserver(this@UpnpManager)
@@ -80,12 +90,33 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
 
     fun launchItem(item: IDIDLItem) {
         rendererCommand?.pause()
-        val rendererState = factory.createRendererState()
-        rendererCommand = factory.createRendererCommand(rendererState)
-        rendererCommand?.run {
-            resume()
-            updateFull()
-            launchItem(item)
+        val rendererState = factory.createRendererState().also {
+            it.addObserver { _, _ ->
+                val durationRemaining = it.remainingDuration
+                val durationElapse = it.position
+                val progress = it.elapsedPercent
+                val title = it.title
+                val artist = it.artist
+                val state = it.state
+
+                val rendererState = RendererState(
+                    durationRemaining,
+                    durationElapse,
+                    progress,
+                    title,
+                    artist,
+                    state
+                )
+
+                Timber.i("New renderer state: $rendererState")
+                _rendererState.postValue(rendererState)
+            }
+        }
+
+        rendererCommand = factory.createRendererCommand(rendererState).also {
+            it.resume()
+            it.updateFull()
+            it.launchItem(item)
         }
     }
 
