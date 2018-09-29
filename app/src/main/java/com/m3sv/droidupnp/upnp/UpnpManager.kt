@@ -18,6 +18,11 @@ sealed class Directory {
     data class SubDirectory(val id: String, val parentId: String?) : Directory()
 }
 
+/**
+ * First is uri to a file, second is a title and third is an artist
+ */
+typealias RenderedItem = Pair<String, String>
+
 class UpnpManager constructor(val controller: UpnpServiceController, val factory: Factory) :
     DeviceDiscoveryObserver, Observer {
 
@@ -28,7 +33,7 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
 
     private val selectedDirectory = PublishSubject.create<Directory>()
 
-    val selectedDirectoryObservable
+    val selectedDirectoryObservable: io.reactivex.Observable<Directory>
         get() = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private var rendererCommand: IRendererCommand? = null
@@ -46,6 +51,11 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
 
     val rendererState: LiveData<RendererState>
         get() = _rendererState
+
+    private val _renderedItem: MutableLiveData<RenderedItem> = MutableLiveData()
+
+    val renderedItem: LiveData<RenderedItem>
+        get() = _renderedItem
 
     fun addObservers() = controller.run {
         rendererDiscovery.addObserver(this@UpnpManager)
@@ -88,7 +98,7 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
 
     private var directoriesStructure = LinkedList<Directory>()
 
-    fun launchItem(item: IDIDLItem) {
+    fun renderItem(item: IDIDLItem) {
         rendererCommand?.pause()
         val rendererState = factory.createRendererState().also {
             it.addObserver { _, _ ->
@@ -111,8 +121,10 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
                 Timber.i("New renderer state: $rendererState")
                 _rendererState.postValue(rendererState)
             }
+
         }
 
+        _renderedItem.postValue(Pair(item.uri, item.title))
         rendererCommand = factory.createRendererCommand(rendererState).also {
             it.resume()
             it.updateFull()

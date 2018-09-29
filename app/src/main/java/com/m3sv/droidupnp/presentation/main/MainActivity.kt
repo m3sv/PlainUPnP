@@ -11,16 +11,17 @@ import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.transition.TransitionManager
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
 import com.m3sv.droidupnp.presentation.base.BaseActivity
 import com.m3sv.droidupnp.presentation.settings.SettingsFragment
 import com.m3sv.droidupnp.upnp.Directory
+import com.m3sv.droidupnp.upnp.RenderedItem
 import com.m3sv.droidupnp.upnp.UpnpManager
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -113,14 +114,21 @@ class MainActivity : BaseActivity() {
             setLifecycleOwner(this@MainActivity)
         }
 
+        setupBottomNavigation(binding.bottomNav)
+
         bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container)
 
         binding.controlsSheet.progress.isEnabled = false
 
-        restoreFragmentState(savedInstanceState)
-        initObservers()
+        if (savedInstanceState == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .add(R.id.container, MainFragment.newInstance())
+                .commit()
+        }
+
+        initLiveData()
         setupPickers()
-        setupBottomNavigation(binding.bottomNav)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(
@@ -165,27 +173,38 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun initObservers() {
+    private val renderedItemObserver = Observer<RenderedItem> {
+        Glide.with(this@MainActivity).load(it?.first).into(binding.controlsSheet.art)
+        binding.controlsSheet.title.text = it?.second
+    }
+
+    private fun initLiveData() {
         with(viewModel) {
-            renderersObservable.observe(this@MainActivity, renderersObserver)
-            contentDirectoriesObservable.observe(this@MainActivity, contentDirectoriesObserver)
-            rendererState.observe(this@MainActivity, rendererStateObserver)
+            renderersObservable.observe(renderersObserver)
+            contentDirectoriesObservable.observe(contentDirectoriesObserver)
+            rendererState.observe(rendererStateObserver)
+            renderedItem.observe(renderedItemObserver)
         }
     }
 
     private fun setupPickers() {
-        binding.controlsSheet.run {
+        with(binding.controlsSheet) {
             rendererAdapter =
                     ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
                         .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
-            mainRendererDevicePicker.adapter = rendererAdapter
-            mainRendererDevicePicker.onItemSelectedListener = rendererSpinnerClickListener
+            with(mainRendererDevicePicker) {
+                adapter = rendererAdapter
+                onItemSelectedListener = rendererSpinnerClickListener
+            }
 
             contentDirectoryAdapter =
                     ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
                         .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
-            mainContentDevicePicker.adapter = contentDirectoryAdapter
-            mainContentDevicePicker.onItemSelectedListener = contentDirectorySpinnerClickListener
+
+            with(mainContentDevicePicker) {
+                adapter = contentDirectoryAdapter
+                onItemSelectedListener = contentDirectorySpinnerClickListener
+            }
         }
     }
 
@@ -197,11 +216,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-
-    }
-
     override fun onStop() {
         with(viewModel) {
             removeObservers()
@@ -210,58 +224,19 @@ class MainActivity : BaseActivity() {
         super.onStop()
     }
 
-    private fun restoreFragmentState(savedInstanceState: Bundle?) {
-        Timber.d("Last fragment tag: ${viewModel.lastFragmentTag}")
-
-        if (savedInstanceState == null) {
-            navigateToMain()
-        }
-    }
-
     private fun navigateToMain() {
         supportFragmentManager.popBackStackImmediate()
-
-        binding.controlsSheet.container.visibility = View.VISIBLE
-
-
-        val fragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG)
-
-        if (fragment == null) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, MainFragment.newInstance(), MainFragment.TAG)
-                .commit()
-        } else {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, fragment, MainFragment.TAG)
-                .commit()
-        }
     }
 
     private fun navigateToSettings() {
-        val fragment = supportFragmentManager.findFragmentByTag(SettingsFragment.TAG)
-
-        binding.controlsSheet.container.visibility = View.GONE
-
+        val tag = SettingsFragment.TAG
+        val fragment = supportFragmentManager.findFragmentByTag(tag)
 
         if (fragment == null) {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, SettingsFragment.newInstance(), SettingsFragment.TAG)
-                .addToBackStack(null)
-                .commit()
+            navigateTo(SettingsFragment.newInstance(), tag, true)
         } else {
-            supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, fragment, SettingsFragment.TAG)
-                .commit()
+            navigateTo(fragment, tag, true)
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        outState.putString("LAST_FRAGMENT_TAG", viewModel.lastFragmentTag)
-        super.onSaveInstanceState(outState)
     }
 
     private var lastBackClick = System.currentTimeMillis()
@@ -280,8 +255,10 @@ class MainActivity : BaseActivity() {
 
             lastBackClick = currentTime
             Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
-        } else {
+        } else if (currentDirectory != null) {
             viewModel.pop()
+        } else {
+            finish()
         }
     }
 

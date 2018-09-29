@@ -87,7 +87,6 @@
 	<string name="about_copyright">Copyright © 2013 Aurélien Chabot</string>
 	<string name="license">Licence</string>
 	<string name="licenses_other">Licences des librairies</string>
-	<string name="about_licenses_other"></string>
 	<string name="source">Code source</string>
 
 </resources>

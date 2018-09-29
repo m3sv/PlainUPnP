@@ -89,7 +89,6 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
             contentType.setImageResource(contentTypeIcon)
             contentType.setOnClickListener(onClick)
         }
-
     }
 
     private fun loadDirectory(

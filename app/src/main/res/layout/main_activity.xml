@@ -40,9 +40,7 @@
 
         <include
             android:id="@+id/controls_sheet"
-            layout="@layout/controls_sheet"
-            android:visibility="gone"
-            tools:visibility="visible" />
+            layout="@layout/controls_sheet" />
 
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/bottom_nav"
@@ -51,5 +49,6 @@
             android:layout_gravity="bottom"
             android:background="#FFF"
             app:menu="@menu/main" />
+
     </android.support.design.widget.CoordinatorLayout>
 </layout>

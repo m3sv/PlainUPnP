@@ -268,7 +268,7 @@
 //    }
 //
 //    @Override
-//    public void launchItem(final IDIDLItem item) {
+//    public void renderItem(final IDIDLItem item) {
 //        if (getAVTransportService() == null)
 //            return;
 //

@@ -100,7 +100,7 @@ class MainFragment : BaseFragment() {
     }
 
     companion object {
-        val TAG = MainFragment::class.java.simpleName
+        val TAG: String = MainFragment::class.java.simpleName
 
         fun newInstance(): MainFragment = MainFragment().apply {
             arguments = Bundle()

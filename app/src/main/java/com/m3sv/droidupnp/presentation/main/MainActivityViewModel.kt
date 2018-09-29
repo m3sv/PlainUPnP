@@ -3,6 +3,7 @@ package com.m3sv.droidupnp.presentation.main
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
+import com.m3sv.droidupnp.upnp.RenderedItem
 import com.m3sv.droidupnp.upnp.UpnpManager
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -17,8 +18,6 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(private val manager: UpnpManager) :
     BaseViewModel() {
 
-    var lastFragmentTag: String? = null
-
     val contentDirectoriesObservable = MutableLiveData<Set<DeviceDisplay>>()
 
     val renderersObservable = MutableLiveData<Set<DeviceDisplay>>()
@@ -26,6 +25,8 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
     val selectedDirectoryObservable = manager.selectedDirectoryObservable
 
     val rendererState: LiveData<UpnpManager.RendererState> = manager.rendererState
+
+    val renderedItem: LiveData<RenderedItem> = manager.renderedItem
 
     private val discoveryDisposable: CompositeDisposable = CompositeDisposable()
 

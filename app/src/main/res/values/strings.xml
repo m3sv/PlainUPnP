@@ -105,5 +105,6 @@
     <string name="filter">Filter…</string>
     <string name="empty_content" translatable="false">-</string>
 	<string name="to_exit">Double tap back button to exit</string>
+    <string name="about_licenses_other" />
 
 </resources>

@@ -10,10 +10,17 @@
         app:behavior_peekHeight="116dp"
         app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-        <!--<View-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="112dp"-->
-        <!--android:background="@drawable/bg_rounded_corners" />-->
+        <ImageView
+            android:id="@+id/art"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/placeholder" />
 
         <Spinner
             android:id="@+id/main_content_device_picker"
@@ -71,26 +78,16 @@
             app:layout_constraintTop_toTopOf="@+id/art"
             app:srcCompat="@drawable/ic_skip_next" />
 
-        <ImageView
-            android:id="@+id/art"
-            android:layout_width="36dp"
-            android:layout_height="37dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/placeholder" />
-
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
             android:text="@string/empty_content"
-            app:layout_constraintEnd_toStartOf="@+id/next"
-            app:layout_constraintStart_toEndOf="@+id/art"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/art" />
 
         <SeekBar
