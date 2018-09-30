@@ -14,7 +14,6 @@ import com.m3sv.droidupnp.presentation.base.BaseViewHolder
 import com.m3sv.droidupnp.presentation.main.data.ContentType
 import com.m3sv.droidupnp.presentation.main.data.Item
 import org.droidupnp.model.upnp.didl.IDIDLItem
-import timber.log.Timber
 
 
 interface OnItemClickListener {

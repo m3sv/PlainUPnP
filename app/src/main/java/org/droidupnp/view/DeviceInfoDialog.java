@@ -78,7 +78,7 @@ public class DeviceInfoDialog extends DialogFragment {
         this.getDialog().setTitle(title);
 
         // Watch for button clicks.
-        Button button = (Button) v.findViewById(R.id.button);
+        Button button = v.findViewById(R.id.button);
         button.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

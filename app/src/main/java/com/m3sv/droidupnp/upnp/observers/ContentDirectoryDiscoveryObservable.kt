@@ -8,15 +8,18 @@ import org.droidupnp.model.upnp.DeviceDiscoveryObserver
 import org.droidupnp.model.upnp.IUpnpDevice
 
 
-class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentDirectoryDiscovery) : Observable<IUpnpDevice>() {
+class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentDirectoryDiscovery) :
+    Observable<IUpnpDevice>() {
     override fun subscribeActual(observer: Observer<in IUpnpDevice>) {
         val deviceObserver = ContentDeviceObserver(contentDiscovery, observer)
         observer.onSubscribe(deviceObserver)
     }
 
-    private inner class ContentDeviceObserver(private val contentDirectoryDiscovery: ContentDirectoryDiscovery,
-                                              private val observer: Observer<in IUpnpDevice>) :
-            Disposable, DeviceDiscoveryObserver {
+    private inner class ContentDeviceObserver(
+        private val contentDirectoryDiscovery: ContentDirectoryDiscovery,
+        private val observer: Observer<in IUpnpDevice>
+    ) :
+        Disposable, DeviceDiscoveryObserver {
         init {
             contentDirectoryDiscovery.addObserver(this)
         }

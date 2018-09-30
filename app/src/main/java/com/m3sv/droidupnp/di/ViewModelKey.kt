@@ -1,8 +1,8 @@
 package com.m3sv.droidupnp.di
 
+import android.arch.lifecycle.ViewModel
 import dagger.MapKey
 import kotlin.reflect.KClass
-import android.arch.lifecycle.ViewModel
 
 @MustBeDocumented
 @Target(

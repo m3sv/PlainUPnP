@@ -32,7 +32,8 @@ class ContentDirectoryDeviceFragment : UpnpDeviceListFragment(), Observer {
 
     override fun select(device: IUpnpDevice?) = select(device, false)
 
-    override fun select(device: IUpnpDevice?, force: Boolean) = controller.setSelectedContentDirectory(device, force)
+    override fun select(device: IUpnpDevice?, force: Boolean) =
+        controller.setSelectedContentDirectory(device, force)
 
     override fun update(p0: Observable?, p1: Any?) {
         val device = controller.selectedContentDirectory

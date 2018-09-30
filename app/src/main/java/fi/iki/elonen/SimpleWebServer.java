@@ -1,8 +1,18 @@
 package fi.iki.elonen;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import timber.log.Timber;
 
@@ -222,7 +232,7 @@ public class SimpleWebServer extends NanoHTTPD {
                     final long dataLen = newLen;
                     FileInputStream fis = new FileInputStream(f) {
                         @Override
-                        public int available() throws IOException {
+                        public int available() {
                             return (int) dataLen;
                         }
                     };

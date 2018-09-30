@@ -2,16 +2,14 @@ package org.droidupnp.model.upnp;
 
 public class CallableRendererFilter implements ICallableFilter {
 
-	private IUpnpDevice device;
+    private IUpnpDevice device;
 
-	public void setDevice(IUpnpDevice device)
-	{
-		this.device = device;
-	}
+    public void setDevice(IUpnpDevice device) {
+        this.device = device;
+    }
 
-	@Override
-	public Boolean call() throws Exception
-	{
-		return device.asService("RenderingControl");
-	}
+    @Override
+    public Boolean call() {
+        return device.asService("RenderingControl");
+    }
 }

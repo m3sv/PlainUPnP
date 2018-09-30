@@ -73,7 +73,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
                 localService, ContentDirectoryService.class));
 
         udn = UDN.valueOf(new UUID(0, 10).toString());
-        this.localAddress = localAddress;
+        MediaServer.localAddress = localAddress;
         this.ctx = ctx;
         createLocalDevice();
 

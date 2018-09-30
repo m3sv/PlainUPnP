@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2013 Aurélien Chabot <aurelien@chabot.fr>
- * 
+ * <p>
  * This file is part of DroidUPNP.
- * 
+ * <p>
  * DroidUPNP is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * DroidUPNP is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -21,42 +21,42 @@ package org.droidupnp.model.upnp;
 
 public interface IUpnpDevice {
 
-	public String getDisplayString();
+    String getDisplayString();
 
-	public String getFriendlyName();
+    String getFriendlyName();
 
-	public String getExtendedInformation();
+    String getExtendedInformation();
 
-	public String getManufacturer();
+    String getManufacturer();
 
-	public String getManufacturerURL();
+    String getManufacturerURL();
 
-	public String getModelName();
+    String getModelName();
 
-	public String getModelDesc();
+    String getModelDesc();
 
-	public String getModelNumber();
+    String getModelNumber();
 
-	public String getModelURL();
+    String getModelURL();
 
-	public String getXMLURL();
+    String getXMLURL();
 
-	public String getPresentationURL();
+    String getPresentationURL();
 
-	public String getSerialNumber();
+    String getSerialNumber();
 
-	public String getUDN();
+    String getUDN();
 
-	public boolean equals(IUpnpDevice otherDevice);
+    boolean equals(IUpnpDevice otherDevice);
 
-	public String getUID();
+    String getUID();
 
-	public boolean asService(String service);
+    boolean asService(String service);
 
-	public void printService();
+    void printService();
 
-	public boolean isFullyHydrated();
+    boolean isFullyHydrated();
 
-	@Override
-	public String toString();
+    @Override
+    String toString();
 }

@@ -1,14 +1,9 @@
 package com.m3sv.droidupnp
 
-import android.app.Activity
-import android.app.Application
 import com.m3sv.droidupnp.di.DaggerAppComponent
 import dagger.android.AndroidInjector
-import dagger.android.DispatchingAndroidInjector
-import dagger.android.HasActivityInjector
 import dagger.android.support.DaggerApplication
 import timber.log.Timber
-import javax.inject.Inject
 
 class App : DaggerApplication() {
 

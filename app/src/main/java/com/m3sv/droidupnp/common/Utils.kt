@@ -15,8 +15,15 @@ object Utils {
     @JvmStatic
     fun getAllMedia(context: Context): ArrayList<String> {
         val videoItemHashSet = HashSet<String>()
-        val projection = arrayOf(MediaStore.Video.VideoColumns.DATA, MediaStore.Video.Media.DISPLAY_NAME)
-        val cursor = context.contentResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, projection, null, null, null)
+        val projection =
+            arrayOf(MediaStore.Video.VideoColumns.DATA, MediaStore.Video.Media.DISPLAY_NAME)
+        val cursor = context.contentResolver.query(
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            null,
+            null,
+            null
+        )
         try {
             cursor.moveToFirst()
             do {
@@ -53,13 +60,18 @@ object Utils {
     @JvmStatic
     @Throws(UnknownHostException::class)
     fun getLocalIpAddress(context: Context): InetAddress {
-        val wifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+        val wifiManager =
+            context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
         val wifiInfo = wifiManager.connectionInfo
         val ipAddress = wifiInfo.ipAddress
         if (ipAddress != 0)
-            return InetAddress.getByName(String.format("%d.%d.%d.%d",
+            return InetAddress.getByName(
+                String.format(
+                    "%d.%d.%d.%d",
                     ipAddress and 0xff, ipAddress shr 8 and 0xff,
-                    ipAddress shr 16 and 0xff, ipAddress shr 24 and 0xff))
+                    ipAddress shr 16 and 0xff, ipAddress shr 24 and 0xff
+                )
+            )
 
         Timber.d("No ip adress available throught wifi manager, try to get it manually")
 

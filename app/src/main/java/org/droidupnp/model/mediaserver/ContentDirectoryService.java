@@ -85,7 +85,7 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
 
     public ContentDirectoryService(Context ctx, String baseURL) {
         this.ctx = ctx;
-        this.baseURL = baseURL;
+        ContentDirectoryService.baseURL = baseURL;
     }
 
     public void setContext(Context ctx) {
@@ -93,7 +93,7 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
     }
 
     public void setBaseURL(String baseURL) {
-        this.baseURL = baseURL;
+        ContentDirectoryService.baseURL = baseURL;
     }
 
     @Override

@@ -8,7 +8,6 @@ import com.m3sv.droidupnp.di.scope.ApplicationScope
 import com.m3sv.droidupnp.presentation.main.data.ContentType
 import com.m3sv.droidupnp.presentation.main.data.Item
 import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers

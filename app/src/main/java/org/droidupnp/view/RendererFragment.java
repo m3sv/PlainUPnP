@@ -204,11 +204,11 @@ public class RendererFragment extends Fragment implements Observer {
                     try {
                         show();
 
-                        TextView title = (TextView) a.findViewById(R.id.title);
-                        TextView artist = (TextView) a.findViewById(R.id.subtitle);
-                        SeekBar seek = (SeekBar) a.findViewById(R.id.progressBar);
-                        SeekBar volume = (SeekBar) a.findViewById(R.id.volume);
-                        TextView durationElapse = (TextView) a.findViewById(R.id.trackDurationElapse);
+                        TextView title = a.findViewById(R.id.title);
+                        TextView artist = a.findViewById(R.id.subtitle);
+                        SeekBar seek = a.findViewById(R.id.progressBar);
+                        SeekBar volume = a.findViewById(R.id.volume);
+                        TextView durationElapse = a.findViewById(R.id.trackDurationElapse);
 
                         if (title == null || artist == null || seek == null || duration == null || durationElapse == null)
                             return;
@@ -262,11 +262,11 @@ public class RendererFragment extends Fragment implements Observer {
 
     private void SetupButtons() {
         // Now_Playing Footer Buttons
-        play_pauseButton = (ImageView) getActivity().findViewById(R.id.play_pauseButton);
-        volumeButton = (ImageView) getActivity().findViewById(R.id.volumeIcon);
-        stopButton = (ImageView) getActivity().findViewById(R.id.stopButton);
-        progressBar = (SeekBar) getActivity().findViewById(R.id.progressBar);
-        volume = (SeekBar) getActivity().findViewById(R.id.volume);
+        play_pauseButton = getActivity().findViewById(R.id.play_pauseButton);
+        volumeButton = getActivity().findViewById(R.id.volumeIcon);
+        stopButton = getActivity().findViewById(R.id.stopButton);
+        progressBar = getActivity().findViewById(R.id.progressBar);
+        volume = getActivity().findViewById(R.id.volume);
     }
 
     public abstract class ButtonCallback implements Callable<Void> {
@@ -279,7 +279,7 @@ public class RendererFragment extends Fragment implements Observer {
             this.view = v;
         }
 
-        public Void call() throws java.lang.Exception {
+        public Void call() {
             view.setBackgroundColor(getResources().getColor(R.color.blue_trans));
             action();
             new Handler().postDelayed(new Runnable() {
@@ -431,7 +431,7 @@ public class RendererFragment extends Fragment implements Observer {
             });
         }
 
-        duration = (TextView) getActivity().findViewById(R.id.trackDurationRemaining);
+        duration = getActivity().findViewById(R.id.trackDurationRemaining);
         if (duration != null) {
             duration.setOnClickListener(v -> {
                 try {

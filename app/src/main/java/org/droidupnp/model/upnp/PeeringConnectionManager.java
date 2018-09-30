@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2013 Aurélien Chabot <aurelien@chabot.fr>
- *
+ * <p>
  * This file is part of DroidUPNP.
- *
+ * <p>
  * DroidUPNP is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * DroidUPNP is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -33,29 +33,29 @@ import timber.log.Timber;
 
 public class PeeringConnectionManager extends AbstractPeeringConnectionManagerService {
 
-	PeeringConnectionManager(ProtocolInfos sourceProtocolInfo, ProtocolInfos sinkProtocolInfo) {
-		super(sourceProtocolInfo, sinkProtocolInfo);
-	}
+    PeeringConnectionManager(ProtocolInfos sourceProtocolInfo, ProtocolInfos sinkProtocolInfo) {
+        super(sourceProtocolInfo, sinkProtocolInfo);
+    }
 
-	@Override
-	protected ConnectionInfo createConnection(int connectionID, int peerConnectionId,
-	                                          ServiceReference peerConnectionManager,
-	                                          ConnectionInfo.Direction direction, ProtocolInfo protocolInfo) throws RemoteViews.ActionException {
+    @Override
+    protected ConnectionInfo createConnection(int connectionID, int peerConnectionId,
+                                              ServiceReference peerConnectionManager,
+                                              ConnectionInfo.Direction direction, ProtocolInfo protocolInfo) throws RemoteViews.ActionException {
 
-		// Create the connection on "this" side with the given ID now...
+        // Create the connection on "this" side with the given ID now...
 
-		return new ConnectionInfo(connectionID, 123, // Logical Rendering Control service ID
-				456, // Logical AV Transport service ID
-				protocolInfo, peerConnectionManager, peerConnectionId, direction, ConnectionInfo.Status.OK);
-	}
+        return new ConnectionInfo(connectionID, 123, // Logical Rendering Control service ID
+                456, // Logical AV Transport service ID
+                protocolInfo, peerConnectionManager, peerConnectionId, direction, ConnectionInfo.Status.OK);
+    }
 
-	@Override
-	protected void closeConnection(ConnectionInfo connectionInfo) {
-		// Close the connection
-	}
+    @Override
+    protected void closeConnection(ConnectionInfo connectionInfo) {
+        // Close the connection
+    }
 
-	@Override
-	protected void peerFailure(ActionInvocation invocation, UpnpResponse operation, String defaultFailureMessage) {
-		Timber.e(defaultFailureMessage, "Error managing connection with peer: " + defaultFailureMessage);
-	}
+    @Override
+    protected void peerFailure(ActionInvocation invocation, UpnpResponse operation, String defaultFailureMessage) {
+        Timber.e(defaultFailureMessage, "Error managing connection with peer: " + defaultFailureMessage);
+    }
 }

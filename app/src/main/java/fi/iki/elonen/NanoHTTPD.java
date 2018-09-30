@@ -133,24 +133,21 @@ public abstract class NanoHTTPD {
                     if (inputStream == null) {
                         safeClose(finalAccept);
                     } else {
-                        asyncRunner.exec(new Runnable() {
-                            @Override
-                            public void run() {
-                                OutputStream outputStream = null;
-                                try {
-                                    outputStream = finalAccept.getOutputStream();
-                                    TempFileManager tempFileManager = tempFileManagerFactory.create();
-                                    HTTPSession session = new HTTPSession(tempFileManager, inputStream, outputStream);
-                                    while (!finalAccept.isClosed()) {
-                                        session.execute();
-                                    }
-                                } catch (IOException e) {
-                                    Timber.e(e, e.getMessage());
-                                } finally {
-                                    safeClose(outputStream);
-                                    safeClose(inputStream);
-                                    safeClose(finalAccept);
+                        asyncRunner.exec(() -> {
+                            OutputStream outputStream = null;
+                            try {
+                                outputStream = finalAccept.getOutputStream();
+                                TempFileManager tempFileManager = tempFileManagerFactory.create();
+                                HTTPSession session = new HTTPSession(tempFileManager, inputStream, outputStream);
+                                while (!finalAccept.isClosed()) {
+                                    session.execute();
                                 }
+                            } catch (IOException e) {
+                                Timber.e(e, e.getMessage());
+                            } finally {
+                                safeClose(outputStream);
+                                safeClose(inputStream);
+                                safeClose(finalAccept);
                             }
                         });
                     }
@@ -451,12 +448,12 @@ public abstract class NanoHTTPD {
         }
 
         @Override
-        public OutputStream open() throws Exception {
+        public OutputStream open() {
             return fstream;
         }
 
         @Override
-        public void delete() throws Exception {
+        public void delete() {
             safeClose(fstream);
             file.delete();
         }

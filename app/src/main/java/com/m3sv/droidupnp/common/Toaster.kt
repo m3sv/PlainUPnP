@@ -12,7 +12,8 @@ class Toaster @Inject constructor(private val application: Application) : Toasta
     }
 
     override fun toast(@StringRes text: Int, arguments: Any?) {
-        Toast.makeText(application, application.getString(text, arguments), Toast.LENGTH_SHORT).show()
+        Toast.makeText(application, application.getString(text, arguments), Toast.LENGTH_SHORT)
+            .show()
     }
 
     override fun longToast(text: String) {
@@ -20,6 +21,7 @@ class Toaster @Inject constructor(private val application: Application) : Toasta
     }
 
     override fun longToast(@StringRes text: Int, arguments: Any?) {
-        Toast.makeText(application, application.getString(text, arguments), Toast.LENGTH_LONG).show()
+        Toast.makeText(application, application.getString(text, arguments), Toast.LENGTH_LONG)
+            .show()
     }
 }

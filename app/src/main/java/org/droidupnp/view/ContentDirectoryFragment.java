@@ -48,9 +48,9 @@ import com.m3sv.droidupnp.upnp.IDIDLObject;
 
 import org.droidupnp.controller.upnp.UpnpServiceController;
 import org.droidupnp.model.upnp.CallableContentDirectoryFilter;
-import org.droidupnp.model.upnp.IContentDirectoryCommand;
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver;
 import org.droidupnp.model.upnp.Factory;
+import org.droidupnp.model.upnp.IContentDirectoryCommand;
 import org.droidupnp.model.upnp.IRendererCommand;
 import org.droidupnp.model.upnp.IUpnpDevice;
 import org.droidupnp.model.upnp.didl.DIDLDevice;
@@ -162,7 +162,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
             // Item
             final DIDLObjectDisplay entry = getItem(position);
 
-            ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
+            ImageView imageView = convertView.findViewById(R.id.icon);
             imageView.setImageResource(entry.getIcon());
 
             for (int i = 0; i < videos.size(); i++) {
@@ -171,13 +171,13 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
                     imageView.setImageBitmap(thumbnails.get(i));
             }
 
-            TextView text1 = (TextView) convertView.findViewById(R.id.text1);
+            TextView text1 = convertView.findViewById(R.id.text1);
             text1.setText(entry.getTitle());
 
-            TextView text2 = (TextView) convertView.findViewById(R.id.text2);
+            TextView text2 = convertView.findViewById(R.id.text2);
             text2.setText((entry.getDescription() != null) ? entry.getDescription() : "");
 
-            TextView text3 = (TextView) convertView.findViewById(R.id.text3);
+            TextView text3 = convertView.findViewById(R.id.text3);
             text3.setText(entry.getCount());
 
             return convertView;
@@ -259,7 +259,7 @@ public class ContentDirectoryFragment extends ListFragment implements Observer {
 
         view.setBackgroundColor(getResources().getColor(R.color.grey));
 
-        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
+        swipeContainer = view.findViewById(R.id.swipeContainer);
 
         // Setup refresh listener which triggers new data loading
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

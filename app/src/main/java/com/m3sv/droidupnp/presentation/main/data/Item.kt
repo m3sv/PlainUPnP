@@ -5,7 +5,6 @@ import org.droidupnp.model.cling.didl.ClingAudioItem
 import org.droidupnp.model.cling.didl.ClingDIDLContainer
 import org.droidupnp.model.cling.didl.ClingImageItem
 import org.droidupnp.model.cling.didl.ClingVideoItem
-import timber.log.Timber
 
 data class Item(
     val uri: String,
@@ -24,7 +23,8 @@ data class Item(
                             it.title,
                             ContentType.DIRECTORY,
                             objects,
-                            it.didlObject.parentID)
+                            it.didlObject.parentID
+                        )
                     }
 
                     is ClingImageItem -> {

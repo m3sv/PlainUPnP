@@ -7,7 +7,10 @@ import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.PublishSubject
 import org.droidupnp.controller.upnp.UpnpServiceController
-import org.droidupnp.model.upnp.*
+import org.droidupnp.model.upnp.DeviceDiscoveryObserver
+import org.droidupnp.model.upnp.Factory
+import org.droidupnp.model.upnp.IRendererCommand
+import org.droidupnp.model.upnp.IUpnpDevice
 import org.droidupnp.model.upnp.didl.IDIDLItem
 import timber.log.Timber
 import java.util.*

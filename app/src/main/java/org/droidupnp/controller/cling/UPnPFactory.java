@@ -23,8 +23,8 @@ import android.content.Context;
 
 import org.droidupnp.controller.upnp.UpnpServiceController;
 import org.droidupnp.model.upnp.ARendererState;
-import org.droidupnp.model.upnp.IContentDirectoryCommand;
 import org.droidupnp.model.upnp.Factory;
+import org.droidupnp.model.upnp.IContentDirectoryCommand;
 import org.droidupnp.model.upnp.IRendererCommand;
 import org.droidupnp.model.upnp.RendererState;
 import org.fourthline.cling.android.AndroidUpnpService;

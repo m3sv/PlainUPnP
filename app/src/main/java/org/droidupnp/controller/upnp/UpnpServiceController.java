@@ -19,13 +19,13 @@
 
 package org.droidupnp.controller.upnp;
 
-import java.util.Observer;
-
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery;
 import org.droidupnp.model.upnp.IServiceListener;
 import org.droidupnp.model.upnp.IUpnpDevice;
 import org.droidupnp.model.upnp.RendererDiscovery;
 import org.fourthline.cling.model.meta.LocalDevice;
+
+import java.util.Observer;
 
 public interface UpnpServiceController {
     void setSelectedRenderer(IUpnpDevice renderer);

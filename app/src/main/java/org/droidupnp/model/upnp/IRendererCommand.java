@@ -1,18 +1,18 @@
 /**
  * Copyright (C) 2013 Aurélien Chabot <aurelien@chabot.fr>
- * 
+ * <p>
  * This file is part of DroidUPNP.
- * 
+ * <p>
  * DroidUPNP is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * DroidUPNP is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -23,40 +23,40 @@ import org.droidupnp.model.upnp.didl.IDIDLItem;
 
 public interface IRendererCommand {
 
-	// Pause/resume backgroud state update
-	public void pause();
+    // Pause/resume backgroud state update
+    void pause();
 
-	public void resume();
+    void resume();
 
-	// / Status
-	public void commandPlay();
+    // / Status
+    void commandPlay();
 
-	public void commandStop();
+    void commandStop();
 
-	public void commandPause();
+    void commandPause();
 
-	public void commandToggle();
+    void commandToggle();
 
-	public void updateStatus();
+    void updateStatus();
 
-	// / Position
-	public void commandSeek(String relativeTimeTarget);
+    // / Position
+    void commandSeek(String relativeTimeTarget);
 
-	public void updatePosition();
+    void updatePosition();
 
-	// / Volume
-	public void setVolume(final int volume);
+    // / Volume
+    void setVolume(final int volume);
 
-	public void setMute(final boolean mute);
+    void setMute(final boolean mute);
 
-	public void toggleMute();
+    void toggleMute();
 
-	public void updateVolume();
+    void updateVolume();
 
-	// / URI
-	public void launchItem(final IDIDLItem uri);
+    // / URI
+    void launchItem(final IDIDLItem uri);
 
-	// / Full
-	public void updateFull();
+    // / Full
+    void updateFull();
 
 }

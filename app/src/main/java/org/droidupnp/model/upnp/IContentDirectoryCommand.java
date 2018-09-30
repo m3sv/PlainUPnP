@@ -21,12 +21,10 @@ package org.droidupnp.model.upnp;
 
 import com.m3sv.droidupnp.upnp.ContentCallback;
 
-import org.droidupnp.view.ContentDirectoryFragment;
-
 public interface IContentDirectoryCommand {
-    public void browse(String directoryID, final String parent, final ContentCallback callback);
+    void browse(String directoryID, final String parent, final ContentCallback callback);
 
-    public void search(String search, final String parent, final ContentCallback callback);
+    void search(String search, final String parent, final ContentCallback callback);
 
-    public boolean isSearchAvailable();
+    boolean isSearchAvailable();
 }

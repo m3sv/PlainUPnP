@@ -19,14 +19,14 @@
 
 package org.droidupnp.model.cling;
 
+import android.util.Log;
+
 import org.droidupnp.model.upnp.IUpnpDevice;
 import org.fourthline.cling.model.meta.Action;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.Service;
 import org.fourthline.cling.model.types.ServiceType;
 import org.fourthline.cling.model.types.UDAServiceType;
-
-import android.util.Log;
 
 @SuppressWarnings("rawtypes")
 public class CDevice implements IUpnpDevice {
@@ -71,7 +71,6 @@ public class CDevice implements IUpnpDevice {
             for (ServiceType cap : device.findServiceTypes()) {
                 info += "\n\t" + cap.getType() + " : " + cap.toFriendlyString();
             }
-        ;
         return info;
     }
 

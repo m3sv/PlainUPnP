@@ -22,7 +22,6 @@ package org.droidupnp.model.cling.didl;
 import com.m3sv.droidupnp.upnp.IDIDLObject;
 
 import org.fourthline.cling.support.model.DIDLObject;
-import org.jetbrains.annotations.Nullable;
 
 public class ClingDIDLObject implements IDIDLObject {
 
