@@ -704,8 +704,8 @@ public abstract class NanoHTTPD {
                     inputStream = sequenceInputStream;
                 }
 
-                parms = new HashMap<String, String>();
-                headers = new HashMap<String, String>();
+                parms = new HashMap<>();
+                headers = new HashMap<>();
 
                 // Create a BufferedReader for parsing the header.
                 BufferedReader hin = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(buf, 0, rlen)));

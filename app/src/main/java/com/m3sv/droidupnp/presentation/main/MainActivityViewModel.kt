@@ -75,16 +75,27 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
 
     fun removeObservers() = manager.removeObservers()
 
-    fun resumeController() {
+    fun resumeUpnp() {
         Timber.d("Resuming UPnP controller")
         manager.controller.resume()
+        manager.resumeRendererUpdate()
     }
 
-    fun pauseController() {
+    fun pauseUpnp() {
         Timber.d("Pausing UPnP controller")
-//        with(manager.controller) {
-//            pause()
-//        }
+        manager.pauseRendererUpdate()
+    }
+
+    fun resumePlayback() {
+        manager.resumePlayback()
+    }
+
+    fun pausePlayback() {
+        manager.pausePlayback()
+    }
+
+    fun stopPlayback() {
+        manager.stopPlayback()
     }
 
     fun refreshServiceListener() = manager.controller.serviceListener?.refresh()

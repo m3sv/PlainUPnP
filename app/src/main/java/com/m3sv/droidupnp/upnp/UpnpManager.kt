@@ -44,7 +44,7 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
         val progress: Int,
         val title: String?,
         val artist: String?,
-        val state: IRendererState.State?
+        val state: org.droidupnp.model.upnp.RendererState.State
     )
 
     private val _rendererState: MutableLiveData<RendererState> = MutableLiveData()
@@ -132,12 +132,22 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
         }
     }
 
-    fun resumeRendererCommand() {
+    fun resumeRendererUpdate() {
         rendererCommand?.resume()
     }
 
-    fun pauseRendererCommand() {
+    fun pauseRendererUpdate() {
         rendererCommand?.pause()
+    }
+
+    fun pausePlayback() = rendererCommand?.commandPause()
+
+    fun stopPlayback() {
+        rendererCommand?.commandStop()
+    }
+
+    fun resumePlayback() {
+        rendererCommand?.commandPlay()
     }
 
     override fun addedDevice(device: IUpnpDevice?) {

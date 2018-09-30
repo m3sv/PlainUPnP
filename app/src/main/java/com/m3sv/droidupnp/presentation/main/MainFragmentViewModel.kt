@@ -31,10 +31,10 @@ class MainFragmentViewModel @Inject constructor(
     }
 
     fun pauseRendererCommand() {
-        upnpManager.pauseRendererCommand()
+        upnpManager.pauseRendererUpdate()
     }
 
     fun resumeRendererCommand() {
-        upnpManager.resumeRendererCommand()
+        upnpManager.resumeRendererUpdate()
     }
 }

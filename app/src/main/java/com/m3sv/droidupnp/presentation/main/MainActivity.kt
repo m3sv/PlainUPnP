@@ -16,6 +16,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.jakewharton.rxbinding2.view.RxView
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.databinding.MainActivityBinding
 import com.m3sv.droidupnp.presentation.base.BaseActivity
@@ -25,7 +26,7 @@ import com.m3sv.droidupnp.upnp.RenderedItem
 import com.m3sv.droidupnp.upnp.UpnpManager
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import org.droidupnp.model.upnp.IRendererState
+import org.droidupnp.model.upnp.RendererState
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
 
@@ -71,31 +72,61 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private val renderersObserver = Observer<Set<DeviceDisplay>> {
+    private val renderersObserver = Observer<Set<DeviceDisplay>>(::handleRenderers)
+
+    private val contentDirectoriesObserver =
+        Observer<Set<DeviceDisplay>>(::handleContentDirectories)
+
+    private val rendererStateObserver = Observer<UpnpManager.RendererState>(::handleRendererState)
+
+    private fun handleContentDirectories(it: Set<DeviceDisplay>?) {
+        it?.let {
+            Timber.d("Received new set of content directories: ${it.size}")
+            with(contentDirectoryAdapter) {
+                clear()
+                addAll(it.asSequence().map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
+            }
+        }
+    }
+
+    private fun handleRendererState(it: UpnpManager.RendererState?) {
+        it?.let {
+            with(binding.controlsSheet) {
+                progress.isEnabled = it.state != RendererState.State.STOP
+                progress.progress = it.progress
+
+                disposables += when (it.state) {
+                    RendererState.State.STOP -> {
+                        play.setImageResource(R.drawable.ic_play_arrow)
+                        RxView.clicks(play).subscribeBy(onNext = {
+                            viewModel.resumePlayback()
+                        }, onError = Timber::e)
+                    }
+
+                    RendererState.State.PLAY -> {
+                        play.setImageResource(R.drawable.ic_pause)
+                        RxView.clicks(play).subscribeBy(onNext = {
+                            viewModel.pausePlayback()
+                        }, onError = Timber::e)
+                    }
+
+                    RendererState.State.PAUSE -> {
+                        play.setImageResource(R.drawable.ic_play_arrow)
+                        RxView.clicks(play).subscribeBy(onNext = {
+                            viewModel.resumePlayback()
+                        }, onError = Timber::e)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun handleRenderers(it: Set<DeviceDisplay>?) {
         it?.run {
             Timber.d("Received new set of renderers: ${it.size}")
             rendererAdapter.run {
                 clear()
                 addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-            }
-        }
-    }
-
-    private val contentDirectoriesObserver = Observer<Set<DeviceDisplay>> {
-        it?.run {
-            Timber.d("Received new set of content directories: ${it.size}")
-            with(contentDirectoryAdapter) {
-                clear()
-                addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-            }
-        }
-    }
-
-    private val rendererStateObserver = Observer<UpnpManager.RendererState> {
-        it?.let {
-            with(binding.controlsSheet) {
-                progress.isEnabled = it.state != IRendererState.State.STOP
-                progress.progress = it.progress
             }
         }
     }
@@ -212,14 +243,14 @@ class MainActivity : BaseActivity() {
         super.onStart()
         with(viewModel) {
             addObservers()
-            resumeController()
+            resumeUpnp()
         }
     }
 
     override fun onStop() {
         with(viewModel) {
             removeObservers()
-            pauseController()
+            pauseUpnp()
         }
         super.onStop()
     }

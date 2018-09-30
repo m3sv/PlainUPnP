@@ -1,56 +1,53 @@
 /**
  * Copyright (C) 2013 Aurélien Chabot <aurelien@chabot.fr>
- * 
+ * <p>
  * This file is part of DroidUPNP.
- * 
+ * <p>
  * DroidUPNP is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * DroidUPNP is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package org.droidupnp.model.upnp;
 
-public interface IRendererState {
+public interface RendererState {
 
-	// Play state
-	public enum State
-	{
-		PLAY, PAUSE, STOP
-	}
+    enum State {
+        PLAY, PAUSE, STOP
+    }
 
-	public State getState();
+    State getState();
 
-	void setState(State state);
+    void setState(State state);
 
-	public int getVolume();
+    int getVolume();
 
-	void setVolume(int volume);
+    void setVolume(int volume);
 
-	public boolean isMute();
+    boolean isMute();
 
-	void setMute(boolean mute);
+    void setMute(boolean mute);
 
-	public String getRemainingDuration();
+    String getRemainingDuration();
 
-	public String getDuration();
+    String getDuration();
 
-	public String getPosition();
+    String getPosition();
 
-	public int getElapsedPercent();
+    int getElapsedPercent();
 
-	public long getDurationSeconds();
+    long getDurationSeconds();
 
-	public String getTitle();
+    String getTitle();
 
-	public String getArtist();
-
+    String getArtist();
 }

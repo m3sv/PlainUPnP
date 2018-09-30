@@ -21,6 +21,6 @@ package org.droidupnp.model.upnp;
 
 import org.droidupnp.model.CObservable;
 
-public abstract class ARendererState extends CObservable implements IRendererState {
+public abstract class ARendererState extends CObservable implements RendererState {
 
 }

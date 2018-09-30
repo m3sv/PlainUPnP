@@ -7,7 +7,6 @@ import org.droidupnp.model.cling.RendererState
 import org.droidupnp.model.cling.TrackMetadata
 import org.droidupnp.model.cling.didl.ClingDIDLItem
 import org.droidupnp.model.upnp.IRendererCommand
-import org.droidupnp.model.upnp.IRendererState
 import org.droidupnp.model.upnp.didl.IDIDLItem
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
@@ -45,6 +44,7 @@ class RendererCommand(
 
     override fun resume() {
         Timber.v("Resume")
+        job.cancel()
         job = Job()
         launch {
             updateInfo()
@@ -113,7 +113,7 @@ class RendererCommand(
 
     override fun commandToggle() {
         val state = rendererState.state
-        if (state == IRendererState.State.PLAY) {
+        if (state == org.droidupnp.model.upnp.RendererState.State.PLAY) {
             commandPause()
         } else {
             commandPlay()
