@@ -43,11 +43,10 @@ public class PeeringConnectionManager extends AbstractPeeringConnectionManagerSe
 	                                          ConnectionInfo.Direction direction, ProtocolInfo protocolInfo) throws RemoteViews.ActionException {
 
 		// Create the connection on "this" side with the given ID now...
-		ConnectionInfo con = new ConnectionInfo(connectionID, 123, // Logical Rendering Control service ID
+
+		return new ConnectionInfo(connectionID, 123, // Logical Rendering Control service ID
 				456, // Logical AV Transport service ID
 				protocolInfo, peerConnectionManager, peerConnectionId, direction, ConnectionInfo.Status.OK);
-
-		return con;
 	}
 
 	@Override

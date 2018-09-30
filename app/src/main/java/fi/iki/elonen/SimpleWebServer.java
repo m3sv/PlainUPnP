@@ -84,22 +84,26 @@ public class SimpleWebServer extends NanoHTTPD {
      * URL-encodes everything between "/"-characters. Encodes spaces as '%20' instead of '+'.
      */
     protected String encodeUri(String uri) {
-        String newUri = "";
+        StringBuilder newUri = new StringBuilder();
         StringTokenizer st = new StringTokenizer(uri, "/ ", true);
         while (st.hasMoreTokens()) {
             String tok = st.nextToken();
-            if (tok.equals("/"))
-                newUri += "/";
-            else if (tok.equals(" "))
-                newUri += "%20";
-            else {
-                try {
-                    newUri += URLEncoder.encode(tok, "UTF-8");
-                } catch (UnsupportedEncodingException ignored) {
-                }
+            switch (tok) {
+                case "/":
+                    newUri.append("/");
+                    break;
+                case " ":
+                    newUri.append("%20");
+                    break;
+                default:
+                    try {
+                        newUri.append(URLEncoder.encode(tok, "UTF-8"));
+                    } catch (UnsupportedEncodingException ignored) {
+                    }
+                    break;
             }
         }
-        return newUri;
+        return newUri.toString();
     }
 
     /**
@@ -248,12 +252,12 @@ public class SimpleWebServer extends NanoHTTPD {
 
     protected String listDirectory(String uri, File f) {
         String heading = "Directory " + uri;
-        String msg = "<html><head><title>" + heading + "</title><style><!--\n" +
+        StringBuilder msg = new StringBuilder("<html><head><title>" + heading + "</title><style><!--\n" +
                 "span.dirname { font-weight: bold; }\n" +
                 "span.filesize { font-size: 75%; }\n" +
                 "// -->\n" +
                 "</style>" +
-                "</head><body><h1>" + heading + "</h1>";
+                "</head><body><h1>" + heading + "</h1>");
 
         String up = null;
         if (uri.length() > 1) {
@@ -279,41 +283,41 @@ public class SimpleWebServer extends NanoHTTPD {
         }));
         Collections.sort(directories);
         if (up != null || directories.size() + files.size() > 0) {
-            msg += "<ul>";
+            msg.append("<ul>");
             if (up != null || directories.size() > 0) {
-                msg += "<section class=\"directories\">";
+                msg.append("<section class=\"directories\">");
                 if (up != null) {
-                    msg += "<li><a rel=\"directory\" href=\"" + up + "\"><span class=\"dirname\">..</span></a></b></li>";
+                    msg.append("<li><a rel=\"directory\" href=\"").append(up).append("\"><span class=\"dirname\">..</span></a></b></li>");
                 }
                 for (int i = 0; i < directories.size(); i++) {
                     String dir = directories.get(i) + "/";
-                    msg += "<li><a rel=\"directory\" href=\"" + encodeUri(uri + dir) + "\"><span class=\"dirname\">" + dir + "</span></a></b></li>";
+                    msg.append("<li><a rel=\"directory\" href=\"").append(encodeUri(uri + dir)).append("\"><span class=\"dirname\">").append(dir).append("</span></a></b></li>");
                 }
-                msg += "</section>";
+                msg.append("</section>");
             }
             if (files.size() > 0) {
-                msg += "<section class=\"files\">";
+                msg.append("<section class=\"files\">");
                 for (int i = 0; i < files.size(); i++) {
                     String file = files.get(i);
 
-                    msg += "<li><a href=\"" + encodeUri(uri + file) + "\"><span class=\"filename\">" + file + "</span></a>";
+                    msg.append("<li><a href=\"").append(encodeUri(uri + file)).append("\"><span class=\"filename\">").append(file).append("</span></a>");
                     File curFile = new File(f, file);
                     long len = curFile.length();
-                    msg += "&nbsp;<span class=\"filesize\">(";
+                    msg.append("&nbsp;<span class=\"filesize\">(");
                     if (len < 1024)
-                        msg += len + " bytes";
+                        msg.append(len).append(" bytes");
                     else if (len < 1024 * 1024)
-                        msg += len / 1024 + "." + (len % 1024 / 10 % 100) + " KB";
+                        msg.append(len / 1024).append(".").append(len % 1024 / 10 % 100).append(" KB");
                     else
-                        msg += len / (1024 * 1024) + "." + len % (1024 * 1024) / 10 % 100 + " MB";
-                    msg += ")</span></li>";
+                        msg.append(len / (1024 * 1024)).append(".").append(len % (1024 * 1024) / 10 % 100).append(" MB");
+                    msg.append(")</span></li>");
                 }
-                msg += "</section>";
+                msg.append("</section>");
             }
-            msg += "</ul>";
+            msg.append("</ul>");
         }
-        msg += "</body></html>";
-        return msg;
+        msg.append("</body></html>");
+        return msg.toString();
     }
 
     @Override

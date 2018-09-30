@@ -125,41 +125,38 @@ public abstract class NanoHTTPD {
         myServerSocket = new ServerSocket();
         myServerSocket.bind((hostname != null) ? new InetSocketAddress(hostname, myPort) : new InetSocketAddress(myPort));
 
-        myThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                do {
-                    try {
-                        final Socket finalAccept = myServerSocket.accept();
-                        final InputStream inputStream = finalAccept.getInputStream();
-                        if (inputStream == null) {
-                            safeClose(finalAccept);
-                        } else {
-                            asyncRunner.exec(new Runnable() {
-                                @Override
-                                public void run() {
-                                    OutputStream outputStream = null;
-                                    try {
-                                        outputStream = finalAccept.getOutputStream();
-                                        TempFileManager tempFileManager = tempFileManagerFactory.create();
-                                        HTTPSession session = new HTTPSession(tempFileManager, inputStream, outputStream);
-                                        while (!finalAccept.isClosed()) {
-                                            session.execute();
-                                        }
-                                    } catch (IOException e) {
-                                        Timber.e(e, e.getMessage());
-                                    } finally {
-                                        safeClose(outputStream);
-                                        safeClose(inputStream);
-                                        safeClose(finalAccept);
+        myThread = new Thread(() -> {
+            do {
+                try {
+                    final Socket finalAccept = myServerSocket.accept();
+                    final InputStream inputStream = finalAccept.getInputStream();
+                    if (inputStream == null) {
+                        safeClose(finalAccept);
+                    } else {
+                        asyncRunner.exec(new Runnable() {
+                            @Override
+                            public void run() {
+                                OutputStream outputStream = null;
+                                try {
+                                    outputStream = finalAccept.getOutputStream();
+                                    TempFileManager tempFileManager = tempFileManagerFactory.create();
+                                    HTTPSession session = new HTTPSession(tempFileManager, inputStream, outputStream);
+                                    while (!finalAccept.isClosed()) {
+                                        session.execute();
                                     }
+                                } catch (IOException e) {
+                                    Timber.e(e, e.getMessage());
+                                } finally {
+                                    safeClose(outputStream);
+                                    safeClose(inputStream);
+                                    safeClose(finalAccept);
                                 }
-                            });
-                        }
-                    } catch (IOException e) {
+                            }
+                        });
                     }
-                } while (!myServerSocket.isClosed());
-            }
+                } catch (IOException e) {
+                }
+            } while (!myServerSocket.isClosed());
         });
         myThread.setDaemon(true);
         myThread.setName("NanoHttpd Main Listener");

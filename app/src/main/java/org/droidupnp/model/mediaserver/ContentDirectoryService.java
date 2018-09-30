@@ -76,7 +76,7 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
     public final static String DIRECTORY_PREFIX = "d-";
 
 
-    private static Context ctx;
+    private Context ctx;
     private static String baseURL;
 
     public ContentDirectoryService() {
