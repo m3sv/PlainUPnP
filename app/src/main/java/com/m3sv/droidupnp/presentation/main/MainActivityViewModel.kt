@@ -116,4 +116,16 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
     fun pop() {
         manager.browsePrevious()
     }
+
+    fun pauseRendererCommand() {
+        manager.pauseRendererUpdate()
+    }
+
+    fun resumeRendererCommand() {
+        manager.resumeRendererUpdate()
+    }
+
+    fun moveTo(progress: Int, max: Int) {
+        manager.moveTo(progress, max)
+    }
 }

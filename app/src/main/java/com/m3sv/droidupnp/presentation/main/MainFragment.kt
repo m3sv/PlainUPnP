@@ -89,15 +89,7 @@ class MainFragment : BaseFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.resumeRendererCommand()
-    }
 
-    override fun onStop() {
-        super.onStop()
-        viewModel.pauseRendererCommand()
-    }
 
     companion object {
         val TAG: String = MainFragment::class.java.simpleName

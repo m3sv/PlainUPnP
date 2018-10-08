@@ -7,10 +7,7 @@ import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.PublishSubject
 import org.droidupnp.controller.upnp.UpnpServiceController
-import org.droidupnp.model.upnp.DeviceDiscoveryObserver
-import org.droidupnp.model.upnp.Factory
-import org.droidupnp.model.upnp.IRendererCommand
-import org.droidupnp.model.upnp.IUpnpDevice
+import org.droidupnp.model.upnp.*
 import org.droidupnp.model.upnp.didl.IDIDLItem
 import timber.log.Timber
 import java.util.*
@@ -56,6 +53,8 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
         get() = _rendererState
 
     private val _renderedItem: MutableLiveData<RenderedItem> = MutableLiveData()
+
+    private var upnpRendererState: ARendererState? = null
 
     val renderedItem: LiveData<RenderedItem>
         get() = _renderedItem
@@ -103,7 +102,7 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
 
     fun renderItem(item: IDIDLItem) {
         rendererCommand?.pause()
-        val rendererState = factory.createRendererState().also {
+        upnpRendererState = factory.createRendererState().also {
             it.addObserver { _, _ ->
                 val durationRemaining = it.remainingDuration
                 val durationElapse = it.position
@@ -128,7 +127,7 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
         }
 
         _renderedItem.postValue(Pair(item.uri, item.title))
-        rendererCommand = factory.createRendererCommand(rendererState).also {
+        rendererCommand = factory.createRendererCommand(upnpRendererState).also {
             it.resume()
             it.updateFull()
             it.launchItem(item)
@@ -196,5 +195,24 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
     }
 
     override fun update(o: Observable?, arg: Any?) {
+    }
+
+    fun moveTo(progress: Int, max: Int) {
+        fun formatTime(h: Long, m: Long, s: Long): String {
+            return ((if (h >= 10) "" + h else "0$h") + ":" + (if (m >= 10) "" + m else "0$m") + ":"
+                    + if (s >= 10) "" + s else "0$s")
+        }
+
+        upnpRendererState?.run {
+            val t = ((1.0 - (max.toDouble() - progress) / max) * durationSeconds).toLong()
+            val h = t / 3600
+            val m = (t - h * 3600) / 60
+            val s = t - h * 3600 - m * 60
+            val seek = formatTime(h, m, s)
+            rendererCommand?.run {
+                Timber.d("Seek to $seek")
+                commandSeek(seek)
+            }
+        }
     }
 }

@@ -14,6 +14,7 @@ import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.SeekBar
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.view.RxView
@@ -147,9 +148,7 @@ class MainActivity : BaseActivity() {
 
         setupBottomNavigation(binding.bottomNav)
 
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container)
-
-        binding.controlsSheet.progress.isEnabled = false
+        initBottomSheet()
 
         if (savedInstanceState == null) {
             supportFragmentManager
@@ -182,6 +181,29 @@ class MainActivity : BaseActivity() {
                 },
                 onError = Timber::e
             )
+
+        binding.controlsSheet.progress.setOnSeekBarChangeListener(object :
+            SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser)
+                    Timber.i("From user")
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                Timber.i("onStartTrackingTouch")
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                Timber.i("onStopTrackingTouch")
+                viewModel.moveTo(seekBar.progress, seekBar.max)
+            }
+        })
+    }
+
+    private fun initBottomSheet() {
+        bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container)
+
+        binding.controlsSheet.progress.isEnabled = false
     }
 
     private fun setupBottomNavigation(bottomNavigation: BottomNavigationView) {
@@ -244,11 +266,13 @@ class MainActivity : BaseActivity() {
         with(viewModel) {
             addObservers()
             resumeUpnp()
+            resumeRendererCommand()
         }
     }
 
     override fun onStop() {
         with(viewModel) {
+            pauseRendererCommand()
             removeObservers()
             pauseUpnp()
         }
