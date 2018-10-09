@@ -358,7 +358,7 @@ public class ContentDirectoryService extends AbstractContentDirectoryService
 				ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString());
 		}
 
-		Log.e(TAG, "No container for this ID !!!");
+		Timber.e("No container for this ID !!!");
 		throw new ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT);
 	}
 }

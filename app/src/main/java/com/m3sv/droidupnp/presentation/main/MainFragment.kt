@@ -57,8 +57,8 @@ class MainFragment : BaseFragment() {
                 viewModel.navigateToDirectory(itemUri, parentId)
             }
 
-            override fun onItemClick(item: IDIDLItem) {
-                viewModel.launchItem(item)
+            override fun onItemClick(item: IDIDLItem, position: Int) {
+                viewModel.launchItem(item, position)
             }
         })
 

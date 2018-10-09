@@ -19,13 +19,13 @@
 
 package org.droidupnp.model.cling;
 
-import android.util.Log;
-
 import org.droidupnp.model.upnp.ARendererState;
 import org.fourthline.cling.support.model.MediaInfo;
 import org.fourthline.cling.support.model.PositionInfo;
 import org.fourthline.cling.support.model.TransportInfo;
 import org.fourthline.cling.support.model.TransportState;
+
+import timber.log.Timber;
 
 public class RendererState extends ARendererState {
 
@@ -111,9 +111,9 @@ public class RendererState extends ARendererState {
             this.positionInfo = positionInfo;
             notifyAllObservers();
         } catch (Exception e) {
-            Log.e(TAG, (e.getMessage() == null) ? "Ëxception !" : e.getMessage());
+            Timber.e((e.getMessage() == null) ? "Exception !" : e.getMessage());
             for (StackTraceElement m : e.getStackTrace())
-                Log.e(TAG, m.toString());
+                Timber.e(m.toString());
         }
 
     }

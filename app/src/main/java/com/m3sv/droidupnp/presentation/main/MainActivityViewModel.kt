@@ -128,4 +128,12 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
     fun moveTo(progress: Int, max: Int) {
         manager.moveTo(progress, max)
     }
+
+    fun playNext() {
+        manager.playNext()
+    }
+
+    fun playPrevious() {
+        manager.playPrevious()
+    }
 }

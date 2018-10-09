@@ -149,7 +149,7 @@ public class TrackMetadata {
             s.flush();
 
         } catch (Exception e) {
-            Log.e(TAG, "error occurred while creating xml file : " + e.toString());
+            Timber.e("error occurred while creating xml file : " + e.toString());
             Timber.e(e);
         }
 

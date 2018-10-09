@@ -252,7 +252,7 @@ public class SettingsActivity extends PreferenceActivity {
 				Preference pref = findPreference("version");
 				pref.setSummary(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);
 			} catch (PackageManager.NameNotFoundException e) {
-				Log.e(TAG, "exception", e);
+				Timber.e("exception", e);
 			}
 
 			// Dialog for external license

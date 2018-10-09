@@ -54,6 +54,7 @@ import de.psdev.licensesdialog.licenses.BSD3ClauseLicense;
 import de.psdev.licensesdialog.licenses.GnuLesserGeneralPublicLicense21;
 import de.psdev.licensesdialog.model.Notice;
 import de.psdev.licensesdialog.model.Notices;
+import timber.log.Timber;
 
 public class SettingsActivity extends PreferenceActivity {
 
@@ -211,7 +212,7 @@ public class SettingsActivity extends PreferenceActivity {
                 Preference pref = findPreference("version");
                 pref.setSummary(getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName);
             } catch (PackageManager.NameNotFoundException e) {
-                Log.e(TAG, "exception", e);
+                Timber.e("exception", e);
             }
 
             // Dialog for external license

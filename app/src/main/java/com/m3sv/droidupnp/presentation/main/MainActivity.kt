@@ -157,6 +157,14 @@ class MainActivity : BaseActivity() {
                 .commit()
         }
 
+        disposables += RxView.clicks(binding.controlsSheet.next).subscribeBy(onNext = {
+            viewModel.playNext()
+        }, onError = Timber::e)
+
+        disposables += RxView.clicks(binding.controlsSheet.previous).subscribeBy(onNext = {
+            viewModel.playPrevious()
+        }, onError = Timber::e)
+
         initLiveData()
         setupPickers()
 
@@ -227,8 +235,13 @@ class MainActivity : BaseActivity() {
     }
 
     private val renderedItemObserver = Observer<RenderedItem> {
-        Glide.with(this@MainActivity).load(it?.first).into(binding.controlsSheet.art)
-        binding.controlsSheet.title.text = it?.second
+        it?.run {
+            Glide.with(this@MainActivity)
+                .load(first)
+                .apply(third)
+                .into(binding.controlsSheet.art)
+            binding.controlsSheet.title.text = second
+        }
     }
 
     private fun initLiveData() {

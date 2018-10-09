@@ -26,7 +26,7 @@ class MainFragmentViewModel @Inject constructor(
         upnpManager.browseTo(directoryId, parentId)
     }
 
-    fun launchItem(item: IDIDLItem) {
-        upnpManager.renderItem(item)
+    fun launchItem(item: IDIDLItem, position: Int) {
+        upnpManager.renderItem(item, position)
     }
 }

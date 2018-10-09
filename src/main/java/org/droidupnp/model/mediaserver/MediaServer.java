@@ -106,7 +106,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer
 		try {
 			version = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0).versionName;
 		} catch (PackageManager.NameNotFoundException e) {
-			Log.e(TAG, "Application version name not found");
+			Timber.e("Application version name not found");
 		}
 
 		DeviceDetails details = new DeviceDetails(
@@ -118,8 +118,8 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer
 		List<ValidationError> l = details.validate();
 		for( ValidationError v : l )
 		{
-			Log.e(TAG, "Validation pb for property "+ v.getPropertyName());
-			Log.e(TAG, "Error is " + v.getMessage());
+			Timber.e("Validation pb for property "+ v.getPropertyName());
+			Timber.e("Error is " + v.getMessage());
 		}
 
 
@@ -242,8 +242,8 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer
 		}
 		catch (Exception e)
 		{
-			Log.e(TAG, "Error while parsing " + id);
-			Log.e(TAG, "exception", e);
+			Timber.e("Error while parsing " + id);
+			Timber.e("exception", e);
 		}
 
 		throw new InvalidIdentificatorException(id + " was not found in media database");
@@ -286,7 +286,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer
 				try {
 					version = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0).versionName;
 				} catch (PackageManager.NameNotFoundException e) {
-					Log.e(TAG, "Application version name not found");
+					Timber.e("Application version name not found");
 				}
 
 				// Some DLNA header option
@@ -300,8 +300,8 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer
 		}
 		catch(Exception e)
 		{
-			Log.e(TAG, "Unexpected error while serving file");
-			Log.e(TAG, "exception", e);
+			Timber.e("Unexpected error while serving file");
+			Timber.e("exception", e);
 		}
 
 		return new Response(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "INTERNAL ERROR: unexpected error.");

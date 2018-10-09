@@ -89,7 +89,7 @@ public class DirectoryContainer extends Container {
             try {
                 path = (File) volume.getClass().getMethod("getPathFile").invoke(volume);
             } catch (Exception e) {
-                Log.e(TAG, "Could not get path of volume " + description + ": " + e);
+                Timber.e("Could not get path of volume " + description + ": " + e);
                 continue;
             }
             Log.d(TAG, "Found volume " + description + " (" + path + ") in state " + volume.getState());
@@ -130,7 +130,7 @@ public class DirectoryContainer extends Container {
                 type = tika.detect(file);
                 Log.v(TAG, "Type of " + file + " from content: " + type);
             } catch (IOException e) {
-                Log.e(TAG, "Could not detect mime type of " + file + ": " + e);
+                Timber.e("Could not detect mime type of " + file + ": " + e);
             }
         }
         if (type == null)

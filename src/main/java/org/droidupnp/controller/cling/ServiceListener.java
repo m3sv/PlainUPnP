@@ -132,18 +132,18 @@ public class ServiceListener implements IServiceListener
 				}
 				catch (UnknownHostException e1)
 				{
-					Log.e(TAG, "Creating demo device failed");
-					Log.e(TAG, "exception", e1);
+					Timber.e("Creating demo device failed");
+					Timber.e("exception", e1);
 				}
 				catch (ValidationException e2)
 				{
-					Log.e(TAG, "Creating demo device failed");
-					Log.e(TAG, "exception", e2);
+					Timber.e("Creating demo device failed");
+					Timber.e("exception", e2);
 				}
 				catch (IOException e3)
 				{
-					Log.e(TAG, "Starting http server failed");
-					Log.e(TAG, "exception", e3);
+					Timber.e("Starting http server failed");
+					Timber.e("exception", e3);
 				}
 			}
 			else if(mediaServer != null)

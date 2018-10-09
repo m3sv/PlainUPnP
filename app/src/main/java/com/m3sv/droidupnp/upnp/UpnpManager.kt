@@ -2,11 +2,16 @@ package com.m3sv.droidupnp.upnp
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import com.bumptech.glide.request.RequestOptions
+import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.PublishSubject
 import org.droidupnp.controller.upnp.UpnpServiceController
+import org.droidupnp.model.cling.didl.ClingAudioItem
+import org.droidupnp.model.cling.didl.ClingImageItem
+import org.droidupnp.model.cling.didl.ClingVideoItem
 import org.droidupnp.model.upnp.*
 import org.droidupnp.model.upnp.didl.IDIDLItem
 import timber.log.Timber
@@ -21,7 +26,7 @@ sealed class Directory {
 /**
  * First is uri to a file, second is a title and third is an artist
  */
-typealias RenderedItem = Pair<String, String>
+typealias RenderedItem = Triple<String, String, RequestOptions>
 
 class UpnpManager constructor(val controller: UpnpServiceController, val factory: Factory) :
     DeviceDiscoveryObserver, Observer {
@@ -100,8 +105,15 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
 
     private var directoriesStructure = LinkedList<Directory>()
 
-    fun renderItem(item: IDIDLItem) {
+    private var next: Int = -1
+    private var previous: Int = -1
+
+    fun renderItem(item: IDIDLItem, position: Int) {
         rendererCommand?.pause()
+
+        next = position + 1
+        previous = position - 1
+
         upnpRendererState = factory.createRendererState().also {
             it.addObserver { _, _ ->
                 val durationRemaining = it.remainingDuration
@@ -123,14 +135,40 @@ class UpnpManager constructor(val controller: UpnpServiceController, val factory
                 Timber.i("New renderer state: $rendererState")
                 _rendererState.postValue(rendererState)
             }
-
         }
 
-        _renderedItem.postValue(Pair(item.uri, item.title))
+        val requestOptions = when (item) {
+            is ClingImageItem -> {
+                RequestOptions()
+            }
+
+            is ClingVideoItem -> {
+                RequestOptions()
+            }
+
+            is ClingAudioItem -> {
+                RequestOptions().placeholder(R.drawable.ic_music_note)
+            }
+
+            else -> RequestOptions()
+        }
+        _renderedItem.postValue(Triple(item.uri, item.title, requestOptions))
         rendererCommand = factory.createRendererCommand(upnpRendererState).also {
             it.resume()
             it.updateFull()
             it.launchItem(item)
+        }
+    }
+
+    fun playNext() {
+        _contentData.value?.takeIf { it.size > next && next != -1 }?.let {
+            renderItem(it[next].didlObject as IDIDLItem, next)
+        }
+    }
+
+    fun playPrevious() {
+        _contentData.value?.takeIf { previous >= 0 && previous < it.size }?.let {
+            renderItem(it[previous].didlObject as IDIDLItem, previous)
         }
     }
 

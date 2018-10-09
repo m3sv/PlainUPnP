@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.common.ItemsDiffCallback
 import com.m3sv.droidupnp.databinding.GalleryContentFolderItemBinding
@@ -19,7 +20,7 @@ import org.droidupnp.model.upnp.didl.IDIDLItem
 interface OnItemClickListener {
     fun onDirectoryClick(itemUri: String, parentId: String?)
 
-    fun onItemClick(item: IDIDLItem)
+    fun onItemClick(item: IDIDLItem, position: Int)
 }
 
 class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener) :
@@ -53,19 +54,25 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
 
         val itemClickListener = View.OnClickListener {
             item.didlObjectDisplay?.get(holder.adapterPosition)?.let {
-                onItemClickListener.onItemClick(it.didlObject as IDIDLItem)
+                onItemClickListener.onItemClick(it.didlObject as IDIDLItem, holder.adapterPosition)
             }
         }
 
         when (item.type) {
             ContentType.IMAGE -> {
-                loadData(holder, item, R.drawable.ic_image, itemClickListener)
+                loadData(holder, item, R.drawable.ic_image, itemClickListener, RequestOptions())
             }
             ContentType.VIDEO -> {
-                loadData(holder, item, R.drawable.ic_video, itemClickListener)
+                loadData(holder, item, R.drawable.ic_video, itemClickListener, RequestOptions())
             }
             ContentType.AUDIO -> {
-                loadData(holder, item, R.drawable.ic_music, itemClickListener)
+                loadData(
+                    holder,
+                    item,
+                    R.drawable.ic_music,
+                    itemClickListener,
+                    RequestOptions().placeholder(R.drawable.ic_music_note)
+                )
             }
             ContentType.DIRECTORY -> {
                 loadDirectory(holder, item)
@@ -77,10 +84,11 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         holder: BaseViewHolder<*>,
         item: Item,
         @DrawableRes contentTypeIcon: Int,
-        onClick: View.OnClickListener
+        onClick: View.OnClickListener,
+        requestOptions: RequestOptions
     ) {
         with((holder as BaseViewHolder<GalleryContentItemBinding>).binding) {
-            Glide.with(holder.itemView.context).load(item.uri).into(thumbnail)
+            Glide.with(holder.itemView.context).load(item.uri).apply(requestOptions).into(thumbnail)
             title.text = item.name
             title.setOnClickListener(onClick)
             thumbnail.setOnClickListener(onClick)
