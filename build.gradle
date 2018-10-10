@@ -23,6 +23,7 @@ buildscript {
                     'recyclerView'    : "com.android.support:recyclerview-v7:${versions.supportLibrary}",
                     'cardView'        : "com.android.support:cardview-v7:${versions.supportLibrary}",
                     'constraintLayout': "com.android.support.constraint:constraint-layout:1.1.0",
+                    'preferences'     : "com.android.support:preference-v7:${versions.supportLibrary}"
             ],
             'architectureComponents': [
                     'lifecycle'               : "android.arch.lifecycle:extensions:${versions.architectureComponents}",

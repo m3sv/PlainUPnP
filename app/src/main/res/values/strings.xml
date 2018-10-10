@@ -106,5 +106,6 @@
     <string name="empty_content" translatable="false">-</string>
 	<string name="to_exit">Double tap back button to exit</string>
     <string name="about_licenses_other" />
+    <string name="general_category">General</string>
 
 </resources>

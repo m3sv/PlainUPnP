@@ -66,6 +66,7 @@ dependencies {
     implementation deps.support.recyclerView
     implementation deps.support.cardView
     implementation deps.support.constraintLayout
+    implementation deps.support.preferences
 
     implementation deps.architectureComponents.lifecycle
     implementation deps.architectureComponents.lifecycleReactiveStreams
@@ -78,7 +79,6 @@ dependencies {
     implementation deps.rx.android
 
     implementation deps.coroutines
-
 
     implementation(deps.glide.core) {
         exclude group: "com.android.support"
