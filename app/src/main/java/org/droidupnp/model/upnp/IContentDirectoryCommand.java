@@ -25,6 +25,4 @@ public interface IContentDirectoryCommand {
     void browse(String directoryID, final String parent, final ContentCallback callback);
 
     void search(String search, final String parent, final ContentCallback callback);
-
-    boolean isSearchAvailable();
 }

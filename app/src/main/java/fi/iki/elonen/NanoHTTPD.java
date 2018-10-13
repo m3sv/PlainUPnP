@@ -197,7 +197,7 @@ public abstract class NanoHTTPD {
      * @return HTTP response, see class Response for details
      */
     protected Response serve(HTTPSession session) {
-        Map<String, String> files = new HashMap<String, String>();
+        Map<String, String> files = new HashMap<>();
 
         try {
             session.parseBody(files);

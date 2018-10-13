@@ -39,7 +39,7 @@ public class ClingVideoItem extends ClingDIDLItem {
     @Override
     public String getDescription() {
         List<Res> res = item.getResources();
-        if (res != null && res.size() > 0)
+        if (res != null && !res.isEmpty())
             return "" + ((res.get(0).getResolution() != null) ? res.get(0).getResolution() : "");
 
         return "";
@@ -48,7 +48,7 @@ public class ClingVideoItem extends ClingDIDLItem {
     @Override
     public String getCount() {
         List<Res> res = item.getResources();
-        if (res != null && res.size() > 0)
+        if (res != null && !res.isEmpty())
             return "" + ((res.get(0).getDuration() != null) ? res.get(0).getDuration().split("\\.")[0] : "");
 
         return "";

@@ -31,7 +31,7 @@ import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.common.CONTENT_DIRECTORY_AUDIO
 import com.m3sv.droidupnp.common.CONTENT_DIRECTORY_IMAGE
 import com.m3sv.droidupnp.common.CONTENT_DIRECTORY_VIDEO
-import org.droidupnp.model.cling.localContent.*
+import org.droidupnp.model.cling.localcontent.*
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException

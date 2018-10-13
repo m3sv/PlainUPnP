@@ -50,7 +50,7 @@ public class ClingAudioItem extends ClingDIDLItem {
     @Override
     public String getCount() {
         List<Res> res = item.getResources();
-        if (res != null && res.size() > 0)
+        if (res != null && !res.isEmpty())
             return "" + ((res.get(0).getDuration() != null) ? res.get(0).getDuration().split("\\.")[0] : "");
 
         return "";

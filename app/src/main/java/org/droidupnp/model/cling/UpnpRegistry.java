@@ -35,7 +35,7 @@ public class UpnpRegistry implements IUpnpRegistry {
 
     @Override
     public Collection<IUpnpDevice> getDevicesList() {
-        Collection<IUpnpDevice> devices = new ArrayList<IUpnpDevice>();
+        Collection<IUpnpDevice> devices = new ArrayList<>();
         for (Device d : clingRegistry.getDevices())
             devices.add(new CDevice(d));
 

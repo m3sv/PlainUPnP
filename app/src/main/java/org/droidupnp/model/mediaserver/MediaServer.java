@@ -53,18 +53,18 @@ import java.util.UUID;
 import timber.log.Timber;
 
 public class MediaServer extends fi.iki.elonen.SimpleWebServer {
-    private final static String TAG = "MediaServer";
+    private static final String TAG = "MediaServer";
 
     private UDN udn;
     private LocalDevice localDevice = null;
     private LocalService localService;
     private Context ctx;
 
-    private final static int port = 8192;
+    private static final int PORT = 8192;
     private static InetAddress localAddress;
 
     public MediaServer(InetAddress localAddress, Context ctx) throws ValidationException {
-        super(null, port, null, true);
+        super(null, PORT, null, true);
 
         Log.i(TAG, "Creating media server !");
 
@@ -96,12 +96,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
     }
 
     public void createLocalDevice() throws ValidationException {
-        String version = "";
-        try {
-            version = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0).versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            Timber.e("Application version name not found");
-        }
+        String version = getApplicationVersion("1.0");
 
         DeviceDetails details = new DeviceDetails(
                 PrefUtils.getSettingContentDirectoryName(ctx),
@@ -116,7 +111,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
         }
 
 
-        DeviceType type = new UDADeviceType("MediaServer", 1);
+        DeviceType type = new UDADeviceType(TAG, 1);
 
         localDevice = new LocalDevice(new DeviceIdentity(udn), type, details, localService);
     }
@@ -127,7 +122,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
     }
 
     public String getAddress() {
-        return localAddress.getHostAddress() + ":" + port;
+        return localAddress.getHostAddress() + ":" + PORT;
     }
 
     public class InvalidIdentificatorException extends java.lang.Exception {
@@ -146,8 +141,8 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
             this.mime = mime;
         }
 
-        public String path;
-        public String mime;
+        private String path;
+        private String mime;
     }
 
     private ServerObject getFileServerObject(String id) throws InvalidIdentificatorException {
@@ -178,7 +173,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
                 mediaColumns = new MediaStore.Images.Media();
             }
 
-            if (uri != null && mediaColumns != null) {
+            if (uri != null) {
                 String[] columns = new String[]{mediaColumns.DATA, mediaColumns.MIME_TYPE};
                 String where = mediaColumns._ID + "=?";
                 String[] whereVal = {"" + mediaId};
@@ -187,18 +182,18 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
                 String mime = null;
                 Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, null);
 
-                if (cursor.moveToFirst()) {
+                if (cursor != null && cursor.moveToFirst()) {
                     path = cursor.getString(cursor.getColumnIndexOrThrow(mediaColumns.DATA));
                     mime = cursor.getString(cursor.getColumnIndexOrThrow(mediaColumns.MIME_TYPE));
+
+                    cursor.close();
                 }
-                cursor.close();
 
                 if (path != null)
                     return new ServerObject(path, mime);
             }
         } catch (Exception e) {
-            Timber.e("Error while parsing " + id);
-            Timber.e("exception", e);
+            Timber.e(e, "Error while parsing " + id);
         }
 
         throw new InvalidIdentificatorException(id + " was not found in media database");
@@ -231,12 +226,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
             }
 
             if (res != null) {
-                String version = "1.0";
-                try {
-                    version = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0).versionName;
-                } catch (PackageManager.NameNotFoundException e) {
-                    Timber.e("Application version name not found");
-                }
+                String version = getApplicationVersion("1.0");
 
                 // Some DLNA header option
                 res.addHeader("realTimeInfo.dlna.org", "DLNA.ORG_TLAG=*");
@@ -252,5 +242,15 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
         }
 
         return new Response(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "INTERNAL ERROR: unexpected error.");
+    }
+
+    private String getApplicationVersion(final String version) {
+        String result = version;
+        try {
+            result = ctx.getPackageManager().getPackageInfo(ctx.getPackageName(), 0).versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Timber.e("Application version name not found");
+        }
+        return result;
     }
 }

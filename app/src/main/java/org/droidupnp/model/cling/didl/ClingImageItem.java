@@ -30,6 +30,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import timber.log.Timber;
+
 public class ClingImageItem extends ClingDIDLItem {
     public ClingImageItem(ImageItem item) {
         super(item);
@@ -43,7 +45,7 @@ public class ClingImageItem extends ClingDIDLItem {
     @Override
     public String getDescription() {
         List<Res> res = item.getResources();
-        if (res != null && res.size() > 0)
+        if (res != null && !res.isEmpty())
             return "" + ((res.get(0).getResolution() != null) ? res.get(0).getResolution() : "");
 
         return "";
@@ -57,6 +59,7 @@ public class ClingImageItem extends ClingDIDLItem {
             DateFormat formatOut = DateFormat.getDateTimeInstance();
             return formatOut.format(date);
         } catch (Exception e) {
+            Timber.e(e);
         }
         return "";
     }

@@ -26,7 +26,9 @@ import org.droidupnp.model.upnp.AUpnpRendererState;
 import org.droidupnp.model.upnp.Factory;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;
 import org.droidupnp.model.upnp.IRendererCommand;
+
 import com.m3sv.droidupnp.data.UpnpRendererState;
+
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.controlpoint.ControlPoint;
 
@@ -36,7 +38,7 @@ public class UPnPFactory implements Factory {
     private final UpnpServiceController controller;
 
     @Inject
-    public UPnPFactory(UpnpServiceController controller) {
+    UPnPFactory(UpnpServiceController controller) {
         this.controller = controller;
     }
 

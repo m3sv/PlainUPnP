@@ -20,6 +20,8 @@ interface UpnpManager {
 
     val renderedItem: LiveData<RenderedItem>
 
+    val contentData: LiveData<List<DIDLObjectDisplay>>
+
     fun addObservers()
 
     fun removeObservers()

@@ -22,6 +22,7 @@ package org.droidupnp.model.cling;
 import android.util.Log;
 
 import com.m3sv.droidupnp.data.IUpnpDevice;
+
 import org.fourthline.cling.model.meta.Action;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.model.meta.Service;
@@ -66,12 +67,12 @@ public class CDevice implements IUpnpDevice {
 
     @Override
     public String getExtendedInformation() {
-        String info = "";
+        StringBuilder info = new StringBuilder();
         if (device.findServiceTypes() != null)
             for (ServiceType cap : device.findServiceTypes()) {
-                info += "\n\t" + cap.getType() + " : " + cap.toFriendlyString();
+                info.append("\n\t").append(cap.getType()).append(" : ").append(cap.toFriendlyString());
             }
-        return info;
+        return info.toString();
     }
 
     @Override

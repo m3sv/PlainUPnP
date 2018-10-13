@@ -75,7 +75,7 @@ public class ServiceListener implements IServiceListener {
 
     @Override
     public Collection<IUpnpDevice> getDeviceList() {
-        ArrayList<IUpnpDevice> deviceList = new ArrayList<IUpnpDevice>();
+        ArrayList<IUpnpDevice> deviceList = new ArrayList<>();
         if (upnpService != null && upnpService.getRegistry() != null) {
             for (Device device : upnpService.getRegistry().getDevices()) {
                 deviceList.add(new CDevice(device));
@@ -86,7 +86,7 @@ public class ServiceListener implements IServiceListener {
 
     @Override
     public Collection<IUpnpDevice> getFilteredDeviceList(ICallableFilter filter) {
-        ArrayList<IUpnpDevice> deviceList = new ArrayList<IUpnpDevice>();
+        ArrayList<IUpnpDevice> deviceList = new ArrayList<>();
         try {
             if (upnpService != null && upnpService.getRegistry() != null) {
                 for (Device device : upnpService.getRegistry().getDevices()) {

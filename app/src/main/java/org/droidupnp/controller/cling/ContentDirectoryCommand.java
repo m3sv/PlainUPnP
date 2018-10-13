@@ -84,7 +84,7 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
     }
 
     private ArrayList<DIDLObjectDisplay> buildContentList(String parent, DIDLContent didl) {
-        ArrayList<DIDLObjectDisplay> list = new ArrayList<DIDLObjectDisplay>();
+        ArrayList<DIDLObjectDisplay> list = new ArrayList<>();
 
         if (parent != null)
             list.add(new DIDLObjectDisplay(new ClingDIDLParentContainer(parent)));
@@ -138,7 +138,7 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
                 callBack(null);
             }
 
-            public void callBack(final DIDLContent didl) {
+            void callBack(final DIDLContent didl) {
                 if (callback != null) {
                     try {
                         if (didl != null)
@@ -180,12 +180,5 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
                 Log.w(TAG, "Fail to browse ! " + defaultMsg);
             }
         });
-    }
-
-    public boolean isSearchAvailable() {
-        if (getContentDirectoryService() == null)
-            return false;
-
-        return false;
     }
 }

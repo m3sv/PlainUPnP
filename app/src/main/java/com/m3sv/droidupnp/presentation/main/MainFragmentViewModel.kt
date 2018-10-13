@@ -7,26 +7,17 @@ import com.m3sv.droidupnp.presentation.base.BaseViewModel
 import com.m3sv.droidupnp.presentation.main.data.Item
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
 import com.m3sv.droidupnp.upnp.DefaultUpnpManager
+import com.m3sv.droidupnp.upnp.UpnpManager
 import org.droidupnp.model.upnp.didl.IDIDLItem
 import javax.inject.Inject
 
 
 class MainFragmentViewModel @Inject constructor(
-    private val defaultUpnpManager: DefaultUpnpManager,
+    private val upnpManager: UpnpManager,
     private val repository: GalleryRepository,
     toaster: Toaster
 ) :
-    BaseViewModel(), Toastable by toaster {
-
-    val contentData: LiveData<List<DIDLObjectDisplay>> = defaultUpnpManager.contentData
+    BaseViewModel(), Toastable by toaster, UpnpManager by upnpManager {
 
     fun getAll(): LiveData<Set<Item>> = repository.getAll()
-
-    fun navigateToDirectory(directoryId: String, parentId: String?) {
-        defaultUpnpManager.browseTo(directoryId, parentId)
-    }
-
-    fun launchItem(item: IDIDLItem, position: Int) {
-        defaultUpnpManager.renderItem(item, position)
-    }
 }

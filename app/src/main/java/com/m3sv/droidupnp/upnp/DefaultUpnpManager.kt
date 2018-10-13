@@ -68,7 +68,7 @@ class DefaultUpnpManager constructor(val controller: UpnpServiceController, val 
 
     private val _contentData = MutableLiveData<List<DIDLObjectDisplay>>()
 
-    val contentData: LiveData<List<DIDLObjectDisplay>> = _contentData
+    override val contentData: LiveData<List<DIDLObjectDisplay>> = _contentData
 
     private val contentCallback: ContentCallback =
         object : ContentCallback {

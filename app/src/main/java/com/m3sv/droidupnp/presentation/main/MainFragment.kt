@@ -54,11 +54,11 @@ class MainFragment : BaseFragment() {
 
         contentAdapter = GalleryContentAdapter(object : OnItemClickListener {
             override fun onDirectoryClick(itemUri: String, parentId: String?) {
-                viewModel.navigateToDirectory(itemUri, parentId)
+                viewModel.browseTo(itemUri, parentId)
             }
 
             override fun onItemClick(item: IDIDLItem, position: Int) {
-                viewModel.launchItem(item, position)
+                viewModel.renderItem(item, position)
             }
         })
 

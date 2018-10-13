@@ -25,7 +25,7 @@ public class ServerRunner {
 
         try {
             System.in.read();
-        } catch (Throwable ignored) {
+        } catch (Exception ignored) {
         }
 
         server.stop();

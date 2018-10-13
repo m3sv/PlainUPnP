@@ -17,7 +17,7 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.model.cling.localContent;
+package org.droidupnp.model.cling.localcontent;
 
 import org.droidupnp.model.mediaserver.ContentDirectoryService;
 import org.fourthline.cling.support.model.DIDLObject;

@@ -17,7 +17,7 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.model.cling.localContent;
+package org.droidupnp.model.cling.localcontent;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -74,7 +74,10 @@ public class AlbumContainer extends DynamicContainer {
         Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, orderBy);
         if (cursor == null)
             return 0;
-        return cursor.getCount();
+
+        int count = cursor.getCount();
+        cursor.close();
+        return count;
     }
 
     @Override
@@ -91,7 +94,8 @@ public class AlbumContainer extends DynamicContainer {
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    String albumId = null, album = null;
+                    String albumId = null;
+                    String album;
                     if (artistId == null) {
                         albumId = "" + cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Albums._ID));
                         album = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM));

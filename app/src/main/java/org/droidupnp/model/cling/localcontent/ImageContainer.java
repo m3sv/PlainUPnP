@@ -17,7 +17,7 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.model.cling.localContent;
+package org.droidupnp.model.cling.localcontent;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -27,22 +27,22 @@ import android.util.Log;
 import org.droidupnp.model.mediaserver.ContentDirectoryService;
 import org.fourthline.cling.support.model.Res;
 import org.fourthline.cling.support.model.container.Container;
-import org.fourthline.cling.support.model.item.VideoItem;
+import org.fourthline.cling.support.model.item.ImageItem;
 import org.seamless.util.MimeType;
 
 import java.util.List;
 
-public class VideoContainer extends DynamicContainer {
-    private static final String TAG = "VideoContainer";
+public class ImageContainer extends DynamicContainer {
+    private static final String TAG = "ImageContainer";
 
-    public VideoContainer(String id, String parentID, String title, String creator, String baseURL, Context ctx) {
+    public ImageContainer(String id, String parentID, String title, String creator, String baseURL, Context ctx) {
         super(id, parentID, title, creator, baseURL, ctx, null, null);
-        uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
     }
 
     @Override
     public Integer getChildCount() {
-        String[] columns = {MediaStore.Video.Media._ID};
+        String[] columns = {MediaStore.Images.Media._ID};
         Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, orderBy);
         if (cursor == null)
             return 0;
@@ -52,28 +52,24 @@ public class VideoContainer extends DynamicContainer {
     @Override
     public List<Container> getContainers() {
         String[] columns = {
-                MediaStore.Video.Media._ID,
-                MediaStore.Video.Media.TITLE,
-                MediaStore.Video.Media.DATA,
-                MediaStore.Video.Media.ARTIST,
-                MediaStore.Video.Media.MIME_TYPE,
-                MediaStore.Video.Media.SIZE,
-                MediaStore.Video.Media.DURATION,
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.TITLE,
+                MediaStore.Images.Media.DATA,
+                MediaStore.Images.Media.MIME_TYPE,
+                MediaStore.Images.Media.SIZE,
                 MediaStore.Images.Media.HEIGHT,
-                MediaStore.Images.Media.WIDTH,
+                MediaStore.Images.Media.WIDTH
         };
 
         Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, orderBy);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
-                    String id = ContentDirectoryService.VIDEO_PREFIX + cursor.getInt(cursor.getColumnIndex(MediaStore.Video.Media._ID));
-                    String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.TITLE));
-                    String creator = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.ARTIST));
-                    String filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA));
-                    String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE));
-                    long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.SIZE));
-                    long duration = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION));
+                    String id = ContentDirectoryService.IMAGE_PREFIX + cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media._ID));
+                    String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.TITLE));
+                    String filePath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA));
+                    String mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.MIME_TYPE));
+                    long size = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE));
                     long height = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.HEIGHT));
                     long width = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH));
 
@@ -84,14 +80,11 @@ public class VideoContainer extends DynamicContainer {
 
                     Res res = new Res(new MimeType(mimeType.substring(0, mimeType.indexOf('/')),
                             mimeType.substring(mimeType.indexOf('/') + 1)), size, "http://" + baseURL + "/" + id + extension);
-                    res.setDuration(duration / (1000 * 60 * 60) + ":"
-                            + (duration % (1000 * 60 * 60)) / (1000 * 60) + ":"
-                            + (duration % (1000 * 60)) / 1000);
                     res.setResolution((int) width, (int) height);
 
-                    addItem(new VideoItem(id, parentID, title, creator, res));
+                    addItem(new ImageItem(id, parentID, title, "", res));
 
-                    Log.v(TAG, "Added video item " + title + " from " + filePath);
+                    Log.v(TAG, "Added image item " + title + " from " + filePath);
 
                 } while (cursor.moveToNext());
             }
@@ -100,4 +93,5 @@ public class VideoContainer extends DynamicContainer {
 
         return containers;
     }
+
 }

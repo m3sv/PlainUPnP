@@ -17,7 +17,7 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.model.cling.localContent;
+package org.droidupnp.model.cling.localcontent;
 
 import android.content.Context;
 import android.net.Uri;

@@ -208,11 +208,11 @@ public class UpnpRendererState extends AUpnpRendererState {
 
     @Override
     public String getTitle() {
-        return getTrackMetadata().title;
+        return getTrackMetadata().getTitle();
     }
 
     @Override
     public String getArtist() {
-        return getTrackMetadata().artist;
+        return getTrackMetadata().getArtist();
     }
 }

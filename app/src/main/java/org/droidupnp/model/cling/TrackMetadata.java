@@ -48,13 +48,41 @@ public class TrackMetadata {
         this.itemClass = itemClass;
     }
 
-    public String id;
-    public String title;
-    public String artist;
-    public String genre;
-    public String artURI;
-    public String res;
-    public String itemClass;
+    private String id;
+    private String title;
+    private String artist;
+    private String genre;
+    private String artURI;
+    private String res;
+    private String itemClass;
+
+    public String getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getArtist() {
+        return artist;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public String getArtURI() {
+        return artURI;
+    }
+
+    public String getRes() {
+        return res;
+    }
+
+    public String getItemClass() {
+        return itemClass;
+    }
 
     private XMLReader initializeReader() throws ParserConfigurationException, SAXException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -76,7 +104,7 @@ public class TrackMetadata {
             xmlreader.setContentHandler(upnpItemHandler);
             xmlreader.parse(new InputSource(new StringReader(xml)));
         } catch (Exception e) {
-            // Timber.e(e, e.getMessage());
+             Timber.e(e, e.getMessage());
             Log.w(TAG, "Error while parsing metadata !");
             Log.w(TAG, "XML : " + xml);
         }
@@ -161,12 +189,11 @@ public class TrackMetadata {
 
     public class UpnpItemHandler extends DefaultHandler {
 
-        private final StringBuffer buffer = new StringBuffer();
+        private final StringBuilder buffer = new StringBuilder();
 
         @Override
         public void startElement(String namespaceURI, String localName, String qName, Attributes atts) {
             buffer.setLength(0);
-            // Log.v(TAG, "startElement, localName="+ localName + ", qName=" + qName);
 
             if (localName.equals("item")) {
                 id = atts.getValue("id");
@@ -175,21 +202,25 @@ public class TrackMetadata {
 
         @Override
         public void endElement(String uri, String localName, String qName) {
-            // Log.v(TAG, "endElement, localName="+ localName + ", qName=" + qName + ", buffer=" +
-            // buffer.toString());
-
-            if (localName.equals("title")) {
-                title = buffer.toString();
-            } else if (localName.equals("creator")) {
-                artist = buffer.toString();
-            } else if (localName.equals("genre")) {
-                genre = buffer.toString();
-            } else if (localName.equals("albumArtURI")) {
-                artURI = buffer.toString();
-            } else if (localName.equals("class")) {
-                itemClass = buffer.toString();
-            } else if (localName.equals("res")) {
-                res = buffer.toString();
+            switch (localName) {
+                case "title":
+                    title = buffer.toString();
+                    break;
+                case "creator":
+                    artist = buffer.toString();
+                    break;
+                case "genre":
+                    genre = buffer.toString();
+                    break;
+                case "albumArtURI":
+                    artURI = buffer.toString();
+                    break;
+                case "class":
+                    itemClass = buffer.toString();
+                    break;
+                case "res":
+                    res = buffer.toString();
+                    break;
             }
         }
 

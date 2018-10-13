@@ -76,5 +76,4 @@ public class ServiceController extends UpnpServiceController {
     public void removeDevice(LocalDevice localDevice) {
         upnpServiceListener.getUpnpService().getRegistry().removeDevice(localDevice);
     }
-
 }
