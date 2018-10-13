@@ -4,7 +4,7 @@ import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver
-import org.droidupnp.model.upnp.IUpnpDevice
+import com.m3sv.droidupnp.data.IUpnpDevice
 import org.droidupnp.model.upnp.RendererDiscovery
 
 class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscovery) :

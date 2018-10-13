@@ -28,8 +28,8 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.m3sv.droidupnp.R;
+import com.m3sv.droidupnp.common.PrefUtils;
 
-import org.droidupnp.view.SettingsActivity;
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.fourthline.cling.model.DefaultServiceManager;
 import org.fourthline.cling.model.ValidationError;
@@ -104,7 +104,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
         }
 
         DeviceDetails details = new DeviceDetails(
-                SettingsActivity.getSettingContentDirectoryName(ctx),
+                PrefUtils.getSettingContentDirectoryName(ctx),
                 new ManufacturerDetails(ctx.getString(R.string.app_name), ctx.getString(R.string.app_url)),
                 new ModelDetails(ctx.getString(R.string.app_name), ctx.getString(R.string.app_url)),
                 ctx.getString(R.string.app_name), version);

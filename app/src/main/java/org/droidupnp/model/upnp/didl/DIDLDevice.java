@@ -22,8 +22,8 @@ package org.droidupnp.model.upnp.didl;
 import com.m3sv.droidupnp.R;
 import com.m3sv.droidupnp.upnp.IDIDLObject;
 
-import org.droidupnp.model.upnp.IUpnpDevice;
-import org.droidupnp.view.DeviceDisplay;
+import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.DeviceDisplay;
 
 public class DIDLDevice implements IDIDLObject {
 

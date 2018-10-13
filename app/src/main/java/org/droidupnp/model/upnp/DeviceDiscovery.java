@@ -21,6 +21,8 @@ package org.droidupnp.model.upnp;
 
 import android.util.Log;
 
+import com.m3sv.droidupnp.data.IUpnpDevice;
+
 import org.droidupnp.controller.upnp.UpnpServiceController;
 
 import java.util.Collection;

@@ -21,7 +21,7 @@ package org.droidupnp.controller.upnp;
 
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery;
 import org.droidupnp.model.upnp.IServiceListener;
-import org.droidupnp.model.upnp.IUpnpDevice;
+import com.m3sv.droidupnp.data.IUpnpDevice;
 import org.droidupnp.model.upnp.RendererDiscovery;
 import org.fourthline.cling.model.meta.LocalDevice;
 

@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.data.Directory
+import com.m3sv.droidupnp.data.IUpnpDevice
 import com.m3sv.droidupnp.data.RendererState
 import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable

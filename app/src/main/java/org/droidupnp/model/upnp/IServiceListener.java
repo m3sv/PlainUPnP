@@ -21,6 +21,8 @@ package org.droidupnp.model.upnp;
 
 import android.content.ServiceConnection;
 
+import com.m3sv.droidupnp.data.IUpnpDevice;
+
 import java.util.Collection;
 
 public interface IServiceListener {

@@ -1,6 +1,4 @@
-package org.droidupnp.view
-
-import org.droidupnp.model.upnp.IUpnpDevice
+package com.m3sv.droidupnp.data
 
 
 enum class DeviceType {

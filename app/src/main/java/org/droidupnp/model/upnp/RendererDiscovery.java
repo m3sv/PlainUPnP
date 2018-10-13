@@ -19,6 +19,8 @@
 
 package org.droidupnp.model.upnp;
 
+import com.m3sv.droidupnp.data.IUpnpDevice;
+
 import org.droidupnp.controller.upnp.UpnpServiceController;
 
 public class RendererDiscovery extends DeviceDiscovery {

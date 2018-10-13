@@ -6,7 +6,7 @@ import com.m3sv.droidupnp.data.RendererState
 import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.Observable
-import org.droidupnp.model.upnp.IUpnpDevice
+import com.m3sv.droidupnp.data.IUpnpDevice
 import org.droidupnp.model.upnp.didl.IDIDLItem
 
 interface UpnpManager {

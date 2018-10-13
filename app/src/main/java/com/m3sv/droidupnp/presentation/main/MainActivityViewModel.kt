@@ -8,8 +8,8 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import org.droidupnp.view.DeviceDisplay
-import org.droidupnp.view.DeviceType
+import com.m3sv.droidupnp.data.DeviceDisplay
+import com.m3sv.droidupnp.data.DeviceType
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -44,7 +44,11 @@ class MainActivityViewModel @Inject constructor(private val defaultUpnpManager: 
             .subscribeBy(
                 onNext = { renderer ->
                     Timber.d("Found Renderer: ${renderer.displayString}")
-                    renderers += DeviceDisplay(renderer, false, DeviceType.RENDERER)
+                    renderers += DeviceDisplay(
+                        renderer,
+                        false,
+                        DeviceType.RENDERER
+                    )
                     renderersObservable.postValue(renderers)
                 },
                 onError = errorHandler

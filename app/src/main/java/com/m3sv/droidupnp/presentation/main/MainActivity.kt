@@ -25,11 +25,10 @@ import com.m3sv.droidupnp.databinding.MainActivityBinding
 import com.m3sv.droidupnp.presentation.base.BaseActivity
 import com.m3sv.droidupnp.presentation.settings.SettingsFragment
 import com.m3sv.droidupnp.upnp.RenderedItem
-import com.m3sv.droidupnp.upnp.DefaultUpnpManager
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import com.m3sv.droidupnp.data.UpnpRendererState
-import org.droidupnp.view.DeviceDisplay
+import com.m3sv.droidupnp.data.DeviceDisplay
 import timber.log.Timber
 
 

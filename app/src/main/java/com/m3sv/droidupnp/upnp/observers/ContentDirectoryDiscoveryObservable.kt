@@ -5,7 +5,7 @@ import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver
-import org.droidupnp.model.upnp.IUpnpDevice
+import com.m3sv.droidupnp.data.IUpnpDevice
 
 
 class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentDirectoryDiscovery) :

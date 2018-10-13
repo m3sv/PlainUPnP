@@ -23,7 +23,7 @@ import android.util.Log;
 
 import org.droidupnp.model.CObservable;
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery;
-import org.droidupnp.model.upnp.IUpnpDevice;
+import com.m3sv.droidupnp.data.IUpnpDevice;
 import org.droidupnp.model.upnp.RendererDiscovery;
 
 import java.util.Observer;

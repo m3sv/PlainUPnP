@@ -89,8 +89,6 @@ class MainFragment : BaseFragment() {
         }
     }
 
-
-
     companion object {
         val TAG: String = MainFragment::class.java.simpleName
 

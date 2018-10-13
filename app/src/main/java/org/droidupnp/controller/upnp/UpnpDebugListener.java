@@ -22,7 +22,7 @@ package org.droidupnp.controller.upnp;
 import android.util.Log;
 
 import org.droidupnp.model.upnp.IRegistryListener;
-import org.droidupnp.model.upnp.IUpnpDevice;
+import com.m3sv.droidupnp.data.IUpnpDevice;
 
 public class UpnpDebugListener implements IRegistryListener {
 

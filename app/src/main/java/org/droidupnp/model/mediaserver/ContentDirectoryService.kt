@@ -28,8 +28,10 @@ import android.preference.PreferenceManager
 import android.text.TextUtils
 import android.util.Log
 import com.m3sv.droidupnp.R
+import com.m3sv.droidupnp.common.CONTENT_DIRECTORY_AUDIO
+import com.m3sv.droidupnp.common.CONTENT_DIRECTORY_IMAGE
+import com.m3sv.droidupnp.common.CONTENT_DIRECTORY_VIDEO
 import org.droidupnp.model.cling.localContent.*
-import org.droidupnp.view.SettingsActivity
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException
@@ -105,7 +107,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             var videoContainer: Container? = null
             var allVideoContainer: Container? = null
 
-            if (sharedPref.getBoolean(SettingsActivity.CONTENTDIRECTORY_VIDEO, true)) {
+            if (sharedPref.getBoolean(CONTENT_DIRECTORY_VIDEO, true)) {
                 videoContainer = CustomContainer(
                     "" + VIDEO_ID, "" + ROOT_ID,
                     VIDEO_TXT, ctx!!.getString(R.string.app_name), baseURL
@@ -133,7 +135,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             var albumAudioContainer: Container? = null
             var allAudioContainer: Container? = null
 
-            if (sharedPref.getBoolean(SettingsActivity.CONTENTDIRECTORY_AUDIO, true)) {
+            if (sharedPref.getBoolean(CONTENT_DIRECTORY_AUDIO, true)) {
                 audioContainer = CustomContainer(
                     "" + AUDIO_ID, "" + ROOT_ID,
                     AUDIO_TXT, ctx!!.getString(R.string.app_name), baseURL
@@ -174,7 +176,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             // Image
             var imageContainer: Container? = null
             var allImageContainer: Container? = null
-            if (sharedPref.getBoolean(SettingsActivity.CONTENTDIRECTORY_IMAGE, true)) {
+            if (sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)) {
                 imageContainer = CustomContainer(
                     "" + IMAGE_ID, "" + ROOT_ID, IMAGE_TXT,
                     ctx!!.getString(R.string.app_name), baseURL

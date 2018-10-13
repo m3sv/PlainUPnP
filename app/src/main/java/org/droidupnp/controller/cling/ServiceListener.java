@@ -35,8 +35,9 @@ import org.droidupnp.model.mediaserver.MediaServer;
 import org.droidupnp.model.upnp.ICallableFilter;
 import org.droidupnp.model.upnp.IRegistryListener;
 import org.droidupnp.model.upnp.IServiceListener;
-import org.droidupnp.model.upnp.IUpnpDevice;
-import org.droidupnp.view.SettingsActivity;
+
+import com.m3sv.droidupnp.data.IUpnpDevice;
+
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.model.ValidationException;
 import org.fourthline.cling.model.message.header.STAllHeader;
@@ -48,6 +49,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import timber.log.Timber;
+
+import static com.m3sv.droidupnp.common.PrefUtils.CONTENT_DIRECTORY_SERVICE;
+
 
 @SuppressWarnings("rawtypes")
 public class ServiceListener implements IServiceListener {
@@ -107,7 +111,7 @@ public class ServiceListener implements IServiceListener {
             upnpService = (AndroidUpnpService) service;
 
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
-            if (sharedPref.getBoolean(SettingsActivity.CONTENTDIRECTORY_SERVICE, true)) {
+            if (sharedPref.getBoolean(CONTENT_DIRECTORY_SERVICE, true)) {
                 try {
                     // Local content directory
                     if (mediaServer == null) {
@@ -117,12 +121,9 @@ public class ServiceListener implements IServiceListener {
                         mediaServer.restart();
                     }
                     upnpService.getRegistry().addDevice(mediaServer.getDevice());
-                } catch (UnknownHostException e1) {
+                } catch (UnknownHostException | ValidationException e1) {
                     Timber.e("Creating demo device failed");
                     Timber.e("exception", e1);
-                } catch (ValidationException e2) {
-                    Timber.e("Creating demo device failed");
-                    Timber.e("exception", e2);
                 } catch (IOException e3) {
                     Timber.e("Starting http server failed");
                     Timber.e("exception", e3);
