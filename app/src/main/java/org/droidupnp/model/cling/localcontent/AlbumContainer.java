@@ -35,13 +35,13 @@ public class AlbumContainer extends DynamicContainer {
     private String artistId = null;
 
     public AlbumContainer(String id, String parentID, String title, String creator, String baseURL, Context ctx, String artistId) {
-        super(id, parentID, title, creator, baseURL, ctx, null, null);
+        super(id, parentID, title, creator, baseURL, ctx, null);
 
         this.artistId = artistId;
         if (artistId == null)
-            uri = MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI;
+            setUri(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI);
         else
-            uri = MediaStore.Audio.Artists.Albums.getContentUri("external", Integer.parseInt(artistId));
+            setUri(MediaStore.Audio.Artists.Albums.getContentUri("external", Integer.parseInt(artistId)));
     }
 
     @Override
@@ -71,7 +71,7 @@ public class AlbumContainer extends DynamicContainer {
         else
             columns = new String[]{MediaStore.Audio.Artists.Albums.ALBUM};
 
-        Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, orderBy);
+        Cursor cursor = getCtx().getContentResolver().query(getUri(), columns, getWhere(), getWhereVal(), getOrderBy());
         if (cursor == null)
             return 0;
 
@@ -90,7 +90,7 @@ public class AlbumContainer extends DynamicContainer {
         else
             columns = new String[]{MediaStore.Audio.Artists.Albums.ALBUM};
 
-        Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, orderBy);
+        Cursor cursor = getCtx().getContentResolver().query(getUri(), columns, getWhere(), getWhereVal(), getOrderBy());
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -106,7 +106,7 @@ public class AlbumContainer extends DynamicContainer {
                         String where2 = MediaStore.Audio.Albums.ALBUM + "=?";
                         String[] whereVal2 = {album};
 
-                        Cursor cursor2 = ctx.getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+                        Cursor cursor2 = getCtx().getContentResolver().query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
                                 columns2, where2, whereVal2, null);
                         if (cursor2.moveToFirst())
                             albumId = "" + cursor2.getInt(cursor2.getColumnIndex(MediaStore.Audio.Albums._ID));
@@ -115,7 +115,7 @@ public class AlbumContainer extends DynamicContainer {
 
                     if (albumId != null && album != null) {
                         Log.d(TAG, " current " + id + " albumId : " + albumId + " album : " + album);
-                        containers.add(new AudioContainer(albumId, id, album, artist, baseURL, ctx, null, albumId));
+                        containers.add(new AudioContainer(albumId, id, album, artist, baseURL, getCtx(), null, albumId));
                     } else {
                         Log.d(TAG, "Unable to get albumId or album");
                     }

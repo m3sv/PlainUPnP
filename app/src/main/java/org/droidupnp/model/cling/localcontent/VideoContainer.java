@@ -36,14 +36,14 @@ public class VideoContainer extends DynamicContainer {
     private static final String TAG = "VideoContainer";
 
     public VideoContainer(String id, String parentID, String title, String creator, String baseURL, Context ctx) {
-        super(id, parentID, title, creator, baseURL, ctx, null, null);
-        uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        super(id, parentID, title, creator, baseURL, ctx, null);
+        setUri(MediaStore.Video.Media.EXTERNAL_CONTENT_URI);
     }
 
     @Override
     public Integer getChildCount() {
         String[] columns = {MediaStore.Video.Media._ID};
-        Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, orderBy);
+        Cursor cursor = getCtx().getContentResolver().query(getUri(), columns, getWhere(), getWhereVal(), getOrderBy());
         if (cursor == null)
             return 0;
         return cursor.getCount();
@@ -63,7 +63,7 @@ public class VideoContainer extends DynamicContainer {
                 MediaStore.Images.Media.WIDTH,
         };
 
-        Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, orderBy);
+        Cursor cursor = getCtx().getContentResolver().query(getUri(), columns, getWhere(), getWhereVal(), getOrderBy());
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {

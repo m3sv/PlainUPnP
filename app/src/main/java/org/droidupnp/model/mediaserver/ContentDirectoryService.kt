@@ -46,13 +46,13 @@ import java.util.*
 
 class ContentDirectoryService : AbstractContentDirectoryService {
 
-    private var ctx: Context? = null
+    private lateinit var ctx: Context
 
     constructor() : super()
 
     constructor(ctx: Context, baseURL: String) {
         this.ctx = ctx
-        ContentDirectoryService.baseURL = baseURL
+        this.baseURL = baseURL
     }
 
     fun setContext(ctx: Context) {
@@ -60,8 +60,10 @@ class ContentDirectoryService : AbstractContentDirectoryService {
     }
 
     fun setBaseURL(baseURL: String) {
-        ContentDirectoryService.baseURL = baseURL
+        this.baseURL = baseURL
     }
+
+    private var baseURL: String? = null
 
     @Throws(ContentDirectoryException::class)
     override fun browse(
@@ -98,9 +100,10 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             Log.d(TAG, "Browsing type $type")
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx)
 
+            val appName = ctx.getString(R.string.app_name)
             val rootContainer = CustomContainer(
                 "" + ROOT_ID, "" + ROOT_ID,
-                ctx!!.getString(R.string.app_name), ctx!!.getString(R.string.app_name), baseURL
+                appName, appName, baseURL
             )
 
             // Video
@@ -110,7 +113,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_VIDEO, true)) {
                 videoContainer = CustomContainer(
                     "" + VIDEO_ID, "" + ROOT_ID,
-                    VIDEO_TXT, ctx!!.getString(R.string.app_name), baseURL
+                    VIDEO_TXT, appName, baseURL
                 )
 
                 with(rootContainer) {
@@ -120,7 +123,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
 
                 allVideoContainer = VideoContainer(
                     "" + ALL_ID, "" + VIDEO_ID,
-                    "All", ctx!!.getString(R.string.app_name), baseURL, ctx
+                    "All", appName, baseURL, ctx
                 )
 
                 with(videoContainer) {
@@ -138,7 +141,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_AUDIO, true)) {
                 audioContainer = CustomContainer(
                     "" + AUDIO_ID, "" + ROOT_ID,
-                    AUDIO_TXT, ctx!!.getString(R.string.app_name), baseURL
+                    AUDIO_TXT, appName, baseURL
                 )
 
                 with(rootContainer) {
@@ -149,7 +152,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
                 with(audioContainer) {
                     artistAudioContainer = ArtistContainer(
                         "" + ARTIST_ID, "" + AUDIO_ID,
-                        "Artist", ctx!!.getString(R.string.app_name), baseURL, ctx
+                        "Artist", appName, baseURL, ctx
                     )
 
                     addContainer(artistAudioContainer)
@@ -157,7 +160,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
 
                     albumAudioContainer = AlbumContainer(
                         "" + ALBUM_ID, "" + AUDIO_ID,
-                        "Album", ctx!!.getString(R.string.app_name), baseURL, ctx, null
+                        "Album", appName, baseURL, ctx, null
                     )
 
                     addContainer(albumAudioContainer)
@@ -165,7 +168,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
 
                     allAudioContainer = AudioContainer(
                         "" + ALL_ID, "" + AUDIO_ID,
-                        "All", ctx!!.getString(R.string.app_name), baseURL, ctx, null, null
+                        "All", appName, baseURL, ctx, null, null
                     )
 
                     addContainer(allAudioContainer)
@@ -179,14 +182,14 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)) {
                 imageContainer = CustomContainer(
                     "" + IMAGE_ID, "" + ROOT_ID, IMAGE_TXT,
-                    ctx!!.getString(R.string.app_name), baseURL
+                    appName, baseURL
                 )
                 rootContainer.addContainer(imageContainer)
                 rootContainer.childCount = rootContainer.childCount!! + 1
 
                 allImageContainer = ImageContainer(
                     "" + ALL_ID, "" + IMAGE_ID, "All",
-                    ctx!!.getString(R.string.app_name), baseURL, ctx
+                    appName, baseURL!!, ctx!!
                 )
                 imageContainer.addContainer(allImageContainer)
                 imageContainer.childCount = imageContainer.childCount!! + 1
@@ -222,7 +225,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
                         Log.d(TAG, "Listing album of artist $artistId")
                         container = AlbumContainer(
                             artistId, parentId, "",
-                            ctx!!.getString(R.string.app_name), baseURL, ctx, artistId
+                            appName, baseURL, ctx, artistId
                         )
                     } else if (subtype.size == 2 && subtype[0] == ALBUM_ID) {
                         val albumId = "" + subtype[1]
@@ -230,7 +233,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
                         Log.d(TAG, "Listing song of album $albumId")
                         container = AudioContainer(
                             albumId, parentId, "",
-                            ctx!!.getString(R.string.app_name), baseURL, ctx, null, albumId
+                            appName, baseURL, ctx, null, albumId
                         )
                     } else if (subtype.size == 3 && subtype[0] == ARTIST_ID) {
                         val albumId = "" + subtype[2]
@@ -239,7 +242,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
                         Log.d(TAG, "Listing song of album " + albumId + " for artist " + subtype[1])
                         container = AudioContainer(
                             albumId, parentId, "",
-                            ctx!!.getString(R.string.app_name), baseURL, ctx, null, albumId
+                            appName, baseURL, ctx, null, albumId
                         )
                     }
                 } else if (type == IMAGE_ID) {
@@ -317,6 +320,5 @@ class ContentDirectoryService : AbstractContentDirectoryService {
         const val AUDIO_PREFIX = "a-"
         const val IMAGE_PREFIX = "i-"
         const val DIRECTORY_PREFIX = "d-"
-        private var baseURL: String? = null
     }
 }

@@ -38,26 +38,26 @@ public class AudioContainer extends DynamicContainer {
 
     public AudioContainer(String id, String parentID, String title, String creator, String baseURL, Context ctx,
                           String artist, String albumId) {
-        super(id, parentID, title, creator, baseURL, ctx, null, null);
-        uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        super(id, parentID, title, creator, baseURL, ctx, null);
+        setUri(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
 
         if (artist != null) {
-            where = MediaStore.Audio.Media.ARTIST + "=?";
-            whereVal = new String[]{artist};
-            orderBy = MediaStore.Audio.Media.ALBUM;
+            setWhere(MediaStore.Audio.Media.ARTIST + "=?");
+            setWhereVal(new String[]{artist});
+            setOrderBy(MediaStore.Audio.Media.ALBUM);
         }
 
         if (albumId != null) {
-            where = MediaStore.Audio.Media.ALBUM_ID + "=?";
-            whereVal = new String[]{albumId};
-            orderBy = MediaStore.Audio.Media.TRACK;
+            setWhere(MediaStore.Audio.Media.ALBUM_ID + "=?");
+            setWhereVal(new String[]{albumId});
+            setOrderBy(MediaStore.Audio.Media.TRACK);
         }
     }
 
     @Override
     public Integer getChildCount() {
         String[] columns = {MediaStore.Audio.Media._ID};
-        Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, orderBy);
+        Cursor cursor = getCtx().getContentResolver().query(getUri(), columns, getWhere(), getWhereVal(), getOrderBy());
         if (cursor == null)
             return 0;
 
@@ -79,7 +79,7 @@ public class AudioContainer extends DynamicContainer {
                 MediaStore.Audio.Media.ALBUM
         };
 
-        Cursor cursor = ctx.getContentResolver().query(uri, columns, where, whereVal, orderBy);
+        Cursor cursor = getCtx().getContentResolver().query(getUri(), columns, getWhere(), getWhereVal(), getOrderBy());
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {

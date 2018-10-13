@@ -92,10 +92,10 @@ public class TrackMetadata {
     }
 
     public void parseTrackMetadata(String xml) {
-        if (xml == null)
-            return;
+        Timber.d("XML: %s", xml);
 
-        Log.d(TAG, "XML : " + xml);
+        if (xml == null || xml.equals("NOT_IMPLEMENTED"))
+            return;
 
         try {
             XMLReader xmlreader = initializeReader();
@@ -104,7 +104,7 @@ public class TrackMetadata {
             xmlreader.setContentHandler(upnpItemHandler);
             xmlreader.parse(new InputSource(new StringReader(xml)));
         } catch (Exception e) {
-             Timber.e(e, e.getMessage());
+            Timber.e(e, e.getMessage());
             Log.w(TAG, "Error while parsing metadata !");
             Log.w(TAG, "XML : " + xml);
         }

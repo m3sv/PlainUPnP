@@ -134,7 +134,7 @@ public class ContentDirectoryCommand implements IContentDirectoryCommand {
 
             @Override
             public void failure(ActionInvocation invocation, UpnpResponse operation, String defaultMsg) {
-                Log.w(TAG, "Fail to browse ! " + defaultMsg);
+                Log.w(TAG, "Fail to browse! " + defaultMsg);
                 callBack(null);
             }
 

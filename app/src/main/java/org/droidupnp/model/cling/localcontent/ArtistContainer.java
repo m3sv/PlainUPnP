@@ -32,15 +32,15 @@ public class ArtistContainer extends DynamicContainer {
     private static final String TAG = "ArtistContainer";
 
     public ArtistContainer(String id, String parentID, String title, String creator, String baseURL, Context ctx) {
-        super(id, parentID, title, creator, baseURL, ctx, null, null);
+        super(id, parentID, title, creator, baseURL, ctx, null);
         Log.d(TAG, "Create ArtistContainer of id " + id + " , " + this.id);
-        uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI;
+        setUri(MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI);
     }
 
     @Override
     public Integer getChildCount() {
         String[] columns = {MediaStore.Audio.Artists._ID};
-        Cursor cursor = ctx.getContentResolver().query(uri, columns, null, null, null);
+        Cursor cursor = getCtx().getContentResolver().query(getUri(), columns, null, null, null);
         if (cursor == null)
             return 0;
         return cursor.getCount();
@@ -55,7 +55,7 @@ public class ArtistContainer extends DynamicContainer {
                 MediaStore.Audio.Artists.ARTIST,
         };
 
-        Cursor cursor = ctx.getContentResolver().query(uri, columns, null, null, null);
+        Cursor cursor = getCtx().getContentResolver().query(getUri(), columns, null, null, null);
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -63,7 +63,7 @@ public class ArtistContainer extends DynamicContainer {
                     String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
 
                     Log.d(TAG, " artistId : " + artistId + " artistArtist : " + artist);
-                    containers.add(new AlbumContainer(artistId, id, artist, artist, baseURL, ctx, artistId));
+                    containers.add(new AlbumContainer(artistId, id, artist, artist, baseURL, getCtx(), artistId));
 
                 } while (cursor.moveToNext());
             }
