@@ -24,7 +24,7 @@ import com.m3sv.droidupnp.presentation.base.BaseActivity
 import com.m3sv.droidupnp.presentation.settings.SettingsFragment
 import com.m3sv.droidupnp.upnp.Directory
 import com.m3sv.droidupnp.upnp.RenderedItem
-import com.m3sv.droidupnp.upnp.UpnpManager
+import com.m3sv.droidupnp.upnp.DefaultUpnpManager
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import org.droidupnp.model.upnp.RendererState
@@ -78,7 +78,7 @@ class MainActivity : BaseActivity() {
     private val contentDirectoriesObserver =
         Observer<Set<DeviceDisplay>>(::handleContentDirectories)
 
-    private val rendererStateObserver = Observer<UpnpManager.RendererState>(::handleRendererState)
+    private val rendererStateObserver = Observer<DefaultUpnpManager.RendererState>(::handleRendererState)
 
     private fun handleContentDirectories(it: Set<DeviceDisplay>?) {
         it?.let {
@@ -90,7 +90,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun handleRendererState(it: UpnpManager.RendererState?) {
+    private fun handleRendererState(it: DefaultUpnpManager.RendererState?) {
         it?.let {
             with(binding.controlsSheet) {
                 progress.isEnabled = it.state != RendererState.State.STOP

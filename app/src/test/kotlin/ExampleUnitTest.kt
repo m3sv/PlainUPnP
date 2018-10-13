@@ -2,7 +2,7 @@
 
 import android.arch.lifecycle.Observer
 import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
-import com.m3sv.droidupnp.upnp.UpnpManager
+import com.m3sv.droidupnp.upnp.DefaultUpnpManager
 import org.droidupnp.view.DeviceDisplay
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -17,21 +17,21 @@ import org.mockito.Mockito.verifyNoMoreInteractions
  */
 class ExampleUnitTest {
 
-    lateinit var manager: UpnpManager
+    lateinit var managerDefault: DefaultUpnpManager
 
     lateinit var mainActivityViewModel: MainActivityViewModel
 
     @Before
     fun setup() {
-        manager = mock(UpnpManager::class.java)
-        mainActivityViewModel = MainActivityViewModel(manager)
+        managerDefault = mock(DefaultUpnpManager::class.java)
+        mainActivityViewModel = MainActivityViewModel(managerDefault)
     }
 
     @Test
     fun empty() {
         val observer: Observer<Set<DeviceDisplay>> = mock(Observer::class.java) as Observer<Set<DeviceDisplay>>
         mainActivityViewModel.renderersObservable.observeForever(observer)
-        verifyNoMoreInteractions(manager)
+        verifyNoMoreInteractions(managerDefault)
     }
 
     @Test

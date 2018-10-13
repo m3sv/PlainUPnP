@@ -5,7 +5,7 @@ import android.content.Context
 import com.hub.common.Toastable
 import com.hub.common.Toaster
 import com.m3sv.droidupnp.di.scope.ApplicationScope
-import com.m3sv.droidupnp.upnp.UpnpManager
+import com.m3sv.droidupnp.upnp.DefaultUpnpManager
 import dagger.Module
 import dagger.Provides
 import org.droidupnp.model.upnp.Factory
@@ -28,5 +28,5 @@ internal object AppModule {
     @ApplicationScope
     @JvmStatic
     fun provideUPnPManager(context: Context, factory: Factory) =
-        UpnpManager(factory.createUpnpServiceController(context), factory)
+        DefaultUpnpManager(factory.createUpnpServiceController(context), factory)
 }

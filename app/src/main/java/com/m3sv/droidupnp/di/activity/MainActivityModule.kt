@@ -8,6 +8,8 @@ import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
 import com.m3sv.droidupnp.presentation.main.MainFragment
 import com.m3sv.droidupnp.presentation.main.MainFragmentViewModel
 import com.m3sv.droidupnp.presentation.settings.SettingsFragment
+import com.m3sv.droidupnp.upnp.DefaultUpnpManager
+import com.m3sv.droidupnp.upnp.UpnpManager
 import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -28,6 +30,9 @@ interface MainActivityModule {
     @IntoMap
     @ViewModelKey(MainFragmentViewModel::class)
     fun bindMainFragmentViewModel(mainFragmentViewModel: MainFragmentViewModel): ViewModel
+
+    @Binds
+    fun bindUpnpManager(defaultUpnpManager: DefaultUpnpManager): UpnpManager
 
     @ContributesAndroidInjector
     fun contributeMainFragment(): MainFragment

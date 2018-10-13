@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
 import com.m3sv.droidupnp.upnp.RenderedItem
+import com.m3sv.droidupnp.upnp.DefaultUpnpManager
 import com.m3sv.droidupnp.upnp.UpnpManager
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
@@ -15,18 +16,18 @@ import org.droidupnp.view.DeviceType
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivityViewModel @Inject constructor(private val manager: UpnpManager) :
+class MainActivityViewModel @Inject constructor(private val upnpManager: UpnpManager) :
     BaseViewModel() {
 
     val contentDirectoriesObservable = MutableLiveData<Set<DeviceDisplay>>()
 
     val renderersObservable = MutableLiveData<Set<DeviceDisplay>>()
 
-    val selectedDirectoryObservable = manager.selectedDirectoryObservable
+    val selectedDirectoryObservable = upnpManager.selectedDirectoryObservable
 
-    val rendererState: LiveData<UpnpManager.RendererState> = manager.rendererState
+    val rendererState: LiveData<DefaultUpnpManager.RendererState> = upnpManager.rendererState
 
-    val renderedItem: LiveData<RenderedItem> = manager.renderedItem
+    val renderedItem: LiveData<RenderedItem> = upnpManager.renderedItem
 
     private val discoveryDisposable: CompositeDisposable = CompositeDisposable()
 
@@ -38,7 +39,7 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
         { Timber.e("Exception during discovery: ${it.message}") }
 
     init {
-        discoveryDisposable += manager.rendererDiscoveryObservable
+        discoveryDisposable += upnpManager.rendererDiscoveryObservable
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onNext = { renderer ->
@@ -49,7 +50,7 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
                 onError = errorHandler
             )
 
-        discoveryDisposable += manager.contentDirectoryDiscoveryObservable
+        discoveryDisposable += upnpManager.contentDirectoryDiscoveryObservable
             .subscribeOn(Schedulers.io())
             .subscribeBy(
                 onNext = { contentDirectory ->
@@ -71,69 +72,67 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
         contentDirectories.clear()
     }
 
-    fun addObservers() = manager.addObservers()
+    fun addObservers() = upnpManager.addObservers()
 
-    fun removeObservers() = manager.removeObservers()
+    fun removeObservers() = upnpManager.removeObservers()
 
     fun resumeUpnp() {
         Timber.d("Resuming UPnP controller")
-        manager.controller.resume()
-        manager.resumeRendererUpdate()
+        upnpManager.controller.resume()
+        upnpManager.resumeRendererUpdate()
     }
 
     fun pauseUpnp() {
         Timber.d("Pausing UPnP controller")
-        manager.pauseRendererUpdate()
+        upnpManager.pauseRendererUpdate()
     }
 
     fun resumePlayback() {
-        manager.resumePlayback()
+        upnpManager.resumePlayback()
     }
 
     fun pausePlayback() {
-        manager.pausePlayback()
+        upnpManager.pausePlayback()
     }
 
     fun stopPlayback() {
-        manager.stopPlayback()
+        upnpManager.stopPlayback()
     }
-
-    fun refreshServiceListener() = manager.controller.serviceListener?.refresh()
 
     fun navigateHome() {
         Timber.d("Navigating home")
-        manager.browseHome()
+        upnpManager.browseHome()
     }
 
     fun selectContentDirectory(contentDirectory: IUpnpDevice?) {
-        manager.selectContentDirectory(contentDirectory)
+        upnpManager.selectContentDirectory(contentDirectory)
     }
 
     fun selectRenderer(renderer: IUpnpDevice?) {
-        manager.selectRenderer(renderer)
+        upnpManager.selectRenderer(renderer)
     }
 
     fun pop() {
-        manager.browsePrevious()
+        upnpManager.browsePrevious()
     }
 
     fun pauseRendererCommand() {
-        manager.pauseRendererUpdate()
+        upnpManager.pauseRendererUpdate()
     }
 
     fun resumeRendererCommand() {
-        manager.resumeRendererUpdate()
+        upnpManager.resumeRendererUpdate()
     }
 
     fun moveTo(progress: Int, max: Int) {
-        manager.moveTo(progress, max)
+        upnpManager.moveTo(progress, max)
     }
 
     fun playNext() {
-        manager.playNext()
+        upnpManager.playNext()
     }
 
     fun playPrevious() {
-        manager.playPrevious()
+        upnpManager.playPrevious()
     }
 }

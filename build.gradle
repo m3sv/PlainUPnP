@@ -3,7 +3,7 @@ buildscript {
     ext.gradleVersion = '3.0.1'
     ext.versions = [
             'compileSdk'            : 27,
-            'buildTools'            : '28.0.2',
+            'buildTools'            : '28.0.3',
             'minSdk'                : 21,
             'targetSdk'             : 27,
 
@@ -59,7 +59,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.2.0'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
     }
 }
