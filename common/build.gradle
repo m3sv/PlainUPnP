@@ -1,0 +1,12 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation deps.kotlin
+}
+
+repositories {
+    mavenCentral()
+}

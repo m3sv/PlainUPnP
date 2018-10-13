@@ -4,6 +4,8 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.droidupnp.R
+import com.m3sv.droidupnp.data.Directory
+import com.m3sv.droidupnp.data.RendererState
 import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
@@ -18,11 +20,6 @@ import timber.log.Timber
 import java.util.*
 
 
-sealed class Directory {
-    object Home : Directory()
-    data class SubDirectory(val id: String, val parentId: String?) : Directory()
-}
-
 /**
  * First is uri to a file, second is a title and third is an artist
  */
@@ -31,7 +28,8 @@ typealias RenderedItem = Triple<String, String, RequestOptions>
 class DefaultUpnpManager constructor(val controller: UpnpServiceController, val factory: Factory) :
     DeviceDiscoveryObserver, Observer, UpnpManager {
 
-    override val rendererDiscoveryObservable = RendererDiscoveryObservable(controller.rendererDiscovery)
+    override val rendererDiscoveryObservable =
+        RendererDiscoveryObservable(controller.rendererDiscovery)
 
     override val contentDirectoryDiscoveryObservable =
         ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
@@ -43,15 +41,6 @@ class DefaultUpnpManager constructor(val controller: UpnpServiceController, val 
 
     private var rendererCommand: IRendererCommand? = null
 
-    data class RendererState(
-        val durationRemaining: String?,
-        val durationElapse: String?,
-        val progress: Int,
-        val title: String?,
-        val artist: String?,
-        val state: org.droidupnp.model.upnp.RendererState.State
-    )
-
     private val _rendererState: MutableLiveData<RendererState> = MutableLiveData()
 
     override val rendererState: LiveData<RendererState>
@@ -59,7 +48,7 @@ class DefaultUpnpManager constructor(val controller: UpnpServiceController, val 
 
     private val _renderedItem: MutableLiveData<RenderedItem> = MutableLiveData()
 
-    private var upnpRendererState: ARendererState? = null
+    private var upnpRendererState: AUpnpRendererState? = null
 
     override val renderedItem: LiveData<RenderedItem>
         get() = _renderedItem
@@ -252,5 +241,13 @@ class DefaultUpnpManager constructor(val controller: UpnpServiceController, val 
                 commandSeek(seek)
             }
         }
+    }
+
+    override fun resumeUpnpController() {
+        controller.resume()
+    }
+
+    override fun pauseUpnpController() {
+        controller.pause()
     }
 }

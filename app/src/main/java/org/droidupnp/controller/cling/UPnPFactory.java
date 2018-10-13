@@ -22,11 +22,11 @@ package org.droidupnp.controller.cling;
 import android.content.Context;
 
 import org.droidupnp.controller.upnp.UpnpServiceController;
-import org.droidupnp.model.upnp.ARendererState;
+import org.droidupnp.model.upnp.AUpnpRendererState;
 import org.droidupnp.model.upnp.Factory;
 import org.droidupnp.model.upnp.IContentDirectoryCommand;
 import org.droidupnp.model.upnp.IRendererCommand;
-import org.droidupnp.model.upnp.RendererState;
+import com.m3sv.droidupnp.data.UpnpRendererState;
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.controlpoint.ControlPoint;
 
@@ -53,13 +53,13 @@ public class UPnPFactory implements Factory {
     }
 
     @Override
-    public IRendererCommand createRendererCommand(RendererState rs) {
+    public IRendererCommand createRendererCommand(UpnpRendererState rs) {
         AndroidUpnpService aus = ((ServiceListener) controller.getServiceListener()).getUpnpService();
         ControlPoint cp = null;
         if (aus != null)
             cp = aus.getControlPoint();
         if (cp != null)
-            return new RendererCommand(controller, cp, (org.droidupnp.model.cling.RendererState) rs);
+            return new RendererCommand(controller, cp, (org.droidupnp.model.cling.UpnpRendererState) rs);
 
         return null;
     }
@@ -70,7 +70,7 @@ public class UPnPFactory implements Factory {
     }
 
     @Override
-    public ARendererState createRendererState() {
-        return new org.droidupnp.model.cling.RendererState();
+    public AUpnpRendererState createRendererState() {
+        return new org.droidupnp.model.cling.UpnpRendererState();
     }
 }

@@ -19,15 +19,16 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.view.RxView
 import com.m3sv.droidupnp.R
+import com.m3sv.droidupnp.data.Directory
+import com.m3sv.droidupnp.data.RendererState
 import com.m3sv.droidupnp.databinding.MainActivityBinding
 import com.m3sv.droidupnp.presentation.base.BaseActivity
 import com.m3sv.droidupnp.presentation.settings.SettingsFragment
-import com.m3sv.droidupnp.upnp.Directory
 import com.m3sv.droidupnp.upnp.RenderedItem
 import com.m3sv.droidupnp.upnp.DefaultUpnpManager
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import org.droidupnp.model.upnp.RendererState
+import com.m3sv.droidupnp.data.UpnpRendererState
 import org.droidupnp.view.DeviceDisplay
 import timber.log.Timber
 
@@ -56,7 +57,7 @@ class MainActivity : BaseActivity() {
             with(viewModel) {
                 Timber.d("Selected item: $position")
                 selectContentDirectory(contentDirectoriesObservable.value?.toList()?.get(position)?.device)
-                navigateHome()
+                browseHome()
             }
         }
     }
@@ -78,7 +79,7 @@ class MainActivity : BaseActivity() {
     private val contentDirectoriesObserver =
         Observer<Set<DeviceDisplay>>(::handleContentDirectories)
 
-    private val rendererStateObserver = Observer<DefaultUpnpManager.RendererState>(::handleRendererState)
+    private val rendererStateObserver = Observer<RendererState>(::handleRendererState)
 
     private fun handleContentDirectories(it: Set<DeviceDisplay>?) {
         it?.let {
@@ -90,28 +91,28 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun handleRendererState(it: DefaultUpnpManager.RendererState?) {
+    private fun handleRendererState(it: RendererState?) {
         it?.let {
             with(binding.controlsSheet) {
-                progress.isEnabled = it.state != RendererState.State.STOP
+                progress.isEnabled = it.state != UpnpRendererState.State.STOP
                 progress.progress = it.progress
 
                 disposables += when (it.state) {
-                    RendererState.State.STOP -> {
+                    UpnpRendererState.State.STOP -> {
                         play.setImageResource(R.drawable.ic_play_arrow)
                         RxView.clicks(play).subscribeBy(onNext = {
                             viewModel.resumePlayback()
                         }, onError = Timber::e)
                     }
 
-                    RendererState.State.PLAY -> {
+                    UpnpRendererState.State.PLAY -> {
                         play.setImageResource(R.drawable.ic_pause)
                         RxView.clicks(play).subscribeBy(onNext = {
                             viewModel.pausePlayback()
                         }, onError = Timber::e)
                     }
 
-                    RendererState.State.PAUSE -> {
+                    UpnpRendererState.State.PAUSE -> {
                         play.setImageResource(R.drawable.ic_play_arrow)
                         RxView.clicks(play).subscribeBy(onNext = {
                             viewModel.resumePlayback()
@@ -134,7 +135,6 @@ class MainActivity : BaseActivity() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
-    private var currentDirectory: Directory? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -180,15 +180,6 @@ class MainActivity : BaseActivity() {
                 )
             }
         }
-
-        disposables += viewModel
-            .selectedDirectoryObservable
-            .subscribeBy(
-                onNext = {
-                    currentDirectory = it
-                },
-                onError = Timber::e
-            )
 
         binding.controlsSheet.progress.setOnSeekBarChangeListener(object :
             SeekBar.OnSeekBarChangeListener {
@@ -279,13 +270,13 @@ class MainActivity : BaseActivity() {
         with(viewModel) {
             addObservers()
             resumeUpnp()
-            resumeRendererCommand()
+            resumeRendererUpdate()
         }
     }
 
     override fun onStop() {
         with(viewModel) {
-            pauseRendererCommand()
+            pauseRendererUpdate()
             removeObservers()
             pauseUpnp()
         }
@@ -315,7 +306,7 @@ class MainActivity : BaseActivity() {
             return
         }
 
-        if (supportFragmentManager.backStackEntryCount == 0 && currentDirectory is Directory.Home) {
+        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.currentDirectory is Directory.Home) {
             val currentTime = System.currentTimeMillis()
 
             if (currentTime - lastBackClick < 500)
@@ -323,8 +314,8 @@ class MainActivity : BaseActivity() {
 
             lastBackClick = currentTime
             Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
-        } else if (currentDirectory != null) {
-            viewModel.pop()
+        } else if (viewModel.currentDirectory != null) {
+            viewModel.browsePrevious()
         } else {
             finish()
         }

@@ -19,7 +19,7 @@
 
 package org.droidupnp.model.cling;
 
-import org.droidupnp.model.upnp.ARendererState;
+import org.droidupnp.model.upnp.AUpnpRendererState;
 import org.fourthline.cling.support.model.MediaInfo;
 import org.fourthline.cling.support.model.PositionInfo;
 import org.fourthline.cling.support.model.TransportInfo;
@@ -27,11 +27,11 @@ import org.fourthline.cling.support.model.TransportState;
 
 import timber.log.Timber;
 
-public class RendererState extends ARendererState {
+public class UpnpRendererState extends AUpnpRendererState {
 
-    protected static final String TAG = "RendererState";
+    protected static final String TAG = "UpnpRendererState";
 
-    public RendererState() {
+    public UpnpRendererState() {
         super();
 
         state = State.STOP;
@@ -196,7 +196,7 @@ public class RendererState extends ARendererState {
 
     @Override
     public String toString() {
-        return "RendererState [state=" + state + ", volume=" + volume + ", repeatMode=" + repeatMode + ", randomMode="
+        return "UpnpRendererState [state=" + state + ", volume=" + volume + ", repeatMode=" + repeatMode + ", randomMode="
                 + randomMode + ", positionInfo=" + positionInfo + ", mediaInfo=" + mediaInfo + ", trackMetadata="
                 + new TrackMetadata(positionInfo.getTrackMetaData()) + "]";
     }

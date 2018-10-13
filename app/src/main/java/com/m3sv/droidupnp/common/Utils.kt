@@ -51,7 +51,7 @@ object Utils {
                 }
             }
         } catch (e: Exception) {
-            Timber.d("Unable to get ip adress for interface " + intfName)
+            Timber.d("Unable to get ip adress for interface $intfName")
         }
 
         return null

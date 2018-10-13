@@ -1,8 +1,8 @@
 package com.m3sv.droidupnp.presentation.main
 
 import android.arch.lifecycle.LiveData
-import com.hub.common.Toastable
-import com.hub.common.Toaster
+import com.m3sv.droidupnp.common.Toastable
+import com.m3sv.droidupnp.common.Toaster
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
 import com.m3sv.droidupnp.presentation.main.data.Item
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay

@@ -21,6 +21,8 @@ package org.droidupnp.model.upnp;
 
 import android.content.Context;
 
+import com.m3sv.droidupnp.data.UpnpRendererState;
+
 import org.droidupnp.controller.upnp.UpnpServiceController;
 
 public interface Factory {
@@ -28,7 +30,7 @@ public interface Factory {
 
     UpnpServiceController createUpnpServiceController(Context ctx);
 
-    ARendererState createRendererState();
+    AUpnpRendererState createRendererState();
 
-    IRendererCommand createRendererCommand(RendererState rs);
+    IRendererCommand createRendererCommand(UpnpRendererState rs);
 }

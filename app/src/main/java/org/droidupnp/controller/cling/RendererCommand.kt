@@ -3,7 +3,7 @@ package org.droidupnp.controller.cling
 import kotlinx.coroutines.experimental.*
 import org.droidupnp.controller.upnp.UpnpServiceController
 import org.droidupnp.model.cling.CDevice
-import org.droidupnp.model.cling.RendererState
+import org.droidupnp.model.cling.UpnpRendererState
 import org.droidupnp.model.cling.TrackMetadata
 import org.droidupnp.model.cling.didl.ClingDIDLItem
 import org.droidupnp.model.upnp.IRendererCommand
@@ -29,7 +29,7 @@ import kotlin.coroutines.experimental.CoroutineContext
 class RendererCommand(
     private val controller: UpnpServiceController,
     private val controlPoint: ControlPoint,
-    private val rendererState: RendererState
+    private val rendererState: UpnpRendererState
 ) : IRendererCommand, CoroutineScope {
 
     private var job: Job = Job()
@@ -113,7 +113,7 @@ class RendererCommand(
 
     override fun commandToggle() {
         val state = rendererState.state
-        if (state == org.droidupnp.model.upnp.RendererState.State.PLAY) {
+        if (state == com.m3sv.droidupnp.data.UpnpRendererState.State.PLAY) {
             commandPause()
         } else {
             commandPlay()

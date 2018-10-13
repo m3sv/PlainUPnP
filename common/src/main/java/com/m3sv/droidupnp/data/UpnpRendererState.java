@@ -17,9 +17,9 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.model.upnp;
+package com.m3sv.droidupnp.data;
 
-public interface RendererState {
+public interface UpnpRendererState {
 
     enum State {
         PLAY, PAUSE, STOP

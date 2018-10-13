@@ -1,13 +1,13 @@
 package com.m3sv.droidupnp.upnp
 
 import android.arch.lifecycle.LiveData
+import com.m3sv.droidupnp.data.Directory
+import com.m3sv.droidupnp.data.RendererState
 import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 import org.droidupnp.model.upnp.IUpnpDevice
 import org.droidupnp.model.upnp.didl.IDIDLItem
-
 
 interface UpnpManager {
     val rendererDiscoveryObservable: RendererDiscoveryObservable
@@ -16,7 +16,7 @@ interface UpnpManager {
 
     val selectedDirectoryObservable: Observable<Directory>
 
-    val rendererState: LiveData<DefaultUpnpManager.RendererState>
+    val rendererState: LiveData<RendererState>
 
     val renderedItem: LiveData<RenderedItem>
 
@@ -29,6 +29,10 @@ interface UpnpManager {
     fun selectRenderer(renderer: IUpnpDevice?)
 
     fun renderItem(item: IDIDLItem, position: Int)
+
+    fun resumeUpnpController()
+
+    fun pauseUpnpController()
 
     fun resumeRendererUpdate()
 

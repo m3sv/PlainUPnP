@@ -105,6 +105,8 @@ dependencies {
     implementation('de.psdev.licensesdialog:licensesdialog:1.8.1') {
         exclude module: 'support-v4'
     }
+
+    implementation project(':common')
 }
 
 kapt {

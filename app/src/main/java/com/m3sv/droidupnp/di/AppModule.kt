@@ -2,8 +2,8 @@ package com.m3sv.droidupnp.di
 
 import android.app.Application
 import android.content.Context
-import com.hub.common.Toastable
-import com.hub.common.Toaster
+import com.m3sv.droidupnp.common.Toastable
+import com.m3sv.droidupnp.common.Toaster
 import com.m3sv.droidupnp.di.scope.ApplicationScope
 import com.m3sv.droidupnp.upnp.DefaultUpnpManager
 import dagger.Module

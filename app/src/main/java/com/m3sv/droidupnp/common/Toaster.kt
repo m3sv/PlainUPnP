@@ -1,4 +1,4 @@
-package com.hub.common
+package com.m3sv.droidupnp.common
 
 import android.app.Application
 import android.support.annotation.StringRes
