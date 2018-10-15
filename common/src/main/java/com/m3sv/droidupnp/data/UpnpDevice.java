@@ -19,7 +19,7 @@
 
 package com.m3sv.droidupnp.data;
 
-public interface IUpnpDevice {
+public interface UpnpDevice {
 
     String getDisplayString();
 
@@ -47,7 +47,7 @@ public interface IUpnpDevice {
 
     String getUDN();
 
-    boolean equals(IUpnpDevice otherDevice);
+    boolean equals(UpnpDevice otherDevice);
 
     String getUID();
 
@@ -56,7 +56,4 @@ public interface IUpnpDevice {
     void printService();
 
     boolean isFullyHydrated();
-
-    @Override
-    String toString();
 }

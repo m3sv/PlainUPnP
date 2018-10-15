@@ -1,15 +1,16 @@
 package com.m3sv.droidupnp.presentation.main
 
 import android.arch.lifecycle.MutableLiveData
+import com.m3sv.droidupnp.data.DeviceDisplay
+import com.m3sv.droidupnp.data.DeviceType
 import com.m3sv.droidupnp.data.Directory
+import com.m3sv.droidupnp.data.UpnpDeviceEvent
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
 import com.m3sv.droidupnp.upnp.UpnpManager
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
-import com.m3sv.droidupnp.data.DeviceDisplay
-import com.m3sv.droidupnp.data.DeviceType
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -42,13 +43,27 @@ class MainActivityViewModel @Inject constructor(private val defaultUpnpManager: 
         discoveryDisposable += rendererDiscoveryObservable
             .subscribeOn(Schedulers.io())
             .subscribeBy(
-                onNext = { renderer ->
-                    Timber.d("Found Renderer: ${renderer.displayString}")
-                    renderers += DeviceDisplay(
-                        renderer,
-                        false,
-                        DeviceType.RENDERER
-                    )
+                onNext = { event ->
+                    when (event) {
+                        is UpnpDeviceEvent.Added -> {
+                            Timber.d("Renderer added: ${event.upnpDevice.displayString}")
+                            renderers += DeviceDisplay(
+                                event.upnpDevice,
+                                false,
+                                DeviceType.RENDERER
+                            )
+                        }
+
+                        is UpnpDeviceEvent.Removed -> {
+                            Timber.d("Renderer added: ${event.upnpDevice.displayString}")
+                            renderers -= DeviceDisplay(
+                                event.upnpDevice,
+                                false,
+                                DeviceType.RENDERER
+                            )
+                        }
+                    }
+
                     renderersObservable.postValue(renderers)
                 },
                 onError = errorHandler
@@ -57,13 +72,28 @@ class MainActivityViewModel @Inject constructor(private val defaultUpnpManager: 
         discoveryDisposable += contentDirectoryDiscoveryObservable
             .subscribeOn(Schedulers.io())
             .subscribeBy(
-                onNext = { contentDirectory ->
-                    Timber.d("Found Content Directory: ${contentDirectory.displayString}")
-                    contentDirectories += DeviceDisplay(
-                        contentDirectory,
-                        false,
-                        DeviceType.CONTENT_DIRECTORY
-                    )
+                onNext = { event ->
+                    when (event) {
+                        is UpnpDeviceEvent.Added -> {
+                            Timber.d("Content directory added: ${event.upnpDevice.displayString}")
+
+                            contentDirectories += DeviceDisplay(
+                                event.upnpDevice,
+                                false,
+                                DeviceType.CONTENT_DIRECTORY
+                            )
+                        }
+
+                        is UpnpDeviceEvent.Removed -> {
+                            Timber.d("Content directory removed: ${event.upnpDevice.displayString}")
+
+                            contentDirectories -= DeviceDisplay(
+                                event.upnpDevice,
+                                false,
+                                DeviceType.CONTENT_DIRECTORY
+                            )
+                        }
+                    }
 
                     contentDirectoriesObservable.postValue(contentDirectories)
                 }, onError = errorHandler

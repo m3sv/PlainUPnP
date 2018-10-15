@@ -7,7 +7,7 @@
             android:title="Enable content directory" />
         <SwitchPreference
             android:defaultValue="@bool/default_enable_dark_theme"
-            android:key="enable_dark_theme"
+            android:key="@string/dark_theme_key"
             android:title="Enable dark theme" />
     </PreferenceCategory>
 </PreferenceScreen>

@@ -21,7 +21,7 @@ package org.droidupnp.model.upnp;
 
 import android.content.ServiceConnection;
 
-import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDevice;
 
 import java.util.Collection;
 
@@ -35,9 +35,9 @@ public interface IServiceListener {
 
     void refresh();
 
-    Collection<IUpnpDevice> getDeviceList();
+    Collection<UpnpDevice> getDeviceList();
 
-    Collection<IUpnpDevice> getFilteredDeviceList(ICallableFilter filter);
+    Collection<UpnpDevice> getFilteredDeviceList(ICallableFilter filter);
 
     ServiceConnection getServiceConnection();
 }

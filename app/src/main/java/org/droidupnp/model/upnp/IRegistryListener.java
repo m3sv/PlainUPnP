@@ -19,12 +19,12 @@
 
 package org.droidupnp.model.upnp;
 
-import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDevice;
 
 public interface IRegistryListener {
 
-    void deviceAdded(final IUpnpDevice device);
+    void deviceAdded(final UpnpDevice device);
 
-    void deviceRemoved(final IUpnpDevice device);
+    void deviceRemoved(final UpnpDevice device);
 
 }

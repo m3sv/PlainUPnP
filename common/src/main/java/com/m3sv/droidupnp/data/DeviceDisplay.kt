@@ -6,7 +6,7 @@ enum class DeviceType {
 }
 
 data class DeviceDisplay @JvmOverloads constructor(
-    val device: IUpnpDevice,
+    val device: UpnpDevice,
     val extendedInformation: Boolean = false,
     val type: DeviceType = DeviceType.UNDEFINED
 )

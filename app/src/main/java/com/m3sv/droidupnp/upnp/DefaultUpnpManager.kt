@@ -5,7 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.data.Directory
-import com.m3sv.droidupnp.data.IUpnpDevice
+import com.m3sv.droidupnp.data.UpnpDevice
 import com.m3sv.droidupnp.data.RendererState
 import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
@@ -27,7 +27,7 @@ import java.util.*
 typealias RenderedItem = Triple<String, String, RequestOptions>
 
 class DefaultUpnpManager constructor(val controller: UpnpServiceController, val factory: Factory) :
-    DeviceDiscoveryObserver, Observer, UpnpManager {
+    Observer, UpnpManager {
 
     override val rendererDiscoveryObservable =
         RendererDiscoveryObservable(controller.rendererDiscovery)
@@ -55,14 +55,10 @@ class DefaultUpnpManager constructor(val controller: UpnpServiceController, val 
         get() = _renderedItem
 
     override fun addObservers() = controller.run {
-        rendererDiscovery.addObserver(this@DefaultUpnpManager)
-        contentDirectoryDiscovery.addObserver(this@DefaultUpnpManager)
         addSelectedContentDirectoryObserver(this@DefaultUpnpManager)
     }
 
     override fun removeObservers() = controller.run {
-        rendererDiscovery.removeObserver(this@DefaultUpnpManager)
-        contentDirectoryDiscovery.removeObserver(this@DefaultUpnpManager)
         delSelectedContentDirectoryObserver(this@DefaultUpnpManager)
     }
 
@@ -83,12 +79,12 @@ class DefaultUpnpManager constructor(val controller: UpnpServiceController, val 
             }
         }
 
-    override fun selectContentDirectory(contentDirectory: IUpnpDevice?) {
+    override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
         Timber.d("Selected contentDirectory: ${contentDirectory?.displayString}")
         controller.selectedContentDirectory = contentDirectory
     }
 
-    override fun selectRenderer(renderer: IUpnpDevice?) {
+    override fun selectRenderer(renderer: UpnpDevice?) {
         Timber.d("Selected renderer: ${renderer?.displayString}")
         controller.selectedRenderer = renderer
     }
@@ -180,9 +176,6 @@ class DefaultUpnpManager constructor(val controller: UpnpServiceController, val 
         rendererCommand?.commandPlay()
     }
 
-    override fun addedDevice(device: IUpnpDevice?) {
-    }
-
     override fun browseHome() {
         browseTo("0", null)
     }
@@ -216,10 +209,6 @@ class DefaultUpnpManager constructor(val controller: UpnpServiceController, val 
             }
         }
         Timber.d(element.toString())
-    }
-
-    override fun removedDevice(device: IUpnpDevice?) {
-        Timber.d("Removed $device")
     }
 
     override fun update(o: Observable?, arg: Any?) {

@@ -21,24 +21,24 @@ package org.droidupnp.controller.upnp;
 
 import org.droidupnp.model.upnp.ContentDirectoryDiscovery;
 import org.droidupnp.model.upnp.IServiceListener;
-import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDevice;
 import org.droidupnp.model.upnp.RendererDiscovery;
 import org.fourthline.cling.model.meta.LocalDevice;
 
 import java.util.Observer;
 
 public interface UpnpServiceController {
-    void setSelectedRenderer(IUpnpDevice renderer);
+    void setSelectedRenderer(UpnpDevice renderer);
 
-    void setSelectedRenderer(IUpnpDevice renderer, boolean force);
+    void setSelectedRenderer(UpnpDevice renderer, boolean force);
 
-    void setSelectedContentDirectory(IUpnpDevice contentDirectory);
+    void setSelectedContentDirectory(UpnpDevice contentDirectory);
 
-    void setSelectedContentDirectory(IUpnpDevice contentDirectory, boolean force);
+    void setSelectedContentDirectory(UpnpDevice contentDirectory, boolean force);
 
-    IUpnpDevice getSelectedRenderer();
+    UpnpDevice getSelectedRenderer();
 
-    IUpnpDevice getSelectedContentDirectory();
+    UpnpDevice getSelectedContentDirectory();
 
     void addSelectedRendererObserver(Observer o);
 

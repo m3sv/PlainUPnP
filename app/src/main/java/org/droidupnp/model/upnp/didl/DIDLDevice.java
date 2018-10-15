@@ -22,18 +22,18 @@ package org.droidupnp.model.upnp.didl;
 import com.m3sv.droidupnp.R;
 import com.m3sv.droidupnp.upnp.IDIDLObject;
 
-import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDevice;
 import com.m3sv.droidupnp.data.DeviceDisplay;
 
 public class DIDLDevice implements IDIDLObject {
 
-    IUpnpDevice device;
+    UpnpDevice device;
 
-    public DIDLDevice(IUpnpDevice device) {
+    public DIDLDevice(UpnpDevice device) {
         this.device = device;
     }
 
-    public IUpnpDevice getDevice() {
+    public UpnpDevice getDevice() {
         return device;
     }
 

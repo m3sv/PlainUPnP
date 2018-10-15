@@ -1,10 +1,10 @@
 package org.droidupnp.model.upnp;
 
-import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDeviceEvent;
 
 public interface DeviceDiscoveryObserver {
 
-    void addedDevice(IUpnpDevice device);
+    void addedDevice(UpnpDeviceEvent device);
 
-    void removedDevice(IUpnpDevice device);
+    void removedDevice(UpnpDeviceEvent device);
 }

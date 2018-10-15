@@ -19,7 +19,7 @@
 
 package org.droidupnp.model.upnp;
 
-import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDevice;
 
 import org.droidupnp.controller.upnp.UpnpServiceController;
 
@@ -37,24 +37,24 @@ public class ContentDirectoryDiscovery extends DeviceDiscovery {
     }
 
     @Override
-    protected boolean isSelected(IUpnpDevice device) {
+    protected boolean isSelected(UpnpDevice device) {
         return controller != null
                 && controller.getSelectedContentDirectory() != null
                 && device.equals(controller.getSelectedContentDirectory());
     }
 
     @Override
-    protected void select(IUpnpDevice device) {
+    protected void select(UpnpDevice device) {
         select(device, false);
     }
 
     @Override
-    protected void select(IUpnpDevice device, boolean force) {
+    protected void select(UpnpDevice device, boolean force) {
         controller.setSelectedContentDirectory(device, force);
     }
 
     @Override
-    protected void removed(IUpnpDevice d) {
+    protected void removed(UpnpDevice d) {
         if (controller != null && controller.getSelectedContentDirectory() != null
                 && d.equals(controller.getSelectedContentDirectory()))
             controller.setSelectedContentDirectory(null);

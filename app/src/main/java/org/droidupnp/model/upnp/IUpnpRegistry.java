@@ -19,13 +19,13 @@
 
 package org.droidupnp.model.upnp;
 
-import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDevice;
 
 import java.util.Collection;
 
 public interface IUpnpRegistry {
 
-    Collection<IUpnpDevice> getDevicesList();
+    Collection<UpnpDevice> getDevicesList();
 
     void addListener(IRegistryListener r);
 

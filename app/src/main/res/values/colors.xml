@@ -6,4 +6,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="transparent">#00000000</color>
     <color name="whiteHalfTransparent">#66E2E2E2</color>
+    <color name="darkBackground">#ff303030</color>
+    <color name="lightBackground">#FFFFFF</color>
 </resources>

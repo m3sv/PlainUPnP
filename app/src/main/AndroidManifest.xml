@@ -16,24 +16,16 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/MainActivityThemeLight">
         <activity
             android:name=".presentation.main.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <activity android:name="com.m3sv.droidupnp.presentation.settings.SettingsActivity" />
-
-        <activity
-            android:name="org.droidupnp.view.SettingsActivity"
-            android:label="@string/app_name">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".presentation.main.MainActivity" />
         </activity>
 
         <service android:name="org.droidupnp.model.cling.UpnpService" />

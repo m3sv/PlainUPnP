@@ -1,12 +1,12 @@
 package org.droidupnp.model.upnp;
 
-import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDevice;
 
 public class CallableRendererFilter implements ICallableFilter {
 
-    private IUpnpDevice device;
+    private UpnpDevice device;
 
-    public void setDevice(IUpnpDevice device) {
+    public void setDevice(UpnpDevice device) {
         this.device = device;
     }
 

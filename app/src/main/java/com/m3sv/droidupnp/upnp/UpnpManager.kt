@@ -6,7 +6,7 @@ import com.m3sv.droidupnp.data.RendererState
 import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.Observable
-import com.m3sv.droidupnp.data.IUpnpDevice
+import com.m3sv.droidupnp.data.UpnpDevice
 import org.droidupnp.model.upnp.didl.IDIDLItem
 
 interface UpnpManager {
@@ -26,9 +26,9 @@ interface UpnpManager {
 
     fun removeObservers()
 
-    fun selectContentDirectory(contentDirectory: IUpnpDevice?)
+    fun selectContentDirectory(contentDirectory: UpnpDevice?)
 
-    fun selectRenderer(renderer: IUpnpDevice?)
+    fun selectRenderer(renderer: UpnpDevice?)
 
     fun renderItem(item: IDIDLItem, position: Int)
 

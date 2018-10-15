@@ -89,10 +89,35 @@
     </style>
 
     <!-- The app theme -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="ActivityTheme.Primary.Base.Light" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="primaryTextColor">@color/colorPrimary</item>
+        <item name="secondaryTextColor">@color/colorPrimary</item>
+        <item name="dividerColor">@color/colorPrimaryLight</item>
+        <item name="iconPlaceholder">@drawable/ic_video</item>
+        <item name="preferenceTheme">@style/PrefsTheme</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="backgroundColor">@color/lightBackground</item>
+    </style>
+
+    <style name="ActivityTheme.Primary.Base.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="primaryTextColor">@color/colorPrimary</item>
+        <item name="secondaryTextColor">@color/colorPrimary</item>
+        <item name="dividerColor">@color/colorPrimaryLight</item>
+        <item name="iconPlaceholder">@drawable/ic_video</item>
         <item name="preferenceTheme">@style/PrefsTheme</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="backgroundColor">@color/darkBackground</item>
+    </style>
+
+    <!-- Specific Feed activity theme -->
+    <style name="MainActivityThemeLight" parent="ActivityTheme.Primary.Base.Light">
+        <!--<item name="android:windowBackground">@color/lightBackground</item>-->
+    </style>
+
+    <style name="MainActivityThemeDark" parent="ActivityTheme.Primary.Base.Dark">
+        <!--<item name="android:windowBackground">@color/darkBackground</item>-->
     </style>
 
     <style name="PrefsTheme" parent="@style/PreferenceThemeOverlay.v14.Material">

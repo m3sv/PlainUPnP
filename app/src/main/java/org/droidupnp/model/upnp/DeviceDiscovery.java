@@ -21,7 +21,8 @@ package org.droidupnp.model.upnp;
 
 import android.util.Log;
 
-import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDeviceEvent;
 
 import org.droidupnp.controller.upnp.UpnpServiceController;
 
@@ -65,7 +66,7 @@ public abstract class DeviceDiscovery {
     public class BrowsingRegistryListener implements IRegistryListener {
 
         @Override
-        public void deviceAdded(final IUpnpDevice device) {
+        public void deviceAdded(final UpnpDevice device) {
             Log.v(TAG, "New device detected : " + device.getDisplayString());
 
             if (device.isFullyHydrated() && filter(device)) {
@@ -79,7 +80,7 @@ public abstract class DeviceDiscovery {
         }
 
         @Override
-        public void deviceRemoved(final IUpnpDevice device) {
+        public void deviceRemoved(final UpnpDevice device) {
             Log.v(TAG, "Device removed : " + device.getFriendlyName());
 
             if (filter(device)) {
@@ -100,24 +101,24 @@ public abstract class DeviceDiscovery {
     public void addObserver(DeviceDiscoveryObserver o) {
         observerList.add(o);
 
-        final Collection<IUpnpDevice> upnpDevices = controller.getServiceListener()
+        final Collection<UpnpDevice> upnpDevices = controller.getServiceListener()
                 .getFilteredDeviceList(getCallableFilter());
-        for (IUpnpDevice d : upnpDevices)
-            o.addedDevice(d);
+        for (UpnpDevice d : upnpDevices)
+            o.addedDevice(new UpnpDeviceEvent.Added(d));
     }
 
     public void removeObserver(DeviceDiscoveryObserver o) {
         observerList.remove(o);
     }
 
-    public void notifyAdded(IUpnpDevice device) {
+    public void notifyAdded(UpnpDevice device) {
         for (DeviceDiscoveryObserver o : observerList)
-            o.addedDevice(device);
+            o.addedDevice(new UpnpDeviceEvent.Added(device));
     }
 
-    public void notifyRemoved(IUpnpDevice device) {
+    public void notifyRemoved(UpnpDevice device) {
         for (DeviceDiscoveryObserver o : observerList)
-            o.removedDevice(device);
+            o.removedDevice(new UpnpDeviceEvent.Removed(device));
     }
 
     /**
@@ -127,7 +128,7 @@ public abstract class DeviceDiscovery {
      * @return add it or not
      * @throws Exception
      */
-    protected boolean filter(IUpnpDevice device) {
+    protected boolean filter(UpnpDevice device) {
         ICallableFilter filter = getCallableFilter();
         filter.setDevice(device);
         try {
@@ -151,14 +152,14 @@ public abstract class DeviceDiscovery {
      * @param d
      * @return
      */
-    protected abstract boolean isSelected(IUpnpDevice d);
+    protected abstract boolean isSelected(UpnpDevice d);
 
     /**
      * Select a device
      *
      * @param device
      */
-    protected abstract void select(IUpnpDevice device);
+    protected abstract void select(UpnpDevice device);
 
     /**
      * Select a device
@@ -166,12 +167,12 @@ public abstract class DeviceDiscovery {
      * @param device
      * @param force
      */
-    protected abstract void select(IUpnpDevice device, boolean force);
+    protected abstract void select(UpnpDevice device, boolean force);
 
     /**
      * Callback when device removed
      *
      * @param d
      */
-    protected abstract void removed(IUpnpDevice d);
+    protected abstract void removed(UpnpDevice d);
 }

@@ -20,7 +20,7 @@
 package org.droidupnp.model.cling;
 
 import org.droidupnp.model.upnp.IRegistryListener;
-import com.m3sv.droidupnp.data.IUpnpDevice;
+import com.m3sv.droidupnp.data.UpnpDevice;
 import org.droidupnp.model.upnp.IUpnpRegistry;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.registry.RegistryImpl;
@@ -34,8 +34,8 @@ public class UpnpRegistry implements IUpnpRegistry {
     RegistryImpl clingRegistry;
 
     @Override
-    public Collection<IUpnpDevice> getDevicesList() {
-        Collection<IUpnpDevice> devices = new ArrayList<>();
+    public Collection<UpnpDevice> getDevicesList() {
+        Collection<UpnpDevice> devices = new ArrayList<>();
         for (Device d : clingRegistry.getDevices())
             devices.add(new CDevice(d));
 

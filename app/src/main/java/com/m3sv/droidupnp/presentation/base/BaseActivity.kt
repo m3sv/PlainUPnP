@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
+import android.support.v7.app.AppCompatDelegate
 import android.support.v7.widget.Toolbar
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.common.NavigationHost
@@ -16,25 +17,20 @@ import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 
-const val THEME_KEY = "is_light_theme"
-
 abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
-    protected val disposables = CompositeDisposable()
 
-    var isLightTheme: Boolean = false
-        protected set
+    protected val disposables = CompositeDisposable()
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        isLightTheme =
-                PreferenceManager.getDefaultSharedPreferences(this).getBoolean(THEME_KEY, true)
-
-        if (isLightTheme) {
-            setTheme(R.style.AppTheme)
+        if (PreferenceManager
+                .getDefaultSharedPreferences(this)
+                .getBoolean(getString(R.string.dark_theme_key), false)) {
+            setTheme(R.style.MainActivityThemeDark)
         } else {
-            setTheme(R.style.AppTheme_Dark)
+            setTheme(R.style.MainActivityThemeLight)
         }
         super.onCreate(savedInstanceState)
     }
@@ -42,14 +38,6 @@ abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
     override fun onDestroy() {
         super.onDestroy()
         disposables.clear()
-    }
-
-    protected fun setAsHomeUp(toolbar: Toolbar) {
-        setSupportActionBar(toolbar)
-        supportActionBar?.run {
-            setDisplayHomeAsUpEnabled(true)
-            setHomeButtonEnabled(true)
-        }
     }
 
     override fun navigateTo(fragment: Fragment, tag: String, addToBackStack: Boolean) {
