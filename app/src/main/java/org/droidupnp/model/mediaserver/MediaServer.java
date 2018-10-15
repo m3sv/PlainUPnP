@@ -237,8 +237,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
 
             return res;
         } catch (Exception e) {
-            Timber.e("Unexpected error while serving file");
-            Timber.e("exception", e);
+            Timber.e(e, "Unexpected error while serving file");
         }
 
         return new Response(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "INTERNAL ERROR: unexpected error.");

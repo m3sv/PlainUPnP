@@ -24,7 +24,6 @@
 package org.droidupnp.controller.cling
 
 import android.content.Context
-import com.m3sv.droidupnp.data.UpnpRendererState
 import org.droidupnp.controller.upnp.UpnpServiceController
 import org.droidupnp.model.upnp.AUpnpRendererState
 import org.droidupnp.model.upnp.Factory
@@ -39,10 +38,12 @@ class UPnPFactory @Inject constructor(private val controller: UpnpServiceControl
         return aus?.controlPoint?.let { ContentDirectoryCommand(it, controller) }
     }
 
-    override fun createRendererCommand(rs: UpnpRendererState): IRendererCommand? {
+    override fun createRendererCommand(rendererState: AUpnpRendererState?): IRendererCommand? {
         val aus = (controller.serviceListener as ServiceListener).getUpnpService()
-        return aus?.controlPoint?.let {
-            RendererCommand(controller, it, rs as org.droidupnp.model.cling.UpnpRendererState)
+        return rendererState?.let { rs ->
+            aus?.controlPoint?.let {
+                RendererCommand(controller, it, rs as org.droidupnp.model.cling.UpnpRendererState)
+            }
         }
     }
 

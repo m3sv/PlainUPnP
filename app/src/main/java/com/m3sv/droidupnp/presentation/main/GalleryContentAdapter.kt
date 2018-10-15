@@ -53,8 +53,10 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         val item = items[position]
 
         val itemClickListener = View.OnClickListener {
-            item.didlObjectDisplay?.get(holder.adapterPosition)?.let {
-                onItemClickListener.onItemClick(it.didlObject as IDIDLItem, holder.adapterPosition)
+            holder.adapterPosition.takeIf { it >= 0 }?.let { adapterPosition ->
+                item.didlObjectDisplay?.get(adapterPosition)?.let {
+                    onItemClickListener.onItemClick(it.didlObject as IDIDLItem, holder.adapterPosition)
+                }
             }
         }
 

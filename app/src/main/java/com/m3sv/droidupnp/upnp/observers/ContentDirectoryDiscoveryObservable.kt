@@ -30,13 +30,13 @@ class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentD
             contentDirectoryDiscovery.removeObserver(this)
         }
 
-        override fun addedDevice(device: UpnpDeviceEvent?) {
-            if (!isDisposed && device != null)
+        override fun addedDevice(device: UpnpDeviceEvent) {
+            if (!isDisposed)
                 observer.onNext(device)
         }
 
-        override fun removedDevice(device: UpnpDeviceEvent?) {
-            if (!isDisposed && device != null)
+        override fun removedDevice(device: UpnpDeviceEvent) {
+            if (!isDisposed)
                 observer.onNext(device)
         }
     }

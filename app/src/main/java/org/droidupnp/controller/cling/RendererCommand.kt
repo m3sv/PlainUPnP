@@ -3,8 +3,8 @@ package org.droidupnp.controller.cling
 import kotlinx.coroutines.experimental.*
 import org.droidupnp.controller.upnp.UpnpServiceController
 import org.droidupnp.model.cling.CDevice
-import org.droidupnp.model.cling.UpnpRendererState
 import org.droidupnp.model.cling.TrackMetadata
+import org.droidupnp.model.cling.UpnpRendererState
 import org.droidupnp.model.cling.didl.ClingDIDLItem
 import org.droidupnp.model.upnp.IRendererCommand
 import org.droidupnp.model.upnp.didl.IDIDLItem
@@ -258,7 +258,7 @@ class RendererCommand(
         })
     }
 
-    fun updatePositionInfo() {
+    private fun updatePositionInfo() {
         if (getAVTransportService() == null)
             return
 
@@ -274,7 +274,7 @@ class RendererCommand(
         })
     }
 
-    fun updateTransportInfo() {
+    private fun updateTransportInfo() {
         if (getAVTransportService() == null)
             return
 
@@ -332,23 +332,14 @@ class RendererCommand(
 
     private suspend fun updateInfo() {
         while (true) {
-            var count = 0
-            while (true) {
-                Timber.d("Update state!")
+            Timber.d("Update state!")
+            updatePositionInfo()
+            updateVolume()
+            updateMute()
+            updateTransportInfo()
+            updateMediaInfo()
 
-                count++
-                updatePositionInfo()
-                if (count % 3 == 0) {
-                    updateVolume()
-                    updateMute()
-                    updateTransportInfo()
-                }
-
-                if (count % 6 == 0) {
-                    updateMediaInfo()
-                }
-                delay(1000)
-            }
+            delay(1000)
         }
     }
 

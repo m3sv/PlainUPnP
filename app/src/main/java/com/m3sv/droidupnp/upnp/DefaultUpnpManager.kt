@@ -100,7 +100,7 @@ class DefaultUpnpManager constructor(val controller: UpnpServiceController, val 
         next = position + 1
         previous = position - 1
 
-        upnpRendererState = factory.createRendererState().also {
+        upnpRendererState = factory.createRendererState()?.also {
             it.addObserver { _, _ ->
                 val durationRemaining = it.remainingDuration
                 val durationElapse = it.position
@@ -138,8 +138,9 @@ class DefaultUpnpManager constructor(val controller: UpnpServiceController, val 
 
             else -> RequestOptions()
         }
+
         _renderedItem.postValue(Triple(item.uri, item.title, requestOptions))
-        rendererCommand = factory.createRendererCommand(upnpRendererState).also {
+        rendererCommand = factory.createRendererCommand(upnpRendererState)?.also {
             it.resume()
             it.updateFull()
             it.launchItem(item)

@@ -1,11 +1,10 @@
 package com.m3sv.droidupnp.upnp.observers
 
+import com.m3sv.droidupnp.data.UpnpDeviceEvent
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
 import org.droidupnp.model.upnp.DeviceDiscoveryObserver
-import com.m3sv.droidupnp.data.UpnpDevice
-import com.m3sv.droidupnp.data.UpnpDeviceEvent
 import org.droidupnp.model.upnp.RendererDiscovery
 
 class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscovery) :
@@ -29,13 +28,13 @@ class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscove
             rendererDiscovery.removeObserver(this)
         }
 
-        override fun addedDevice(device: UpnpDeviceEvent?) {
-            if (!isDisposed && device != null)
+        override fun addedDevice(device: UpnpDeviceEvent) {
+            if (!isDisposed)
                 observer.onNext(device)
         }
 
-        override fun removedDevice(device: UpnpDeviceEvent?) {
-            if (!isDisposed && device != null)
+        override fun removedDevice(device: UpnpDeviceEvent) {
+            if (!isDisposed)
                 observer.onNext(device)
         }
     }
