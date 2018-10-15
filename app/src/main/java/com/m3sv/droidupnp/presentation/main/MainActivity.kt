@@ -127,7 +127,7 @@ class MainActivity : BaseActivity() {
             Timber.d("Received new set of renderers: ${it.size}")
             rendererAdapter.run {
                 clear()
-                addAll(it.map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
+                addAll(it.asSequence().map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
             }
         }
     }

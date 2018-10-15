@@ -5,10 +5,7 @@ import com.m3sv.droidupnp.common.Toastable
 import com.m3sv.droidupnp.common.Toaster
 import com.m3sv.droidupnp.presentation.base.BaseViewModel
 import com.m3sv.droidupnp.presentation.main.data.Item
-import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
-import com.m3sv.droidupnp.upnp.DefaultUpnpManager
 import com.m3sv.droidupnp.upnp.UpnpManager
-import org.droidupnp.model.upnp.didl.IDIDLItem
 import javax.inject.Inject
 
 

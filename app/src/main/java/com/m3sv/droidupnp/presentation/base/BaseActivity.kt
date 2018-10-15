@@ -7,8 +7,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatDelegate
-import android.support.v7.widget.Toolbar
 import com.m3sv.droidupnp.R
 import com.m3sv.droidupnp.common.NavigationHost
 import com.m3sv.droidupnp.di.ViewModelFactory

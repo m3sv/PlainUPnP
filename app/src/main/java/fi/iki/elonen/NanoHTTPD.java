@@ -250,7 +250,7 @@ public abstract class NanoHTTPD {
      * @return a map of <code>String</code> (parameter name) to <code>List&lt;String&gt;</code> (a list of the values supplied).
      */
     protected Map<String, List<String>> decodeParameters(String queryString) {
-        Map<String, List<String>> parms = new HashMap<String, List<String>>();
+        Map<String, List<String>> parms = new HashMap<>();
         if (queryString != null) {
             StringTokenizer st = new StringTokenizer(queryString, "&");
             while (st.hasMoreTokens()) {
@@ -258,7 +258,7 @@ public abstract class NanoHTTPD {
                 int sep = e.indexOf('=');
                 String propertyName = (sep >= 0) ? decodePercent(e.substring(0, sep)).trim() : decodePercent(e).trim();
                 if (!parms.containsKey(propertyName)) {
-                    parms.put(propertyName, new ArrayList<String>());
+                    parms.put(propertyName, new ArrayList<>());
                 }
                 String propertyValue = (sep >= 0) ? decodePercent(e.substring(sep + 1)) : null;
                 if (propertyValue != null) {
@@ -410,7 +410,7 @@ public abstract class NanoHTTPD {
 
         public DefaultTempFileManager() {
             tmpdir = System.getProperty("java.io.tmpdir");
-            tempFiles = new ArrayList<TempFile>();
+            tempFiles = new ArrayList<>();
         }
 
         @Override
@@ -485,7 +485,7 @@ public abstract class NanoHTTPD {
         /**
          * Headers for the HTTP response. Use addHeader() to add lines.
          */
-        private Map<String, String> header = new HashMap<String, String>();
+        private Map<String, String> header = new HashMap<>();
         /**
          * The request method that spawned this response.
          */
@@ -705,7 +705,7 @@ public abstract class NanoHTTPD {
                 BufferedReader hin = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(buf, 0, rlen)));
 
                 // Decode the header into parms and header java properties
-                Map<String, String> pre = new HashMap<String, String>();
+                Map<String, String> pre = new HashMap<>();
                 decodeHeader(hin, pre, parms, headers);
 
                 method = Method.lookup(pre.get("method"));
@@ -803,15 +803,15 @@ public abstract class NanoHTTPD {
                         decodeMultipartData(boundary, fbuf, in, parms, files);
                     } else {
                         // Handle application/x-www-form-urlencoded
-                        String postLine = "";
+                        StringBuilder postLine = new StringBuilder();
                         char pbuf[] = new char[512];
                         int read = in.read(pbuf);
-                        while (read >= 0 && !postLine.endsWith("\r\n")) {
-                            postLine += String.valueOf(pbuf, 0, read);
+                        while (read >= 0 && !postLine.toString().endsWith("\r\n")) {
+                            postLine.append(String.valueOf(pbuf, 0, read));
                             read = in.read(pbuf);
                         }
-                        postLine = postLine.trim();
-                        decodeParms(postLine, parms);
+                        postLine = new StringBuilder(postLine.toString().trim());
+                        decodeParms(postLine.toString(), parms);
                     }
                 } else if (Method.PUT.equals(method)) {
                     files.put("content", saveTmpFile(fbuf, 0, fbuf.limit()));
@@ -890,7 +890,7 @@ public abstract class NanoHTTPD {
                         throw new ResponseException(Response.Status.BAD_REQUEST, "BAD REQUEST: Content type is multipart/form-data but next chunk does not start with boundary. Usage: GET /example/file.html");
                     }
                     boundarycount++;
-                    Map<String, String> item = new HashMap<String, String>();
+                    Map<String, String> item = new HashMap<>();
                     mpline = in.readLine();
                     while (mpline != null && mpline.trim().length() > 0) {
                         int p = mpline.indexOf(':');
@@ -905,7 +905,7 @@ public abstract class NanoHTTPD {
                             throw new ResponseException(Response.Status.BAD_REQUEST, "BAD REQUEST: Content type is multipart/form-data but no content-disposition info found. Usage: GET /example/file.html");
                         }
                         StringTokenizer st = new StringTokenizer(contentDisposition, "; ");
-                        Map<String, String> disposition = new HashMap<String, String>();
+                        Map<String, String> disposition = new HashMap<>();
                         while (st.hasMoreTokens()) {
                             String token = st.nextToken();
                             int p = token.indexOf('=');
@@ -916,16 +916,16 @@ public abstract class NanoHTTPD {
                         String pname = disposition.get("name");
                         pname = pname.substring(1, pname.length() - 1);
 
-                        String value = "";
+                        StringBuilder value = new StringBuilder();
                         if (item.get("content-type") == null) {
                             while (mpline != null && !mpline.contains(boundary)) {
                                 mpline = in.readLine();
                                 if (mpline != null) {
                                     int d = mpline.indexOf(boundary);
                                     if (d == -1) {
-                                        value += mpline;
+                                        value.append(mpline);
                                     } else {
-                                        value += mpline.substring(0, d - 2);
+                                        value.append(mpline.substring(0, d - 2));
                                     }
                                 }
                             }
@@ -936,13 +936,13 @@ public abstract class NanoHTTPD {
                             int offset = stripMultipartHeaders(fbuf, bpositions[boundarycount - 2]);
                             String path = saveTmpFile(fbuf, offset, bpositions[boundarycount - 1] - offset - 4);
                             files.put(pname, path);
-                            value = disposition.get("filename");
-                            value = value.substring(1, value.length() - 1);
+                            value = new StringBuilder(disposition.get("filename"));
+                            value = new StringBuilder(value.substring(1, value.length() - 1));
                             do {
                                 mpline = in.readLine();
                             } while (mpline != null && !mpline.contains(boundary));
                         }
-                        parms.put(pname, value);
+                        parms.put(pname, value.toString());
                     }
                 }
             } catch (IOException ioe) {
@@ -970,7 +970,7 @@ public abstract class NanoHTTPD {
         private int[] getBoundaryPositions(ByteBuffer b, byte[] boundary) {
             int matchcount = 0;
             int matchbyte = -1;
-            List<Integer> matchbytes = new ArrayList<Integer>();
+            List<Integer> matchbytes = new ArrayList<>();
             for (int i = 0; i < b.limit(); i++) {
                 if (b.get(i) == boundary[matchcount]) {
                     if (matchcount == 0)

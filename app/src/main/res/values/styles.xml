@@ -27,12 +27,6 @@
     <color name="dark">#444444</color>
     <color name="darker">#222222</color>
 
-    <drawable name="play">@drawable/ic_action_play</drawable>
-    <drawable name="pause">@drawable/ic_action_pause</drawable>
-    <drawable name="stop">@drawable/ic_action_stop</drawable>
-    <drawable name="volume">@drawable/ic_action_volume_on</drawable>
-    <drawable name="volume_mute">@drawable/ic_action_volume_muted</drawable>
-
     <style name="DrawerText" parent="@android:style/TextAppearance">
         <item name="android:textColor">@color/darker</item>
     </style>

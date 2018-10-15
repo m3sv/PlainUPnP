@@ -189,7 +189,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
 
                 allImageContainer = ImageContainer(
                     "" + ALL_ID, "" + IMAGE_ID, "All",
-                    appName, baseURL!!, ctx!!
+                    appName, baseURL!!, ctx
                 )
                 imageContainer.addContainer(allImageContainer)
                 imageContainer.childCount = imageContainer.childCount!! + 1
@@ -208,17 +208,20 @@ class ContentDirectoryService : AbstractContentDirectoryService {
                     }
                 } else if (type == AUDIO_ID) {
                     if (subtype.size == 1) {
-                        if (subtype[0] == ARTIST_ID) {
-                            Log.d(TAG, "Listing all artists...")
-                            container = artistAudioContainer
-                        } else if (subtype[0] == ALBUM_ID) {
-                            Log.d(TAG, "Listing album of all artists...")
-                            container = albumAudioContainer
-                        } else if (subtype[0] == ALL_ID) {
-                            Log.d(TAG, "Listing all songs...")
-                            container = allAudioContainer
+                        when {
+                            subtype[0] == ARTIST_ID -> {
+                                Log.d(TAG, "Listing all artists...")
+                                container = artistAudioContainer
+                            }
+                            subtype[0] == ALBUM_ID -> {
+                                Log.d(TAG, "Listing album of all artists...")
+                                container = albumAudioContainer
+                            }
+                            subtype[0] == ALL_ID -> {
+                                Log.d(TAG, "Listing all songs...")
+                                container = allAudioContainer
+                            }
                         }
-                        // and others...
                     } else if (subtype.size == 2 && subtype[0] == ARTIST_ID) {
                         val artistId = "" + subtype[1]
                         val parentId = "" + AUDIO_ID + SEPARATOR + subtype[0]

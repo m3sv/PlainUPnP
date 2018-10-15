@@ -24,9 +24,6 @@
 package org.droidupnp.model.upnp
 
 import android.content.Context
-
-import com.m3sv.droidupnp.data.UpnpRendererState
-
 import org.droidupnp.controller.upnp.UpnpServiceController
 
 interface Factory {
