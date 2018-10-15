@@ -25,22 +25,18 @@ package org.droidupnp.controller.cling
 
 import android.content.Context
 import android.content.Intent
-
 import org.droidupnp.model.cling.UpnpService
 import org.droidupnp.model.cling.UpnpServiceController
 import org.fourthline.cling.model.meta.LocalDevice
-
+import timber.log.Timber
 import javax.inject.Inject
 
-import timber.log.Timber
-
-class ServiceController @Inject constructor(private val context: Context) : UpnpServiceController() {
+class ServiceController @Inject constructor(private val context: Context) :
+    UpnpServiceController() {
 
     private val upnpServiceListener: ServiceListener = ServiceListener(context)
 
-    override fun getServiceListener(): ServiceListener {
-        return upnpServiceListener
-    }
+    override fun getServiceListener(): ServiceListener = upnpServiceListener
 
     override fun pause() {
         context.unbindService(upnpServiceListener.getServiceConnection())
