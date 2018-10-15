@@ -14,7 +14,7 @@ import com.m3sv.droidupnp.presentation.main.data.Item
 import com.m3sv.droidupnp.upnp.DIDLObjectDisplay
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import org.droidupnp.model.upnp.didl.IDIDLItem
+import org.droidupnp.legacy.upnp.didl.IDIDLItem
 import timber.log.Timber
 
 

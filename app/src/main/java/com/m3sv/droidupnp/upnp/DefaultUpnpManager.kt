@@ -11,12 +11,11 @@ import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.subjects.PublishSubject
-import org.droidupnp.controller.upnp.UpnpServiceController
-import org.droidupnp.model.cling.didl.ClingAudioItem
-import org.droidupnp.model.cling.didl.ClingImageItem
-import org.droidupnp.model.cling.didl.ClingVideoItem
-import org.droidupnp.model.upnp.*
-import org.droidupnp.model.upnp.didl.IDIDLItem
+import org.droidupnp.legacy.cling.didl.ClingAudioItem
+import org.droidupnp.legacy.cling.didl.ClingImageItem
+import org.droidupnp.legacy.cling.didl.ClingVideoItem
+import org.droidupnp.legacy.upnp.*
+import org.droidupnp.legacy.upnp.didl.IDIDLItem
 import timber.log.Timber
 import java.util.*
 

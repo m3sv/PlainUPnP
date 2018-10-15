@@ -7,7 +7,7 @@ import com.m3sv.droidupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.droidupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.Observable
 import com.m3sv.droidupnp.data.UpnpDevice
-import org.droidupnp.model.upnp.didl.IDIDLItem
+import org.droidupnp.legacy.upnp.didl.IDIDLItem
 
 interface UpnpManager {
     val rendererDiscoveryObservable: RendererDiscoveryObservable

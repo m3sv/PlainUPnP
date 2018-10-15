@@ -20,7 +20,6 @@
 
     <!-- General -->
     <string name="app_name">DroidUPnP</string>
-    <string name="app_url">https://github.com/trishika/DroidUPnP</string>
     <string name="version">Version</string>
 
     <!-- Navigation drawer -->

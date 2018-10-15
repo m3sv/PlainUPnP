@@ -8,7 +8,7 @@ import com.m3sv.droidupnp.di.scope.ApplicationScope
 import com.m3sv.droidupnp.upnp.DefaultUpnpManager
 import dagger.Module
 import dagger.Provides
-import org.droidupnp.model.upnp.Factory
+import org.droidupnp.legacy.upnp.Factory
 
 
 @Module
