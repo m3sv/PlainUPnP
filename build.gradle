@@ -12,7 +12,8 @@ buildscript {
             'dagger'                : '2.13',
             'glide'                 : '4.2.0',
             'cling'                 : '2.1.1',
-            'jetty'                 : '8.2.0.v20160908'
+            'jetty'                 : '8.2.0.v20160908',
+            'retrofit'              : '2.4.0'
     ]
 
     ext.deps = [
@@ -49,7 +50,11 @@ buildscript {
                     'compiler': "com.github.bumptech.glide:compiler:${versions.glide}"
             ],
             'kotlinDataBinding'     : "com.android.databinding:compiler:$gradleVersion",
-            'coroutines'            : "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.+"
+            'coroutines'            : "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.+",
+            'retrofit'              : [
+                    'core'     : "com.squareup.retrofit2:retrofit:${versions.retrofit}",
+                    'rxAdapter': "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}"
+            ]
     ]
 
     repositories {

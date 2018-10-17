@@ -78,6 +78,9 @@ dependencies {
     implementation deps.rx.binding
     implementation deps.rx.android
 
+    implementation deps.retrofit.core
+    implementation deps.retrofit.rxAdapter
+
     implementation deps.coroutines
 
     implementation(deps.glide.core) {
