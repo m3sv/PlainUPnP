@@ -8,7 +8,7 @@ import kotlin.properties.Delegates
 
 abstract class BaseAdapter<T>(private val diffCallback: ItemsDiffCallback<T>) :
     RecyclerView.Adapter<BaseViewHolder<*>>() {
-    var originalItems = listOf<T>()
+    private var originalItems = listOf<T>()
 
     var items: List<T> by Delegates.observable(mutableListOf()) { _, _, newValue ->
         if (newValue.isEmpty())
@@ -17,7 +17,7 @@ abstract class BaseAdapter<T>(private val diffCallback: ItemsDiffCallback<T>) :
             isEmpty.postValue(false)
     }
 
-    val isEmpty: MutableLiveData<Boolean> = MutableLiveData()
+    private val isEmpty: MutableLiveData<Boolean> = MutableLiveData()
 
     override fun getItemCount(): Int = items.size
 

@@ -17,9 +17,9 @@ import org.mockito.Mockito.verifyNoMoreInteractions
  */
 class ExampleUnitTest {
 
-    lateinit var managerDefault: DefaultUpnpManager
+    private lateinit var managerDefault: DefaultUpnpManager
 
-    lateinit var mainActivityViewModel: MainActivityViewModel
+    private lateinit var mainActivityViewModel: MainActivityViewModel
 
     @Before
     fun setup() {

@@ -297,7 +297,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
     }
 
     companion object {
-        private val TAG = "ContentDirectoryService"
+        private const val TAG = "ContentDirectoryService"
 
         const val SEPARATOR = '$'
 

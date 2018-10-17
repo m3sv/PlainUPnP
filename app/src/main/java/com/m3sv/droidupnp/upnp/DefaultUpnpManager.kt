@@ -25,7 +25,7 @@ import java.util.*
  */
 typealias RenderedItem = Triple<String, String, RequestOptions>
 
-class DefaultUpnpManager constructor(val controller: UpnpServiceController, val factory: Factory) :
+class DefaultUpnpManager constructor(private val controller: UpnpServiceController, val factory: Factory) :
     Observer, UpnpManager {
 
     override val rendererDiscoveryObservable =

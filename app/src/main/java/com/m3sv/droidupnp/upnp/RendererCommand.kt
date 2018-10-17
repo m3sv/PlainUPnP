@@ -241,7 +241,7 @@ class RendererCommand(
 
     // Update
 
-    fun updateMediaInfo() {
+    private fun updateMediaInfo() {
         if (getAVTransportService() == null)
             return
 
@@ -305,7 +305,7 @@ class RendererCommand(
         })
     }
 
-    fun updateMute() {
+    private fun updateMute() {
         if (getRenderingControlService() == null)
             return
 

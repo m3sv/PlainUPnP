@@ -87,8 +87,7 @@ public class TrackMetadata {
     private XMLReader initializeReader() throws ParserConfigurationException, SAXException {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = factory.newSAXParser();
-        XMLReader xmlreader = parser.getXMLReader();
-        return xmlreader;
+        return parser.getXMLReader();
     }
 
     public void parseTrackMetadata(String xml) {

@@ -694,8 +694,7 @@ public abstract class NanoHTTPD {
 
                 if (splitbyte < rlen) {
                     ByteArrayInputStream splitInputStream = new ByteArrayInputStream(buf, splitbyte, rlen - splitbyte);
-                    SequenceInputStream sequenceInputStream = new SequenceInputStream(splitInputStream, inputStream);
-                    inputStream = sequenceInputStream;
+                    inputStream = new SequenceInputStream(splitInputStream, inputStream);
                 }
 
                 parms = new HashMap<>();
@@ -1105,7 +1104,7 @@ public abstract class NanoHTTPD {
         }
     }
 
-    private static final void safeClose(ServerSocket serverSocket) {
+    private static void safeClose(ServerSocket serverSocket) {
         if (serverSocket != null) {
             try {
                 serverSocket.close();
@@ -1114,7 +1113,7 @@ public abstract class NanoHTTPD {
         }
     }
 
-    private static final void safeClose(Socket socket) {
+    private static void safeClose(Socket socket) {
         if (socket != null) {
             try {
                 socket.close();
@@ -1123,7 +1122,7 @@ public abstract class NanoHTTPD {
         }
     }
 
-    private static final void safeClose(Closeable closeable) {
+    private static void safeClose(Closeable closeable) {
         if (closeable != null) {
             try {
                 closeable.close();
