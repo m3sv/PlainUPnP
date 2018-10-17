@@ -107,5 +107,10 @@
     <string name="general_category">General</string>
 
     <string name="dark_theme_key" translatable="false">dark_theme_enabled_key</string>
+    <string name="enable_dark_theme">Enable dark theme</string>
+    <string name="share_images">Share images</string>
+    <string name="share_music">Share music</string>
+    <string name="share_videos">Share videos</string>
+    <string name="app_url">placeholder</string>
 
 </resources>
