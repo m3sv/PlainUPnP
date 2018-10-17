@@ -1,6 +1,7 @@
 package com.m3sv.droidupnp.di
 
 import android.app.Application
+import android.net.Network
 import com.m3sv.droidupnp.App
 import com.m3sv.droidupnp.di.activity.MainActivityBuilder
 import com.m3sv.droidupnp.di.scope.ApplicationScope
@@ -14,7 +15,7 @@ import dagger.android.support.AndroidSupportInjectionModule
     modules = [AndroidSupportInjectionModule::class,
         MainActivityBuilder::class,
         AppModule::class,
-        UPnPBinder::class]
+        UPnPBinder::class, NetworkModule::class]
 )
 interface AppComponent : AndroidInjector<App> {
     @Component.Builder

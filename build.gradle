@@ -52,8 +52,9 @@ buildscript {
             'kotlinDataBinding'     : "com.android.databinding:compiler:$gradleVersion",
             'coroutines'            : "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.+",
             'retrofit'              : [
-                    'core'     : "com.squareup.retrofit2:retrofit:${versions.retrofit}",
-                    'rxAdapter': "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}"
+                    'core'          : "com.squareup.retrofit2:retrofit:${versions.retrofit}",
+                    'rxAdapter'     : "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}",
+                    'moshiConverter': "com.squareup.retrofit2:converter-moshi:${versions.retrofit}"
             ]
     ]
 

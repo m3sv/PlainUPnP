@@ -14,6 +14,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
 
     packagingOptions {
@@ -80,6 +81,7 @@ dependencies {
 
     implementation deps.retrofit.core
     implementation deps.retrofit.rxAdapter
+    implementation deps.retrofit.moshiConverter
 
     implementation deps.coroutines
 

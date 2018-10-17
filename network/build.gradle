@@ -1,0 +1,48 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+
+        def homePath = System.properties['user.home']
+        def keystorePropertiesFile = rootProject.file("$homePath/keys/plainupnp/api.properties")
+        def keystoreProperties = new Properties()
+        keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+        buildConfigField 'String', 'TASTE_DIVE_BASE_URL', '"https://tastedive.com/api/"'
+        buildConfigField 'String', 'TASTE_DIVE_API_KEY', "\"${keystoreProperties['TASTE_DIVE_API_KEY']}\""
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    implementation deps.retrofit.core
+    implementation deps.retrofit.rxAdapter
+    implementation deps.retrofit.moshiConverter
+
+    implementation deps.timber
+    implementation deps.kotlin
+}
