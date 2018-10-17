@@ -2,6 +2,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/general_category">
         <SwitchPreference
+            android:defaultValue="@bool/default_enable_dark_theme"
+            android:key="@string/dark_theme_key"
+            android:title="@string/enable_dark_theme" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/upnp_category">
+        <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"
             android:key="pref_contentDirectoryService_image"
             android:title="@string/share_images" />
@@ -15,10 +22,6 @@
             android:defaultValue="@bool/default_enable_content_directory"
             android:key="pref_contentDirectoryService_video"
             android:title="@string/share_videos" />
-
-        <SwitchPreference
-            android:defaultValue="@bool/default_enable_dark_theme"
-            android:key="@string/dark_theme_key"
-            android:title="@string/enable_dark_theme" />
     </PreferenceCategory>
+
 </PreferenceScreen>

@@ -25,7 +25,10 @@ import java.util.*
  */
 typealias RenderedItem = Triple<String, String, RequestOptions>
 
-class DefaultUpnpManager constructor(private val controller: UpnpServiceController, val factory: Factory) :
+class DefaultUpnpManager constructor(
+    private val controller: UpnpServiceController,
+    val factory: Factory
+) :
     Observer, UpnpManager {
 
     override val rendererDiscoveryObservable =
@@ -52,6 +55,10 @@ class DefaultUpnpManager constructor(private val controller: UpnpServiceControll
 
     override val renderedItem: LiveData<RenderedItem>
         get() = _renderedItem
+
+    override val currentContentDirectory: UpnpDevice?
+        get() = controller.selectedContentDirectory
+
 
     override fun addObservers() = controller.run {
         addSelectedContentDirectoryObserver(this@DefaultUpnpManager)
@@ -212,6 +219,7 @@ class DefaultUpnpManager constructor(private val controller: UpnpServiceControll
     }
 
     override fun update(o: Observable?, arg: Any?) {
+        Timber.d("Selected new content directory: ${controller.selectedContentDirectory}")
     }
 
     override fun moveTo(progress: Int, max: Int) {

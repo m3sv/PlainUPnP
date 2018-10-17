@@ -105,6 +105,7 @@
     <string name="to_exit">Double tap back button to exit</string>
     <string name="about_licenses_other" />
     <string name="general_category">General</string>
+    <string name="upnp_category">UPnP</string>
 
     <string name="dark_theme_key" translatable="false">dark_theme_enabled_key</string>
     <string name="enable_dark_theme">Enable dark theme</string>

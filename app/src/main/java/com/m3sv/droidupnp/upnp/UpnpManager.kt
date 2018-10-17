@@ -22,6 +22,8 @@ interface UpnpManager {
 
     val contentData: LiveData<List<DIDLObjectDisplay>>
 
+    val currentContentDirectory: UpnpDevice?
+
     fun addObservers()
 
     fun removeObservers()

@@ -4,7 +4,12 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.support.v7.app.AppCompatDelegate
 import android.support.v7.preference.PreferenceFragmentCompat
+import android.view.View
 import com.m3sv.droidupnp.R
+import com.m3sv.droidupnp.upnp.UpnpManager
+import dagger.android.DaggerActivity
+import dagger.android.support.DaggerAppCompatActivity
+import javax.inject.Inject
 
 
 class SettingsFragment : PreferenceFragmentCompat(),
@@ -12,6 +17,14 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     private val darkThemeKey by lazy {
         getString(R.string.dark_theme_key)
+    }
+
+    @Inject
+    lateinit var upnpManager: UpnpManager
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        (activity as? DaggerAppCompatActivity)?.supportFragmentInjector()?.inject(this)
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -39,6 +52,11 @@ class SettingsFragment : PreferenceFragmentCompat(),
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                     activity?.recreate()
                 }
+            }
+        } else {
+            upnpManager.currentContentDirectory?.let {
+                if (it.isLocal)
+                    upnpManager.browseHome()
             }
         }
     }

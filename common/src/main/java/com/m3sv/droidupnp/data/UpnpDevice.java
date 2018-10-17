@@ -56,4 +56,6 @@ public interface UpnpDevice {
     void printService();
 
     boolean isFullyHydrated();
+
+    boolean isLocal();
 }

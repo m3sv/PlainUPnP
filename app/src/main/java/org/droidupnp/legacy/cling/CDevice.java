@@ -25,6 +25,7 @@ import com.m3sv.droidupnp.data.UpnpDevice;
 
 import org.fourthline.cling.model.meta.Action;
 import org.fourthline.cling.model.meta.Device;
+import org.fourthline.cling.model.meta.LocalDevice;
 import org.fourthline.cling.model.meta.Service;
 import org.fourthline.cling.model.types.ServiceType;
 import org.fourthline.cling.model.types.UDAServiceType;
@@ -34,7 +35,7 @@ public class CDevice implements UpnpDevice {
 
     private static final String TAG = "ClingDevice";
 
-    Device device;
+    private Device device;
 
     public CDevice(Device device) {
         this.device = device;
@@ -195,5 +196,18 @@ public class CDevice implements UpnpDevice {
     @Override
     public int hashCode() {
         return device != null ? device.hashCode() : 0;
+    }
+
+
+    @Override
+    public String toString() {
+        return "CDevice{" +
+                "device=" + device +
+                '}';
+    }
+
+    @Override
+    public boolean isLocal() {
+        return device instanceof LocalDevice;
     }
 }
