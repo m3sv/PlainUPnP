@@ -23,7 +23,7 @@
 
 package org.droidupnp.legacy.upnp
 
-import com.m3sv.droidupnp.upnp.ContentCallback
+import com.m3sv.plainupnp.upnp.ContentCallback
 
 interface IContentDirectoryCommand {
     fun browse(directoryID: String, parent: String?, callback: ContentCallback)

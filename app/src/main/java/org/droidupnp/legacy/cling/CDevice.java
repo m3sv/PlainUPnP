@@ -21,7 +21,7 @@ package org.droidupnp.legacy.cling;
 
 import android.util.Log;
 
-import com.m3sv.droidupnp.data.UpnpDevice;
+import com.m3sv.plainupnp.data.UpnpDevice;
 
 import org.fourthline.cling.model.meta.Action;
 import org.fourthline.cling.model.meta.Device;

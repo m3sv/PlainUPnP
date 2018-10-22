@@ -1,6 +1,6 @@
 package org.droidupnp.legacy.upnp;
 
-import com.m3sv.droidupnp.data.UpnpDevice;
+import com.m3sv.plainupnp.data.UpnpDevice;
 
 public class CallableContentDirectoryFilter implements ICallableFilter {
 

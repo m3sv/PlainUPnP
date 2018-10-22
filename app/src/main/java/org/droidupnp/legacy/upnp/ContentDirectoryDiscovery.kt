@@ -23,9 +23,9 @@
 
 package org.droidupnp.legacy.upnp
 
-import com.m3sv.droidupnp.data.UpnpDevice
+import com.m3sv.plainupnp.data.UpnpDevice
 
-import com.m3sv.droidupnp.upnp.UpnpServiceController
+import com.m3sv.plainupnp.upnp.UpnpServiceController
 
 class ContentDirectoryDiscovery(
     controller: UpnpServiceController,

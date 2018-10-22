@@ -27,8 +27,8 @@ import android.os.Build;
 import android.provider.MediaStore;
 import android.util.Log;
 
-import com.m3sv.droidupnp.R;
-import com.m3sv.droidupnp.common.PrefUtils;
+import com.m3sv.plainupnp.R;
+import com.m3sv.plainupnp.common.PrefUtils;
 
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.fourthline.cling.model.DefaultServiceManager;

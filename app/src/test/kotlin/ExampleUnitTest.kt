@@ -1,9 +1,9 @@
 @file:Suppress("IllegalIdentifier", "UNCHECKED_CAST")
 
 import android.arch.lifecycle.Observer
-import com.m3sv.droidupnp.presentation.main.MainActivityViewModel
-import com.m3sv.droidupnp.upnp.DefaultUpnpManager
-import com.m3sv.droidupnp.data.DeviceDisplay
+import com.m3sv.plainupnp.presentation.main.MainActivityViewModel
+import com.m3sv.plainupnp.upnp.DefaultUpnpManager
+import com.m3sv.plainupnp.data.DeviceDisplay
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

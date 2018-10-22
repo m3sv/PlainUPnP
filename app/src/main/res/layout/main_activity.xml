@@ -24,7 +24,7 @@
 
         <variable
             name="vm"
-            type="com.m3sv.droidupnp.presentation.main.MainActivityViewModel" />
+            type="com.m3sv.plainupnp.presentation.main.MainActivityViewModel" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout

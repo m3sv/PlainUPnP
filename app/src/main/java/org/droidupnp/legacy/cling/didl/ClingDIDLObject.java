@@ -19,7 +19,7 @@
 
 package org.droidupnp.legacy.cling.didl;
 
-import com.m3sv.droidupnp.upnp.IDIDLObject;
+import com.m3sv.plainupnp.upnp.IDIDLObject;
 
 import org.fourthline.cling.support.model.DIDLObject;
 

@@ -19,11 +19,11 @@
 
 package org.droidupnp.legacy.upnp.didl;
 
-import com.m3sv.droidupnp.R;
-import com.m3sv.droidupnp.upnp.IDIDLObject;
+import com.m3sv.plainupnp.R;
+import com.m3sv.plainupnp.upnp.IDIDLObject;
 
-import com.m3sv.droidupnp.data.UpnpDevice;
-import com.m3sv.droidupnp.data.DeviceDisplay;
+import com.m3sv.plainupnp.data.UpnpDevice;
+import com.m3sv.plainupnp.data.DeviceDisplay;
 
 public class DIDLDevice implements IDIDLObject {
 

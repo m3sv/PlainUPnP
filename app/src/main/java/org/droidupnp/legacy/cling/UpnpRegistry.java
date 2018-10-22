@@ -20,7 +20,7 @@
 package org.droidupnp.legacy.cling;
 
 import org.droidupnp.legacy.upnp.IRegistryListener;
-import com.m3sv.droidupnp.data.UpnpDevice;
+import com.m3sv.plainupnp.data.UpnpDevice;
 import org.droidupnp.legacy.upnp.IUpnpRegistry;
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.registry.RegistryImpl;

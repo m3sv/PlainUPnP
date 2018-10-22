@@ -23,12 +23,12 @@ import android.util.Log;
 
 import org.droidupnp.legacy.CObservable;
 import org.droidupnp.legacy.upnp.ContentDirectoryDiscovery;
-import com.m3sv.droidupnp.data.UpnpDevice;
+import com.m3sv.plainupnp.data.UpnpDevice;
 import org.droidupnp.legacy.upnp.RendererDiscovery;
 
 import java.util.Observer;
 
-public abstract class UpnpServiceController implements com.m3sv.droidupnp.upnp.UpnpServiceController {
+public abstract class UpnpServiceController implements com.m3sv.plainupnp.upnp.UpnpServiceController {
 
     private static final String TAG = "UpnpServiceController";
 

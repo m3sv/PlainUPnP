@@ -21,10 +21,10 @@ package org.droidupnp.legacy.upnp;
 
 import android.util.Log;
 
-import com.m3sv.droidupnp.data.UpnpDevice;
-import com.m3sv.droidupnp.data.UpnpDeviceEvent;
+import com.m3sv.plainupnp.data.UpnpDevice;
+import com.m3sv.plainupnp.data.UpnpDeviceEvent;
 
-import com.m3sv.droidupnp.upnp.UpnpServiceController;
+import com.m3sv.plainupnp.upnp.UpnpServiceController;
 
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;

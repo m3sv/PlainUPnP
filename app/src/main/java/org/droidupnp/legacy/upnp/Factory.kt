@@ -24,7 +24,7 @@
 package org.droidupnp.legacy.upnp
 
 import android.content.Context
-import com.m3sv.droidupnp.upnp.UpnpServiceController
+import com.m3sv.plainupnp.upnp.UpnpServiceController
 
 interface Factory {
     fun createContentDirectoryCommand(): IContentDirectoryCommand?

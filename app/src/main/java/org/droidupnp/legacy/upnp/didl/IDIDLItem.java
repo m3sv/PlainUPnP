@@ -19,7 +19,7 @@
 
 package org.droidupnp.legacy.upnp.didl;
 
-import com.m3sv.droidupnp.upnp.IDIDLObject;
+import com.m3sv.plainupnp.upnp.IDIDLObject;
 
 public interface IDIDLItem extends IDIDLObject {
     String getURI();

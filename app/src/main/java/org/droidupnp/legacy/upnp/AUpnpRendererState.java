@@ -19,7 +19,7 @@
 
 package org.droidupnp.legacy.upnp;
 
-import com.m3sv.droidupnp.data.UpnpRendererState;
+import com.m3sv.plainupnp.data.UpnpRendererState;
 
 import org.droidupnp.legacy.CObservable;
 

@@ -21,7 +21,7 @@ package org.droidupnp.legacy.cling.didl;
 
 import android.util.Log;
 
-import com.m3sv.droidupnp.R;
+import com.m3sv.plainupnp.R;
 
 import org.droidupnp.legacy.upnp.didl.IDIDLItem;
 import org.fourthline.cling.support.model.item.Item;
