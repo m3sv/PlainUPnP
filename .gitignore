@@ -13,3 +13,7 @@ local.properties
 DroidUPnP.iml
 projectFilesBackup
 captures/*
+app/app.iml
+
+PlainUPnP.iml
+network/network.iml

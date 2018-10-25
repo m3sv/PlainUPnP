@@ -7,9 +7,12 @@ import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.data.Directory
 import com.m3sv.plainupnp.data.UpnpDevice
 import com.m3sv.plainupnp.data.RendererState
+import com.m3sv.plainupnp.data.UpnpRendererState
 import com.m3sv.plainupnp.upnp.observers.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observers.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import org.droidupnp.legacy.cling.didl.ClingAudioItem
 import org.droidupnp.legacy.cling.didl.ClingImageItem
@@ -51,7 +54,9 @@ class DefaultUpnpManager constructor(
 
     private val _renderedItem: MutableLiveData<RenderedItem> = MutableLiveData()
 
-    private var upnpRendererState: AUpnpRendererState? = null
+    private var upnpRendererState: org.droidupnp.legacy.cling.UpnpRendererState? = null
+
+    private var upnpRenderStateDisposable: Disposable? = null
 
     override val renderedItem: LiveData<RenderedItem>
         get() = _renderedItem
@@ -106,11 +111,15 @@ class DefaultUpnpManager constructor(
         next = position + 1
         previous = position - 1
 
-        upnpRendererState = factory.createRendererState()?.also {
-            it.addObserver { _, _ ->
+
+        upnpRenderStateDisposable?.takeIf { !it.isDisposed }?.dispose()
+        upnpRendererState = factory.createRendererState()
+
+        upnpRenderStateDisposable = upnpRendererState?.let {
+            it.subscribeBy(onNext = {
                 val durationRemaining = it.remainingDuration
-                val durationElapse = it.position
-                val progress = it.elapsedPercent
+                val durationElapse = it.elapsedDuration
+                val progress = it.progress
                 val title = it.title
                 val artist = it.artist
                 val state = it.state
@@ -126,8 +135,31 @@ class DefaultUpnpManager constructor(
 
                 Timber.i("New renderer state: $rendererState")
                 _rendererState.postValue(rendererState)
-            }
+            }, onError = Timber::e, onComplete = {
+            })
         }
+//            ?.also {
+//            it.addObserver { _, _ ->
+//                val durationRemaining = it.remainingDuration
+//                val durationElapse = it.position
+//                val progress = it.elapsedPercent
+//                val title = it.title
+//                val artist = it.artist
+//                val state = it.state
+//
+//                val rendererState = RendererState(
+//                    durationRemaining,
+//                    durationElapse,
+//                    progress,
+//                    title,
+//                    artist,
+//                    state
+//                )
+//
+//                Timber.i("New renderer state: $rendererState")
+//                _rendererState.postValue(rendererState)
+//            }
+//        }
 
         val requestOptions = when (item) {
             is ClingImageItem -> {

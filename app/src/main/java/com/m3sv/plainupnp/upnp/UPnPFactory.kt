@@ -43,14 +43,14 @@ class UPnPFactory @Inject constructor(private val controller: UpnpServiceControl
         }
     }
 
-    override fun createRendererCommand(rendererState: AUpnpRendererState?): IRendererCommand? {
+    override fun createRendererCommand(rendererState: UpnpRendererState?): IRendererCommand? {
         val aus = (controller.serviceListener as ServiceListener).getUpnpService()
         return rendererState?.let { rs ->
             aus?.controlPoint?.let {
                 RendererCommand(
                     controller,
                     it,
-                    rs as UpnpRendererState
+                    rs
                 )
             }
         }
@@ -60,7 +60,7 @@ class UPnPFactory @Inject constructor(private val controller: UpnpServiceControl
         return controller
     }
 
-    override fun createRendererState(): AUpnpRendererState {
+    override fun createRendererState(): UpnpRendererState {
         return org.droidupnp.legacy.cling.UpnpRendererState()
     }
 }

@@ -25,13 +25,14 @@ package org.droidupnp.legacy.upnp
 
 import android.content.Context
 import com.m3sv.plainupnp.upnp.UpnpServiceController
+import org.droidupnp.legacy.cling.UpnpRendererState
 
 interface Factory {
     fun createContentDirectoryCommand(): IContentDirectoryCommand?
 
     fun createUpnpServiceController(ctx: Context): UpnpServiceController
 
-    fun createRendererState(): AUpnpRendererState?
+    fun createRendererState(): UpnpRendererState?
 
-    fun createRendererCommand(rendererState: AUpnpRendererState?): IRendererCommand?
+    fun createRendererCommand(rendererState: UpnpRendererState?): IRendererCommand?
 }

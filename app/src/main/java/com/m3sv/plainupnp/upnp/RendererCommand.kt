@@ -16,6 +16,7 @@ import org.fourthline.cling.support.avtransport.callback.*
 import org.fourthline.cling.support.model.MediaInfo
 import org.fourthline.cling.support.model.PositionInfo
 import org.fourthline.cling.support.model.TransportInfo
+import org.fourthline.cling.support.model.TransportState
 import org.fourthline.cling.support.model.item.*
 import org.fourthline.cling.support.renderingcontrol.callback.GetMute
 import org.fourthline.cling.support.renderingcontrol.callback.GetVolume
@@ -145,7 +146,7 @@ class RendererCommand(
             override fun success(invocation: ActionInvocation<*>?) {
                 super.success(invocation)
                 Timber.v("Success to set volume")
-                rendererState.volume = volume
+                rendererState.setVolume(volume)
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -161,7 +162,7 @@ class RendererCommand(
         controlPoint.execute(object : SetMute(getRenderingControlService()!!, mute) {
             override fun success(invocation: ActionInvocation<*>?) {
                 Timber.v("Success setting mute status ! ")
-                rendererState.isMute = mute
+                rendererState.setMuted(mute)
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -248,7 +249,7 @@ class RendererCommand(
         controlPoint.execute(object : GetMediaInfo(getAVTransportService()!!) {
             override fun received(arg0: ActionInvocation<*>, arg1: MediaInfo) {
                 Timber.d("Receive media info ! $arg1")
-                rendererState.mediaInfo = arg1
+                rendererState.setMediaInfo(arg1)
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -273,6 +274,8 @@ class RendererCommand(
         })
     }
 
+    private var previousTransportState = TransportState.STOPPED
+
     private fun updateTransportInfo() {
         if (getAVTransportService() == null)
             return
@@ -284,7 +287,10 @@ class RendererCommand(
 
             override fun received(arg0: ActionInvocation<*>, arg1: TransportInfo) {
                 Timber.d("Transport info: $arg1")
-                rendererState.transportInfo = arg1
+                if (arg1.currentTransportState == TransportState.STOPPED && previousTransportState == TransportState.PLAYING)
+                    job.cancel()
+                rendererState.setTransportInfo(arg1)
+                previousTransportState = arg1.currentTransportState
             }
         })
     }
@@ -296,7 +302,7 @@ class RendererCommand(
         controlPoint.execute(object : GetVolume(getRenderingControlService()) {
             override fun received(arg0: ActionInvocation<*>, arg1: Int) {
                 Timber.d("Receive volume ! $arg1")
-                rendererState.volume = arg1
+                rendererState.setVolume(arg1)
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -312,7 +318,7 @@ class RendererCommand(
         controlPoint.execute(object : GetMute(getRenderingControlService()!!) {
             override fun received(arg0: ActionInvocation<*>, arg1: Boolean) {
                 Timber.d("Receive mute status ! $arg1")
-                rendererState.isMute = arg1
+                rendererState.setMuted(arg1)
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
