@@ -1,10 +1,10 @@
-package com.m3sv.plainupnp.upnp.observers
+package com.m3sv.plainupnp.upnp.observables
 
 import com.m3sv.plainupnp.data.UpnpDeviceEvent
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
-import org.droidupnp.legacy.upnp.ContentDirectoryDiscovery
+import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery
 import org.droidupnp.legacy.upnp.DeviceDiscoveryObserver
 
 

@@ -21,10 +21,11 @@ package org.droidupnp.legacy.cling;
 
 import android.util.Log;
 
-import org.droidupnp.legacy.CObservable;
-import org.droidupnp.legacy.upnp.ContentDirectoryDiscovery;
 import com.m3sv.plainupnp.data.UpnpDevice;
-import org.droidupnp.legacy.upnp.RendererDiscovery;
+import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery;
+import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery;
+
+import org.droidupnp.legacy.CObservable;
 
 import java.util.Observer;
 
@@ -55,8 +56,8 @@ public abstract class UpnpServiceController implements com.m3sv.plainupnp.upnp.U
         rendererObservable = new CObservable();
         contentDirectoryObservable = new CObservable();
 
-        contentDirectoryDiscovery = new ContentDirectoryDiscovery(this, getServiceListener());
-        rendererDiscovery = new RendererDiscovery(this, getServiceListener());
+        contentDirectoryDiscovery = new ContentDirectoryDiscovery(this);
+        rendererDiscovery = new RendererDiscovery(this);
     }
 
     @Override

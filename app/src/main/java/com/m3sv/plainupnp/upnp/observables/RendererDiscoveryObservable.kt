@@ -1,11 +1,11 @@
-package com.m3sv.plainupnp.upnp.observers
+package com.m3sv.plainupnp.upnp.observables
 
 import com.m3sv.plainupnp.data.UpnpDeviceEvent
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
 import org.droidupnp.legacy.upnp.DeviceDiscoveryObserver
-import org.droidupnp.legacy.upnp.RendererDiscovery
+import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
 
 class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscovery) :
     Observable<UpnpDeviceEvent>() {

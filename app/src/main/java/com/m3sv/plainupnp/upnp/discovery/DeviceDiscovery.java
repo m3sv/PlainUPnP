@@ -17,7 +17,7 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.legacy.upnp;
+package com.m3sv.plainupnp.upnp.discovery;
 
 import android.util.Log;
 
@@ -25,6 +25,11 @@ import com.m3sv.plainupnp.data.UpnpDevice;
 import com.m3sv.plainupnp.data.UpnpDeviceEvent;
 
 import com.m3sv.plainupnp.upnp.UpnpServiceController;
+
+import org.droidupnp.legacy.upnp.DeviceDiscoveryObserver;
+import org.droidupnp.legacy.upnp.ICallableFilter;
+import org.droidupnp.legacy.upnp.IRegistryListener;
+import org.droidupnp.legacy.upnp.IServiceListener;
 
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -43,15 +48,15 @@ public abstract class DeviceDiscovery {
 
     protected final UpnpServiceController controller;
 
-    public DeviceDiscovery(UpnpServiceController controller, IServiceListener serviceListener, boolean extendedInformation) {
+    public DeviceDiscovery(UpnpServiceController controller, boolean extendedInformation) {
         this.controller = controller;
         browsingRegistryListener = new BrowsingRegistryListener();
         this.extendedInformation = extendedInformation;
         observerList = new CopyOnWriteArrayList<>();
     }
 
-    public DeviceDiscovery(UpnpServiceController controller, IServiceListener serviceListener) {
-        this(controller, serviceListener, false);
+    public DeviceDiscovery(UpnpServiceController controller) {
+        this(controller, false);
     }
 
     public void resume(IServiceListener serviceListener) {

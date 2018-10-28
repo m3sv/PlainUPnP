@@ -21,18 +21,17 @@
  * along with DroidUPNP.  If not, see <http:></http:>//www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.legacy.upnp
+package com.m3sv.plainupnp.upnp.discovery
 
 import com.m3sv.plainupnp.data.UpnpDevice
-
 import com.m3sv.plainupnp.upnp.UpnpServiceController
+import org.droidupnp.legacy.upnp.CallableContentDirectoryFilter
+import org.droidupnp.legacy.upnp.ICallableFilter
 
-class ContentDirectoryDiscovery(
-    controller: UpnpServiceController,
-    serviceListener: IServiceListener?
-) : DeviceDiscovery(controller, serviceListener) {
+class ContentDirectoryDiscovery(controller: UpnpServiceController) : DeviceDiscovery(controller) {
 
-    override fun getCallableFilter(): ICallableFilter = CallableContentDirectoryFilter()
+    override fun getCallableFilter(): ICallableFilter =
+        CallableContentDirectoryFilter()
 
     override fun isSelected(device: UpnpDevice): Boolean {
         return (controller != null

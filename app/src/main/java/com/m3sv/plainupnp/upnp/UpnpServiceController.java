@@ -19,10 +19,10 @@
 
 package com.m3sv.plainupnp.upnp;
 
-import org.droidupnp.legacy.upnp.ContentDirectoryDiscovery;
+import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery;
 import org.droidupnp.legacy.upnp.IServiceListener;
 import com.m3sv.plainupnp.data.UpnpDevice;
-import org.droidupnp.legacy.upnp.RendererDiscovery;
+import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery;
 import org.fourthline.cling.model.meta.LocalDevice;
 
 import java.util.Observer;

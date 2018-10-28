@@ -33,6 +33,8 @@ class MainActivityViewModel @Inject constructor(private val defaultUpnpManager: 
         { Timber.e("Exception during discovery: ${it.message}") }
 
     init {
+        resumeUpnpController()
+
         disposables += selectedDirectoryObservable
             .subscribeBy(
                 onNext = {
@@ -108,12 +110,16 @@ class MainActivityViewModel @Inject constructor(private val defaultUpnpManager: 
 
     fun resumeUpnp() {
         Timber.d("Resuming UPnP controller")
-        resumeUpnpController()
         resumeRendererUpdate()
     }
 
     fun pauseUpnp() {
         Timber.d("Pausing UPnP controller")
         pauseRendererUpdate()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        pauseUpnpController()
     }
 }

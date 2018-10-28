@@ -25,7 +25,6 @@ package com.m3sv.plainupnp.upnp
 
 import android.content.Context
 import org.droidupnp.legacy.cling.UpnpRendererState
-import org.droidupnp.legacy.upnp.AUpnpRendererState
 import org.droidupnp.legacy.upnp.Factory
 import org.droidupnp.legacy.upnp.IContentDirectoryCommand
 import org.droidupnp.legacy.upnp.IRendererCommand
