@@ -53,8 +53,10 @@ class MainFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         contentAdapter = GalleryContentAdapter(object : OnItemClickListener {
-            override fun onDirectoryClick(itemUri: String, parentId: String?) {
-                viewModel.browseTo(itemUri, parentId)
+            override fun onDirectoryClick(itemUri: String?, parentId: String?) {
+                itemUri?.let {
+                    viewModel.browseTo(itemUri, parentId)
+                } ?: Timber.e("Item URI is null")
             }
 
             override fun onItemClick(item: IDIDLItem, position: Int) {

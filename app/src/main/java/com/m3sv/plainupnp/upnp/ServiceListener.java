@@ -99,7 +99,7 @@ public class ServiceListener implements IServiceListener {
         return deviceList;
     }
 
-    protected ServiceConnection serviceConnection = new ServiceConnection() {
+    private ServiceConnection serviceConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {

@@ -27,7 +27,7 @@ import java.util.*
 /**
  * First is uri to a file, second is a title and third is an artist
  */
-typealias RenderedItem = Triple<String, String, RequestOptions>
+typealias RenderedItem = Triple<String?, String, RequestOptions>
 
 class DefaultUpnpManager constructor(
     private val controller: UpnpServiceController,
@@ -143,9 +143,9 @@ class DefaultUpnpManager constructor(
             else -> RequestOptions()
         }
 
-        _renderedItem.postValue(Triple(item.uri, item.title, requestOptions))
+        _renderedItem.postValue(RenderedItem(item.uri, item.title, requestOptions))
         rendererCommand = factory.createRendererCommand(upnpRendererState)?.also {
-            if (item is ClingVideoItem)
+            if (item !is ClingImageItem)
                 it.resume()
             it.updateFull()
             it.launchItem(item)

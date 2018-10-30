@@ -25,6 +25,8 @@ import com.m3sv.plainupnp.R;
 
 import org.droidupnp.legacy.upnp.didl.IDIDLItem;
 import org.fourthline.cling.support.model.item.Item;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ClingDIDLItem extends ClingDIDLObject implements IDIDLItem {
 
@@ -40,7 +42,8 @@ public class ClingDIDLItem extends ClingDIDLObject implements IDIDLItem {
     }
 
     @Override
-    public String getURI() {
+    @Nullable
+    public String getUri() {
         if (item != null) {
             Log.d(TAG, "Item : " + item.getFirstResource().getValue());
             if (item.getFirstResource() != null && item.getFirstResource().getValue() != null)

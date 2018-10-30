@@ -38,12 +38,12 @@ class RendererCommand(
         get() = Dispatchers.IO + job
 
     override fun pause() {
-        Timber.v("Interrupt")
+        Timber.v("Pause renderer")
         job.cancel()
     }
 
     override fun resume() {
-        Timber.v("Resume")
+        Timber.v("Resume renderer")
         job.cancel()
         job = Job()
         launch {
@@ -175,7 +175,7 @@ class RendererCommand(
         setMute(!rendererState.isMute)
     }
 
-    fun setURI(uri: String, trackMetadata: TrackMetadata) {
+    fun setURI(uri: String?, trackMetadata: TrackMetadata) {
         Timber.i("Set uri to $uri")
 
         controlPoint.execute(object :
@@ -234,7 +234,7 @@ class RendererCommand(
             }
 
             fun callback() {
-                setURI(item.getURI(), trackMetadata)
+                setURI(item.uri, trackMetadata)
             }
         })
 

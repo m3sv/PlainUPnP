@@ -18,7 +18,7 @@ import org.droidupnp.legacy.upnp.didl.IDIDLItem
 
 
 interface OnItemClickListener {
-    fun onDirectoryClick(itemUri: String, parentId: String?)
+    fun onDirectoryClick(itemUri: String?, parentId: String?)
 
     fun onItemClick(item: IDIDLItem, position: Int)
 }
@@ -108,10 +108,7 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
             title.text = item.name
             thumbnail.setImageResource(R.drawable.ic_folder)
             container.setOnClickListener {
-                onItemClickListener.onDirectoryClick(
-                    item.uri,
-                    item.parentId
-                )
+                onItemClickListener.onDirectoryClick(item.uri, item.parentId)
             }
         }
     }

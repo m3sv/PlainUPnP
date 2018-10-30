@@ -7,7 +7,7 @@ import org.droidupnp.legacy.cling.didl.ClingImageItem
 import org.droidupnp.legacy.cling.didl.ClingVideoItem
 
 data class Item(
-    val uri: String,
+    val uri: String?,
     val name: String,
     val type: ContentType,
     val didlObjectDisplay: List<DIDLObjectDisplay>? = null,
