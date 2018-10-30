@@ -36,7 +36,6 @@ public abstract class UpnpServiceController implements com.m3sv.plainupnp.upnp.U
     protected UpnpDevice renderer;
     protected UpnpDevice contentDirectory;
 
-    protected CObservable rendererObservable;
     protected CObservable contentDirectoryObservable;
 
     private final ContentDirectoryDiscovery contentDirectoryDiscovery;
@@ -53,7 +52,6 @@ public abstract class UpnpServiceController implements com.m3sv.plainupnp.upnp.U
     }
 
     protected UpnpServiceController() {
-        rendererObservable = new CObservable();
         contentDirectoryObservable = new CObservable();
 
         contentDirectoryDiscovery = new ContentDirectoryDiscovery(this);
@@ -72,7 +70,6 @@ public abstract class UpnpServiceController implements com.m3sv.plainupnp.upnp.U
             return;
 
         this.renderer = renderer;
-        rendererObservable.notifyAllObservers();
     }
 
     @Override
@@ -102,17 +99,6 @@ public abstract class UpnpServiceController implements com.m3sv.plainupnp.upnp.U
     }
 
     @Override
-    public void addSelectedRendererObserver(Observer o) {
-        Log.i(TAG, "New SelectedRendererObserver");
-        rendererObservable.addObserver(o);
-    }
-
-    @Override
-    public void delSelectedRendererObserver(Observer o) {
-        rendererObservable.deleteObserver(o);
-    }
-
-    @Override
     public void addSelectedContentDirectoryObserver(Observer o) {
         contentDirectoryObservable.addObserver(o);
     }
@@ -135,5 +121,4 @@ public abstract class UpnpServiceController implements com.m3sv.plainupnp.upnp.U
         rendererDiscovery.resume(getServiceListener());
         contentDirectoryDiscovery.resume(getServiceListener());
     }
-
 }

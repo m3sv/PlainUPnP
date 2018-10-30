@@ -16,6 +16,7 @@ import io.reactivex.subjects.PublishSubject
 import org.droidupnp.legacy.cling.didl.ClingAudioItem
 import org.droidupnp.legacy.cling.didl.ClingImageItem
 import org.droidupnp.legacy.cling.didl.ClingVideoItem
+import org.droidupnp.legacy.upnp.ContentCallback
 import org.droidupnp.legacy.upnp.Factory
 import org.droidupnp.legacy.upnp.IRendererCommand
 import org.droidupnp.legacy.upnp.didl.IDIDLItem
@@ -75,18 +76,7 @@ class DefaultUpnpManager constructor(
 
     override val contentData: LiveData<List<DIDLObjectDisplay>> = _contentData
 
-    private val contentCallback: ContentCallback =
-        object : ContentCallback {
-            private var content: List<DIDLObjectDisplay>? = null
-
-            override fun setContent(content: ArrayList<DIDLObjectDisplay>) {
-                _contentData.postValue(content)
-            }
-
-            override fun run() {
-                Timber.d("content size: ${content?.size ?: 0}")
-            }
-        }
+    private val contentCallback: ContentCallback = { _contentData.postValue(it) }
 
     override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
         Timber.d("Selected contentDirectory: ${contentDirectory?.displayString}")

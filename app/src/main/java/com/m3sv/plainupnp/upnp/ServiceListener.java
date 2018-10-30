@@ -25,9 +25,9 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.m3sv.common.Utils;
+import com.m3sv.plainupnp.data.UpnpDevice;
 
 import org.droidupnp.legacy.cling.CDevice;
 import org.droidupnp.legacy.cling.CRegistryListener;
@@ -35,9 +35,6 @@ import org.droidupnp.legacy.mediaserver.MediaServer;
 import org.droidupnp.legacy.upnp.ICallableFilter;
 import org.droidupnp.legacy.upnp.IRegistryListener;
 import org.droidupnp.legacy.upnp.IServiceListener;
-
-import com.m3sv.plainupnp.data.UpnpDevice;
-
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.model.ValidationException;
 import org.fourthline.cling.model.message.header.STAllHeader;
@@ -106,7 +103,7 @@ public class ServiceListener implements IServiceListener {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Timber.i( "Connected service");
+            Timber.i("Connected service");
             upnpService = (AndroidUpnpService) service;
 
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -140,7 +137,7 @@ public class ServiceListener implements IServiceListener {
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
-            Timber.i( "Service disconnected");
+            Timber.i("Service disconnected");
             upnpService = null;
         }
     };

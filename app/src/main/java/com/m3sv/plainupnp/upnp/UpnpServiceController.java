@@ -40,10 +40,6 @@ public interface UpnpServiceController {
 
     UpnpDevice getSelectedContentDirectory();
 
-    void addSelectedRendererObserver(Observer o);
-
-    void delSelectedRendererObserver(Observer o);
-
     void addSelectedContentDirectoryObserver(Observer o);
 
     void delSelectedContentDirectoryObserver(Observer o);
