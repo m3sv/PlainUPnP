@@ -25,7 +25,7 @@ import org.fourthline.cling.support.model.WriteStatus;
 import org.fourthline.cling.support.model.container.Container;
 
 public class CustomContainer extends Container {
-    protected String baseURL = null;
+    protected String baseURL;
 
     public CustomContainer(String id, String parentID, String title, String creator, String baseURL) {
         this.setClazz(new DIDLObject.Class("object.container"));

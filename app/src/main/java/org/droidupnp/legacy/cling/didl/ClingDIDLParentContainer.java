@@ -38,6 +38,4 @@ public class ClingDIDLParentContainer extends ClingDIDLObject implements IDIDLPa
     public int getChildCount() {
         return 0;
     }
-
-
 }
