@@ -21,6 +21,15 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/ic_folder" />
 
+        <View
+            android:id="@+id/content_shadow"
+            android:layout_width="0dp"
+            android:layout_height="24dp"
+            android:background="@drawable/content_shadow"
+            app:layout_constraintBottom_toBottomOf="@+id/thumbnail"
+            app:layout_constraintEnd_toEndOf="@+id/thumbnail"
+            app:layout_constraintStart_toStartOf="@id/thumbnail" />
+
         <ImageView
             android:id="@+id/content_type"
             android:layout_width="24dp"
@@ -32,8 +41,8 @@
             android:id="@+id/title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:gravity="top"
             android:includeFontPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
