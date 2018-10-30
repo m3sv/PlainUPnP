@@ -287,8 +287,6 @@ class RendererCommand(
 
             override fun received(arg0: ActionInvocation<*>, arg1: TransportInfo) {
                 Timber.d("Transport info: $arg1")
-                if (arg1.currentTransportState == TransportState.STOPPED && previousTransportState == TransportState.PLAYING)
-                    job.cancel()
                 rendererState.setTransportInfo(arg1)
                 previousTransportState = arg1.currentTransportState
             }

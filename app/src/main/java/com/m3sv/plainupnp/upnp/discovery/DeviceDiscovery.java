@@ -64,7 +64,7 @@ public abstract class DeviceDiscovery {
     }
 
     public void pause(IServiceListener serviceListener) {
-//        serviceListener.removeListener(browsingRegistryListener);
+        serviceListener.removeListener(browsingRegistryListener);
         serviceListener.clearListener();
     }
 

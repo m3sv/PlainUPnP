@@ -55,13 +55,12 @@ import static com.m3sv.plainupnp.common.PrefUtils.CONTENT_DIRECTORY_SERVICE;
 
 @SuppressWarnings("rawtypes")
 public class ServiceListener implements IServiceListener {
-    private static final String TAG = "Cling.ServiceListener";
 
-    protected AndroidUpnpService upnpService;
-    protected ArrayList<IRegistryListener> waitingListener;
+    private AndroidUpnpService upnpService;
+    private ArrayList<IRegistryListener> waitingListener;
 
     private MediaServer mediaServer = null;
-    private Context ctx = null;
+    private Context ctx;
 
     public ServiceListener(Context ctx) {
         waitingListener = new ArrayList<>();
@@ -107,7 +106,7 @@ public class ServiceListener implements IServiceListener {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.i(TAG, "Service connexion");
+            Timber.i( "Connected service");
             upnpService = (AndroidUpnpService) service;
 
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx);
@@ -122,11 +121,9 @@ public class ServiceListener implements IServiceListener {
                     }
                     upnpService.getRegistry().addDevice(mediaServer.getDevice());
                 } catch (UnknownHostException | ValidationException e1) {
-                    Timber.e("Creating demo device failed");
-                    Timber.e("exception", e1);
+                    Timber.e(e1, "Creating demo device failed");
                 } catch (IOException e3) {
-                    Timber.e("Starting http server failed");
-                    Timber.e("exception", e3);
+                    Timber.e(e3, "Starting http server failed");
                 }
             } else if (mediaServer != null) {
                 mediaServer.stop();
@@ -143,7 +140,7 @@ public class ServiceListener implements IServiceListener {
 
         @Override
         public void onServiceDisconnected(ComponentName className) {
-            Log.i(TAG, "Service disconnected");
+            Timber.i( "Service disconnected");
             upnpService = null;
         }
     };
@@ -159,7 +156,6 @@ public class ServiceListener implements IServiceListener {
 
     @Override
     public void addListener(IRegistryListener registryListener) {
-        Log.d(TAG, "Add Listener !");
         if (upnpService != null)
             addListenerSafe(registryListener);
         else
@@ -168,7 +164,6 @@ public class ServiceListener implements IServiceListener {
 
     private void addListenerSafe(IRegistryListener registryListener) {
         assert upnpService != null;
-        Log.d(TAG, "Add Listener Safe !");
 
         // Get ready for future device advertisements
         upnpService.getRegistry().addListener(new CRegistryListener(registryListener));
@@ -181,7 +176,6 @@ public class ServiceListener implements IServiceListener {
 
     @Override
     public void removeListener(IRegistryListener registryListener) {
-        Log.d(TAG, "remove listener");
         if (upnpService != null)
             removeListenerSafe(registryListener);
         else
@@ -190,7 +184,6 @@ public class ServiceListener implements IServiceListener {
 
     private void removeListenerSafe(IRegistryListener registryListener) {
         assert upnpService != null;
-        Log.d(TAG, "remove listener Safe");
         upnpService.getRegistry().removeListener(new CRegistryListener(registryListener));
     }
 

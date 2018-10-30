@@ -134,7 +134,6 @@ class MainActivity : BaseActivity() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
@@ -267,6 +266,7 @@ class MainActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
         with(viewModel) {
+            resumeUpnpController()
             addObservers()
             resumeUpnp()
             resumeRendererUpdate()
