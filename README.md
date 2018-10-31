@@ -26,4 +26,4 @@ Copyright (C) 2015, Aurélien Chabot <aurelien@chabot.fr>
 
 Licensed under **GPLv3**
 
-See [COPYING](https://github.com/trishika/DroidUPnP/blob/master/COPYING).
+See [COPYING](https://github.com/m3sv/PlainUPnP/blob/master/COPYING).
