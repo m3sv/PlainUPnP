@@ -1,4 +1,4 @@
-package org.droidupnp.legacy.cling.didl
+package com.m3sv.plainupnp.upnp.didl
 
 import com.m3sv.plainupnp.data.upnp.DIDLParentContainer
 import org.fourthline.cling.support.model.container.Container
@@ -12,5 +12,5 @@ class ClingDIDLParentContainer(id: String) : ClingDIDLObject(Container()),
         didlObject.id = id
     }
 
-    override fun getTitle(): String = ".."
+    override fun getTitle(): String = "build/generated/not_namespaced_r_class_sources/debug/processDebugResources"
 }

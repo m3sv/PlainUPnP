@@ -1,7 +1,8 @@
 package com.m3sv.plainupnp.upnp
 
+import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
+import com.m3sv.plainupnp.upnp.didl.*
 import org.droidupnp.legacy.cling.CDevice
-import org.droidupnp.legacy.cling.didl.*
 import org.droidupnp.legacy.upnp.ContentCallback
 import org.droidupnp.legacy.upnp.IContentDirectoryCommand
 import org.fourthline.cling.controlpoint.ControlPoint
@@ -46,12 +47,18 @@ class ContentDirectoryCommand(
         val result = ArrayList<DIDLObjectDisplay>()
 
         if (parent != null)
-            result.add(DIDLObjectDisplay(ClingDIDLParentContainer(parent)))
+            result.add(
+                DIDLObjectDisplay(
+                    ClingDIDLParentContainer(
+                        parent
+                    )
+                )
+            )
 
         didl?.let {
             for (item in it.containers) {
                 result.add(DIDLObjectDisplay(ClingDIDLContainer(item)))
-                Timber.v("Add container: " + item.title)
+                Timber.v("Add container: %s", item.title)
             }
 
             for (item in it.items) {
@@ -64,10 +71,10 @@ class ContentDirectoryCommand(
 
                 result.add(DIDLObjectDisplay(clingItem))
 
-                Timber.v("Add item: " + item.title)
+                Timber.v("Add item: %s", item.title)
 
                 for (p in item.properties)
-                    Timber.v(p.descriptorName + " " + p.toString())
+                    Timber.v("%s%s", p.descriptorName + " ", p.toString())
             }
 
         }

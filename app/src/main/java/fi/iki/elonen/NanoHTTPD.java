@@ -143,7 +143,7 @@ public abstract class NanoHTTPD {
                                     session.execute();
                                 }
                             } catch (IOException e) {
-                                Timber.e(e, e.getMessage());
+                                Timber.e(e, "Exception while executing request!");
                             } finally {
                                 safeClose(outputStream);
                                 safeClose(inputStream);
@@ -353,7 +353,7 @@ public abstract class NanoHTTPD {
     }
 
     /**
-     * UPnPFactory to create temp file managers.
+     * UpnpFactory to create temp file managers.
      */
     public interface TempFileManagerFactory {
         TempFileManager create();

@@ -21,7 +21,7 @@
  * along with DroidUPNP.  If not, see <http:></http:>//www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.legacy.cling.didl
+package com.m3sv.plainupnp.upnp.didl
 
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.data.upnp.DIDLItem

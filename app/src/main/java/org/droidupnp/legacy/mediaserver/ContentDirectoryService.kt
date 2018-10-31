@@ -26,12 +26,11 @@ package org.droidupnp.legacy.mediaserver
 import android.content.Context
 import android.preference.PreferenceManager
 import android.text.TextUtils
-import android.util.Log
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.CONTENT_DIRECTORY_AUDIO
 import com.m3sv.plainupnp.common.CONTENT_DIRECTORY_IMAGE
 import com.m3sv.plainupnp.common.CONTENT_DIRECTORY_VIDEO
-import org.droidupnp.legacy.cling.localcontent.*
+import com.m3sv.plainupnp.upnp.localcontent.*
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException
@@ -71,7 +70,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
         filter: String, firstResult: Long, maxResults: Long,
         orderby: Array<SortCriterion>
     ): BrowseResult {
-        Log.d(TAG, "Will browse $objectID")
+        Timber.d("Will browse $objectID")
 
         try {
             val didl = DIDLContent()
@@ -97,7 +96,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
 
             var container: Container? = null
 
-            Log.d(TAG, "Browsing type $type")
+            Timber.d("Browsing type $type")
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx)
 
             val appName = ctx.getString(R.string.app_name)
@@ -203,29 +202,29 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             } else {
                 if (type == VIDEO_ID) {
                     if (subtype[0] == ALL_ID) {
-                        Log.d(TAG, "Listing all videos...")
+                        Timber.d("Listing all videos...")
                         container = allVideoContainer
                     }
                 } else if (type == AUDIO_ID) {
                     if (subtype.size == 1) {
                         when {
                             subtype[0] == ARTIST_ID -> {
-                                Log.d(TAG, "Listing all artists...")
+                                Timber.d("Listing all artists...")
                                 container = artistAudioContainer
                             }
                             subtype[0] == ALBUM_ID -> {
-                                Log.d(TAG, "Listing album of all artists...")
+                                Timber.d("Listing album of all artists...")
                                 container = albumAudioContainer
                             }
                             subtype[0] == ALL_ID -> {
-                                Log.d(TAG, "Listing all songs...")
+                                Timber.d("Listing all songs...")
                                 container = allAudioContainer
                             }
                         }
                     } else if (subtype.size == 2 && subtype[0] == ARTIST_ID) {
                         val artistId = "" + subtype[1]
                         val parentId = "" + AUDIO_ID + SEPARATOR + subtype[0]
-                        Log.d(TAG, "Listing album of artist $artistId")
+                        Timber.d("Listing album of artist $artistId")
                         container = AlbumContainer(
                             artistId, parentId, "",
                             appName, baseURL, ctx, artistId
@@ -233,7 +232,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
                     } else if (subtype.size == 2 && subtype[0] == ALBUM_ID) {
                         val albumId = "" + subtype[1]
                         val parentId = "" + AUDIO_ID + SEPARATOR + subtype[0]
-                        Log.d(TAG, "Listing song of album $albumId")
+                        Timber.d("Listing song of album $albumId")
                         container = AudioContainer(
                             albumId, parentId, "",
                             appName, baseURL, ctx, null, albumId
@@ -242,7 +241,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
                         val albumId = "" + subtype[2]
                         val parentId =
                             "" + AUDIO_ID + SEPARATOR + subtype[0] + SEPARATOR + subtype[1]
-                        Log.d(TAG, "Listing song of album " + albumId + " for artist " + subtype[1])
+                        Timber.d("Listing song of album %s for artist %s", albumId, subtype[1])
                         container = AudioContainer(
                             albumId, parentId, "",
                             appName, baseURL, ctx, null, albumId
@@ -250,29 +249,29 @@ class ContentDirectoryService : AbstractContentDirectoryService {
                     }
                 } else if (type == IMAGE_ID) {
                     if (subtype[0] == ALL_ID) {
-                        Log.d(TAG, "Listing all images...")
+                        Timber.d("Listing all images...")
                         container = allImageContainer
                     }
                 }
             }
 
             if (container != null) {
-                Log.d(TAG, "List container...")
+                Timber.d("List container...")
 
                 // Get container first
                 for (c in container.containers)
                     didl.addContainer(c)
 
-                Log.d(TAG, "List item...")
+                Timber.d("List item...")
 
                 // Then get item
                 for (i in container.items)
                     didl.addItem(i)
 
-                Log.d(TAG, "Return result...")
+                Timber.d("Return result...")
 
                 val count = container.childCount!!
-                Log.d(TAG, "Child count : $count")
+                Timber.d("Child count: $count")
                 var answer = ""
                 try {
                     answer = DIDLParser().generate(didl)
@@ -282,7 +281,7 @@ class ContentDirectoryService : AbstractContentDirectoryService {
                     )
                 }
 
-                Log.d(TAG, "answer : $answer")
+                Timber.d("Answer : $answer")
 
                 return BrowseResult(answer, count.toLong(), count.toLong())
             }
@@ -297,8 +296,6 @@ class ContentDirectoryService : AbstractContentDirectoryService {
     }
 
     companion object {
-        private const val TAG = "ContentDirectoryService"
-
         const val SEPARATOR = '$'
 
         // Type

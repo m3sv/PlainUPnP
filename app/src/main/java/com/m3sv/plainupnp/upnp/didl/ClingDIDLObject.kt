@@ -1,4 +1,4 @@
-package org.droidupnp.legacy.cling.didl
+package com.m3sv.plainupnp.upnp.didl
 
 import org.fourthline.cling.support.model.DIDLObject
 

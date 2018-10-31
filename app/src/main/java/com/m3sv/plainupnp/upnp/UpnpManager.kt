@@ -1,13 +1,10 @@
 package com.m3sv.plainupnp.upnp
 
 import android.arch.lifecycle.LiveData
-import com.m3sv.plainupnp.data.upnp.Directory
-import com.m3sv.plainupnp.data.upnp.RendererState
+import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
 import io.reactivex.Observable
-import com.m3sv.plainupnp.data.upnp.UpnpDevice
-import com.m3sv.plainupnp.data.upnp.DIDLItem
 
 interface UpnpManager {
     val rendererDiscoveryObservable: RendererDiscoveryObservable

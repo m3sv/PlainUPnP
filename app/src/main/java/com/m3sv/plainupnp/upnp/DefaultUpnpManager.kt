@@ -4,22 +4,19 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.data.upnp.Directory
-import com.m3sv.plainupnp.data.upnp.RendererState
-import com.m3sv.plainupnp.data.upnp.UpnpDevice
+import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import org.droidupnp.legacy.cling.didl.ClingAudioItem
-import org.droidupnp.legacy.cling.didl.ClingImageItem
-import org.droidupnp.legacy.cling.didl.ClingVideoItem
+import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
+import com.m3sv.plainupnp.upnp.didl.ClingImageItem
+import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import org.droidupnp.legacy.upnp.ContentCallback
 import org.droidupnp.legacy.upnp.Factory
 import org.droidupnp.legacy.upnp.IRendererCommand
-import com.m3sv.plainupnp.data.upnp.DIDLItem
 import timber.log.Timber
 import java.util.*
 

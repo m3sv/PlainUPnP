@@ -19,6 +19,8 @@
 
 package org.droidupnp.legacy.cling;
 
+import com.m3sv.plainupnp.upnp.UpnpRendererStateModel;
+
 import org.fourthline.cling.support.model.MediaInfo;
 import org.fourthline.cling.support.model.PositionInfo;
 import org.fourthline.cling.support.model.TransportInfo;

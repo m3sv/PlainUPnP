@@ -21,20 +21,27 @@
  * along with DroidUPNP.  If not, see <http:></http:>//www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.legacy.cling.didl
+package com.m3sv.plainupnp.upnp.localcontent
 
-import com.m3sv.plainupnp.R
-
-import com.m3sv.plainupnp.data.upnp.DIDLContainer
+import android.content.Context
+import android.net.Uri
 import org.fourthline.cling.support.model.container.Container
 
-class ClingDIDLContainer(item: Container) : ClingDIDLObject(item),
-    DIDLContainer {
+abstract class DynamicContainer(
+    id: String?,
+    parentID: String?,
+    title: String?,
+    creator: String?,
+    baseURL: String?,
+    protected val ctx: Context,
+    protected var uri: Uri?
+) : CustomContainer(id, parentID, title, creator, baseURL) {
 
-    override val childCount: Int
-        get() = didlObject.takeIf { it is Container }?.let { (it as Container).childCount } ?: 0
+    protected var where: String? = null
+    protected var whereVal: Array<String> = emptyArray()
+    protected var orderBy: String? = null
 
-    override fun getCount(): String = Integer.toString(childCount)
+    abstract override fun getChildCount(): Int?
 
-    override fun getIcon(): Int = R.drawable.ic_action_collection
+    abstract override fun getContainers(): List<Container>
 }

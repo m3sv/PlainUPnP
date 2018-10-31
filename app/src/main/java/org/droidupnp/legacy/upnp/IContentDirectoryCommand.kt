@@ -1,6 +1,6 @@
 package org.droidupnp.legacy.upnp
 
-import com.m3sv.plainupnp.upnp.DIDLObjectDisplay
+import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 
 typealias ContentCallback = (List<DIDLObjectDisplay>?) -> Unit
 

@@ -17,7 +17,7 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.legacy.cling.localcontent;
+package com.m3sv.plainupnp.upnp.localcontent;
 
 import android.content.Context;
 import android.database.Cursor;

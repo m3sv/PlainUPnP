@@ -25,14 +25,13 @@ package com.m3sv.plainupnp.upnp
 
 import android.content.Context
 import android.content.Intent
-import org.droidupnp.legacy.cling.UpnpService
-import org.droidupnp.legacy.cling.UpnpServiceController
+import org.droidupnp.legacy.cling.UpnpServiceControllerImpl
 import org.fourthline.cling.model.meta.LocalDevice
 import timber.log.Timber
 import javax.inject.Inject
 
 class ServiceController @Inject constructor(private val context: Context) :
-    UpnpServiceController() {
+    UpnpServiceControllerImpl() {
 
     private val upnpServiceListener: ServiceListener =
         ServiceListener(context)

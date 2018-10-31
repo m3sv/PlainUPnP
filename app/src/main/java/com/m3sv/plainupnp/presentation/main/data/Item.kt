@@ -1,10 +1,10 @@
 package com.m3sv.plainupnp.presentation.main.data
 
-import com.m3sv.plainupnp.upnp.DIDLObjectDisplay
-import org.droidupnp.legacy.cling.didl.ClingAudioItem
-import org.droidupnp.legacy.cling.didl.ClingDIDLContainer
-import org.droidupnp.legacy.cling.didl.ClingImageItem
-import org.droidupnp.legacy.cling.didl.ClingVideoItem
+import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
+import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
+import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
+import com.m3sv.plainupnp.upnp.didl.ClingImageItem
+import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 
 data class Item(
     val uri: String?,

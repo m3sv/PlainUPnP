@@ -30,36 +30,24 @@ import org.droidupnp.legacy.upnp.IContentDirectoryCommand
 import org.droidupnp.legacy.upnp.IRendererCommand
 import javax.inject.Inject
 
-class UPnPFactory @Inject constructor(private val controller: UpnpServiceController) : Factory {
+class UpnpFactory @Inject constructor(private val controller: UpnpServiceController) : Factory {
 
-    override fun createContentDirectoryCommand(): IContentDirectoryCommand? {
-        val aus = (controller.serviceListener as ServiceListener).getUpnpService()
-        return aus?.controlPoint?.let {
-            ContentDirectoryCommand(
-                it,
-                controller
-            )
-        }
-    }
-
-    override fun createRendererCommand(rendererState: UpnpRendererState?): IRendererCommand? {
-        val aus = (controller.serviceListener as ServiceListener).getUpnpService()
-        return rendererState?.let { rs ->
-            aus?.controlPoint?.let {
-                RendererCommand(
-                    controller,
-                    it,
-                    rs
-                )
+    override fun createContentDirectoryCommand(): IContentDirectoryCommand? =
+        (controller.serviceListener as ServiceListener).upnpService
+            ?.controlPoint
+            ?.let {
+                ContentDirectoryCommand(it, controller)
             }
-        }
-    }
 
-    override fun createUpnpServiceController(ctx: Context): UpnpServiceController {
-        return controller
-    }
+    override fun createRendererCommand(rendererState: UpnpRendererState?): IRendererCommand? =
+        (controller.serviceListener as ServiceListener).upnpService
+            ?.controlPoint
+            ?.let {
+                rendererState?.let { rs -> RendererCommand(controller, it, rs) }
+            }
 
-    override fun createRendererState(): UpnpRendererState {
-        return org.droidupnp.legacy.cling.UpnpRendererState()
-    }
+    override fun createUpnpServiceController(ctx: Context): UpnpServiceController = controller
+
+    override fun createRendererState(): UpnpRendererState =
+        org.droidupnp.legacy.cling.UpnpRendererState()
 }

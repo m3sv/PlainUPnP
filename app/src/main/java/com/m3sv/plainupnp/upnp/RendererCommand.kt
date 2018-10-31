@@ -4,7 +4,7 @@ import kotlinx.coroutines.experimental.*
 import org.droidupnp.legacy.cling.CDevice
 import org.droidupnp.legacy.cling.TrackMetadata
 import org.droidupnp.legacy.cling.UpnpRendererState
-import org.droidupnp.legacy.cling.didl.ClingDIDLItem
+import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
 import org.droidupnp.legacy.upnp.IRendererCommand
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import org.fourthline.cling.controlpoint.ControlPoint

@@ -11,7 +11,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.main.data.Item
-import com.m3sv.plainupnp.upnp.DIDLObjectDisplay
+import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import com.m3sv.plainupnp.data.upnp.DIDLItem

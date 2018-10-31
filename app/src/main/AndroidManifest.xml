@@ -28,6 +28,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name="org.droidupnp.legacy.cling.UpnpService" />
+        <service android:name=".upnp.UpnpService" />
     </application>
 </manifest>
