@@ -2,8 +2,6 @@
 
 PlainUPnP - intially DroidUPnP - is an UPnP control point application for android.
 
-I decided to refactor an old project with new technologies and frameworks.
-
 PlainUPnP discovers your home UPnP device, content provider and renderer.
 It allows you to browse your UPnP content directory, select the media you want
 to use and allows you to play it on your connected television or any UPnP renderer
@@ -16,8 +14,7 @@ It also allows you to use your android device as an UPnP content provider.
 - [ ] Replace plain observers with reactive streams
 - [ ] Test coverage
 
-Original project: https://github.com/trishika/DroidUPnP
-
+This is a rewrite of trishika's DroidUPnP original project can be found [here](https://github.com/trishika/DroidUPnP).
 
 Copying
 =======
