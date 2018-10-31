@@ -19,16 +19,16 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.view.RxView
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.data.Directory
-import com.m3sv.plainupnp.data.RendererState
+import com.m3sv.plainupnp.data.upnp.Directory
+import com.m3sv.plainupnp.data.upnp.RendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.upnp.RenderedItem
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import com.m3sv.plainupnp.data.UpnpRendererState
-import com.m3sv.plainupnp.data.DeviceDisplay
+import com.m3sv.plainupnp.data.upnp.UpnpRendererState
+import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import timber.log.Timber
 
 

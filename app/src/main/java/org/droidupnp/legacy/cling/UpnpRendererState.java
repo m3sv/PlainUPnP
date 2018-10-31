@@ -71,7 +71,7 @@ public class UpnpRendererState extends Observable<UpnpRendererStateModel> {
     }
 
     @Nullable
-    public com.m3sv.plainupnp.data.UpnpRendererState.State getState() {
+    public com.m3sv.plainupnp.data.upnp.UpnpRendererState.State getState() {
         if (innerState != null) {
             return innerState.getState();
         }
@@ -97,7 +97,7 @@ public class UpnpRendererState extends Observable<UpnpRendererStateModel> {
         }
     }
 
-    private class UpnpInnerState extends MainThreadDisposable implements com.m3sv.plainupnp.data.UpnpRendererState {
+    private class UpnpInnerState extends MainThreadDisposable implements com.m3sv.plainupnp.data.upnp.UpnpRendererState {
         private final Observer<? super UpnpRendererStateModel> observer;
 
         // / Player info

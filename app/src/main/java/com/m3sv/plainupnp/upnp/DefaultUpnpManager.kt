@@ -4,9 +4,9 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.data.Directory
-import com.m3sv.plainupnp.data.RendererState
-import com.m3sv.plainupnp.data.UpnpDevice
+import com.m3sv.plainupnp.data.upnp.Directory
+import com.m3sv.plainupnp.data.upnp.RendererState
+import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
@@ -19,7 +19,7 @@ import org.droidupnp.legacy.cling.didl.ClingVideoItem
 import org.droidupnp.legacy.upnp.ContentCallback
 import org.droidupnp.legacy.upnp.Factory
 import org.droidupnp.legacy.upnp.IRendererCommand
-import org.droidupnp.legacy.upnp.didl.IDIDLItem
+import com.m3sv.plainupnp.data.upnp.DIDLItem
 import timber.log.Timber
 import java.util.*
 
@@ -93,7 +93,7 @@ class DefaultUpnpManager constructor(
     private var next: Int = -1
     private var previous: Int = -1
 
-    override fun renderItem(item: IDIDLItem, position: Int) {
+    override fun renderItem(item: DIDLItem, position: Int) {
         rendererCommand?.pause()
 
         next = position + 1
@@ -154,13 +154,13 @@ class DefaultUpnpManager constructor(
 
     override fun playNext() {
         _contentData.value?.takeIf { it.size > next && next != -1 }?.let {
-            renderItem(it[next].didlObject as IDIDLItem, next)
+            renderItem(it[next].didlObject as DIDLItem, next)
         }
     }
 
     override fun playPrevious() {
         _contentData.value?.takeIf { previous >= 0 && previous < it.size }?.let {
-            renderItem(it[previous].didlObject as IDIDLItem, previous)
+            renderItem(it[previous].didlObject as DIDLItem, previous)
         }
     }
 
@@ -192,7 +192,8 @@ class DefaultUpnpManager constructor(
         when (id) {
             "0" -> {
                 selectedDirectory.onNext(Directory.Home)
-                directoriesStructure = LinkedList<Directory>().also { it.add(Directory.Home) }
+                directoriesStructure = LinkedList<Directory>().also { it.add(
+                    Directory.Home) }
             }
             else -> {
                 val subDirectory = Directory.SubDirectory(id, parentId)

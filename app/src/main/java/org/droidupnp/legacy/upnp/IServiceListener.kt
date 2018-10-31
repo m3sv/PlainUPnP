@@ -2,7 +2,7 @@ package org.droidupnp.legacy.upnp
 
 import android.content.ServiceConnection
 
-import com.m3sv.plainupnp.data.UpnpDevice
+import com.m3sv.plainupnp.data.upnp.UpnpDevice
 
 interface IServiceListener {
 

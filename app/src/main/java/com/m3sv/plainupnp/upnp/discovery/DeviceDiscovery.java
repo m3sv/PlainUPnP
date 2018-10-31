@@ -21,8 +21,8 @@ package com.m3sv.plainupnp.upnp.discovery;
 
 import android.util.Log;
 
-import com.m3sv.plainupnp.data.UpnpDevice;
-import com.m3sv.plainupnp.data.UpnpDeviceEvent;
+import com.m3sv.plainupnp.data.upnp.UpnpDevice;
+import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent;
 
 import com.m3sv.plainupnp.upnp.UpnpServiceController;
 

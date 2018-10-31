@@ -1,13 +1,13 @@
 package com.m3sv.plainupnp.upnp
 
 import android.arch.lifecycle.LiveData
-import com.m3sv.plainupnp.data.Directory
-import com.m3sv.plainupnp.data.RendererState
+import com.m3sv.plainupnp.data.upnp.Directory
+import com.m3sv.plainupnp.data.upnp.RendererState
 import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
 import io.reactivex.Observable
-import com.m3sv.plainupnp.data.UpnpDevice
-import org.droidupnp.legacy.upnp.didl.IDIDLItem
+import com.m3sv.plainupnp.data.upnp.UpnpDevice
+import com.m3sv.plainupnp.data.upnp.DIDLItem
 
 interface UpnpManager {
     val rendererDiscoveryObservable: RendererDiscoveryObservable
@@ -32,7 +32,7 @@ interface UpnpManager {
 
     fun selectRenderer(renderer: UpnpDevice?)
 
-    fun renderItem(item: IDIDLItem, position: Int)
+    fun renderItem(item: DIDLItem, position: Int)
 
     fun resumeUpnpController()
 

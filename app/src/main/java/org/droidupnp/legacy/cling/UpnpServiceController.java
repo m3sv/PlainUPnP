@@ -19,9 +19,7 @@
 
 package org.droidupnp.legacy.cling;
 
-import android.util.Log;
-
-import com.m3sv.plainupnp.data.UpnpDevice;
+import com.m3sv.plainupnp.data.upnp.UpnpDevice;
 import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery;
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery;
 

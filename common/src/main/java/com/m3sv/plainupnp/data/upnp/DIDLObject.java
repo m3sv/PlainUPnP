@@ -17,45 +17,21 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.m3sv.plainupnp.data;
+package com.m3sv.plainupnp.data.upnp;
 
-public interface UpnpDevice {
+public interface DIDLObject {
 
-    String getDisplayString();
+    String getDataType();
 
-    String getFriendlyName();
+    String getTitle();
 
-    String getExtendedInformation();
+    String getDescription();
 
-    String getManufacturer();
+    String getCount();
 
-    String getManufacturerURL();
+    int getIcon();
 
-    String getModelName();
+    String getParentID();
 
-    String getModelDesc();
-
-    String getModelNumber();
-
-    String getModelURL();
-
-    String getXMLURL();
-
-    String getPresentationURL();
-
-    String getSerialNumber();
-
-    String getUDN();
-
-    boolean equals(UpnpDevice otherDevice);
-
-    String getUID();
-
-    boolean asService(String service);
-
-    void printService();
-
-    boolean isFullyHydrated();
-
-    boolean isLocal();
+    String getId();
 }

@@ -14,13 +14,13 @@ import com.m3sv.plainupnp.presentation.base.BaseAdapter
 import com.m3sv.plainupnp.presentation.base.BaseViewHolder
 import com.m3sv.plainupnp.presentation.main.data.ContentType
 import com.m3sv.plainupnp.presentation.main.data.Item
-import org.droidupnp.legacy.upnp.didl.IDIDLItem
+import com.m3sv.plainupnp.data.upnp.DIDLItem
 
 
 interface OnItemClickListener {
     fun onDirectoryClick(itemUri: String?, parentId: String?)
 
-    fun onItemClick(item: IDIDLItem, position: Int)
+    fun onItemClick(item: DIDLItem, position: Int)
 }
 
 class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener) :
@@ -55,7 +55,7 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         val itemClickListener = View.OnClickListener {
             holder.adapterPosition.takeIf { it >= 0 }?.let { adapterPosition ->
                 item.didlObjectDisplay?.get(adapterPosition)?.let {
-                    onItemClickListener.onItemClick(it.didlObject as IDIDLItem, holder.adapterPosition)
+                    onItemClickListener.onItemClick(it.didlObject as DIDLItem, holder.adapterPosition)
                 }
             }
         }

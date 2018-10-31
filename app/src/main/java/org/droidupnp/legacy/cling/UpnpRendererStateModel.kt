@@ -1,6 +1,6 @@
 package org.droidupnp.legacy.cling
 
-import com.m3sv.plainupnp.data.UpnpRendererState
+import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import org.fourthline.cling.support.model.MediaInfo
 import org.fourthline.cling.support.model.PositionInfo
 import org.fourthline.cling.support.model.TransportInfo

@@ -21,8 +21,20 @@
  * along with DroidUPNP.  If not, see <http:></http:>//www.gnu.org/licenses/>.
  */
 
-package com.m3sv.plainupnp.upnp
+package org.droidupnp.legacy.cling.didl
 
-interface IDIDLContainer : IDIDLObject {
-    val childCount: Int
+import com.m3sv.plainupnp.R
+
+import com.m3sv.plainupnp.data.upnp.DIDLContainer
+import org.fourthline.cling.support.model.container.Container
+
+class ClingDIDLContainer(item: Container) : ClingDIDLObject(item),
+    DIDLContainer {
+
+    override val childCount: Int
+        get() = didlObject.takeIf { it is Container }?.let { (it as Container).childCount } ?: 0
+
+    override fun getCount(): String = Integer.toString(childCount)
+
+    override fun getIcon(): Int = R.drawable.ic_action_collection
 }

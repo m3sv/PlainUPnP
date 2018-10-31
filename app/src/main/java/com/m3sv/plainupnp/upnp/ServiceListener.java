@@ -27,7 +27,7 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 
 import com.m3sv.common.Utils;
-import com.m3sv.plainupnp.data.UpnpDevice;
+import com.m3sv.plainupnp.data.upnp.UpnpDevice;
 
 import org.droidupnp.legacy.cling.CDevice;
 import org.droidupnp.legacy.cling.CRegistryListener;

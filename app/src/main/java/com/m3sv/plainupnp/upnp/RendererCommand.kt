@@ -6,7 +6,7 @@ import org.droidupnp.legacy.cling.TrackMetadata
 import org.droidupnp.legacy.cling.UpnpRendererState
 import org.droidupnp.legacy.cling.didl.ClingDIDLItem
 import org.droidupnp.legacy.upnp.IRendererCommand
-import org.droidupnp.legacy.upnp.didl.IDIDLItem
+import com.m3sv.plainupnp.data.upnp.DIDLItem
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -113,7 +113,7 @@ class RendererCommand(
 
     override fun commandToggle() {
         val state = rendererState.state
-        if (state == com.m3sv.plainupnp.data.UpnpRendererState.State.PLAY) {
+        if (state == com.m3sv.plainupnp.data.upnp.UpnpRendererState.State.PLAY) {
             commandPause()
         } else {
             commandPlay()
@@ -193,11 +193,11 @@ class RendererCommand(
         })
     }
 
-    override fun launchItem(item: IDIDLItem) {
+    override fun launchItem(item: DIDLItem) {
         if (getAVTransportService() == null)
             return
 
-        val obj = (item as ClingDIDLItem).getObject() as? Item ?: return
+        val obj = (item as ClingDIDLItem).didlObject as? Item ?: return
 
         var type = ""
         when (obj) {

@@ -14,7 +14,7 @@ import com.m3sv.plainupnp.presentation.main.data.Item
 import com.m3sv.plainupnp.upnp.DIDLObjectDisplay
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import org.droidupnp.legacy.upnp.didl.IDIDLItem
+import com.m3sv.plainupnp.data.upnp.DIDLItem
 import timber.log.Timber
 
 
@@ -59,7 +59,7 @@ class MainFragment : BaseFragment() {
                 } ?: Timber.e("Item URI is null")
             }
 
-            override fun onItemClick(item: IDIDLItem, position: Int) {
+            override fun onItemClick(item: DIDLItem, position: Int) {
                 viewModel.renderItem(item, position)
             }
         })

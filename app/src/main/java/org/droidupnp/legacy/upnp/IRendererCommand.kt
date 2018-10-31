@@ -1,6 +1,6 @@
 package org.droidupnp.legacy.upnp
 
-import org.droidupnp.legacy.upnp.didl.IDIDLItem
+import com.m3sv.plainupnp.data.upnp.DIDLItem
 
 interface IRendererCommand {
 
@@ -35,7 +35,7 @@ interface IRendererCommand {
     fun updateVolume()
 
     // URI
-    fun launchItem(uri: IDIDLItem)
+    fun launchItem(uri: DIDLItem)
 
     // Full
     fun updateFull()

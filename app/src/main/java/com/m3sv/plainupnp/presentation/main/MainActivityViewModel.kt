@@ -1,10 +1,10 @@
 package com.m3sv.plainupnp.presentation.main
 
 import android.arch.lifecycle.MutableLiveData
-import com.m3sv.plainupnp.data.DeviceDisplay
-import com.m3sv.plainupnp.data.DeviceType
-import com.m3sv.plainupnp.data.Directory
-import com.m3sv.plainupnp.data.UpnpDeviceEvent
+import com.m3sv.plainupnp.data.upnp.DeviceDisplay
+import com.m3sv.plainupnp.data.upnp.DeviceType
+import com.m3sv.plainupnp.data.upnp.Directory
+import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.upnp.UpnpManager
 import io.reactivex.disposables.CompositeDisposable

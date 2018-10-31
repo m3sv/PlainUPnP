@@ -17,25 +17,45 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.legacy.cling.didl;
+package com.m3sv.plainupnp.data.upnp;
 
-import org.droidupnp.legacy.upnp.didl.IDIDLParentContainer;
-import org.fourthline.cling.support.model.container.Container;
+public interface UpnpDevice {
 
-public class ClingDIDLParentContainer extends ClingDIDLObject implements IDIDLParentContainer {
+    String getDisplayString();
 
-    public ClingDIDLParentContainer(String id) {
-        super(new Container());
-        item.setId(id);
-    }
+    String getFriendlyName();
 
-    @Override
-    public String getTitle() {
-        return "..";
-    }
+    String getExtendedInformation();
 
-    @Override
-    public int getChildCount() {
-        return 0;
-    }
+    String getManufacturer();
+
+    String getManufacturerURL();
+
+    String getModelName();
+
+    String getModelDesc();
+
+    String getModelNumber();
+
+    String getModelURL();
+
+    String getXMLURL();
+
+    String getPresentationURL();
+
+    String getSerialNumber();
+
+    String getUDN();
+
+    boolean equals(UpnpDevice otherDevice);
+
+    String getUID();
+
+    boolean asService(String service);
+
+    void printService();
+
+    boolean isFullyHydrated();
+
+    boolean isLocal();
 }

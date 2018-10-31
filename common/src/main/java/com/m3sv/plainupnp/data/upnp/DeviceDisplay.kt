@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.data
+package com.m3sv.plainupnp.data.upnp
 
 
 enum class DeviceType {

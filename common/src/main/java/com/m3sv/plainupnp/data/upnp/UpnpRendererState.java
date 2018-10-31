@@ -17,38 +17,37 @@
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.droidupnp.legacy.cling.didl;
+package com.m3sv.plainupnp.data.upnp;
 
-import com.m3sv.plainupnp.R;
+public interface UpnpRendererState {
 
-import org.droidupnp.legacy.upnp.didl.IDIDLContainer;
-import org.fourthline.cling.support.model.container.Container;
-
-public class ClingDIDLContainer extends ClingDIDLObject implements IDIDLContainer {
-
-    public ClingDIDLContainer(Container item) {
-        super(item);
+    enum State {
+        PLAY, PAUSE, STOP
     }
 
-    public String getCount() {
-        return "" + getChildCount();
-    }
+    State getState();
 
-    @Override
-    public int getIcon() {
-        return R.drawable.ic_action_collection;
-    }
+    void setState(State state);
 
-    @Override
-    public int getChildCount() {
-        if (!(item instanceof Container))
-            return 0;
+    int getVolume();
 
-        Integer i = ((Container) item).getChildCount();
+    void setVolume(int volume);
 
-        if (i == null)
-            return 0;
+    boolean isMute();
 
-        return i;
-    }
+    void setMute(boolean mute);
+
+    String getRemainingDuration();
+
+    String getDuration();
+
+    String getPosition();
+
+    int getElapsedPercent();
+
+    long getDurationSeconds();
+
+    String getTitle();
+
+    String getArtist();
 }

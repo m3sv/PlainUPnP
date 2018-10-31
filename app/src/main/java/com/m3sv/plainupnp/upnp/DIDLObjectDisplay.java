@@ -20,17 +20,20 @@
 package com.m3sv.plainupnp.upnp;
 
 
+import com.m3sv.plainupnp.data.upnp.DIDLContainer;
+import com.m3sv.plainupnp.data.upnp.DIDLObject;
+
 public class DIDLObjectDisplay {
 
     protected static final String TAG = "DIDLContentDisplay";
 
-    private final IDIDLObject didl;
+    private final DIDLObject didl;
 
-    public DIDLObjectDisplay(IDIDLObject didl) {
+    public DIDLObjectDisplay(DIDLObject didl) {
         this.didl = didl;
     }
 
-    public IDIDLObject getDIDLObject() {
+    public DIDLObject getDIDLObject() {
         return didl;
     }
 
@@ -52,8 +55,8 @@ public class DIDLObjectDisplay {
 
     @Override
     public String toString() {
-        if (didl instanceof IDIDLContainer)
-            return didl.getTitle() + " (" + ((IDIDLContainer) didl).getChildCount() + ")";
+        if (didl instanceof DIDLContainer)
+            return didl.getTitle() + " (" + ((DIDLContainer) didl).getChildCount() + ")";
 
         return didl.getTitle();
     }

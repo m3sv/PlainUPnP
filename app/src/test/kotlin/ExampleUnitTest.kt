@@ -3,7 +3,7 @@
 import android.arch.lifecycle.Observer
 import com.m3sv.plainupnp.presentation.main.MainActivityViewModel
 import com.m3sv.plainupnp.upnp.DefaultUpnpManager
-import com.m3sv.plainupnp.data.DeviceDisplay
+import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

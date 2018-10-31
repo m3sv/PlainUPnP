@@ -23,7 +23,7 @@
 
 package com.m3sv.plainupnp.upnp.discovery
 
-import com.m3sv.plainupnp.data.UpnpDevice
+import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.UpnpServiceController
 import org.droidupnp.legacy.upnp.CallableContentDirectoryFilter
 import org.droidupnp.legacy.upnp.ICallableFilter
