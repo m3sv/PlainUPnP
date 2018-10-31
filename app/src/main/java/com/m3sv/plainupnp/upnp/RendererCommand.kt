@@ -51,17 +51,15 @@ class RendererCommand(
         }
     }
 
-    fun getRenderingControlService(): Service<*, *>? {
-        return if (controller.selectedRenderer == null) null else (controller.selectedRenderer as CDevice).device.findService(
-            UDAServiceType("RenderingControl")
-        )
-    }
+    fun getRenderingControlService(): Service<*, *>? =
+        controller.selectedRenderer?.let {
+            (it as CDevice).device?.findService(UDAServiceType("RenderingControl"))
+        }
 
-    fun getAVTransportService(): Service<*, *>? {
-        return if (controller.selectedRenderer == null) null else (controller.selectedRenderer as CDevice).device.findService(
-            UDAServiceType("AVTransport")
-        )
-    }
+    fun getAVTransportService(): Service<*, *>? =
+        controller.selectedRenderer?.let {
+            (it as CDevice).device?.findService(UDAServiceType("AVTransport"))
+        }
 
     override fun commandPlay() {
         if (getAVTransportService() == null)
@@ -240,7 +238,7 @@ class RendererCommand(
 
     }
 
-    // Update
+// Update
 
     private fun updateMediaInfo() {
         if (getAVTransportService() == null)

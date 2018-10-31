@@ -84,17 +84,6 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
         contentDirectoryService.setBaseURL(getAddress());
     }
 
-    public void restart() {
-        Log.d(TAG, "Restart mediaServer");
-//		try {
-//			stop();
-//			createLocalDevice();
-//			start();
-//		} catch (Exception e) {
-//			Timber.e(e, e.getMessage());
-//		}
-    }
-
     public void createLocalDevice() throws ValidationException {
         String version = getApplicationVersion("1.0");
 

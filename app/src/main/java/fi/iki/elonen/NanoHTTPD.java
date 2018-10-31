@@ -269,6 +269,8 @@ public abstract class NanoHTTPD {
         return parms;
     }
 
+    public abstract void restart();
+
     /**
      * HTTP Request methods, with the ability to decode a <code>String</code> back to its enum value.
      */

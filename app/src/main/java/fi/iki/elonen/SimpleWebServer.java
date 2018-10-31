@@ -115,6 +115,11 @@ public class SimpleWebServer extends NanoHTTPD {
         return newUri.toString();
     }
 
+    @Override
+    public void restart() {
+
+    }
+
     /**
      * Serves file from homeDir and its' subdirectories (only). Uses only URI, ignores all headers and HTTP parameters.
      */

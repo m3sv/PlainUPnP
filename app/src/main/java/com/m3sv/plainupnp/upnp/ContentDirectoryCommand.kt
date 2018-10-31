@@ -31,14 +31,14 @@ class ContentDirectoryCommand(
                 null
             else (controller.selectedContentDirectory as CDevice)
                 .device
-                .findService(UDAServiceType("X_MS_MediaReceiverRegistar"))
+                ?.findService(UDAServiceType("X_MS_MediaReceiverRegistar"))
 
     private val contentDirectoryService: Service<*, *>?
         get() = if (controller.selectedContentDirectory == null)
                 null
             else (controller.selectedContentDirectory as CDevice)
                 .device
-                .findService(UDAServiceType("ContentDirectory"))
+                ?.findService(UDAServiceType("ContentDirectory"))
 
     private fun buildContentList(
         parent: String?,
