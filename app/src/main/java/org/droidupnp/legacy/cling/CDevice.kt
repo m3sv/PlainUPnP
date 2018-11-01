@@ -42,139 +42,64 @@ class CDevice(val device: Device<*, *, *>?) : UpnpDevice {
 
     override fun getUID(): String = device?.identity?.udn?.toString() ?: ""
 
-    // todo finish refactoring CDevice
     override fun getExtendedInformation(): String {
         val info = StringBuilder()
-        if (device!!.findServiceTypes() != null)
-            for (cap in device.findServiceTypes()) {
-                info.append("\n\t").append(cap.type).append(" : ").append(cap.toFriendlyString())
-            }
+        device?.findServiceTypes()?.forEach {
+            info.append("\n\t").append(it.type).append(" : ").append(it.toFriendlyString())
+        }
         return info.toString()
     }
 
     override fun printService() {
-        val services = device!!.findServices()
-        for (service in services) {
-            Timber.i("\t Service : $service")
-            for (a in service.actions) {
+        device?.findServices()?.forEach {
+            Timber.i("\t Service : $it")
+            for (a in it.actions) {
                 Timber.i("\t\t Action : $a")
             }
         }
     }
 
-    override fun asService(service: String): Boolean {
-        return device!!.findService(UDAServiceType(service)) != null
+    override fun asService(service: String): Boolean =
+        device?.findService(UDAServiceType(service)) != null
+
+    override fun getManufacturer(): String =
+        device?.details?.manufacturerDetails?.manufacturer ?: ""
+
+    override fun getManufacturerURL(): String =
+        device?.details?.manufacturerDetails?.manufacturerURI?.toString() ?: ""
+
+    override fun getModelName(): String = device?.details?.modelDetails?.modelName ?: ""
+
+    override fun getModelDesc(): String = device?.details?.modelDetails?.modelDescription ?: ""
+
+    override fun getModelNumber(): String = device?.details?.modelDetails?.modelNumber ?: ""
+
+    override fun getModelURL(): String = device?.details?.modelDetails?.modelURI?.toString() ?: ""
+
+    override fun getXMLURL(): String = device?.details?.baseURL?.toString() ?: ""
+
+    override fun getPresentationURL(): String = device?.details?.presentationURI?.toString() ?: ""
+
+    override fun getSerialNumber(): String = device?.details?.serialNumber ?: ""
+
+    override fun getUDN(): String = device?.identity?.udn?.toString() ?: ""
+
+    override fun isFullyHydrated(): Boolean = device?.isFullyHydrated ?: false
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+
+        val cDevice = other as? CDevice
+
+        return device?.let {
+            it == cDevice?.device
+        } ?: false
     }
 
-    override fun getManufacturer(): String {
-        return device!!.details.manufacturerDetails.manufacturer
-    }
+    override fun hashCode(): Int = device?.hashCode() ?: 0
 
-    override fun getManufacturerURL(): String {
-        try {
-            return device!!.details.manufacturerDetails.manufacturerURI.toString()
-        } catch (e: Exception) {
-            return ""
-        }
-    }
+    override fun toString(): String = "CDevice{ device=$device }"
 
-    override fun getModelName(): String {
-        try {
-            return device!!.details.modelDetails.modelName
-        } catch (e: Exception) {
-            return ""
-        }
-
-    }
-
-    override fun getModelDesc(): String {
-        try {
-            return device!!.details.modelDetails.modelDescription
-        } catch (e: Exception) {
-            return ""
-        }
-
-    }
-
-    override fun getModelNumber(): String {
-        try {
-            return device!!.details.modelDetails.modelNumber
-        } catch (e: Exception) {
-            return ""
-        }
-
-    }
-
-    override fun getModelURL(): String {
-        try {
-            return device!!.details.modelDetails.modelURI.toString()
-        } catch (e: Exception) {
-            return ""
-        }
-
-    }
-
-    override fun getXMLURL(): String {
-        try {
-            return device!!.details.baseURL.toString()
-        } catch (e: Exception) {
-            return ""
-        }
-
-    }
-
-    override fun getPresentationURL(): String {
-        try {
-            return device!!.details.presentationURI.toString()
-        } catch (e: Exception) {
-            return ""
-        }
-
-    }
-
-    override fun getSerialNumber(): String {
-        try {
-            return device!!.details.serialNumber
-        } catch (e: Exception) {
-            return ""
-        }
-
-    }
-
-    override fun getUDN(): String {
-        try {
-            return device!!.identity.udn.toString()
-        } catch (e: Exception) {
-            return ""
-        }
-
-    }
-
-    override fun isFullyHydrated(): Boolean {
-        return device!!.isFullyHydrated
-    }
-
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-
-        val cDevice = o as CDevice?
-
-        return if (device != null) device == cDevice!!.device else cDevice!!.device == null
-    }
-
-    override fun hashCode(): Int {
-        return device?.hashCode() ?: 0
-    }
-
-
-    override fun toString(): String {
-        return "CDevice{" +
-                "device=" + device +
-                '}'.toString()
-    }
-
-    override fun isLocal(): Boolean {
-        return device is LocalDevice
-    }
+    override fun isLocal(): Boolean = device is LocalDevice
 }
