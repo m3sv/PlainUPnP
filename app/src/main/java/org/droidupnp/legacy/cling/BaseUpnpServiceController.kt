@@ -29,67 +29,43 @@ import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
 
 import org.droidupnp.legacy.CObservable
+import org.droidupnp.legacy.upnp.IServiceListener
+import org.fourthline.cling.model.meta.LocalDevice
 
 import java.util.Observer
 
 abstract class BaseUpnpServiceController protected constructor() : UpnpServiceController {
 
-    protected var renderer: UpnpDevice? = null
-    protected var contentDirectory: UpnpDevice? = null
+    private var contentDirectoryObservable: CObservable = CObservable()
 
-    protected var contentDirectoryObservable: CObservable
-
-    private val contentDirectoryDiscovery: ContentDirectoryDiscovery
-    private val rendererDiscovery: RendererDiscovery
-
-    override fun getContentDirectoryDiscovery(): ContentDirectoryDiscovery {
-        return contentDirectoryDiscovery
+    override val contentDirectoryDiscovery: ContentDirectoryDiscovery by lazy {
+        ContentDirectoryDiscovery(this)
+    }
+    override val rendererDiscovery: RendererDiscovery by lazy {
+        RendererDiscovery(this)
     }
 
-    override fun getRendererDiscovery(): RendererDiscovery {
-        return rendererDiscovery
-    }
+    override var selectedRenderer: UpnpDevice? = null
 
-    // todo cleanup this
-    init {
-        contentDirectoryObservable = CObservable()
+    override var selectedContentDirectory: UpnpDevice? = null
 
-        contentDirectoryDiscovery = ContentDirectoryDiscovery(this)
-        rendererDiscovery = RendererDiscovery(this)
-    }
-
-    override fun setSelectedRenderer(renderer: UpnpDevice) {
-        setSelectedRenderer(renderer, false)
-    }
-
-    override fun setSelectedRenderer(renderer: UpnpDevice?, force: Boolean) {
+    override fun setSelectedContentDirectory(contentDirectory: UpnpDevice, force: Boolean) {
         // Skip if no change and no force
-        if (!force && renderer != null && this.renderer != null && this.renderer!!.equals(renderer))
+        if (!force && this.selectedContentDirectory != null && this.selectedContentDirectory!!.equals(
+                contentDirectory
+            ))
             return
 
-        this.renderer = renderer
-    }
-
-    override fun setSelectedContentDirectory(contentDirectory: UpnpDevice) {
-        setSelectedContentDirectory(contentDirectory, false)
-    }
-
-    override fun setSelectedContentDirectory(contentDirectory: UpnpDevice?, force: Boolean) {
-        // Skip if no change and no force
-        if (!force && contentDirectory != null && this.contentDirectory != null
-            && this.contentDirectory!!.equals(contentDirectory))
-            return
-
-        this.contentDirectory = contentDirectory
+        this.selectedContentDirectory = contentDirectory
         contentDirectoryObservable.notifyAllObservers()
     }
 
-    override fun getSelectedRenderer(): UpnpDevice? {
-        return renderer
-    }
+    override fun setSelectedRenderer(renderer: UpnpDevice, force: Boolean) {
+        // Skip if no change and no force
+        if (!force && this.selectedRenderer != null && this.selectedRenderer!!.equals(renderer))
+            return
 
-    override fun getSelectedContentDirectory(): UpnpDevice? {
-        return contentDirectory
+        this.selectedRenderer = renderer
     }
 
     override fun addSelectedContentDirectoryObserver(o: Observer) {

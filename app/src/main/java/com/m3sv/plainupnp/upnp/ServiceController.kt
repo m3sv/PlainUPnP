@@ -28,6 +28,7 @@ import android.content.Intent
 import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
 import org.droidupnp.legacy.cling.BaseUpnpServiceController
+import org.droidupnp.legacy.upnp.IServiceListener
 import org.fourthline.cling.model.meta.LocalDevice
 import timber.log.Timber
 import javax.inject.Inject
@@ -38,7 +39,8 @@ class ServiceController @Inject constructor(private val context: Context) :
     private val upnpServiceListener: ServiceListener =
         ServiceListener(context)
 
-    override fun getServiceListener(): ServiceListener = upnpServiceListener
+    override val serviceListener: IServiceListener
+        get() = upnpServiceListener
 
     override fun pause() {
         context.unbindService(upnpServiceListener.serviceConnection)

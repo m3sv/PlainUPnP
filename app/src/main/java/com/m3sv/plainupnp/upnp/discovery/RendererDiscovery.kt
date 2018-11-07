@@ -36,7 +36,7 @@ class RendererDiscovery(controller: UpnpServiceController) :
     }
 
     override fun isSelected(device: UpnpDevice): Boolean {
-        return if (controller != null && controller.selectedRenderer != null)
+        return if (controller?.selectedRenderer != null)
             device.equals(controller.selectedRenderer)
         else false
     }
@@ -50,8 +50,7 @@ class RendererDiscovery(controller: UpnpServiceController) :
     }
 
     override fun removed(d: UpnpDevice) {
-        if (controller != null
-            && controller.selectedRenderer != null
+        if (controller?.selectedRenderer != null
             && d.equals(controller.selectedRenderer))
             controller.selectedRenderer = null
     }

@@ -13,22 +13,22 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.SeekBar
 import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.view.RxView
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.Directory
 import com.m3sv.plainupnp.data.upnp.RendererState
+import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
+import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.upnp.RenderedItem
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import com.m3sv.plainupnp.data.upnp.UpnpRendererState
-import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import timber.log.Timber
 
 
@@ -38,9 +38,9 @@ class MainActivity : BaseActivity() {
 
     private lateinit var binding: MainActivityBinding
 
-    private lateinit var rendererAdapter: ArrayAdapter<String>
+    private lateinit var rendererAdapter: SimpleArrayAdapter<String>
 
-    private lateinit var contentDirectoryAdapter: ArrayAdapter<String>
+    private lateinit var contentDirectoryAdapter: SimpleArrayAdapter<String>
 
     private val contentDirectorySpinnerClickListener = object : AdapterView.OnItemSelectedListener {
 
@@ -56,7 +56,6 @@ class MainActivity : BaseActivity() {
             with(viewModel) {
                 Timber.d("Selected item: $position")
                 selectContentDirectory(contentDirectoriesObservable.value?.toList()?.get(position)?.device)
-                browseHome()
             }
         }
     }
@@ -83,10 +82,7 @@ class MainActivity : BaseActivity() {
     private fun handleContentDirectories(it: Set<DeviceDisplay>?) {
         it?.let {
             Timber.d("Received new set of content directories: ${it.size}")
-            with(contentDirectoryAdapter) {
-                clear()
-                addAll(it.asSequence().map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-            }
+            contentDirectoryAdapter.setNewItems(it.asSequence().map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
         }
     }
 
@@ -125,10 +121,7 @@ class MainActivity : BaseActivity() {
     private fun handleRenderers(it: Set<DeviceDisplay>?) {
         it?.run {
             Timber.d("Received new set of renderers: ${it.size}")
-            rendererAdapter.run {
-                clear()
-                addAll(it.asSequence().map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-            }
+            rendererAdapter.setNewItems(it.asSequence().map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
         }
     }
 
@@ -245,16 +238,14 @@ class MainActivity : BaseActivity() {
     private fun setupPickers() {
         with(binding.controlsSheet) {
             rendererAdapter =
-                    ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
-                        .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+                    SimpleArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
             with(mainRendererDevicePicker) {
                 adapter = rendererAdapter
                 onItemSelectedListener = rendererSpinnerClickListener
             }
 
             contentDirectoryAdapter =
-                    ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
-                        .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+                    SimpleArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
 
             with(mainContentDevicePicker) {
                 adapter = contentDirectoryAdapter

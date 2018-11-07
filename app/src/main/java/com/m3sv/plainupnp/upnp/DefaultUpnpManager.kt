@@ -77,7 +77,10 @@ class DefaultUpnpManager constructor(
 
     override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
         Timber.d("Selected contentDirectory: ${contentDirectory?.displayString}")
+        val browseHome = controller.selectedContentDirectory != contentDirectory
         controller.selectedContentDirectory = contentDirectory
+        if (browseHome)
+            browseHome()
     }
 
     override fun selectRenderer(renderer: UpnpDevice?) {
@@ -189,8 +192,11 @@ class DefaultUpnpManager constructor(
         when (id) {
             "0" -> {
                 selectedDirectory.onNext(Directory.Home)
-                directoriesStructure = LinkedList<Directory>().also { it.add(
-                    Directory.Home) }
+                directoriesStructure = LinkedList<Directory>().also {
+                    it.add(
+                        Directory.Home
+                    )
+                }
             }
             else -> {
                 val subDirectory = Directory.SubDirectory(id, parentId)
