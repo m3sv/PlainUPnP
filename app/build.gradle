@@ -78,6 +78,9 @@ dependencies {
     implementation deps.rx.kotlin
     implementation deps.rx.binding
     implementation deps.rx.android
+    implementation deps.rx.relay
+
+    implementation deps.okHttp.loggingInterceptor
 
     implementation deps.retrofit.core
     implementation deps.retrofit.rxAdapter
@@ -112,6 +115,7 @@ dependencies {
     }
 
     implementation project(':common')
+    implementation project(':network')
 }
 
 kapt {
@@ -135,10 +139,4 @@ if (propFile.exists()) {
     }
 } else {
     android.buildTypes.release.signingConfig = null
-}
-
-kotlin {
-    experimental {
-        coroutines 'enable'
-    }
 }

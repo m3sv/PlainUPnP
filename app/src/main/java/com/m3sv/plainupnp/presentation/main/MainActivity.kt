@@ -34,13 +34,15 @@ import timber.log.Timber
 
 class MainActivity : BaseActivity() {
 
-    lateinit var viewModel: MainActivityViewModel
+    private lateinit var viewModel: MainActivityViewModel
 
     private lateinit var binding: MainActivityBinding
 
     private lateinit var rendererAdapter: SimpleArrayAdapter<String>
 
     private lateinit var contentDirectoryAdapter: SimpleArrayAdapter<String>
+
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     private val contentDirectorySpinnerClickListener = object : AdapterView.OnItemSelectedListener {
 
@@ -125,8 +127,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
@@ -138,7 +138,6 @@ class MainActivity : BaseActivity() {
         }
 
         setupBottomNavigation(binding.bottomNav)
-
         initBottomSheet()
 
         if (savedInstanceState == null) {
@@ -156,7 +155,13 @@ class MainActivity : BaseActivity() {
             viewModel.playPrevious()
         }, onError = Timber::e)
 
-        initLiveData()
+        with(viewModel) {
+            renderersObservable.observe(renderersObserver)
+            contentDirectoriesObservable.observe(contentDirectoriesObserver)
+            rendererState.observe(rendererStateObserver)
+            renderedItem.observe(renderedItemObserver)
+        }
+
         setupPickers()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -190,9 +195,48 @@ class MainActivity : BaseActivity() {
         })
     }
 
+    override fun onStart() {
+        super.onStart()
+        with(viewModel) {
+            resumeUpnpController()
+            addObservers()
+            resumeUpnp()
+            resumeRendererUpdate()
+        }
+    }
+
+    override fun onStop() {
+        with(viewModel) {
+            pauseRendererUpdate()
+            removeObservers()
+            pauseUpnp()
+        }
+        super.onStop()
+    }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            binding.bottomNav.selectedItemId = R.id.nav_home
+            return
+        }
+
+        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.currentDirectory is Directory.Home) {
+            val currentTime = System.currentTimeMillis()
+
+            if (currentTime - lastBackClick < 500)
+                finish()
+
+            lastBackClick = currentTime
+            Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
+        } else if (viewModel.currentDirectory != null) {
+            viewModel.browsePrevious()
+        } else {
+            finish()
+        }
+    }
+
     private fun initBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container)
-
         binding.controlsSheet.progress.isEnabled = false
     }
 
@@ -226,51 +270,21 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun initLiveData() {
-        with(viewModel) {
-            renderersObservable.observe(renderersObserver)
-            contentDirectoriesObservable.observe(contentDirectoriesObserver)
-            rendererState.observe(rendererStateObserver)
-            renderedItem.observe(renderedItemObserver)
-        }
-    }
-
     private fun setupPickers() {
         with(binding.controlsSheet) {
-            rendererAdapter =
-                    SimpleArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
+            rendererAdapter = SimpleArrayAdapter(this@MainActivity)
             with(mainRendererDevicePicker) {
                 adapter = rendererAdapter
                 onItemSelectedListener = rendererSpinnerClickListener
             }
 
-            contentDirectoryAdapter =
-                    SimpleArrayAdapter<String>(this@MainActivity, android.R.layout.simple_list_item_1)
+            contentDirectoryAdapter = SimpleArrayAdapter(this@MainActivity)
 
             with(mainContentDevicePicker) {
                 adapter = contentDirectoryAdapter
                 onItemSelectedListener = contentDirectorySpinnerClickListener
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        with(viewModel) {
-            resumeUpnpController()
-            addObservers()
-            resumeUpnp()
-            resumeRendererUpdate()
-        }
-    }
-
-    override fun onStop() {
-        with(viewModel) {
-            pauseRendererUpdate()
-            removeObservers()
-            pauseUpnp()
-        }
-        super.onStop()
     }
 
     private fun navigateToMain() {
@@ -289,27 +303,6 @@ class MainActivity : BaseActivity() {
     }
 
     private var lastBackClick = System.currentTimeMillis()
-
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount == 1) {
-            binding.bottomNav.selectedItemId = R.id.nav_home
-            return
-        }
-
-        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.currentDirectory is Directory.Home) {
-            val currentTime = System.currentTimeMillis()
-
-            if (currentTime - lastBackClick < 500)
-                finish()
-
-            lastBackClick = currentTime
-            Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
-        } else if (viewModel.currentDirectory != null) {
-            viewModel.browsePrevious()
-        } else {
-            finish()
-        }
-    }
 
     companion object {
         private const val REQUEST_READ_EXT_STORAGE = 12345

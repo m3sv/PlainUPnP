@@ -34,14 +34,14 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation deps.dagger.core
+    compileOnly deps.dagger.annotation
+    kapt deps.dagger.compiler
 
     implementation deps.retrofit.core
     implementation deps.retrofit.rxAdapter
     implementation deps.retrofit.moshiConverter
+    implementation deps.rx.android
 
     implementation deps.timber
     implementation deps.kotlin

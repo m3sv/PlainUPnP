@@ -20,7 +20,7 @@
 <resources>
 
 	<!-- General -->
-	<string name="app_name">DroidUPnP</string>
+	<string name="app_name">PlainUPnP</string>
 	<string name="version">Versie</string>
 
 	<!-- Navigation drawer -->

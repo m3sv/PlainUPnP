@@ -4,8 +4,8 @@ import android.content.Context
 import android.widget.ArrayAdapter
 
 
-class SimpleArrayAdapter<T : Any>(context: Context?, resource: Int) :
-    ArrayAdapter<T>(context, resource) {
+class SimpleArrayAdapter<T : Any>(context: Context?) :
+    ArrayAdapter<T>(context, android.R.layout.simple_list_item_1) {
 
     init {
         setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)

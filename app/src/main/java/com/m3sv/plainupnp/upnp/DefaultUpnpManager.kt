@@ -4,6 +4,8 @@ import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.Event
+import com.m3sv.plainupnp.common.RxBus
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
@@ -94,11 +96,14 @@ class DefaultUpnpManager constructor(
     private var previous: Int = -1
 
     override fun renderItem(item: DIDLItem, position: Int) {
+        if (item is ClingVideoItem) {
+            RxBus.publish(Event.GetMovieSuggestionsEvent(item.title))
+        }
+
         rendererCommand?.pause()
 
         next = position + 1
         previous = position - 1
-
 
         upnpRenderStateDisposable?.takeIf { !it.isDisposed }?.dispose()
         upnpRendererState = factory.createRendererState()
@@ -123,8 +128,7 @@ class DefaultUpnpManager constructor(
 
                 Timber.i("New renderer state: $newRendererState")
                 _rendererState.postValue(newRendererState)
-            }, onError = Timber::e, onComplete = {
-            })
+            }, onError = Timber::e)
         }
 
         val requestOptions = when (item) {

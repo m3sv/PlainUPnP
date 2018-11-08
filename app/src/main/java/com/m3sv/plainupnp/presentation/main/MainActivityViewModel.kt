@@ -1,10 +1,13 @@
 package com.m3sv.plainupnp.presentation.main
 
 import android.arch.lifecycle.MutableLiveData
+import com.m3sv.plainupnp.common.Event
+import com.m3sv.plainupnp.common.RxBus
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.Directory
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
+import com.m3sv.plainupnp.network.ApiManager
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.upnp.UpnpManager
 import io.reactivex.disposables.CompositeDisposable
@@ -14,7 +17,10 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivityViewModel @Inject constructor(private val defaultUpnpManager: UpnpManager) :
+class MainActivityViewModel @Inject constructor(
+    private val defaultUpnpManager: UpnpManager,
+    private val apiManager: ApiManager
+) :
     BaseViewModel(), UpnpManager by defaultUpnpManager {
 
     var currentDirectory: Directory? = null
@@ -33,6 +39,14 @@ class MainActivityViewModel @Inject constructor(private val defaultUpnpManager: 
         { Timber.e("Exception during discovery: ${it.message}") }
 
     init {
+        disposables += RxBus.listen(Event.GetMovieSuggestionsEvent::class.java)
+            .subscribeBy(onNext = {
+                Timber.d("Get movie suggestion for ${it.name}")
+                apiManager.getSuggestions(it.name, "movies").subscribeBy(onSuccess = {
+                    Timber.d("Got response: $it")
+                }, onError = Timber::e)
+            }, onError = Timber::e)
+
         disposables += selectedDirectoryObservable
             .subscribeBy(
                 onNext = {
@@ -98,12 +112,6 @@ class MainActivityViewModel @Inject constructor(private val defaultUpnpManager: 
                     contentDirectoriesObservable.postValue(contentDirectories)
                 }, onError = errorHandler
             )
-    }
-
-    fun resetDevices() {
-        Timber.d("Resetting devices")
-        renderers.clear()
-        contentDirectories.clear()
     }
 
     fun resumeUpnp() {
