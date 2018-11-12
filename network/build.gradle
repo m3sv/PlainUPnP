@@ -12,14 +12,15 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
-
         def homePath = System.properties['user.home']
         def keystorePropertiesFile = rootProject.file("$homePath/keys/plainupnp/api.properties")
         def keystoreProperties = new Properties()
         keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
         buildConfigField 'String', 'TASTE_DIVE_BASE_URL', '"https://tastedive.com/api/"'
+        buildConfigField 'String', 'OMDB_BASE_URL', '"https://www.omdbapi.com/"'
         buildConfigField 'String', 'TASTE_DIVE_API_KEY', "\"${keystoreProperties['TASTE_DIVE_API_KEY']}\""
+        buildConfigField 'String', 'OMDB_API_KEY', "\"${keystoreProperties['OMDB_API_KEY']}\""
     }
 
     buildTypes {

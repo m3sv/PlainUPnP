@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.network
 
+import com.m3sv.plainupnp.network.responses.OmdbResponse
 import com.m3sv.plainupnp.network.responses.TasteDiveResponse
 import io.reactivex.Single
 
@@ -12,5 +13,7 @@ interface ApiManager {
      * If not specified, the results can have mixed types.
      */
     fun getSuggestions(query: String, type: String): Single<TasteDiveResponse>
+
+    fun getMovieInfo(query: String): Single<OmdbResponse>
 }
 

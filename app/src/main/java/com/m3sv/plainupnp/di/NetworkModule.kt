@@ -1,10 +1,7 @@
 package com.m3sv.plainupnp.di
 
 import com.m3sv.plainupnp.di.scope.ApplicationScope
-import com.m3sv.plainupnp.network.ApiManager
-import com.m3sv.plainupnp.network.BuildConfig
-import com.m3sv.plainupnp.network.DefaultApiManager
-import com.m3sv.plainupnp.network.TasteDiveService
+import com.m3sv.plainupnp.network.*
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -43,7 +40,7 @@ object NetworkModule {
     @JvmStatic
     fun provideTasteDiveRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
-            .baseUrl(BuildConfig.TASTE_DIVE_BASE_URL)
+            .baseUrl(BuildConfig.OMDB_BASE_URL)
             .client(okHttpClient)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(MoshiConverterFactory.create())
@@ -52,6 +49,12 @@ object NetworkModule {
     @Provides
     @ApplicationScope
     @JvmStatic
-    fun provideTaseDiveService(retrofit: Retrofit): TasteDiveService =
+    fun provideTasteDiveService(retrofit: Retrofit): TasteDiveService =
         retrofit.create(TasteDiveService::class.java)
+
+    @Provides
+    @ApplicationScope
+    @JvmStatic
+    fun provideOmdbService(retrofit: Retrofit): OmdbService =
+        retrofit.create(OmdbService::class.java)
 }
