@@ -214,27 +214,6 @@ class MainActivity : BaseActivity() {
         super.onStop()
     }
 
-    override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount == 1) {
-            binding.bottomNav.selectedItemId = R.id.nav_home
-            return
-        }
-
-        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.currentDirectory is Directory.Home) {
-            val currentTime = System.currentTimeMillis()
-
-            if (currentTime - lastBackClick < 500)
-                finish()
-
-            lastBackClick = currentTime
-            Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
-        } else if (viewModel.currentDirectory != null) {
-            viewModel.browsePrevious()
-        } else {
-            finish()
-        }
-    }
-
     private fun initBottomSheet() {
         bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container)
         binding.controlsSheet.progress.isEnabled = false
@@ -242,6 +221,7 @@ class MainActivity : BaseActivity() {
 
     private fun setupBottomNavigation(bottomNavigation: BottomNavigationView) {
         bottomNavigation.setOnNavigationItemSelectedListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             if (it.itemId != binding.bottomNav.selectedItemId)
                 when (it.itemId) {
                     R.id.nav_home -> {
@@ -299,6 +279,32 @@ class MainActivity : BaseActivity() {
             navigateTo(SettingsFragment.newInstance(), tag, true)
         } else {
             navigateTo(fragment, tag, true)
+        }
+    }
+
+    override fun onBackPressed() {
+        if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            return
+        }
+
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            binding.bottomNav.selectedItemId = R.id.nav_home
+            return
+        }
+
+        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.currentDirectory is Directory.Home) {
+            val currentTime = System.currentTimeMillis()
+
+            if (currentTime - lastBackClick < 500)
+                finish()
+
+            lastBackClick = currentTime
+            Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
+        } else if (viewModel.currentDirectory != null) {
+            viewModel.browsePrevious()
+        } else {
+            finish()
         }
     }
 

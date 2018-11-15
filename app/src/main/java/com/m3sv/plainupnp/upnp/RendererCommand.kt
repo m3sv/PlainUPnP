@@ -326,8 +326,8 @@ class RendererCommand(
     override fun updateFull() {
         updateMediaInfo()
         updatePositionInfo()
-        updateVolume()
-        updateMute()
+//        updateVolume()
+//        updateMute()
         updateTransportInfo()
     }
 
@@ -335,12 +335,12 @@ class RendererCommand(
         while (true) {
             Timber.d("Update state!")
             updatePositionInfo()
-            updateVolume()
-            updateMute()
+//            updateVolume()
+//            updateMute()
             updateTransportInfo()
             updateMediaInfo()
 
-            delay(1000)
+            delay(1250)
         }
     }
 

@@ -39,18 +39,19 @@ class MainActivityViewModel @Inject constructor(
         { Timber.e("Exception during discovery: ${it.message}") }
 
     init {
-        disposables += RxBus
-            .listen(Event.GetMovieSuggestionsEvent::class.java)
-            .flatMapSingle {
-                val name = it.name
-                    .replace("bluray", "", true)
-                    .replace(Regex("[^a-zA-Z]+"), " ")
-                    .replace(Regex("( \\w )"), "")
-                Timber.d("Get movie suggestion for $name")
-                apiManager.getMovieInfo(name)
-            }.subscribeBy(onNext = {
-                Timber.d("Got response: $it")
-            }, onError = Timber::e)
+        // todo for version 1.2, add finding video info support
+//        disposables += RxBus
+//            .listen(Event.GetMovieSuggestionsEvent::class.java)
+//            .flatMapSingle {
+//                val name = it.name
+//                    .replace("bluray", "", true)
+//                    .replace(Regex("[^a-zA-Z]+"), " ")
+//                    .replace(Regex("( \\w )"), "")
+//                Timber.d("Get movie suggestion for $name")
+//                apiManager.getMovieInfo(name)
+//            }.subscribeBy(onNext = {
+//                Timber.d("Got response: $it")
+//            }, onError = Timber::e)
 
         disposables += selectedDirectoryObservable
             .subscribeBy(

@@ -34,8 +34,7 @@ class ContentDirectoryDiscovery(controller: UpnpServiceController) : DeviceDisco
         CallableContentDirectoryFilter()
 
     override fun isSelected(device: UpnpDevice): Boolean {
-        return (controller != null
-                && controller.selectedContentDirectory != null
+        return (controller?.selectedContentDirectory != null
                 && device.equals(controller.selectedContentDirectory))
     }
 
@@ -48,8 +47,7 @@ class ContentDirectoryDiscovery(controller: UpnpServiceController) : DeviceDisco
     }
 
     override fun removed(d: UpnpDevice) {
-        if (controller != null
-            && controller.selectedContentDirectory != null
+        if (controller?.selectedContentDirectory != null
             && d.equals(controller.selectedContentDirectory))
             controller.selectedContentDirectory = null
     }

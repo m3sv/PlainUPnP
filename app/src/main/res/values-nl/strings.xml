@@ -20,7 +20,6 @@
 <resources>
 
 	<!-- General -->
-	<string name="app_name">PlainUPnP</string>
 	<string name="version">Versie</string>
 
 	<!-- Navigation drawer -->

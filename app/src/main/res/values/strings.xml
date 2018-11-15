@@ -19,7 +19,7 @@
 <resources>
 
     <!-- General -->
-    <string name="app_name">DroidUPnP</string>
+    <string name="app_name" translatable="false">PlainUPnP</string>
     <string name="version">Version</string>
 
     <!-- Navigation drawer -->
