@@ -9,11 +9,6 @@ compatible device.
 
 It also allows you to use your android device as an UPnP content provider.
 
-## TODO:
-- [ ] Finish movie suggestions
-- [ ] Replace plain observers with reactive streams
-- [ ] Test coverage
-
 This is a rewrite of trishika's [DroidUPnP](https://github.com/trishika/DroidUPnP), original project can be found [here](https://github.com/trishika/DroidUPnP).
 
 Copying
