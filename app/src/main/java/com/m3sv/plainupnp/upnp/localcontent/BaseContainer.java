@@ -16,18 +16,18 @@
  * You should have received a copy of the GNU General Public License
  * along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.m3sv.plainupnp.upnp.localcontent;
+
 
 import org.droidupnp.legacy.mediaserver.ContentDirectoryService;
 import org.fourthline.cling.support.model.DIDLObject;
 import org.fourthline.cling.support.model.WriteStatus;
 import org.fourthline.cling.support.model.container.Container;
 
-public class CustomContainer extends Container {
+public class BaseContainer extends Container {
     protected String baseURL;
 
-    public CustomContainer(String id, String parentID, String title, String creator, String baseURL) {
+    public BaseContainer(String id, String parentID, String title, String creator, String baseURL) {
         this.setClazz(new DIDLObject.Class("object.container"));
 
         if (parentID == null || parentID.compareTo("" + ContentDirectoryService.ROOT_ID) == 0)
@@ -46,5 +46,9 @@ public class CustomContainer extends Container {
         setChildCount(0);
 
         this.baseURL = baseURL;
+    }
+
+    public String getBaseURL() {
+        return baseURL;
     }
 }

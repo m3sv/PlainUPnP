@@ -26,21 +26,19 @@ package com.m3sv.plainupnp.upnp
 import android.content.Context
 import org.droidupnp.legacy.cling.UpnpRendererState
 import org.droidupnp.legacy.upnp.Factory
-import org.droidupnp.legacy.upnp.IContentDirectoryCommand
-import org.droidupnp.legacy.upnp.IRendererCommand
 import javax.inject.Inject
 
 class UpnpFactory @Inject constructor(private val controller: UpnpServiceController) : Factory {
 
-    override fun createContentDirectoryCommand(): IContentDirectoryCommand? =
-        (controller.serviceListener as ServiceListener).upnpService
+    override fun createContentDirectoryCommand(): ContentDirectoryCommand? =
+        controller.serviceListener.upnpService
             ?.controlPoint
             ?.let {
                 ContentDirectoryCommand(it, controller)
             }
 
-    override fun createRendererCommand(rendererState: UpnpRendererState?): IRendererCommand? =
-        (controller.serviceListener as ServiceListener).upnpService
+    override fun createRendererCommand(rendererState: UpnpRendererState?): RendererCommand? =
+        controller.serviceListener.upnpService
             ?.controlPoint
             ?.let {
                 rendererState?.let { rs -> RendererCommand(controller, it, rs) }

@@ -3,8 +3,6 @@ package com.m3sv.plainupnp.upnp
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import com.m3sv.plainupnp.upnp.didl.*
 import org.droidupnp.legacy.cling.CDevice
-import org.droidupnp.legacy.upnp.ContentCallback
-import org.droidupnp.legacy.upnp.IContentDirectoryCommand
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -21,24 +19,26 @@ import org.fourthline.cling.support.model.item.VideoItem
 import timber.log.Timber
 import java.util.*
 
+typealias ContentCallback = (List<DIDLObjectDisplay>?) -> Unit
+
 class ContentDirectoryCommand(
     private val controlPoint: ControlPoint,
     private val controller: UpnpServiceController
-) : IContentDirectoryCommand {
+) {
 
     private val mediaReceiverRegistarService: Service<*, *>?
         get() = if (controller.selectedContentDirectory == null)
-                null
-            else (controller.selectedContentDirectory as CDevice)
-                .device
-                ?.findService(UDAServiceType("X_MS_MediaReceiverRegistar"))
+            null
+        else (controller.selectedContentDirectory as CDevice)
+            .device
+            ?.findService(UDAServiceType("X_MS_MediaReceiverRegistar"))
 
     private val contentDirectoryService: Service<*, *>?
         get() = if (controller.selectedContentDirectory == null)
-                null
-            else (controller.selectedContentDirectory as CDevice)
-                .device
-                ?.findService(UDAServiceType("ContentDirectory"))
+            null
+        else (controller.selectedContentDirectory as CDevice)
+            .device
+            ?.findService(UDAServiceType("ContentDirectory"))
 
     private fun buildContentList(
         parent: String?,
@@ -83,7 +83,7 @@ class ContentDirectoryCommand(
         return result
     }
 
-    override fun browse(
+    fun browse(
         directoryID: String,
         parent: String?,
         callback: ContentCallback
@@ -118,7 +118,7 @@ class ContentDirectoryCommand(
         }
     }
 
-    override fun search(search: String, parent: String?, callback: ContentCallback) {
+    fun search(search: String, parent: String?, callback: ContentCallback) {
         contentDirectoryService?.let {
             controlPoint.execute(object : Search(it, parent, search) {
                 override fun received(actionInvocation: ActionInvocation<*>, didl: DIDLContent) {

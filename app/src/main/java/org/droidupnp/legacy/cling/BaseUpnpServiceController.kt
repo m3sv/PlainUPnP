@@ -29,8 +29,6 @@ import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
 
 import org.droidupnp.legacy.CObservable
-import org.droidupnp.legacy.upnp.IServiceListener
-import org.fourthline.cling.model.meta.LocalDevice
 
 import java.util.Observer
 

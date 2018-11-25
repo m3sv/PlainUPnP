@@ -26,12 +26,12 @@ package com.m3sv.plainupnp.upnp.discovery
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.UpnpServiceController
 import org.droidupnp.legacy.upnp.CallableRendererFilter
-import org.droidupnp.legacy.upnp.ICallableFilter
+import org.droidupnp.legacy.upnp.CallableFilter
 
 class RendererDiscovery(controller: UpnpServiceController) :
     DeviceDiscovery(controller) {
 
-    override fun getCallableFilter(): ICallableFilter {
+    override fun getCallableFilter(): CallableFilter {
         return CallableRendererFilter()
     }
 

@@ -17,6 +17,7 @@ import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import com.m3sv.plainupnp.data.upnp.DIDLItem
+import com.m3sv.plainupnp.presentation.main.data.toItems
 import timber.log.Timber
 
 
@@ -29,7 +30,9 @@ class MainFragment : BaseFragment() {
     private lateinit var contentAdapter: GalleryContentAdapter
 
     private val upnpContentObserver = Observer<List<DIDLObjectDisplay>> { content ->
-        content?.let { contentAdapter.setWithDiff(Item.fromDIDLObjectDisplay(content)) }
+        content?.let {
+            contentAdapter.setWithDiff(content.toItems())
+        }
     }
 
     private val localContentObserver = Observer<Set<Item>> { content ->
@@ -88,7 +91,7 @@ class MainFragment : BaseFragment() {
         with(viewModel.contentData) {
             observe(upnpContentObserver)
             value?.let {
-                contentAdapter.setWithDiff(Item.fromDIDLObjectDisplay(it))
+                contentAdapter.setWithDiff(it.toItems())
             }
         }
     }

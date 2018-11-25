@@ -83,7 +83,7 @@ public class VideoContainer extends DynamicContainer {
                         extension = filePath.substring(dot).toLowerCase();
 
                     Res res = new Res(new MimeType(mimeType.substring(0, mimeType.indexOf('/')),
-                            mimeType.substring(mimeType.indexOf('/') + 1)), size, "http://" + baseURL + "/" + id + extension);
+                            mimeType.substring(mimeType.indexOf('/') + 1)), size, "http://" + getBaseURL() + "/" + id + extension);
                     res.setDuration(duration / (1000 * 60 * 60) + ":"
                             + (duration % (1000 * 60 * 60)) / (1000 * 60) + ":"
                             + (duration % (1000 * 60)) / 1000);

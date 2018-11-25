@@ -1,4 +1,4 @@
-package com.m3sv.common
+package com.m3sv.plainupnp.common
 
 import android.content.Context
 import android.net.wifi.WifiManager

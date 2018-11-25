@@ -4,7 +4,6 @@ import org.droidupnp.legacy.cling.CDevice
 import org.droidupnp.legacy.cling.TrackMetadata
 import org.droidupnp.legacy.cling.UpnpRendererState
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
-import org.droidupnp.legacy.upnp.IRendererCommand
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import kotlinx.coroutines.*
 import org.fourthline.cling.controlpoint.ControlPoint
@@ -30,19 +29,19 @@ class RendererCommand(
     private val controller: UpnpServiceController,
     private val controlPoint: ControlPoint,
     private val rendererState: UpnpRendererState
-) : IRendererCommand, CoroutineScope {
+) : CoroutineScope {
 
     private var job: Job = Job()
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
 
-    override fun pause() {
+    fun pause() {
         Timber.v("Pause renderer")
         job.cancel()
     }
 
-    override fun resume() {
+    fun resume() {
         Timber.v("Resume renderer")
         job.cancel()
         job = Job()
@@ -61,7 +60,7 @@ class RendererCommand(
             (it as CDevice).device?.findService(UDAServiceType("AVTransport"))
         }
 
-    override fun commandPlay() {
+    fun commandPlay() {
         if (getAVTransportService() == null)
             return
 
@@ -77,7 +76,7 @@ class RendererCommand(
         })
     }
 
-    override fun commandStop() {
+    fun commandStop() {
         if (getAVTransportService() == null)
             return
 
@@ -93,7 +92,7 @@ class RendererCommand(
         })
     }
 
-    override fun commandPause() {
+    fun commandPause() {
         if (getAVTransportService() == null)
             return
 
@@ -109,7 +108,7 @@ class RendererCommand(
         })
     }
 
-    override fun commandToggle() {
+    fun commandToggle() {
         val state = rendererState.state
         if (state == com.m3sv.plainupnp.data.upnp.UpnpRendererState.State.PLAY) {
             commandPause()
@@ -118,7 +117,7 @@ class RendererCommand(
         }
     }
 
-    override fun commandSeek(relativeTimeTarget: String) {
+    fun commandSeek(relativeTimeTarget: String) {
         if (getAVTransportService() == null)
             return
 
@@ -136,7 +135,7 @@ class RendererCommand(
         })
     }
 
-    override fun setVolume(volume: Int) {
+    fun setVolume(volume: Int) {
         if (getRenderingControlService() == null)
             return
 
@@ -153,7 +152,7 @@ class RendererCommand(
         })
     }
 
-    override fun setMute(mute: Boolean) {
+    fun setMute(mute: Boolean) {
         if (getRenderingControlService() == null)
             return
 
@@ -169,7 +168,7 @@ class RendererCommand(
         })
     }
 
-    override fun toggleMute() {
+    fun toggleMute() {
         setMute(!rendererState.isMute)
     }
 
@@ -191,7 +190,7 @@ class RendererCommand(
         })
     }
 
-    override fun launchItem(item: DIDLItem) {
+    fun launchItem(item: DIDLItem) {
         if (getAVTransportService() == null)
             return
 
@@ -237,8 +236,6 @@ class RendererCommand(
         })
 
     }
-
-// Update
 
     private fun updateMediaInfo() {
         if (getAVTransportService() == null)
@@ -291,7 +288,7 @@ class RendererCommand(
         })
     }
 
-    override fun updateVolume() {
+    fun updateVolume() {
         if (getRenderingControlService() == null)
             return
 
@@ -323,11 +320,11 @@ class RendererCommand(
         })
     }
 
-    override fun updateFull() {
+    fun updateFull() {
         updateMediaInfo()
         updatePositionInfo()
-//        updateVolume()
-//        updateMute()
+        updateVolume()
+        updateMute()
         updateTransportInfo()
     }
 
@@ -335,20 +332,12 @@ class RendererCommand(
         while (true) {
             Timber.d("Update state!")
             updatePositionInfo()
-//            updateVolume()
-//            updateMute()
+            updateVolume()
+            updateMute()
             updateTransportInfo()
             updateMediaInfo()
 
-            delay(1250)
+            delay(1500)
         }
-    }
-
-    override fun updateStatus() {
-        // TODO Auto-generated method stub
-    }
-
-    override fun updatePosition() {
-        // TODO Auto-generated method stub
     }
 }

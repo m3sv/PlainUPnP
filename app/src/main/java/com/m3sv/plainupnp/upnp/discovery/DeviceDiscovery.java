@@ -19,17 +19,16 @@
 
 package com.m3sv.plainupnp.upnp.discovery;
 
-import android.util.Log;
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice;
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent;
 
+import com.m3sv.plainupnp.upnp.ServiceListener;
 import com.m3sv.plainupnp.upnp.UpnpServiceController;
 
 import org.droidupnp.legacy.upnp.DeviceDiscoveryObserver;
-import org.droidupnp.legacy.upnp.ICallableFilter;
-import org.droidupnp.legacy.upnp.IRegistryListener;
-import org.droidupnp.legacy.upnp.IServiceListener;
+import org.droidupnp.legacy.upnp.CallableFilter;
+import org.droidupnp.legacy.upnp.RegistryListener;
 
 import java.util.Collection;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -38,15 +37,13 @@ import timber.log.Timber;
 
 public abstract class DeviceDiscovery {
 
-    protected static final String TAG = "DeviceDiscovery";
+    protected boolean extendedInformation;
+
+    protected final UpnpServiceController controller;
 
     private final BrowsingRegistryListener browsingRegistryListener;
 
-    protected boolean extendedInformation;
-
     private final CopyOnWriteArrayList<DeviceDiscoveryObserver> observerList;
-
-    protected final UpnpServiceController controller;
 
     public DeviceDiscovery(UpnpServiceController controller, boolean extendedInformation) {
         this.controller = controller;
@@ -59,24 +56,24 @@ public abstract class DeviceDiscovery {
         this(controller, false);
     }
 
-    public void resume(IServiceListener serviceListener) {
+    public void resume(ServiceListener serviceListener) {
         serviceListener.addListener(browsingRegistryListener);
     }
 
-    public void pause(IServiceListener serviceListener) {
+    public void pause(ServiceListener serviceListener) {
         serviceListener.removeListener(browsingRegistryListener);
         serviceListener.clearListener();
     }
 
-    public class BrowsingRegistryListener implements IRegistryListener {
+    public class BrowsingRegistryListener implements RegistryListener {
 
         @Override
         public void deviceAdded(final UpnpDevice device) {
-            Log.v(TAG, "New device detected : " + device.getDisplayString());
+            Timber.v("New device detected : " + device.getDisplayString());
 
             if (device.isFullyHydrated() && filter(device)) {
                 if (isSelected(device)) {
-                    Log.i(TAG, "Reselect device to refresh it");
+                    Timber.i("Reselect device to refresh it");
                     select(device, true);
                 }
 
@@ -86,11 +83,11 @@ public abstract class DeviceDiscovery {
 
         @Override
         public void deviceRemoved(final UpnpDevice device) {
-            Log.v(TAG, "Device removed : " + device.getFriendlyName());
+            Timber.v("Device removed : " + device.getFriendlyName());
 
             if (filter(device)) {
                 if (isSelected(device)) {
-                    Log.i(TAG, "Selected device have been removed");
+                    Timber.i("Selected device have been removed");
                     removed(device);
                 }
 
@@ -134,7 +131,7 @@ public abstract class DeviceDiscovery {
      * @throws Exception
      */
     protected boolean filter(UpnpDevice device) {
-        ICallableFilter filter = getCallableFilter();
+        CallableFilter filter = getCallableFilter();
         filter.setDevice(device);
         try {
             return filter.call();
@@ -149,7 +146,7 @@ public abstract class DeviceDiscovery {
      *
      * @return
      */
-    protected abstract ICallableFilter getCallableFilter();
+    protected abstract CallableFilter getCallableFilter();
 
     /**
      * Filter to know if device is selected

@@ -4,6 +4,6 @@ import com.m3sv.plainupnp.data.upnp.UpnpDevice
 
 import java.util.concurrent.Callable
 
-interface ICallableFilter : Callable<Boolean> {
+interface CallableFilter : Callable<Boolean> {
     fun setDevice(device: UpnpDevice)
 }

@@ -100,9 +100,9 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx)
 
             val appName = ctx.getString(R.string.app_name)
-            val rootContainer = CustomContainer(
+            val rootContainer = BaseContainer(
                 "" + ROOT_ID, "" + ROOT_ID,
-                appName, appName, baseURL
+                appName, appName, baseURL!!
             )
 
             // Video
@@ -110,9 +110,9 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             var allVideoContainer: Container? = null
 
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_VIDEO, true)) {
-                videoContainer = CustomContainer(
+                videoContainer = BaseContainer(
                     "" + VIDEO_ID, "" + ROOT_ID,
-                    VIDEO_TXT, appName, baseURL
+                    VIDEO_TXT, appName, baseURL!!
                 )
 
                 with(rootContainer) {
@@ -138,9 +138,9 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             var allAudioContainer: Container? = null
 
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_AUDIO, true)) {
-                audioContainer = CustomContainer(
+                audioContainer = BaseContainer(
                     "" + AUDIO_ID, "" + ROOT_ID,
-                    AUDIO_TXT, appName, baseURL
+                    AUDIO_TXT, appName, baseURL!!
                 )
 
                 with(rootContainer) {
@@ -179,19 +179,19 @@ class ContentDirectoryService : AbstractContentDirectoryService {
             var imageContainer: Container? = null
             var allImageContainer: Container? = null
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)) {
-                imageContainer = CustomContainer(
+                imageContainer = BaseContainer(
                     "" + IMAGE_ID, "" + ROOT_ID, IMAGE_TXT,
-                    appName, baseURL
+                    appName, baseURL!!
                 )
                 rootContainer.addContainer(imageContainer)
-                rootContainer.childCount = rootContainer.childCount!! + 1
+                rootContainer.childCount = rootContainer.childCount + 1
 
                 allImageContainer = ImageContainer(
                     "" + ALL_ID, "" + IMAGE_ID, "All",
-                    appName, baseURL!!, ctx
+                    appName, baseURL, ctx
                 )
                 imageContainer.addContainer(allImageContainer)
-                imageContainer.childCount = imageContainer.childCount!! + 1
+                imageContainer.childCount = imageContainer.childCount + 1
             }
 
             if (subtype.size == 0) {

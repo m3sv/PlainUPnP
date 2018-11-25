@@ -32,10 +32,10 @@ abstract class DynamicContainer(
     parentID: String?,
     title: String?,
     creator: String?,
-    baseURL: String?,
+    baseURL: String,
     protected val ctx: Context,
     protected var uri: Uri?
-) : CustomContainer(id, parentID, title, creator, baseURL) {
+) : BaseContainer(id, parentID, title, creator, baseURL) {
 
     protected var where: String? = null
     protected var whereVal: Array<String> = emptyArray()

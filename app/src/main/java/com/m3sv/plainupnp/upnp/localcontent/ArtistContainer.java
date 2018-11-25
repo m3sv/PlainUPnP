@@ -63,7 +63,7 @@ public class ArtistContainer extends DynamicContainer {
                     String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST));
 
                     Log.d(TAG, " artistId : " + artistId + " artistArtist : " + artist);
-                    containers.add(new AlbumContainer(artistId, id, artist, artist, baseURL, getCtx(), artistId));
+                    containers.add(new AlbumContainer(artistId, id, artist, artist, getBaseURL(), getCtx(), artistId));
 
                 } while (cursor.moveToNext());
             }

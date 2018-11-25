@@ -26,15 +26,14 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
-import com.m3sv.common.Utils;
+import com.m3sv.plainupnp.common.Utils;
 import com.m3sv.plainupnp.data.upnp.UpnpDevice;
 
 import org.droidupnp.legacy.cling.CDevice;
 import org.droidupnp.legacy.cling.CRegistryListener;
 import org.droidupnp.legacy.mediaserver.MediaServer;
-import org.droidupnp.legacy.upnp.ICallableFilter;
-import org.droidupnp.legacy.upnp.IRegistryListener;
-import org.droidupnp.legacy.upnp.IServiceListener;
+import org.droidupnp.legacy.upnp.CallableFilter;
+import org.droidupnp.legacy.upnp.RegistryListener;
 import org.fourthline.cling.android.AndroidUpnpService;
 import org.fourthline.cling.model.ValidationException;
 import org.fourthline.cling.model.message.header.STAllHeader;
@@ -44,6 +43,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import timber.log.Timber;
 
@@ -51,10 +51,10 @@ import static com.m3sv.plainupnp.common.PrefUtils.CONTENT_DIRECTORY_SERVICE;
 
 
 @SuppressWarnings("rawtypes")
-public class ServiceListener implements IServiceListener {
+public class ServiceListener {
 
     private AndroidUpnpService upnpService;
-    private ArrayList<IRegistryListener> waitingListener;
+    private List<RegistryListener> waitingListener;
 
     private MediaServer mediaServer = null;
     private Context ctx;
@@ -64,12 +64,10 @@ public class ServiceListener implements IServiceListener {
         this.ctx = ctx;
     }
 
-    @Override
     public void refresh() {
         upnpService.getControlPoint().search(new STAllHeader());
     }
 
-    @Override
     public Collection<UpnpDevice> getDeviceList() {
         ArrayList<UpnpDevice> deviceList = new ArrayList<>();
         if (upnpService != null && upnpService.getRegistry() != null) {
@@ -80,8 +78,7 @@ public class ServiceListener implements IServiceListener {
         return deviceList;
     }
 
-    @Override
-    public Collection<UpnpDevice> getFilteredDeviceList(ICallableFilter filter) {
+    public Collection<UpnpDevice> getFilteredDeviceList(CallableFilter filter) {
         ArrayList<UpnpDevice> deviceList = new ArrayList<>();
         try {
             if (upnpService != null && upnpService.getRegistry() != null) {
@@ -127,7 +124,7 @@ public class ServiceListener implements IServiceListener {
                 mediaServer = null;
             }
 
-            for (IRegistryListener registryListener : waitingListener) {
+            for (RegistryListener registryListener : waitingListener) {
                 addListenerSafe(registryListener);
             }
 
@@ -142,7 +139,6 @@ public class ServiceListener implements IServiceListener {
         }
     };
 
-    @Override
     public ServiceConnection getServiceConnection() {
         return serviceConnection;
     }
@@ -151,15 +147,14 @@ public class ServiceListener implements IServiceListener {
         return upnpService;
     }
 
-    @Override
-    public void addListener(IRegistryListener registryListener) {
+    public void addListener(RegistryListener registryListener) {
         if (upnpService != null)
             addListenerSafe(registryListener);
         else
             waitingListener.add(registryListener);
     }
 
-    private void addListenerSafe(IRegistryListener registryListener) {
+    private void addListenerSafe(RegistryListener registryListener) {
         assert upnpService != null;
 
         // Get ready for future device advertisements
@@ -171,20 +166,18 @@ public class ServiceListener implements IServiceListener {
         }
     }
 
-    @Override
-    public void removeListener(IRegistryListener registryListener) {
+    public void removeListener(RegistryListener registryListener) {
         if (upnpService != null)
             removeListenerSafe(registryListener);
         else
             waitingListener.remove(registryListener);
     }
 
-    private void removeListenerSafe(IRegistryListener registryListener) {
+    private void removeListenerSafe(RegistryListener registryListener) {
         assert upnpService != null;
         upnpService.getRegistry().removeListener(new CRegistryListener(registryListener));
     }
 
-    @Override
     public void clearListener() {
         waitingListener.clear();
     }

@@ -115,7 +115,7 @@ public class AlbumContainer extends DynamicContainer {
 
                     if (albumId != null && album != null) {
                         Log.d(TAG, " current " + id + " albumId : " + albumId + " album : " + album);
-                        containers.add(new AudioContainer(albumId, id, album, artist, baseURL, getCtx(), null, albumId));
+                        containers.add(new AudioContainer(albumId, id, album, artist, getBaseURL(), getCtx(), null, albumId));
                     } else {
                         Log.d(TAG, "Unable to get albumId or album");
                     }

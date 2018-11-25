@@ -1,12 +1,12 @@
 package org.droidupnp.legacy.cling
 
-import org.droidupnp.legacy.upnp.IRegistryListener
+import org.droidupnp.legacy.upnp.RegistryListener
 import org.fourthline.cling.model.meta.LocalDevice
 import org.fourthline.cling.model.meta.RemoteDevice
 import org.fourthline.cling.registry.DefaultRegistryListener
 import org.fourthline.cling.registry.Registry
 
-class CRegistryListener(private val registryListener: IRegistryListener) :
+class CRegistryListener(private val registryListener: RegistryListener) :
     DefaultRegistryListener() {
 
     /* Discovery performance optimization for very slow Android devices! */

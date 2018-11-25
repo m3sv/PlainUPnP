@@ -2,7 +2,7 @@ package org.droidupnp.legacy.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 
-class CallableContentDirectoryFilter : ICallableFilter {
+class CallableContentDirectoryFilter : CallableFilter {
 
     private var device: UpnpDevice? = null
 

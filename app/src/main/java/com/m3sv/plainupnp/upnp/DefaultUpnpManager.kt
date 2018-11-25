@@ -16,9 +16,7 @@ import io.reactivex.subjects.PublishSubject
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
-import org.droidupnp.legacy.upnp.ContentCallback
 import org.droidupnp.legacy.upnp.Factory
-import org.droidupnp.legacy.upnp.IRendererCommand
 import timber.log.Timber
 import java.util.*
 
@@ -44,7 +42,7 @@ class DefaultUpnpManager constructor(
     override val selectedDirectoryObservable: io.reactivex.Observable<Directory>
         get() = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
-    private var rendererCommand: IRendererCommand? = null
+    private var rendererCommand: RendererCommand? = null
 
     private val _rendererState: MutableLiveData<RendererState> = MutableLiveData()
 

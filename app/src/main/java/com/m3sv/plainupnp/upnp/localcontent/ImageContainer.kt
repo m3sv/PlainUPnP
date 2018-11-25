@@ -34,12 +34,12 @@ import timber.log.Timber
 
 class ImageContainer(
     id: String,
-    parentID: String,
-    title: String,
-    creator: String,
-    baseURL: String,
+    parentID: String?,
+    title: String?,
+    creator: String?,
+    baseURL: String?,
     context: Context
-) : DynamicContainer(id, parentID, title, creator, baseURL, context, null) {
+) : DynamicContainer(id, parentID, title, creator, baseURL!!, context, null) {
 
     init {
         uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI

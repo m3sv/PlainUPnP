@@ -12,7 +12,6 @@ class UpnpService : AndroidUpnpServiceImpl() {
             override fun getRegistryMaintenanceIntervalMillis(): Int = 7000
         }
 
-
     override fun onUnbind(intent: Intent): Boolean {
         Timber.d("Unbind UPnP service")
         return super.onUnbind(intent)
