@@ -7,7 +7,10 @@ import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import kotlinx.coroutines.*
 import org.fourthline.cling.controlpoint.ControlPoint
+import org.fourthline.cling.controlpoint.SubscriptionCallback
 import org.fourthline.cling.model.action.ActionInvocation
+import org.fourthline.cling.model.gena.CancelReason
+import org.fourthline.cling.model.gena.GENASubscription
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
 import org.fourthline.cling.model.types.UDAServiceType
@@ -22,6 +25,7 @@ import org.fourthline.cling.support.renderingcontrol.callback.GetVolume
 import org.fourthline.cling.support.renderingcontrol.callback.SetMute
 import org.fourthline.cling.support.renderingcontrol.callback.SetVolume
 import timber.log.Timber
+import java.lang.Exception
 import kotlin.coroutines.CoroutineContext
 
 
@@ -332,12 +336,12 @@ class RendererCommand(
         while (true) {
             Timber.d("Update state!")
             updatePositionInfo()
-            updateVolume()
-            updateMute()
+//            updateVolume()
+//            updateMute()
             updateTransportInfo()
             updateMediaInfo()
 
-            delay(1500)
+            delay(1000)
         }
     }
 }

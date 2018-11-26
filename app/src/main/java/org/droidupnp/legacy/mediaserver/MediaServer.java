@@ -221,7 +221,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
                 res.addHeader("realTimeInfo.dlna.org", "DLNA.ORG_TLAG=*");
                 res.addHeader("contentFeatures.dlna.org", "");
                 res.addHeader("transferMode.dlna.org", "Streaming");
-                res.addHeader("Server", "DLNADOC/1.50 UPnP/1.0 Cling/2.0 DroidUPnP/" + version + " Android/" + Build.VERSION.RELEASE);
+                res.addHeader("Server", "DLNADOC/1.50 UPnP/1.0 Cling/2.0 PlainUPnP/" + version + " Android/" + Build.VERSION.RELEASE);
             }
 
             return res;

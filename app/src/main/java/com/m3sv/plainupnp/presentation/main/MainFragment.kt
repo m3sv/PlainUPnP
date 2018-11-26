@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.m3sv.plainupnp.common.Event
 import com.m3sv.plainupnp.common.RxBus
+import com.m3sv.plainupnp.common.SpaceItemDecoration
+import com.m3sv.plainupnp.common.dp
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.main.data.Item
@@ -73,6 +75,8 @@ class MainFragment : BaseFragment() {
             val spanCount =
                 if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 3
                 else 5
+
+            addItemDecoration(SpaceItemDecoration(16.dp))
             layoutManager =
                     GridLayoutManager(
                         requireActivity(),
