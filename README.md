@@ -1,4 +1,4 @@
-# Rewrite of UI layer is in progress
+# PlainUPnP
 
 PlainUPnP - intially DroidUPnP - is an UPnP control point application for android.
 
