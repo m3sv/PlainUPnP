@@ -8,10 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jakewharton.rxbinding2.widget.RxTextView
-import com.m3sv.plainupnp.common.Event
-import com.m3sv.plainupnp.common.RxBus
 import com.m3sv.plainupnp.common.SpaceItemDecoration
-import com.m3sv.plainupnp.common.dp
+import com.m3sv.plainupnp.common.utils.dp
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.main.data.Item
@@ -35,10 +33,6 @@ class MainFragment : BaseFragment() {
         content?.let {
             contentAdapter.setWithDiff(content.toItems())
         }
-    }
-
-    private val localContentObserver = Observer<Set<Item>> { content ->
-        content?.let { contentAdapter.setWithDiff(it.toList()) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,8 +95,6 @@ class MainFragment : BaseFragment() {
     }
 
     companion object {
-        val TAG: String = MainFragment::class.java.simpleName
-
         fun newInstance(): MainFragment = MainFragment().apply {
             arguments = Bundle()
         }

@@ -11,13 +11,16 @@ class SimpleArrayAdapter<T : Any>(context: Context?) :
         setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
     }
 
-    private var items: List<T> = emptyList()
+    var items: List<T> = emptyList()
+        private set
+
 
     fun setNewItems(items: List<T>) {
         if (this.items != items) {
             this.items = items
             clear()
             addAll(items)
+            notifyDataSetChanged()
         }
     }
 }

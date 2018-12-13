@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.common
+package com.m3sv.plainupnp.common.utils
 
 import android.content.Context
 import android.net.wifi.WifiManager
@@ -75,7 +75,8 @@ object Utils {
 
         Timber.d("No ip adress available throught wifi manager, try to get it manually")
 
-        var inetAddress: InetAddress? = getLocalIpAddressFromIntf("wlan0")
+        var inetAddress: InetAddress? =
+            getLocalIpAddressFromIntf("wlan0")
 
         if (inetAddress != null) {
             Timber.d("Got an ip for interfarce wlan0")

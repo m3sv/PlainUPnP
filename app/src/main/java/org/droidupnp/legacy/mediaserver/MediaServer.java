@@ -28,7 +28,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 
 import com.m3sv.plainupnp.R;
-import com.m3sv.plainupnp.common.PrefUtils;
+import com.m3sv.plainupnp.common.utils.PrefUtils;
 
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder;
 import org.fourthline.cling.model.DefaultServiceManager;
@@ -98,7 +98,6 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
             Timber.e("Validation pb for property " + v.getPropertyName());
             Timber.e("Error is " + v.getMessage());
         }
-
 
         DeviceType type = new UDADeviceType(TAG, 1);
 
@@ -191,18 +190,9 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
     @Override
     public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> parms,
                           Map<String, String> files) {
-        Response res = null;
+        Response res;
 
         Log.i(TAG, "Serve uri : " + uri);
-
-        for (Map.Entry<String, String> entry : header.entrySet())
-            Log.d(TAG, "Header : key=" + entry.getKey() + " value=" + entry.getValue());
-
-        for (Map.Entry<String, String> entry : parms.entrySet())
-            Log.d(TAG, "Params : key=" + entry.getKey() + " value=" + entry.getValue());
-
-        for (Map.Entry<String, String> entry : files.entrySet())
-            Log.d(TAG, "Files : key=" + entry.getKey() + " value=" + entry.getValue());
 
         try {
             try {

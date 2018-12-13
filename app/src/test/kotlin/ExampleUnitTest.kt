@@ -30,7 +30,7 @@ class ExampleUnitTest {
     @Test
     fun empty() {
         val observer: Observer<Set<DeviceDisplay>> = mock(Observer::class.java) as Observer<Set<DeviceDisplay>>
-        mainActivityViewModel.renderersObservable.observeForever(observer)
+        mainActivityViewModel.renderers.observeForever(observer)
         verifyNoMoreInteractions(managerDefault)
     }
 

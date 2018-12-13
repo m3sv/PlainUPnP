@@ -108,9 +108,9 @@
 
     <string name="dark_theme_key" translatable="false">dark_theme_enabled_key</string>
     <string name="enable_dark_theme">Enable dark theme</string>
-    <string name="share_images">Share images</string>
-    <string name="share_music">Share music</string>
-    <string name="share_videos">Share videos</string>
+    <string name="share_images">Enable images</string>
+    <string name="share_music">Enable music</string>
+    <string name="share_videos">Enable videos</string>
     <string name="app_url">placeholder</string>
 
     <string name="search">Search…</string>

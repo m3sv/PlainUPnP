@@ -17,6 +17,5 @@ class ExampleInstrumentedTest {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
 
-        assertEquals("com.m3sv.droidupnp", appContext.packageName)
     }
 }

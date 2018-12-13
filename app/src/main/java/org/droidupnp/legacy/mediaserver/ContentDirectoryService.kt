@@ -27,9 +27,9 @@ import android.content.Context
 import android.preference.PreferenceManager
 import android.text.TextUtils
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.common.CONTENT_DIRECTORY_AUDIO
-import com.m3sv.plainupnp.common.CONTENT_DIRECTORY_IMAGE
-import com.m3sv.plainupnp.common.CONTENT_DIRECTORY_VIDEO
+import com.m3sv.plainupnp.common.utils.CONTENT_DIRECTORY_AUDIO
+import com.m3sv.plainupnp.common.utils.CONTENT_DIRECTORY_IMAGE
+import com.m3sv.plainupnp.common.utils.CONTENT_DIRECTORY_VIDEO
 import com.m3sv.plainupnp.upnp.localcontent.*
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode

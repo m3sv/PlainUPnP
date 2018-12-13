@@ -1,5 +1,5 @@
 @file:JvmName("PrefUtils")
-package com.m3sv.plainupnp.common
+package com.m3sv.plainupnp.common.utils
 
 import android.content.Context
 import android.support.v7.preference.PreferenceManager

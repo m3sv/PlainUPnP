@@ -7,14 +7,13 @@ android {
     buildToolsVersion versions.buildTools
 
     defaultConfig {
-        applicationId "com.m3sv.droidupnp"
+        applicationId "com.m3sv.plainupnp"
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
 
-        versionCode 1
-        versionName "1.0"
+        versionCode 8
+        versionName "1.0.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     packagingOptions {
@@ -27,7 +26,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
@@ -52,14 +51,13 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     testImplementation 'junit:junit:4.12'
     testImplementation 'org.mockito:mockito-core:2.13.0'
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.2.10'
 
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation deps.support.appCompat
     implementation deps.support.v4
@@ -68,52 +66,39 @@ dependencies {
     implementation deps.support.cardView
     implementation deps.support.constraintLayout
     implementation deps.support.preferences
-
     implementation deps.architectureComponents.lifecycle
     implementation deps.architectureComponents.lifecycleReactiveStreams
-
     implementation deps.timber
     implementation deps.kotlin
-
     implementation deps.rx.kotlin
     implementation deps.rx.binding
     implementation deps.rx.android
     implementation deps.rx.relay
-
     implementation deps.okHttp.loggingInterceptor
-
     implementation deps.retrofit.core
     implementation deps.retrofit.rxAdapter
     implementation deps.retrofit.moshiConverter
-
     implementation deps.coroutines
-
     implementation(deps.glide.core) {
         exclude group: "com.android.support"
     }
     kapt deps.glide.compiler
-
     implementation deps.dagger.core
     compileOnly deps.dagger.annotation
     kapt deps.dagger.compiler
-
     implementation deps.dagger.android
     implementation deps.dagger.androidSupport
     kapt deps.dagger.androidProcessor
-
     // Cling
     implementation group: 'org.fourthline.cling', name: 'cling-core', version: versions.cling
     implementation group: 'org.fourthline.cling', name: 'cling-support', version: versions.cling
     implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: versions.jetty
     implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: versions.jetty
     implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: versions.jetty
-
-    implementation group: 'org.slf4j', name: 'slf4j-jdk14', version: '1.7.14'
-
+    implementation 'org.slf4j:slf4j-jdk14:1.7.14'
     implementation('de.psdev.licensesdialog:licensesdialog:1.8.1') {
         exclude module: 'support-v4'
     }
-
     implementation project(':common')
 }
 

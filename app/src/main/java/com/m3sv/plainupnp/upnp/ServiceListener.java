@@ -26,7 +26,7 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 
-import com.m3sv.plainupnp.common.Utils;
+import com.m3sv.plainupnp.common.utils.Utils;
 import com.m3sv.plainupnp.data.upnp.UpnpDevice;
 
 import org.droidupnp.legacy.cling.CDevice;
@@ -47,7 +47,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-import static com.m3sv.plainupnp.common.PrefUtils.CONTENT_DIRECTORY_SERVICE;
+import static com.m3sv.plainupnp.common.utils.PrefUtils.CONTENT_DIRECTORY_SERVICE;
 
 
 @SuppressWarnings("rawtypes")

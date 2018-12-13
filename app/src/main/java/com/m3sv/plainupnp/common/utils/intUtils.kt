@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.common
+package com.m3sv.plainupnp.common.utils
 
 import android.content.res.Resources
 

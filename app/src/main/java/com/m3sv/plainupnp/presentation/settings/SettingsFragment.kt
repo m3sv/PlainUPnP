@@ -14,7 +14,7 @@ import javax.inject.Inject
 class SettingsFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val darkThemeKey by lazy {
+    private val darkThemeKey by lazy(LazyThreadSafetyMode.NONE) {
         getString(R.string.dark_theme_key)
     }
 

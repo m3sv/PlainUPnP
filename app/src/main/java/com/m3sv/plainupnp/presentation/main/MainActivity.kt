@@ -12,6 +12,7 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.view.View
+import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.SeekBar
 import android.widget.Toast
@@ -38,14 +39,13 @@ class MainActivity : BaseActivity() {
 
     private lateinit var binding: MainActivityBinding
 
-    private lateinit var rendererAdapter: SimpleArrayAdapter<String>
+    private lateinit var rendererAdapter: SimpleArrayAdapter<DeviceDisplay>
 
-    private lateinit var contentDirectoryAdapter: SimpleArrayAdapter<String>
+    private lateinit var contentDirectoryAdapter: SimpleArrayAdapter<DeviceDisplay>
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
     private val contentDirectorySpinnerClickListener = object : AdapterView.OnItemSelectedListener {
-
         override fun onNothingSelected(parent: AdapterView<*>?) {
         }
 
@@ -57,7 +57,7 @@ class MainActivity : BaseActivity() {
         ) {
             with(viewModel) {
                 Timber.d("Selected item: $position")
-                selectContentDirectory(contentDirectoriesObservable.value?.toList()?.get(position)?.device)
+                selectContentDirectory(contentDirectoryAdapter.getItem(position).device)
             }
         }
     }
@@ -66,10 +66,15 @@ class MainActivity : BaseActivity() {
         override fun onNothingSelected(parent: AdapterView<*>?) {
         }
 
-        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        override fun onItemSelected(
+            parent: AdapterView<*>?,
+            view: View?,
+            position: Int,
+            id: Long
+        ) {
             with(viewModel) {
                 Timber.d("Selected renderer: $position")
-                selectRenderer(renderersObservable.value?.toList()?.get(position)?.device)
+                selectRenderer(rendererAdapter.getItem(position).device)
             }
         }
     }
@@ -84,7 +89,14 @@ class MainActivity : BaseActivity() {
     private fun handleContentDirectories(it: Set<DeviceDisplay>?) {
         it?.let {
             Timber.d("Received new set of content directories: ${it.size}")
-            contentDirectoryAdapter.setNewItems(it.asSequence().map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
+            contentDirectoryAdapter.setNewItems(it.toList())
+        }
+    }
+
+    private fun handleRenderers(it: Set<DeviceDisplay>?) {
+        it?.run {
+            Timber.d("Received new set of renderers: ${it.size}")
+            rendererAdapter.setNewItems(it.toList())
         }
     }
 
@@ -120,13 +132,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun handleRenderers(it: Set<DeviceDisplay>?) {
-        it?.run {
-            Timber.d("Received new set of renderers: ${it.size}")
-            rendererAdapter.setNewItems(it.asSequence().map { deviceDisplay -> deviceDisplay.device.displayString }.toList())
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
@@ -145,6 +150,7 @@ class MainActivity : BaseActivity() {
                 .beginTransaction()
                 .add(R.id.container, MainFragment.newInstance())
                 .commit()
+            viewModel.resumeUpnpController()
         }
 
         disposables += RxView.clicks(binding.controlsSheet.next).subscribeBy(onNext = {
@@ -156,13 +162,13 @@ class MainActivity : BaseActivity() {
         }, onError = Timber::e)
 
         with(viewModel) {
-            renderersObservable.observe(renderersObserver)
-            contentDirectoriesObservable.observe(contentDirectoriesObserver)
+            renderers.observe(renderersObserver)
+            contentDirectories.observe(contentDirectoriesObserver)
             rendererState.observe(rendererStateObserver)
             renderedItem.observe(renderedItemObserver)
         }
 
-        setupPickers()
+        initPickers()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (ContextCompat.checkSelfPermission(
@@ -198,7 +204,6 @@ class MainActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
         with(viewModel) {
-            resumeUpnpController()
             addObservers()
             resumeUpnp()
             resumeRendererUpdate()
@@ -250,7 +255,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun setupPickers() {
+    private fun initPickers() {
         with(binding.controlsSheet) {
             rendererAdapter = SimpleArrayAdapter(this@MainActivity)
             with(mainRendererDevicePicker) {
@@ -259,7 +264,6 @@ class MainActivity : BaseActivity() {
             }
 
             contentDirectoryAdapter = SimpleArrayAdapter(this@MainActivity)
-
             with(mainContentDevicePicker) {
                 adapter = contentDirectoryAdapter
                 onItemSelectedListener = contentDirectorySpinnerClickListener
@@ -283,29 +287,28 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_COLLAPSED) {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-            return
-        }
-
         if (supportFragmentManager.backStackEntryCount == 1) {
             binding.bottomNav.selectedItemId = R.id.nav_home
             return
         }
 
         if (supportFragmentManager.backStackEntryCount == 0 && viewModel.currentDirectory is Directory.Home) {
-            val currentTime = System.currentTimeMillis()
-
-            if (currentTime - lastBackClick < 500)
-                finish()
-
-            lastBackClick = currentTime
-            Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
+            doubleTapExit()
         } else if (viewModel.currentDirectory != null) {
             viewModel.browsePrevious()
         } else {
             finish()
         }
+    }
+
+    private fun doubleTapExit() {
+        val currentTime = System.currentTimeMillis()
+
+        if (currentTime - lastBackClick < 500)
+            finish()
+
+        lastBackClick = currentTime
+        Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
     }
 
     private var lastBackClick = System.currentTimeMillis()

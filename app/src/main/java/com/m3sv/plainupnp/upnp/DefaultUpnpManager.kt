@@ -76,9 +76,12 @@ class DefaultUpnpManager constructor(
     private val contentCallback: ContentCallback = { _contentData.postValue(it) }
 
     override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
-        Timber.d("Selected contentDirectory: ${contentDirectory?.displayString}")
+        Timber.d("Selected content directory: ${contentDirectory?.displayString}")
+
         val browseHome = controller.selectedContentDirectory != contentDirectory
+
         controller.selectedContentDirectory = contentDirectory
+
         if (browseHome)
             browseHome()
     }
