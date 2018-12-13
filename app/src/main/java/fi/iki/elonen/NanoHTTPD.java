@@ -1,5 +1,7 @@
 package fi.iki.elonen;
 
+import com.m3sv.plainupnp.common.CoroutinesExecutor;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.Closeable;
@@ -327,10 +329,11 @@ public abstract class NanoHTTPD {
         @Override
         public void exec(Runnable code) {
             ++requestCount;
-            Thread t = new Thread(code);
-            t.setDaemon(true);
-            t.setName("NanoHttpd Request Processor (#" + requestCount + ")");
-            t.start();
+            CoroutinesExecutor.launchInGlobalScope(code);
+//            Thread t = new Thread(code);
+//            t.setDaemon(true);
+//            t.setName("NanoHttpd Request Processor (#" + requestCount + ")");
+//            t.start();
         }
     }
 
