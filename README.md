@@ -1,4 +1,6 @@
-# PlainUPnP
+<p align="center"><img src="https://github.com/m3sv/PlainUPnP/raw/master/app/src/main/ic_launcher-web.png" width="150"></p> 
+
+<h2 align="center"><b>PlainUPnP</b></h2>
 
 PlainUPnP - intially DroidUPnP - is an UPnP control point application for android.
 
