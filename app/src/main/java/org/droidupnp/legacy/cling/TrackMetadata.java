@@ -21,8 +21,6 @@ import timber.log.Timber;
 
 public class TrackMetadata {
 
-    protected static final String TAG = "TrackMetadata";
-
     @Override
     public String toString() {
         return "TrackMetadata [id=" + id + ", title=" + title + ", artist=" + artist + ", genre=" + genre + ", artURI="
@@ -104,8 +102,8 @@ public class TrackMetadata {
             xmlreader.parse(new InputSource(new StringReader(xml)));
         } catch (Exception e) {
             Timber.e(e, e.getMessage());
-            Log.w(TAG, "Error while parsing metadata !");
-            Log.w(TAG, "XML : " + xml);
+            Timber.w("Error while parsing metadata !");
+            Timber.w("XML : " + xml);
         }
     }
 
@@ -181,7 +179,7 @@ public class TrackMetadata {
         }
 
         String xml = sw.toString();
-        Log.d(TAG, "TrackMetadata : " + xml);
+        Timber.d("TrackMetadata : " + xml);
 
         return xml;
     }

@@ -9,11 +9,12 @@ import java.util.concurrent.Executors
 
 class UpnpService : AndroidUpnpServiceImpl() {
 
+    private val executor = Executors.newFixedThreadPool(32)
+
     override fun createConfiguration(): AndroidUpnpServiceConfiguration =
         object : AndroidUpnpServiceConfiguration() {
             override fun getRegistryMaintenanceIntervalMillis(): Int = 7000
-            override fun getSyncProtocolExecutorService(): ExecutorService =
-                Executors.newFixedThreadPool(16)
+            override fun getSyncProtocolExecutorService(): ExecutorService = executor
         }
 
     override fun onUnbind(intent: Intent): Boolean {

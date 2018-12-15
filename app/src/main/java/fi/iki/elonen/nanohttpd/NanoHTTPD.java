@@ -1,4 +1,4 @@
-package fi.iki.elonen;
+package fi.iki.elonen.nanohttpd;
 
 
 import java.io.BufferedReader;
@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
+import fi.iki.elonen.CoroutineAsyncRunner;
 import timber.log.Timber;
 
 /**
@@ -269,22 +270,6 @@ public abstract class NanoHTTPD {
     }
 
     public abstract void restart();
-
-    /**
-     * HTTP Request methods, with the ability to decode a <code>String</code> back to its enum value.
-     */
-    public enum Method {
-        GET, PUT, POST, DELETE, HEAD;
-
-        static Method lookup(String method) {
-            for (Method m : Method.values()) {
-                if (m.toString().equalsIgnoreCase(method)) {
-                    return m;
-                }
-            }
-            return null;
-        }
-    }
 
     // ------------------------------------------------------------------------------- //
     //

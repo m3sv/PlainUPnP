@@ -106,7 +106,9 @@ class DefaultUpnpManager constructor(
     }
 
     private fun renderItem(item: RenderItem) {
+        rendererCommand?.commandStop()
         rendererCommand?.pause()
+
         next = item.position + 1
         previous = item.position - 1
 
@@ -153,12 +155,15 @@ class DefaultUpnpManager constructor(
         }
 
         _renderedItem.postValue(RenderedItem(item.item.uri, item.item.title, requestOptions))
-        rendererCommand = factory.createRendererCommand(upnpRendererState)?.also {
-            if (item.item !is ClingImageItem)
-                it.resume()
-            it.updateFull()
-            it.launchItem(item.item)
-        }
+
+        rendererCommand = factory
+            .createRendererCommand(upnpRendererState)
+            ?.also {
+                if (item.item !is ClingImageItem)
+                    it.resume()
+                it.updateFull()
+                it.launchItem(item.item)
+            }
     }
 
     override fun playNext() {

@@ -50,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import fi.iki.elonen.nanohttpd.Method;
 import timber.log.Timber;
 
 public class MediaServer extends fi.iki.elonen.SimpleWebServer {

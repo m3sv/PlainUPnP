@@ -306,6 +306,4 @@ public class UpnpRendererState extends Observable<UpnpRendererStateModel> {
             return getTrackMetadata().getArtist();
         }
     }
-
-
 }

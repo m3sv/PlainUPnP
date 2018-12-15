@@ -1,5 +1,7 @@
 package fi.iki.elonen
 
+import fi.iki.elonen.nanohttpd.Method
+import fi.iki.elonen.nanohttpd.NanoHTTPD
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream
@@ -312,7 +314,7 @@ open class SimpleWebServer(
 
     override fun serve(
         uri: String,
-        method: NanoHTTPD.Method,
+        method: Method,
         header: Map<String, String>,
         parms: Map<String, String>,
         files: Map<String, String>
