@@ -11,8 +11,8 @@ android {
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
 
-        versionCode 8
-        versionName "1.0.3"
+        versionCode 11
+        versionName "1.0.6"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -32,6 +32,8 @@ android {
 
         debug {
             applicationIdSuffix ".debug"
+//            minifyEnabled true
+//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -89,6 +91,7 @@ dependencies {
     implementation deps.dagger.android
     implementation deps.dagger.androidSupport
     kapt deps.dagger.androidProcessor
+
     // Cling
     implementation group: 'org.fourthline.cling', name: 'cling-core', version: versions.cling
     implementation group: 'org.fourthline.cling', name: 'cling-support', version: versions.cling
@@ -96,16 +99,15 @@ dependencies {
     implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: versions.jetty
     implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: versions.jetty
     implementation 'org.slf4j:slf4j-jdk14:1.7.14'
-    implementation('de.psdev.licensesdialog:licensesdialog:1.8.1') {
-        exclude module: 'support-v4'
-    }
+
+    implementation 'com.google.firebase:firebase-core:16.0.6'
+
     implementation project(':common')
 }
 
 kapt {
     generateStubs = true
 }
-
 
 File propFile = file('signing.properties')
 if (propFile.exists()) {
@@ -124,3 +126,5 @@ if (propFile.exists()) {
 } else {
     android.buildTypes.release.signingConfig = null
 }
+
+apply plugin: 'com.google.gms.google-services'

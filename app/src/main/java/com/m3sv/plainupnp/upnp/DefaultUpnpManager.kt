@@ -3,6 +3,8 @@ package com.m3sv.plainupnp.upnp
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.bumptech.glide.request.RequestOptions
+import com.jakewharton.rxrelay2.PublishRelay
+import com.jakewharton.rxrelay2.Relay
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.Event
 import com.m3sv.plainupnp.common.RxBus
@@ -19,6 +21,7 @@ import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import org.droidupnp.legacy.upnp.Factory
 import timber.log.Timber
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -96,15 +99,16 @@ class DefaultUpnpManager constructor(
     private var next: Int = -1
     private var previous: Int = -1
 
-    override fun renderItem(item: DIDLItem, position: Int) {
-        if (item is ClingVideoItem) {
-            RxBus.publish(Event.GetMovieSuggestionsEvent(item.title))
-        }
+    override val renderItemRelay: Relay<RenderItem> = PublishRelay.create()
 
+    init {
+        renderItemRelay.throttleFirst(1, TimeUnit.SECONDS).subscribe(::renderItem, Timber::e)
+    }
+
+    private fun renderItem(item: RenderItem) {
         rendererCommand?.pause()
-
-        next = position + 1
-        previous = position - 1
+        next = item.position + 1
+        previous = item.position - 1
 
         upnpRenderStateDisposable?.takeIf { !it.isDisposed }?.dispose()
         upnpRendererState = factory.createRendererState()
@@ -132,7 +136,7 @@ class DefaultUpnpManager constructor(
             }, onError = Timber::e)
         }
 
-        val requestOptions = when (item) {
+        val requestOptions = when (item.item) {
             is ClingImageItem -> {
                 RequestOptions()
             }
@@ -148,24 +152,24 @@ class DefaultUpnpManager constructor(
             else -> RequestOptions()
         }
 
-        _renderedItem.postValue(RenderedItem(item.uri, item.title, requestOptions))
+        _renderedItem.postValue(RenderedItem(item.item.uri, item.item.title, requestOptions))
         rendererCommand = factory.createRendererCommand(upnpRendererState)?.also {
-            if (item !is ClingImageItem)
+            if (item.item !is ClingImageItem)
                 it.resume()
             it.updateFull()
-            it.launchItem(item)
+            it.launchItem(item.item)
         }
     }
 
     override fun playNext() {
         _contentData.value?.takeIf { it.size > next && next != -1 }?.let {
-            renderItem(it[next].didlObject as DIDLItem, next)
+            renderItem(RenderItem(it[next].didlObject as DIDLItem, next))
         }
     }
 
     override fun playPrevious() {
         _contentData.value?.takeIf { previous >= 0 && previous < it.size }?.let {
-            renderItem(it[previous].didlObject as DIDLItem, previous)
+            renderItem(RenderItem(it[previous].didlObject as DIDLItem, previous))
         }
     }
 

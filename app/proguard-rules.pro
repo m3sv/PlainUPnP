@@ -26,12 +26,11 @@
 -dontwarn android.support.design.widget.**
 
 -keep class javax.** { *; }
--keep class org.** { *; }
 -keep class org.fourthline.cling.** { *;}
 -keep class org.seamless.** { *;}
 -keep class org.eclipse.jetty.** { *;}
 -keep class org.slf4j.** { *;}
--keep class javax.servlet.** { *;}
+-keep class javax.servlet.** { *; }
 
 -dontwarn com.google.errorprone.annotations.*
 
@@ -58,7 +57,6 @@
 
 # Top-level functions that can only be used by Kotlin.
 -dontwarn retrofit2.-KotlinExtensions
-
 
 # JSR 305 annotations are for embedding nullability information.
 -dontwarn javax.annotation.**

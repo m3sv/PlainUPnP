@@ -1,6 +1,5 @@
 package fi.iki.elonen;
 
-import com.m3sv.plainupnp.common.CoroutinesExecutor;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -115,7 +114,7 @@ public abstract class NanoHTTPD {
         this.hostname = hostname;
         this.myPort = port;
         setTempFileManagerFactory(new DefaultTempFileManagerFactory());
-        setAsyncRunner(new DefaultAsyncRunner());
+        setAsyncRunner(new CoroutineAsyncRunner());
     }
 
     /**
@@ -141,9 +140,7 @@ public abstract class NanoHTTPD {
                                 outputStream = finalAccept.getOutputStream();
                                 TempFileManager tempFileManager = tempFileManagerFactory.create();
                                 HTTPSession session = new HTTPSession(tempFileManager, inputStream, outputStream);
-                                while (!finalAccept.isClosed()) {
-                                    session.execute();
-                                }
+                                session.execute();
                             } catch (IOException e) {
                                 Timber.e(e, "Exception while executing request!");
                             } finally {
@@ -314,27 +311,6 @@ public abstract class NanoHTTPD {
      */
     public interface AsyncRunner {
         void exec(Runnable code);
-    }
-
-    /**
-     * Default threading strategy for NanoHttpd.
-     * <p>
-     * <p>By default, the server spawns a new Thread for every incoming request.  These are set
-     * to <i>daemon</i> status, and named according to the request number.  The name is
-     * useful when profiling the application.</p>
-     */
-    public static class DefaultAsyncRunner implements AsyncRunner {
-        private long requestCount;
-
-        @Override
-        public void exec(Runnable code) {
-            ++requestCount;
-            CoroutinesExecutor.launchInGlobalScope(code);
-//            Thread t = new Thread(code);
-//            t.setDaemon(true);
-//            t.setName("NanoHttpd Request Processor (#" + requestCount + ")");
-//            t.start();
-        }
     }
 
     // ------------------------------------------------------------------------------- //

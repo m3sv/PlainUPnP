@@ -18,6 +18,7 @@ import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.presentation.main.data.toItems
+import com.m3sv.plainupnp.upnp.RenderItem
 import timber.log.Timber
 
 
@@ -61,7 +62,7 @@ class MainFragment : BaseFragment() {
             }
 
             override fun onItemClick(item: DIDLItem, position: Int) {
-                viewModel.renderItem(item, position)
+                viewModel.renderItemRelay.accept(RenderItem(item, position))
             }
         })
 

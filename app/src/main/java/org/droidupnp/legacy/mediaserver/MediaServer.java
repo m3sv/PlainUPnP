@@ -63,6 +63,9 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
     private static final int PORT = 8192;
     private static InetAddress localAddress;
 
+
+    private final String version;
+
     public MediaServer(InetAddress localAddress, Context ctx) throws ValidationException {
         super(null, PORT, null, true);
 
@@ -77,6 +80,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
         udn = UDN.valueOf(new UUID(0, 10).toString());
         MediaServer.localAddress = localAddress;
         this.ctx = ctx;
+        version = getApplicationVersion("1.0");
         createLocalDevice();
 
         ContentDirectoryService contentDirectoryService = (ContentDirectoryService) localService.getManager().getImplementation();
@@ -85,8 +89,6 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
     }
 
     public void createLocalDevice() throws ValidationException {
-        String version = getApplicationVersion("1.0");
-
         DeviceDetails details = new DeviceDetails(
                 PrefUtils.getSettingContentDirectoryName(ctx),
                 new ManufacturerDetails(ctx.getString(R.string.app_name), ctx.getString(R.string.app_url)),
@@ -187,8 +189,12 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
         throw new InvalidIdentificatorException(id + " was not found in media database");
     }
 
+
     @Override
-    public Response serve(String uri, Method method, Map<String, String> header, Map<String, String> parms,
+    public Response serve(String uri,
+                          Method method,
+                          Map<String, String> header,
+                          Map<String, String> parms,
                           Map<String, String> files) {
         Response res;
 
@@ -205,8 +211,6 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
             }
 
             if (res != null) {
-                String version = getApplicationVersion("1.0");
-
                 // Some DLNA header option
                 res.addHeader("realTimeInfo.dlna.org", "DLNA.ORG_TLAG=*");
                 res.addHeader("contentFeatures.dlna.org", "");

@@ -8,9 +8,7 @@ import com.m3sv.plainupnp.upnp.UpnpManager
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
-import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainActivityViewModel @Inject constructor(
@@ -29,27 +27,20 @@ class MainActivityViewModel @Inject constructor(
         { Timber.e("Exception during discovery: ${it.message}") }
 
     init {
-        disposables += selectedDirectoryObservable
-            .subscribeBy(
-                onNext = {
-                    currentDirectory = it
-                }, onError = Timber::e
-            )
+        disposables += selectedDirectoryObservable.subscribeBy(
+            onNext = { currentDirectory = it },
+            onError = Timber::e
+        )
 
-        discoveryDisposable += rendererDiscoveryObservable
-            .subscribeOn(Schedulers.io())
-            .debounce(1000, TimeUnit.MILLISECONDS)
-            .subscribeBy(
-                onNext = renderers::postValue,
-                onError = errorHandler
-            )
+        discoveryDisposable += rendererDiscoveryObservable.subscribeBy(
+            onNext = renderers::postValue,
+            onError = errorHandler
+        )
 
-        discoveryDisposable += contentDirectoryDiscoveryObservable
-            .subscribeOn(Schedulers.io())
-            .debounce(1000, TimeUnit.MILLISECONDS)
-            .subscribeBy(
-                onNext = contentDirectories::postValue, onError = errorHandler
-            )
+        discoveryDisposable += contentDirectoryDiscoveryObservable.subscribeBy(
+            onNext = contentDirectories::postValue,
+            onError = errorHandler
+        )
     }
 
     fun resumeUpnp() {

@@ -8,13 +8,13 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ItemsDiffCallback
+import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.GalleryContentFolderItemBinding
 import com.m3sv.plainupnp.databinding.GalleryContentItemBinding
 import com.m3sv.plainupnp.presentation.base.BaseAdapter
 import com.m3sv.plainupnp.presentation.base.BaseViewHolder
 import com.m3sv.plainupnp.presentation.main.data.ContentType
 import com.m3sv.plainupnp.presentation.main.data.Item
-import com.m3sv.plainupnp.data.upnp.DIDLItem
 
 
 interface OnItemClickListener {
@@ -55,30 +55,38 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         val itemClickListener = View.OnClickListener {
             holder.adapterPosition.takeIf { it >= 0 }?.let { adapterPosition ->
                 item.didlObjectDisplay?.get(adapterPosition)?.let {
-                    onItemClickListener.onItemClick(it.didlObject as DIDLItem, holder.adapterPosition)
+                    onItemClickListener.onItemClick(
+                        it.didlObject as DIDLItem,
+                        holder.adapterPosition
+                    )
                 }
             }
         }
 
         when (item.type) {
-            ContentType.IMAGE -> {
-                loadData(holder, item, R.drawable.ic_image, itemClickListener, RequestOptions())
-            }
-            ContentType.VIDEO -> {
-                loadData(holder, item, R.drawable.ic_video, itemClickListener, RequestOptions())
-            }
-            ContentType.AUDIO -> {
-                loadData(
-                    holder,
-                    item,
-                    R.drawable.ic_music,
-                    itemClickListener,
-                    RequestOptions().placeholder(R.drawable.ic_music_note)
-                )
-            }
-            ContentType.DIRECTORY -> {
-                loadDirectory(holder, item)
-            }
+            ContentType.IMAGE -> loadData(
+                holder,
+                item,
+                R.drawable.ic_image,
+                itemClickListener,
+                RequestOptions()
+            )
+            ContentType.VIDEO -> loadData(
+                holder,
+                item,
+                R.drawable.ic_video,
+                itemClickListener,
+                RequestOptions()
+            )
+            ContentType.AUDIO -> loadData(
+                holder,
+                item,
+                R.drawable.ic_music,
+                itemClickListener,
+                RequestOptions().placeholder(R.drawable.ic_music_note)
+            )
+
+            ContentType.DIRECTORY -> loadDirectory(holder, item)
         }
     }
 
@@ -90,7 +98,12 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         requestOptions: RequestOptions
     ) {
         with((holder as BaseViewHolder<GalleryContentItemBinding>).binding) {
-            Glide.with(holder.itemView.context).load(item.uri).apply(requestOptions).into(thumbnail)
+            Glide.with(holder.itemView)
+                .load(item.uri)
+                .thumbnail(0.25f)
+                .apply(requestOptions)
+                .into(thumbnail)
+
             title.text = item.name
             title.setOnClickListener(onClick)
             thumbnail.setOnClickListener(onClick)

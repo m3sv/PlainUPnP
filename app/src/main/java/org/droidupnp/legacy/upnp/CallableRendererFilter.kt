@@ -4,11 +4,7 @@ import com.m3sv.plainupnp.data.upnp.UpnpDevice
 
 class CallableRendererFilter : CallableFilter {
 
-    private var device: UpnpDevice? = null
-
-    override fun setDevice(device: UpnpDevice) {
-        this.device = device
-    }
+    override var device: UpnpDevice? = null
 
     override fun call(): Boolean = device?.asService("RenderingControl") ?: false
 }

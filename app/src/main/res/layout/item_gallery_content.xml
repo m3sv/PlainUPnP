@@ -12,7 +12,7 @@
 
         <ImageView
             android:id="@+id/thumbnail"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="120dp"
             android:adjustViewBounds="true"
             android:scaleType="fitCenter"
@@ -48,7 +48,7 @@
             android:gravity="top"
             android:includeFontPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/thumbnail"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/thumbnail"
             app:layout_constraintVertical_bias="0.0"

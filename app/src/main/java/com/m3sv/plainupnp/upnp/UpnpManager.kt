@@ -1,6 +1,7 @@
 package com.m3sv.plainupnp.upnp
 
 import android.arch.lifecycle.LiveData
+import com.jakewharton.rxrelay2.Relay
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
@@ -21,6 +22,8 @@ interface UpnpManager {
 
     val currentContentDirectory: UpnpDevice?
 
+    val renderItemRelay: Relay<RenderItem>
+
     fun addObservers()
 
     fun removeObservers()
@@ -28,8 +31,6 @@ interface UpnpManager {
     fun selectContentDirectory(contentDirectory: UpnpDevice?)
 
     fun selectRenderer(renderer: UpnpDevice?)
-
-    fun renderItem(item: DIDLItem, position: Int)
 
     fun resumeUpnpController()
 
@@ -57,3 +58,5 @@ interface UpnpManager {
 
     fun moveTo(progress: Int, max: Int)
 }
+
+data class RenderItem(val item: DIDLItem, val position: Int)
