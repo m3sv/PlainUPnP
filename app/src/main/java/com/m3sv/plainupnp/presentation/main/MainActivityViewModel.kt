@@ -32,12 +32,12 @@ class MainActivityViewModel @Inject constructor(
             onError = Timber::e
         )
 
-        discoveryDisposable += rendererDiscoveryObservable.subscribeBy(
+        discoveryDisposable += rendererDiscovery.subscribeBy(
             onNext = renderers::postValue,
             onError = errorHandler
         )
 
-        discoveryDisposable += contentDirectoryDiscoveryObservable.subscribeBy(
+        discoveryDisposable += contentDirectoryDiscovery.subscribeBy(
             onNext = contentDirectories::postValue,
             onError = errorHandler
         )

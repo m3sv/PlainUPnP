@@ -331,9 +331,12 @@ class RendererCommand(
                 updateMute()
             }
 
+            if (counter % 6 == 0) {
+                updateMediaInfo()
+            }
+
             updatePositionInfo()
             updateTransportInfo()
-            updateMediaInfo()
 
             counter++
             delay(1000)

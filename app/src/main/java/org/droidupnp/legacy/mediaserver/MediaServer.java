@@ -25,6 +25,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import com.m3sv.plainupnp.R;
@@ -192,11 +193,11 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
 
 
     @Override
-    public Response serve(String uri,
-                          Method method,
-                          Map<String, String> header,
-                          Map<String, String> parms,
-                          Map<String, String> files) {
+    public Response serve(@NonNull String uri,
+                          @NonNull Method method,
+                          @NonNull Map<String, String> header,
+                          @NonNull Map<String, String> parms,
+                          @NonNull Map<String, String> files) {
         Response res;
 
         Log.i(TAG, "Serve uri : " + uri);

@@ -8,9 +8,9 @@ import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
 import io.reactivex.Observable
 
 interface UpnpManager {
-    val rendererDiscoveryObservable: RendererDiscoveryObservable
+    val rendererDiscovery: RendererDiscoveryObservable
 
-    val contentDirectoryDiscoveryObservable: ContentDirectoryDiscoveryObservable
+    val contentDirectoryDiscovery: ContentDirectoryDiscoveryObservable
 
     val selectedDirectoryObservable: Observable<Directory>
 

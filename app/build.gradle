@@ -11,8 +11,8 @@ android {
         minSdkVersion versions.minSdk
         targetSdkVersion versions.targetSdk
 
-        versionCode 12
-        versionName "1.0.7"
+        versionCode 13
+        versionName "1.0.8"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -32,8 +32,8 @@ android {
 
         debug {
             applicationIdSuffix ".debug"
-//            minifyEnabled true
-//            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 

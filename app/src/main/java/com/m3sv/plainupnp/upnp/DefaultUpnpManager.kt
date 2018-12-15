@@ -34,16 +34,9 @@ class DefaultUpnpManager constructor(
     val factory: Factory
 ) : Observer, UpnpManager {
 
-    override val rendererDiscoveryObservable =
-        RendererDiscoveryObservable(controller.rendererDiscovery)
+    private var upnpRendererState: org.droidupnp.legacy.cling.UpnpRendererState? = null
 
-    override val contentDirectoryDiscoveryObservable =
-        ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
-
-    private val selectedDirectory = PublishSubject.create<Directory>()
-
-    override val selectedDirectoryObservable: io.reactivex.Observable<Directory>
-        get() = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    private var upnpRenderStateDisposable: Disposable? = null
 
     private var rendererCommand: RendererCommand? = null
 
@@ -54,29 +47,25 @@ class DefaultUpnpManager constructor(
 
     private val _renderedItem: MutableLiveData<RenderedItem> = MutableLiveData()
 
-    private var upnpRendererState: org.droidupnp.legacy.cling.UpnpRendererState? = null
-
-    private var upnpRenderStateDisposable: Disposable? = null
-
     override val renderedItem: LiveData<RenderedItem>
         get() = _renderedItem
 
     override val currentContentDirectory: UpnpDevice?
         get() = controller.selectedContentDirectory
 
-    override fun addObservers() = controller.run {
-        addSelectedContentDirectoryObserver(this@DefaultUpnpManager)
-    }
-
-    override fun removeObservers() = controller.run {
-        delSelectedContentDirectoryObserver(this@DefaultUpnpManager)
-    }
-
     private val _contentData = MutableLiveData<List<DIDLObjectDisplay>>()
 
     override val contentData: LiveData<List<DIDLObjectDisplay>> = _contentData
 
-    private val contentCallback: ContentCallback = { _contentData.postValue(it) }
+    override val rendererDiscovery = RendererDiscoveryObservable(controller.rendererDiscovery)
+
+    override val contentDirectoryDiscovery =
+        ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
+
+    private val selectedDirectory = PublishSubject.create<Directory>()
+
+    override val selectedDirectoryObservable: io.reactivex.Observable<Directory>
+        get() = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
         Timber.d("Selected content directory: ${contentDirectory?.displayString}")
@@ -102,7 +91,7 @@ class DefaultUpnpManager constructor(
     override val renderItemRelay: Relay<RenderItem> = PublishRelay.create()
 
     init {
-        renderItemRelay.throttleFirst(1, TimeUnit.SECONDS).subscribe(::renderItem, Timber::e)
+        renderItemRelay.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::renderItem, Timber::e)
     }
 
     private fun renderItem(item: RenderItem) {
@@ -202,7 +191,7 @@ class DefaultUpnpManager constructor(
 
     override fun browseTo(id: String, parentId: String?, addToStructure: Boolean) {
         Timber.d("Browse: $id")
-        factory.createContentDirectoryCommand()?.browse(id, null, contentCallback)
+        factory.createContentDirectoryCommand()?.browse(id, null, _contentData::postValue)
         when (id) {
             "0" -> {
                 selectedDirectory.onNext(Directory.Home)
@@ -266,5 +255,13 @@ class DefaultUpnpManager constructor(
     override fun pauseUpnpController() {
         Timber.d("Pause UPnP controller")
         controller.pause()
+    }
+
+    override fun addObservers() = controller.run {
+        addSelectedContentDirectoryObserver(this@DefaultUpnpManager)
+    }
+
+    override fun removeObservers() = controller.run {
+        delSelectedContentDirectoryObserver(this@DefaultUpnpManager)
     }
 }

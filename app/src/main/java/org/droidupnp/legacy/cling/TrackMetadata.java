@@ -1,6 +1,5 @@
 package org.droidupnp.legacy.cling;
 
-import android.util.Log;
 import android.util.Xml;
 
 import org.xml.sax.Attributes;
@@ -21,22 +20,35 @@ import timber.log.Timber;
 
 public class TrackMetadata {
 
-    @Override
-    public String toString() {
-        return "TrackMetadata [id=" + id + ", title=" + title + ", artist=" + artist + ", genre=" + genre + ", artURI="
-                + artURI + "res=" + res + ", itemClass=" + itemClass + "]";
+    private String id;
+    private String title;
+    private String artist;
+    private String genre;
+    private String artURI;
+    private String res;
+    private String itemClass;
+
+    private XMLReader xmlreader;
+    private final UpnpItemHandler upnpItemHandler;
+
+    public TrackMetadata() {
+        super();
+        upnpItemHandler = new UpnpItemHandler();
+        try {
+            xmlreader = initializeReader();
+        } catch (ParserConfigurationException | SAXException e) {
+            Timber.e(e);
+        }
     }
 
     public TrackMetadata(String xml) {
+        this();
         parseTrackMetadata(xml);
-    }
-
-    public TrackMetadata() {
     }
 
     public TrackMetadata(String id, String title, String artist, String genre, String artURI, String res,
                          String itemClass) {
-        super();
+        this();
         this.id = id;
         this.title = title;
         this.artist = artist;
@@ -46,40 +58,12 @@ public class TrackMetadata {
         this.itemClass = itemClass;
     }
 
-    private String id;
-    private String title;
-    private String artist;
-    private String genre;
-    private String artURI;
-    private String res;
-    private String itemClass;
-
-    public String getId() {
-        return id;
-    }
-
     public String getTitle() {
         return title;
     }
 
     public String getArtist() {
         return artist;
-    }
-
-    public String getGenre() {
-        return genre;
-    }
-
-    public String getArtURI() {
-        return artURI;
-    }
-
-    public String getRes() {
-        return res;
-    }
-
-    public String getItemClass() {
-        return itemClass;
     }
 
     private XMLReader initializeReader() throws ParserConfigurationException, SAXException {
@@ -91,13 +75,10 @@ public class TrackMetadata {
     public void parseTrackMetadata(String xml) {
         Timber.d("XML: %s", xml);
 
-        if (xml == null || xml.equals("NOT_IMPLEMENTED"))
+        if (xml == null || xml.equals("NOT_IMPLEMENTED") || xmlreader == null)
             return;
 
         try {
-            XMLReader xmlreader = initializeReader();
-            UpnpItemHandler upnpItemHandler = new UpnpItemHandler();
-
             xmlreader.setContentHandler(upnpItemHandler);
             xmlreader.parse(new InputSource(new StringReader(xml)));
         } catch (Exception e) {

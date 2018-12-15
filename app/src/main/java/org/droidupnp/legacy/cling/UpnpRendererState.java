@@ -127,18 +127,17 @@ public class UpnpRendererState extends Observable<UpnpRendererStateModel> {
         private void updateState() {
             Timber.d("Update renderer state");
             if (!isDisposed())
-                observer.onNext(
-                        new UpnpRendererStateModel(state,
-                                getRemainingDuration(),
-                                getPosition(),
-                                getElapsedPercent(),
-                                getTitle(),
-                                getArtist(),
-                                volume,
-                                mute,
-                                positionInfo,
-                                mediaInfo,
-                                transportInfo));
+                observer.onNext(new UpnpRendererStateModel(state,
+                        getRemainingDuration(),
+                        getPosition(),
+                        getElapsedPercent(),
+                        getTitle(),
+                        getArtist(),
+                        volume,
+                        mute,
+                        positionInfo,
+                        mediaInfo,
+                        transportInfo));
         }
 
         @Override
@@ -287,8 +286,7 @@ public class UpnpRendererState extends Observable<UpnpRendererStateModel> {
         @Override
         public String toString() {
             return "UpnpRendererState [state=" + state + ", volume=" + volume + ", repeatMode=" + repeatMode + ", randomMode="
-                    + randomMode + ", positionInfo=" + positionInfo + ", mediaInfo=" + mediaInfo + ", trackMetadata="
-                    + new TrackMetadata(positionInfo.getTrackMetaData()) + "]";
+                    + randomMode + ", positionInfo=" + positionInfo + ", mediaInfo=" + mediaInfo + "]";
         }
 
         @Override
