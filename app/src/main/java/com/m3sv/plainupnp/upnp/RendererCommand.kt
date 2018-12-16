@@ -62,12 +62,12 @@ class RendererCommand(
         getAVTransportService()?.let {
             controlPoint.execute(object : Play(it) {
                 override fun success(invocation: ActionInvocation<*>?) {
-                    Timber.v("Success playing ! ")
+                    Timber.v("Success playing")
                     // TODO update player state
                 }
 
                 override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to play ! $arg2")
+                    Timber.w("Failed to play $arg2")
                 }
             })
         }

@@ -34,7 +34,7 @@ interface Factory {
 
     fun createUpnpServiceController(ctx: Context): UpnpServiceController
 
-    fun createRendererState(): UpnpRendererState?
+    fun createRendererState(): UpnpRendererState
 
     fun createRendererCommand(rendererState: UpnpRendererState?): RendererCommand?
 }

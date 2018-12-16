@@ -6,18 +6,15 @@ import com.bumptech.glide.request.RequestOptions
 import com.jakewharton.rxrelay2.PublishRelay
 import com.jakewharton.rxrelay2.Relay
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.common.Event
-import com.m3sv.plainupnp.common.RxBus
 import com.m3sv.plainupnp.data.upnp.*
+import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
+import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
-import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
-import com.m3sv.plainupnp.upnp.didl.ClingImageItem
-import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import org.droidupnp.legacy.upnp.Factory
 import timber.log.Timber
 import java.util.*
@@ -101,11 +98,8 @@ class DefaultUpnpManager constructor(
         next = item.position + 1
         previous = item.position - 1
 
-        upnpRenderStateDisposable?.takeIf { !it.isDisposed }?.dispose()
-        upnpRendererState = factory.createRendererState()
-
-        upnpRenderStateDisposable = upnpRendererState?.let { rendererState ->
-            rendererState.subscribeBy(onNext = {
+        upnpRendererState = factory.createRendererState().also {
+            it.subscribeBy(onNext = {
                 val durationRemaining = it.remainingDuration
                 val durationElapse = it.elapsedDuration
                 val progress = it.progress
@@ -128,18 +122,7 @@ class DefaultUpnpManager constructor(
         }
 
         val requestOptions = when (item.item) {
-            is ClingImageItem -> {
-                RequestOptions()
-            }
-
-            is ClingVideoItem -> {
-                RequestOptions()
-            }
-
-            is ClingAudioItem -> {
-                RequestOptions().placeholder(R.drawable.ic_music_note)
-            }
-
+            is ClingAudioItem -> RequestOptions().placeholder(R.drawable.ic_music_note)
             else -> RequestOptions()
         }
 

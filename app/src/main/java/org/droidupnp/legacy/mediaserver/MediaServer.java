@@ -47,6 +47,7 @@ import org.fourthline.cling.model.types.UDN;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -65,6 +66,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
     private static final int PORT = 8192;
     private static InetAddress localAddress;
 
+    private Map<String, ServerObject> objectMap;
 
     private final String version;
 
@@ -88,6 +90,8 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
         ContentDirectoryService contentDirectoryService = (ContentDirectoryService) localService.getManager().getImplementation();
         contentDirectoryService.setContext(ctx);
         contentDirectoryService.setBaseURL(getAddress());
+
+        objectMap = new HashMap<>();
     }
 
     public void createLocalDevice() throws ValidationException {
@@ -107,7 +111,6 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
 
         localDevice = new LocalDevice(new DeviceIdentity(udn), type, details, localService);
     }
-
 
     public LocalDevice getDevice() {
         return localDevice;
@@ -137,7 +140,12 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
         private String mime;
     }
 
+
     private ServerObject getFileServerObject(String id) throws InvalidIdentificatorException {
+        if (objectMap.get(id) != null) {
+            return objectMap.get(id);
+        }
+
         try {
             // Remove extension
             int dot = id.lastIndexOf('.');
@@ -181,8 +189,11 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
                     cursor.close();
                 }
 
-                if (path != null)
-                    return new ServerObject(path, mime);
+                if (path != null) {
+                    ServerObject result = new ServerObject(path, mime);
+                    objectMap.put(id, result);
+                    return result;
+                }
             }
         } catch (Exception e) {
             Timber.e(e, "Error while parsing " + id);
@@ -200,7 +211,7 @@ public class MediaServer extends fi.iki.elonen.SimpleWebServer {
                           @NonNull Map<String, String> files) {
         Response res;
 
-        Log.i(TAG, "Serve uri : " + uri);
+        Log.i(TAG, "Serve uri: " + uri);
 
         try {
             try {

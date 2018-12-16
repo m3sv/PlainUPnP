@@ -47,7 +47,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     lateinit var context: Context
 
-    var baseURL: String? = null
+    lateinit var baseURL: String
 
     @Throws(ContentDirectoryException::class)
     override fun browse(
@@ -87,7 +87,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             val appName = context.getString(R.string.app_name)
             val rootContainer = BaseContainer(
                 "" + ROOT_ID, "" + ROOT_ID,
-                appName, appName, baseURL!!
+                appName, appName, baseURL
             )
 
             // Video
@@ -97,7 +97,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_VIDEO, true)) {
                 videoContainer = BaseContainer(
                     "" + VIDEO_ID, "" + ROOT_ID,
-                    VIDEO_TXT, appName, baseURL!!
+                    VIDEO_TXT, appName, baseURL
                 )
 
                 with(rootContainer) {
@@ -125,7 +125,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_AUDIO, true)) {
                 audioContainer = BaseContainer(
                     "" + AUDIO_ID, "" + ROOT_ID,
-                    AUDIO_TXT, appName, baseURL!!
+                    AUDIO_TXT, appName, baseURL
                 )
 
                 with(rootContainer) {
@@ -166,7 +166,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)) {
                 imageContainer = BaseContainer(
                     "" + IMAGE_ID, "" + ROOT_ID, IMAGE_TXT,
-                    appName, baseURL!!
+                    appName, baseURL
                 )
                 rootContainer.addContainer(imageContainer)
                 rootContainer.childCount = rootContainer.childCount + 1
@@ -305,5 +305,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         const val AUDIO_PREFIX = "a-"
         const val IMAGE_PREFIX = "i-"
         const val DIRECTORY_PREFIX = "d-"
+
+        fun isRoot(parentId: String?) = parentId?.compareTo(ContentDirectoryService.ROOT_ID.toString()) == 0
     }
 }

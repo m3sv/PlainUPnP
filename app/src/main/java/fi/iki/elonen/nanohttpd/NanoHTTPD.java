@@ -152,6 +152,7 @@ public abstract class NanoHTTPD {
                         });
                     }
                 } catch (IOException e) {
+                    Timber.e(e);
                 }
             } while (!myServerSocket.isClosed());
         });
@@ -635,6 +636,8 @@ public abstract class NanoHTTPD {
         }
 
         public void execute() throws IOException {
+            Timber.d("Execute is called");
+
             try {
                 // Read the first 8192 bytes.
                 // The full header should fit in here.
