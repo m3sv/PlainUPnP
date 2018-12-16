@@ -33,7 +33,7 @@ open class BaseContainer(
     parentID: String?,
     title: String?,
     creator: String?,
-    val baseURL: String?
+    val baseURL: String
 ) : Container(
     if (ContentDirectoryService.isRoot(parentID)) id else parentID + ContentDirectoryService.SEPARATOR + id,
     parentID,

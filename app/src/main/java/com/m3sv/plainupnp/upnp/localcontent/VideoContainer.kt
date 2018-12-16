@@ -24,27 +24,33 @@
 package com.m3sv.plainupnp.upnp.localcontent
 
 import android.content.Context
-import android.net.Uri
 import android.provider.MediaStore
 import org.droidupnp.legacy.mediaserver.ContentDirectoryService
 import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
-import org.fourthline.cling.support.model.item.ImageItem
+import org.fourthline.cling.support.model.item.VideoItem
 import org.seamless.util.MimeType
 import timber.log.Timber
 
-class ImageContainer(
+class VideoContainer(
     id: String,
-    parentID: String?,
-    title: String?,
-    creator: String?,
+    parentID: String,
+    title: String,
+    creator: String,
     baseURL: String,
-    context: Context,
-    uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-) : DynamicContainer(id, parentID, title, creator, baseURL, context, uri) {
+    ctx: Context
+) : DynamicContainer(
+    id,
+    parentID,
+    title,
+    creator,
+    baseURL,
+    ctx,
+    MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+) {
 
     override fun getChildCount(): Int? {
-        val columns = arrayOf(MediaStore.Images.Media._ID)
+        val columns = arrayOf(MediaStore.Video.Media._ID)
         val cursor = ctx.contentResolver.query(uri, columns, where, whereVal, orderBy) ?: return 0
         val result = cursor.count
         cursor.close()
@@ -53,11 +59,13 @@ class ImageContainer(
 
     override fun getContainers(): List<Container> {
         val columns = arrayOf(
-            MediaStore.Images.Media._ID,
-            MediaStore.Images.Media.TITLE,
-            MediaStore.Images.Media.DATA,
-            MediaStore.Images.Media.MIME_TYPE,
-            MediaStore.Images.Media.SIZE,
+            MediaStore.Video.Media._ID,
+            MediaStore.Video.Media.TITLE,
+            MediaStore.Video.Media.DATA,
+            MediaStore.Video.Media.ARTIST,
+            MediaStore.Video.Media.MIME_TYPE,
+            MediaStore.Video.Media.SIZE,
+            MediaStore.Video.Media.DURATION,
             MediaStore.Images.Media.HEIGHT,
             MediaStore.Images.Media.WIDTH
         )
@@ -65,16 +73,21 @@ class ImageContainer(
         ctx.contentResolver.query(uri, columns, where, whereVal, orderBy)?.apply {
             if (moveToFirst()) {
                 do {
-                    val id =
-                        ContentDirectoryService.IMAGE_PREFIX + getInt(getColumnIndex(MediaStore.Images.Media._ID))
+                    val id = ContentDirectoryService.VIDEO_PREFIX + getInt(
+                        getColumnIndex(MediaStore.Video.Media._ID)
+                    )
                     val title =
-                        getString(getColumnIndexOrThrow(MediaStore.Images.Media.TITLE))
+                        getString(getColumnIndexOrThrow(MediaStore.Video.Media.TITLE))
+                    val creator =
+                        getString(getColumnIndexOrThrow(MediaStore.Video.Media.ARTIST))
                     val filePath =
-                        getString(getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
+                        getString(getColumnIndexOrThrow(MediaStore.Video.Media.DATA))
                     val mimeType =
-                        getString(getColumnIndexOrThrow(MediaStore.Images.Media.MIME_TYPE))
+                        getString(getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE))
                     val size =
-                        getLong(getColumnIndexOrThrow(MediaStore.Images.Media.SIZE))
+                        getLong(getColumnIndexOrThrow(MediaStore.Video.Media.SIZE))
+                    val duration =
+                        getLong(getColumnIndexOrThrow(MediaStore.Video.Media.DURATION))
                     val height =
                         getLong(getColumnIndexOrThrow(MediaStore.Images.Media.HEIGHT))
                     val width =
@@ -91,11 +104,14 @@ class ImageContainer(
                             mimeType.substring(mimeType.indexOf('/') + 1)
                         ), size, "http://$baseURL/$id$extension"
                     )
+                    res.duration = ((duration / (1000 * 60 * 60)).toString() + ":"
+                            + duration % (1000 * 60 * 60) / (1000 * 60) + ":"
+                            + duration % (1000 * 60) / 1000)
                     res.setResolution(width.toInt(), height.toInt())
 
-                    addItem(ImageItem(id, parentID, title, "", res))
+                    addItem(VideoItem(id, parentID, title, creator, res))
 
-                    Timber.v("Added image item $title from $filePath")
+                    Timber.v("Added video item $title from $filePath")
                 } while (moveToNext())
             }
         }?.close()

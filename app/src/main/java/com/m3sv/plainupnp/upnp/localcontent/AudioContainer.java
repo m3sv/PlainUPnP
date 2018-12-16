@@ -38,8 +38,7 @@ public class AudioContainer extends DynamicContainer {
 
     public AudioContainer(String id, String parentID, String title, String creator, String baseURL, Context ctx,
                           String artist, String albumId) {
-        super(id, parentID, title, creator, baseURL, ctx, null);
-        setUri(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+        super(id, parentID, title, creator, baseURL, ctx, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
 
         if (artist != null) {
             setWhere(MediaStore.Audio.Media.ARTIST + "=?");

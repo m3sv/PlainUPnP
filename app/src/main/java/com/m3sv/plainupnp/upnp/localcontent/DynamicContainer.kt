@@ -34,11 +34,13 @@ abstract class DynamicContainer(
     creator: String?,
     baseURL: String,
     protected val ctx: Context,
-    protected var uri: Uri?
+    protected val uri: Uri
 ) : BaseContainer(id, parentID, title, creator, baseURL) {
 
     protected var where: String? = null
+
     protected var whereVal: Array<String> = emptyArray()
+
     protected var orderBy: String? = null
 
     abstract override fun getChildCount(): Int?
