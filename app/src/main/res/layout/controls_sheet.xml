@@ -24,7 +24,7 @@
             android:scaleType="centerCrop"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/placeholder" />
+            app:srcCompat="@drawable/ic_launcher_no_shadow" />
 
         <android.support.constraint.Guideline
             android:id="@+id/top_guide"

@@ -13,7 +13,7 @@ import timber.log.Timber
 
 class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentDirectoryDiscovery) :
     Observable<Set<DeviceDisplay>>() {
-    private val contentDirectories = HashSet<DeviceDisplay>()
+    private val contentDirectories = LinkedHashSet<DeviceDisplay>()
 
     override fun subscribeActual(observer: Observer<in Set<DeviceDisplay>>) {
         val deviceObserver = ContentDeviceObserver(contentDiscovery, observer)
@@ -23,7 +23,7 @@ class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentD
     private fun handleEvent(event: UpnpDeviceEvent) {
         when (event) {
             is UpnpDeviceEvent.Added -> {
-                Timber.d("Content directory added: ${event.upnpDevice.displayString}")
+                Timber.d("Content directory added: ${event.upnpDevice.friendlyName}")
 
                 contentDirectories += DeviceDisplay(
                     event.upnpDevice,
@@ -33,7 +33,7 @@ class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentD
             }
 
             is UpnpDeviceEvent.Removed -> {
-                Timber.d("Content directory removed: ${event.upnpDevice.displayString}")
+                Timber.d("Content directory removed: ${event.upnpDevice.friendlyName}")
 
                 contentDirectories -= DeviceDisplay(
                     event.upnpDevice,

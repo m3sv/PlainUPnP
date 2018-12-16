@@ -10,6 +10,6 @@ data class DeviceDisplay(
     val extendedInformation: Boolean = false,
     val type: DeviceType = DeviceType.UNDEFINED) {
     override fun toString(): String {
-        return device.displayString
+        return device.friendlyName
     }
 }

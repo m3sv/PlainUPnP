@@ -1,8 +1,6 @@
 package com.m3sv.plainupnp.data.upnp
 
 
-import com.m3sv.plainupnp.data.upnp.DIDLObject
-
 data class DIDLObjectDisplay(val didlObject: DIDLObject) {
 
     val title: String

@@ -13,7 +13,7 @@ import timber.log.Timber
 class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscovery) :
     Observable<Set<DeviceDisplay>>() {
 
-    private val renderers = HashSet<DeviceDisplay>()
+    private val renderers = LinkedHashSet<DeviceDisplay>()
 
     private fun handleEvent(event: UpnpDeviceEvent) {
         when (event) {

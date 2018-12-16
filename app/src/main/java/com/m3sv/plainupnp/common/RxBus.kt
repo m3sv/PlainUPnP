@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.common
 
 import com.jakewharton.rxrelay2.PublishRelay
 import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 
 
 sealed class Event {

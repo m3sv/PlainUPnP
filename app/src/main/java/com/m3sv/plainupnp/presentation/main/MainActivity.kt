@@ -12,7 +12,6 @@ import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.view.View
-import android.widget.Adapter
 import android.widget.AdapterView
 import android.widget.SeekBar
 import android.widget.Toast
@@ -55,10 +54,8 @@ class MainActivity : BaseActivity() {
             position: Int,
             id: Long
         ) {
-            with(viewModel) {
-                Timber.d("Selected item: $position")
-                selectContentDirectory(contentDirectoryAdapter.getItem(position).device)
-            }
+            Timber.d("Selected item: $position")
+            viewModel.selectContentDirectory(contentDirectoryAdapter.getItem(position).device)
         }
     }
 
@@ -72,10 +69,8 @@ class MainActivity : BaseActivity() {
             position: Int,
             id: Long
         ) {
-            with(viewModel) {
-                Timber.d("Selected renderer: $position")
-                selectRenderer(rendererAdapter.getItem(position).device)
-            }
+            Timber.d("Selected renderer: $position")
+            viewModel.selectRenderer(rendererAdapter.getItem(position).device)
         }
     }
 
@@ -150,6 +145,7 @@ class MainActivity : BaseActivity() {
                 .beginTransaction()
                 .add(R.id.container, MainFragment.newInstance())
                 .commit()
+
             viewModel.resumeUpnpController()
         }
 

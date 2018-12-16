@@ -10,7 +10,7 @@ class ClingAudioItem(item: AudioItem) : ClingDIDLItem(item) {
 
     override fun getDescription(): String {
         if (didlObject is MusicTrack) {
-            val track = didlObject as MusicTrack
+            val track = didlObject
             return (track.firstArtist?.name?.let { it } ?: "") +
                     (track.album?.let { " - $it" } ?: "")
         }

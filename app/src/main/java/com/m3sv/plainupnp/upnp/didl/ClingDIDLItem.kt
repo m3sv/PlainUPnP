@@ -29,7 +29,7 @@ import org.fourthline.cling.support.model.item.Item
 
 open class ClingDIDLItem(item: Item) : ClingDIDLObject(item), DIDLItem {
 
-    override val uri: String? get() = didlObject?.firstResource?.value
+    override val uri: String? get() = didlObject.firstResource?.value
 
     override fun getIcon(): Int = R.drawable.ic_file
 }

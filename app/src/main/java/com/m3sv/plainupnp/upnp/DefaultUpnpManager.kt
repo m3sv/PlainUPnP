@@ -28,12 +28,12 @@ typealias RenderedItem = Triple<String?, String, RequestOptions>
 
 class DefaultUpnpManager constructor(
     private val controller: UpnpServiceController,
-    val factory: Factory
+    private val factory: Factory
 ) : Observer, UpnpManager {
 
     private var upnpRendererState: org.droidupnp.legacy.cling.UpnpRendererState? = null
 
-    private var upnpRenderStateDisposable: Disposable? = null
+    private var rendererStateDisposable: Disposable? = null
 
     private var rendererCommand: RendererCommand? = null
 
@@ -94,32 +94,34 @@ class DefaultUpnpManager constructor(
     private fun renderItem(item: RenderItem) {
         rendererCommand?.commandStop()
         rendererCommand?.pause()
+        rendererStateDisposable?.dispose()
 
         next = item.position + 1
         previous = item.position - 1
 
-        upnpRendererState = factory.createRendererState().also {
-            it.subscribeBy(onNext = {
-                val durationRemaining = it.remainingDuration
-                val durationElapse = it.elapsedDuration
-                val progress = it.progress
-                val title = it.title
-                val artist = it.artist
-                val state = it.state
+        upnpRendererState = factory.createRendererState()
 
-                val newRendererState = RendererState(
-                    durationRemaining,
-                    durationElapse,
-                    progress,
-                    title,
-                    artist,
-                    state
-                )
+        rendererStateDisposable = upnpRendererState?.map {
+            val newRendererState = RendererState(
+                it.remainingDuration,
+                it.elapsedDuration,
+                it.progress,
+                it.title,
+                it.artist,
+                it.state
+            )
 
-                Timber.i("New renderer state: $newRendererState")
-                _rendererState.postValue(newRendererState)
-            }, onError = Timber::e)
-        }
+            Timber.i("New renderer state: $newRendererState")
+            newRendererState
+        }?.subscribeBy(onNext = _rendererState::postValue, onError = Timber::e)
+
+        rendererCommand = factory.createRendererCommand(upnpRendererState)
+            ?.apply {
+                if (item.item !is ClingImageItem)
+                    resume()
+                updateFull()
+                launchItem(item.item)
+            }
 
         val requestOptions = when (item.item) {
             is ClingAudioItem -> RequestOptions().placeholder(R.drawable.ic_music_note)
@@ -127,15 +129,6 @@ class DefaultUpnpManager constructor(
         }
 
         _renderedItem.postValue(RenderedItem(item.item.uri, item.item.title, requestOptions))
-
-        rendererCommand = factory
-            .createRendererCommand(upnpRendererState)
-            ?.also {
-                if (item.item !is ClingImageItem)
-                    it.resume()
-                it.updateFull()
-                it.launchItem(item.item)
-            }
     }
 
     override fun playNext() {
