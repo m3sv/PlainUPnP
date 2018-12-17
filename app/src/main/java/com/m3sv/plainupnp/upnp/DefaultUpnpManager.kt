@@ -3,8 +3,6 @@ package com.m3sv.plainupnp.upnp
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import com.bumptech.glide.request.RequestOptions
-import com.jakewharton.rxrelay2.PublishRelay
-import com.jakewharton.rxrelay2.Relay
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
@@ -16,6 +14,7 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.Subject
 import org.droidupnp.legacy.upnp.Factory
 import timber.log.Timber
 import java.util.*
@@ -51,9 +50,9 @@ class DefaultUpnpManager constructor(
     override val currentContentDirectory: UpnpDevice?
         get() = controller.selectedContentDirectory
 
-    private val _contentData = MutableLiveData<List<DIDLObjectDisplay>>()
+    private val _contentData = MutableLiveData<ContentState>()
 
-    override val contentData: LiveData<List<DIDLObjectDisplay>> = _contentData
+    override val contentData: LiveData<ContentState> = _contentData
 
     private val _launchLocally: PublishSubject<LaunchLocally> = PublishSubject.create()
 
@@ -99,15 +98,25 @@ class DefaultUpnpManager constructor(
     private var next: Int = -1
     private var previous: Int = -1
 
-    override val renderItemRelay: Relay<RenderItem> = PublishRelay.create()
+    private val renderItem: Subject<RenderItem> = PublishSubject.create()
+
+    private val browseTo: Subject<BrowseToModel> = PublishSubject.create()
 
     init {
-        renderItemRelay.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::renderItem, Timber::e)
+        renderItem.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::render, Timber::e)
+        browseTo.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::browse, Timber::e)
     }
 
-    private fun renderItem(item: RenderItem) {
-        rendererCommand?.commandStop()
-        rendererCommand?.pause()
+    override fun renderItem(item: RenderItem) {
+        renderItem.onNext(item)
+    }
+
+    private fun render(item: RenderItem) {
+        rendererCommand?.run {
+            commandStop()
+            pause()
+        }
+
         rendererStateDisposable?.dispose()
 
         updateUi(item)
@@ -173,14 +182,18 @@ class DefaultUpnpManager constructor(
     }
 
     override fun playNext() {
-        _contentData.value?.takeIf { it.size > next && next != -1 }?.let {
-            renderItem(RenderItem(it[next].didlObject as DIDLItem, next))
+        _contentData.value?.let {
+            if (it is ContentState.Success && (next in 0..it.content.size)) {
+                renderItem(RenderItem(it.content[next].didlObject as DIDLItem, next))
+            }
         }
     }
 
     override fun playPrevious() {
-        _contentData.value?.takeIf { previous >= 0 && previous < it.size }?.let {
-            renderItem(RenderItem(it[previous].didlObject as DIDLItem, previous))
+        _contentData.value?.let {
+            if (it is ContentState.Success && (previous in 0..it.content.size)) {
+                renderItem(RenderItem(it.content[previous].didlObject as DIDLItem, previous))
+            }
         }
     }
 
@@ -203,25 +216,29 @@ class DefaultUpnpManager constructor(
     }
 
     override fun browseHome() {
-        browseTo("0", null)
+        browseTo.onNext(BrowseToModel("0", null))
     }
 
-    override fun browseTo(id: String, parentId: String?, addToStructure: Boolean) {
-        Timber.d("Browse: $id")
-        factory.createContentDirectoryCommand()?.browse(id, null, _contentData::postValue)
-        when (id) {
+    override fun browseTo(model: BrowseToModel) {
+        browseTo.onNext(model)
+    }
+
+    private fun browse(model: BrowseToModel) {
+        Timber.d("Browse: ${model.id}")
+        _contentData.postValue(ContentState.Loading)
+
+        factory.createContentDirectoryCommand()?.browse(model.id, null) {
+            _contentData.postValue(ContentState.Success(it ?: listOf()))
+        }
+        when (model.id) {
             "0" -> {
                 selectedDirectory.onNext(Directory.Home)
-                directoriesStructure = LinkedList<Directory>().also {
-                    it.add(
-                        Directory.Home
-                    )
-                }
+                directoriesStructure = LinkedList<Directory>().apply { add(Directory.Home) }
             }
             else -> {
-                val subDirectory = Directory.SubDirectory(id, parentId)
+                val subDirectory = Directory.SubDirectory(model.id, model.parentId)
                 selectedDirectory.onNext(subDirectory)
-                if (addToStructure)
+                if (model.addToStructure)
                     directoriesStructure.addFirst(subDirectory)
                 Timber.d("Adding subdirectory: $subDirectory")
             }
@@ -232,10 +249,11 @@ class DefaultUpnpManager constructor(
         val element = directoriesStructure.pop()
         when (element) {
             is Directory.Home -> {
-                browseTo("0", null)
+                browseTo(BrowseToModel("0", null))
             }
+
             is Directory.SubDirectory -> {
-                browseTo(element.parentId!!, element.parentId, false)
+                browseTo(BrowseToModel(element.parentId!!, element.parentId, false))
             }
         }
         Timber.d("Browse previous: $element")

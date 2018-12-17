@@ -18,13 +18,13 @@ interface UpnpManager {
 
     val renderedItem: LiveData<RenderedItem>
 
-    val contentData: LiveData<List<DIDLObjectDisplay>>
+    val contentData: LiveData<ContentState>
 
     val launchLocally: Observable<LaunchLocally>
 
     val currentContentDirectory: UpnpDevice?
 
-    val renderItemRelay: Relay<RenderItem>
+    fun renderItem(item: RenderItem)
 
     fun addObservers()
 
@@ -54,7 +54,7 @@ interface UpnpManager {
 
     fun browseHome()
 
-    fun browseTo(id: String, parentId: String?, addToStructure: Boolean = true)
+    fun browseTo(model: BrowseToModel)
 
     fun browsePrevious()
 
@@ -64,3 +64,10 @@ interface UpnpManager {
 data class RenderItem(val item: DIDLItem, val position: Int)
 
 data class LaunchLocally(val uri: String, val contentType: String)
+
+data class BrowseToModel(val id: String, val parentId: String?, val addToStructure: Boolean = true)
+
+sealed class ContentState {
+    object Loading : ContentState()
+    data class Success(val content: List<DIDLObjectDisplay>) : ContentState()
+}

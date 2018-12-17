@@ -26,6 +26,8 @@ interface OnItemClickListener {
 class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener) :
     BaseAdapter<Item>(GalleryContentAdapter.diffCallback) {
 
+    var clickable = true
+
     override fun getItemViewType(position: Int): Int = items[position].type.ordinal
 
     override fun onCreateViewHolder(
@@ -53,14 +55,15 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         val item = items[position]
 
         val itemClickListener = View.OnClickListener {
-            holder.adapterPosition.takeIf { it >= 0 }?.let { adapterPosition ->
-                item.didlObjectDisplay?.get(adapterPosition)?.let {
-                    onItemClickListener.onItemClick(
-                        it.didlObject as DIDLItem,
-                        holder.adapterPosition
-                    )
+            if (clickable)
+                holder.adapterPosition.takeIf { it >= 0 }?.let { adapterPosition ->
+                    item.didlObjectDisplay?.get(adapterPosition)?.let {
+                        onItemClickListener.onItemClick(
+                            it.didlObject as DIDLItem,
+                            holder.adapterPosition
+                        )
+                    }
                 }
-            }
         }
 
         when (item.type) {
@@ -121,7 +124,8 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
             title.text = item.name
             thumbnail.setImageResource(R.drawable.ic_folder)
             container.setOnClickListener {
-                onItemClickListener.onDirectoryClick(item.uri, item.parentId)
+                if (clickable)
+                    onItemClickListener.onDirectoryClick(item.uri, item.parentId)
             }
         }
     }

@@ -11,10 +11,11 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import com.m3sv.plainupnp.common.SpaceItemDecoration
 import com.m3sv.plainupnp.common.utils.dp
 import com.m3sv.plainupnp.data.upnp.DIDLItem
-import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.main.data.toItems
+import com.m3sv.plainupnp.upnp.BrowseToModel
+import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.RenderItem
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -29,9 +30,18 @@ class MainFragment : BaseFragment() {
 
     private lateinit var contentAdapter: GalleryContentAdapter
 
-    private val upnpContentObserver = Observer<List<DIDLObjectDisplay>> { content ->
+    private val upnpContentObserver = Observer<ContentState> { content ->
         content?.let {
-            contentAdapter.setWithDiff(content.toItems())
+            when (it) {
+                is ContentState.Success -> {
+                    contentAdapter.setWithDiff(it.content.toItems())
+                    hideProgress()
+                }
+
+                is ContentState.Loading -> {
+                    showProgress()
+                }
+            }
         }
     }
 
@@ -56,28 +66,27 @@ class MainFragment : BaseFragment() {
         contentAdapter = GalleryContentAdapter(object : OnItemClickListener {
             override fun onDirectoryClick(itemUri: String?, parentId: String?) {
                 itemUri?.let {
-                    viewModel.browseTo(itemUri, parentId)
+                    viewModel.browseTo(BrowseToModel(itemUri, parentId))
                 } ?: Timber.e("Item URI is null")
             }
 
             override fun onItemClick(item: DIDLItem, position: Int) {
-                viewModel.renderItemRelay.accept(RenderItem(item, position))
+                viewModel.renderItem(RenderItem(item, position))
             }
         })
 
         binding.content.run {
             val spanCount =
-                if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 3
-                else 5
+                if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 5
+                else 6
 
             addItemDecoration(SpaceItemDecoration(16.dp))
-            layoutManager =
-                    GridLayoutManager(
-                        requireActivity(),
-                        spanCount,
-                        GridLayoutManager.VERTICAL,
-                        false
-                    )
+            layoutManager = GridLayoutManager(
+                requireActivity(),
+                spanCount,
+                GridLayoutManager.VERTICAL,
+                false
+            )
             adapter = contentAdapter
         }
 
@@ -88,10 +97,20 @@ class MainFragment : BaseFragment() {
 
         with(viewModel.contentData) {
             observe(upnpContentObserver)
-            value?.let {
-                contentAdapter.setWithDiff(it.toItems())
-            }
+
+            if (value is ContentState.Success)
+                contentAdapter.setWithDiff((value as ContentState.Success).content.toItems())
         }
+    }
+
+    private fun showProgress() {
+        contentAdapter.clickable = false
+        binding.progress.visibility = View.VISIBLE
+    }
+
+    private fun hideProgress() {
+        binding.progress.visibility = View.GONE
+        contentAdapter.clickable = true
     }
 
     companion object {

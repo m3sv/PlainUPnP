@@ -29,16 +29,12 @@ class ContentDirectoryCommand(
     private val mediaReceiverRegistarService: Service<*, *>?
         get() = if (controller.selectedContentDirectory == null)
             null
-        else (controller.selectedContentDirectory as CDevice)
-            .device
-            ?.findService(UDAServiceType("X_MS_MediaReceiverRegistar"))
+        else (controller.selectedContentDirectory as CDevice).device?.findService(UDAServiceType("X_MS_MediaReceiverRegistar"))
 
     private val contentDirectoryService: Service<*, *>?
         get() = if (controller.selectedContentDirectory == null)
             null
-        else (controller.selectedContentDirectory as CDevice)
-            .device
-            ?.findService(UDAServiceType("ContentDirectory"))
+        else (controller.selectedContentDirectory as CDevice).device?.findService(UDAServiceType("ContentDirectory"))
 
     private fun buildContentList(
         parent: String?,
@@ -47,13 +43,7 @@ class ContentDirectoryCommand(
         val result = ArrayList<DIDLObjectDisplay>()
 
         if (parent != null)
-            result.add(
-                DIDLObjectDisplay(
-                    ClingDIDLParentContainer(
-                        parent
-                    )
-                )
-            )
+            result.add(DIDLObjectDisplay(ClingDIDLParentContainer(parent)))
 
         didl?.let {
             for (item in it.containers) {
@@ -76,9 +66,7 @@ class ContentDirectoryCommand(
                 for (p in item.properties)
                     Timber.v("%s%s", p.descriptorName + " ", p.toString())
             }
-
         }
-
 
         return result
     }
