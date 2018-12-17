@@ -20,6 +20,8 @@ interface UpnpManager {
 
     val contentData: LiveData<List<DIDLObjectDisplay>>
 
+    val launchLocally: Observable<LaunchLocally>
+
     val currentContentDirectory: UpnpDevice?
 
     val renderItemRelay: Relay<RenderItem>
@@ -60,3 +62,5 @@ interface UpnpManager {
 }
 
 data class RenderItem(val item: DIDLItem, val position: Int)
+
+data class LaunchLocally(val uri: String, val contentType: String)

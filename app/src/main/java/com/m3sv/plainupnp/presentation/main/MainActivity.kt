@@ -2,8 +2,11 @@ package com.m3sv.plainupnp.presentation.main
 
 import android.Manifest
 import android.arch.lifecycle.Observer
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.constraint.ConstraintLayout
@@ -26,6 +29,7 @@ import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
+import com.m3sv.plainupnp.upnp.LaunchLocally
 import com.m3sv.plainupnp.upnp.RenderedItem
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
@@ -80,6 +84,8 @@ class MainActivity : BaseActivity() {
         Observer<Set<DeviceDisplay>>(::handleContentDirectories)
 
     private val rendererStateObserver = Observer<RendererState>(::handleRendererState)
+
+    private val launchLocallyObserver = Observer<LaunchLocally>(::launchLocally)
 
     private fun handleContentDirectories(it: Set<DeviceDisplay>?) {
         it?.let {
@@ -164,6 +170,11 @@ class MainActivity : BaseActivity() {
             renderedItem.observe(renderedItemObserver)
         }
 
+        disposables += viewModel.launchLocally.subscribeBy(
+            onNext = ::launchLocally,
+            onError = Timber::e
+        )
+
         initPickers()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -241,13 +252,29 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private val renderedItemObserver = Observer<RenderedItem> {
-        it?.run {
+    private val renderedItemObserver = Observer<RenderedItem> { item ->
+        item?.run {
             Glide.with(this@MainActivity)
                 .load(first)
                 .apply(third)
                 .into(binding.controlsSheet.art)
+
             binding.controlsSheet.title.text = second
+        }
+    }
+
+    private fun launchLocally(item: LaunchLocally?) {
+        item?.let {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.uri)).apply {
+                    flags = FLAG_ACTIVITY_NEW_TASK
+                    setDataAndType(Uri.parse(item.uri), item.contentType)
+                }
+
+                startActivity(intent)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
         }
     }
 

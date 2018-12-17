@@ -2,18 +2,22 @@ package com.m3sv.plainupnp.upnp.observables
 
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
+import com.m3sv.plainupnp.data.upnp.LocalDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
+import org.droidupnp.legacy.cling.CDevice
 import org.droidupnp.legacy.upnp.DeviceDiscoveryObserver
 import timber.log.Timber
 
 class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscovery) :
     Observable<Set<DeviceDisplay>>() {
 
-    private val renderers = LinkedHashSet<DeviceDisplay>()
+    private val renderers = LinkedHashSet<DeviceDisplay>().apply {
+        add(DeviceDisplay(LocalDevice()))
+    }
 
     private fun handleEvent(event: UpnpDeviceEvent) {
         when (event) {
@@ -40,6 +44,7 @@ class RendererDiscoveryObservable(private val rendererDiscovery: RendererDiscove
     override fun subscribeActual(observer: Observer<in Set<DeviceDisplay>>) {
         val deviceObserver = RendererDeviceObserver(rendererDiscovery, observer)
         observer.onSubscribe(deviceObserver)
+        observer.onNext(renderers)
     }
 
     private inner class RendererDeviceObserver(

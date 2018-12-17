@@ -9,6 +9,7 @@ import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
+import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
@@ -54,6 +55,11 @@ class DefaultUpnpManager constructor(
 
     override val contentData: LiveData<List<DIDLObjectDisplay>> = _contentData
 
+    private val _launchLocally: PublishSubject<LaunchLocally> = PublishSubject.create()
+
+    override val launchLocally: io.reactivex.Observable<LaunchLocally>
+        get() = _launchLocally.toFlowable(BackpressureStrategy.LATEST).toObservable()
+
     override val rendererDiscovery = RendererDiscoveryObservable(controller.rendererDiscovery)
 
     override val contentDirectoryDiscovery =
@@ -75,9 +81,17 @@ class DefaultUpnpManager constructor(
             browseHome()
     }
 
+    private var isLocal: Boolean = false
+
     override fun selectRenderer(renderer: UpnpDevice?) {
         Timber.d("Selected renderer: ${renderer?.displayString}")
-        controller.selectedRenderer = renderer
+
+        if (renderer is LocalDevice) {
+            isLocal = true
+        } else {
+            isLocal = false
+            controller.selectedRenderer = renderer
+        }
     }
 
     private var directoriesStructure = LinkedList<Directory>()
@@ -95,6 +109,13 @@ class DefaultUpnpManager constructor(
         rendererCommand?.commandStop()
         rendererCommand?.pause()
         rendererStateDisposable?.dispose()
+
+        updateUi(item)
+
+        if (isLocal) {
+            launchItemLocally(item)
+            return
+        }
 
         next = item.position + 1
         previous = item.position - 1
@@ -122,7 +143,27 @@ class DefaultUpnpManager constructor(
                 updateFull()
                 launchItem(item.item)
             }
+    }
 
+    private fun launchItemLocally(item: RenderItem) {
+        item.item.uri?.let { uri ->
+            val contentType = when (item.item) {
+                is ClingAudioItem -> "audio/*"
+                is ClingImageItem -> "image/*"
+                is ClingVideoItem -> "video/*"
+                else -> null
+            }
+
+            contentType?.let {
+                _launchLocally.onNext(LaunchLocally(uri, it))
+            }
+        }
+    }
+
+    /**
+     * Updates control sheet with latest launched item
+     */
+    private fun updateUi(item: RenderItem) {
         val requestOptions = when (item.item) {
             is ClingAudioItem -> RequestOptions().placeholder(R.drawable.ic_music_note)
             else -> RequestOptions()

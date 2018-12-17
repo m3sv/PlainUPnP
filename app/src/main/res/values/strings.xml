@@ -49,5 +49,6 @@
     <string name="app_url">placeholder</string>
 
     <string name="search">Search…</string>
+    <string name="play_locally">play locally</string>
 
 </resources>
