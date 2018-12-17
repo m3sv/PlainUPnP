@@ -31,11 +31,10 @@ class DefaultUpnpManager constructor(
     private val factory: Factory
 ) : Observer, UpnpManager {
 
-    private var upnpRendererState: org.droidupnp.legacy.cling.UpnpRendererState? = null
+    override val rendererDiscovery = RendererDiscoveryObservable(controller.rendererDiscovery)
 
-    private var rendererStateDisposable: Disposable? = null
-
-    private var rendererCommand: RendererCommand? = null
+    override val contentDirectoryDiscovery =
+        ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
 
     private val _rendererState: MutableLiveData<RendererState> = MutableLiveData()
 
@@ -47,27 +46,45 @@ class DefaultUpnpManager constructor(
     override val renderedItem: LiveData<RenderedItem>
         get() = _renderedItem
 
-    override val currentContentDirectory: UpnpDevice?
-        get() = controller.selectedContentDirectory
-
     private val _contentData = MutableLiveData<ContentState>()
 
     override val contentData: LiveData<ContentState> = _contentData
+
+    override val currentContentDirectory: UpnpDevice?
+        get() = controller.selectedContentDirectory
 
     private val _launchLocally: PublishSubject<LaunchLocally> = PublishSubject.create()
 
     override val launchLocally: io.reactivex.Observable<LaunchLocally>
         get() = _launchLocally.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
-    override val rendererDiscovery = RendererDiscoveryObservable(controller.rendererDiscovery)
-
-    override val contentDirectoryDiscovery =
-        ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
-
     private val selectedDirectory = PublishSubject.create<Directory>()
 
     override val selectedDirectoryObservable: io.reactivex.Observable<Directory>
         get() = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
+
+    private var upnpRendererState: org.droidupnp.legacy.cling.UpnpRendererState? = null
+
+    private var rendererStateDisposable: Disposable? = null
+
+    private var rendererCommand: RendererCommand? = null
+
+    private var isLocal: Boolean = false
+
+    private var directoriesStructure = LinkedList<Directory>()
+
+    private var next: Int = -1
+
+    private var previous: Int = -1
+
+    private val renderItem: Subject<RenderItem> = PublishSubject.create()
+
+    private val browseTo: Subject<BrowseToModel> = PublishSubject.create()
+
+    init {
+        renderItem.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::render, Timber::e)
+        browseTo.throttleLast(500, TimeUnit.MILLISECONDS).subscribe(::browse, Timber::e)
+    }
 
     override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
         Timber.d("Selected content directory: ${contentDirectory?.displayString}")
@@ -80,8 +97,6 @@ class DefaultUpnpManager constructor(
             browseHome()
     }
 
-    private var isLocal: Boolean = false
-
     override fun selectRenderer(renderer: UpnpDevice?) {
         Timber.d("Selected renderer: ${renderer?.displayString}")
 
@@ -91,20 +106,6 @@ class DefaultUpnpManager constructor(
             isLocal = false
             controller.selectedRenderer = renderer
         }
-    }
-
-    private var directoriesStructure = LinkedList<Directory>()
-
-    private var next: Int = -1
-    private var previous: Int = -1
-
-    private val renderItem: Subject<RenderItem> = PublishSubject.create()
-
-    private val browseTo: Subject<BrowseToModel> = PublishSubject.create()
-
-    init {
-        renderItem.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::render, Timber::e)
-        browseTo.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::browse, Timber::e)
     }
 
     override fun renderItem(item: RenderItem) {
