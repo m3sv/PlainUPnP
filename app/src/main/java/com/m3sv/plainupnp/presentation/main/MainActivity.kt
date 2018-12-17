@@ -85,8 +85,6 @@ class MainActivity : BaseActivity() {
 
     private val rendererStateObserver = Observer<RendererState>(::handleRendererState)
 
-    private val launchLocallyObserver = Observer<LaunchLocally>(::launchLocally)
-
     private fun handleContentDirectories(it: Set<DeviceDisplay>?) {
         it?.let {
             Timber.d("Received new set of content directories: ${it.size}")
@@ -254,6 +252,7 @@ class MainActivity : BaseActivity() {
 
     private val renderedItemObserver = Observer<RenderedItem> { item ->
         item?.run {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             Glide.with(this@MainActivity)
                 .load(first)
                 .apply(third)

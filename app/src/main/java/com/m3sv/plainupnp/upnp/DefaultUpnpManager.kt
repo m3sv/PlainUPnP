@@ -15,6 +15,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import org.droidupnp.legacy.cling.UpnpRendererStateObservable
 import org.droidupnp.legacy.upnp.Factory
 import timber.log.Timber
 import java.util.*
@@ -63,7 +64,7 @@ class DefaultUpnpManager constructor(
     override val selectedDirectoryObservable: io.reactivex.Observable<Directory>
         get() = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
-    private var upnpRendererState: org.droidupnp.legacy.cling.UpnpRendererState? = null
+    private var upnpRendererStateObservable: UpnpRendererStateObservable? = null
 
     private var rendererStateDisposable: Disposable? = null
 
@@ -130,9 +131,9 @@ class DefaultUpnpManager constructor(
         next = item.position + 1
         previous = item.position - 1
 
-        upnpRendererState = factory.createRendererState()
+        upnpRendererStateObservable = factory.createRendererState()
 
-        rendererStateDisposable = upnpRendererState?.map {
+        rendererStateDisposable = upnpRendererStateObservable?.map {
             val newRendererState = RendererState(
                 it.remainingDuration,
                 it.elapsedDuration,
@@ -146,7 +147,7 @@ class DefaultUpnpManager constructor(
             newRendererState
         }?.subscribeBy(onNext = _rendererState::postValue, onError = Timber::e)
 
-        rendererCommand = factory.createRendererCommand(upnpRendererState)
+        rendererCommand = factory.createRendererCommand(upnpRendererStateObservable)
             ?.apply {
                 if (item.item !is ClingImageItem)
                     resume()
@@ -270,7 +271,7 @@ class DefaultUpnpManager constructor(
                     + if (s >= 10) "" + s else "0$s")
         }
 
-        upnpRendererState?.run {
+        upnpRendererStateObservable?.run {
             val t = ((1.0 - (max.toDouble() - progress) / max) * durationSeconds).toLong()
             val h = t / 3600
             val m = (t - h * 3600) / 60

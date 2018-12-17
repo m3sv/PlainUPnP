@@ -5,7 +5,7 @@ import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
 import kotlinx.coroutines.*
 import org.droidupnp.legacy.cling.CDevice
 import org.droidupnp.legacy.cling.TrackMetadata
-import org.droidupnp.legacy.cling.UpnpRendererState
+import org.droidupnp.legacy.cling.UpnpRendererStateObservable
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -28,7 +28,7 @@ import kotlin.coroutines.CoroutineContext
 class RendererCommand(
     private val controller: UpnpServiceController,
     private val controlPoint: ControlPoint,
-    private val rendererState: UpnpRendererState
+    private val rendererStateObservable: UpnpRendererStateObservable
 ) : CoroutineScope {
 
     private var job: Job = Job()
@@ -135,7 +135,7 @@ class RendererCommand(
                 override fun success(invocation: ActionInvocation<*>?) {
                     super.success(invocation)
                     Timber.v("Success to set volume")
-                    rendererState.setVolume(volume)
+                    rendererStateObservable.setVolume(volume)
                 }
 
                 override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -150,7 +150,7 @@ class RendererCommand(
             controlPoint.execute(object : SetMute(it, mute) {
                 override fun success(invocation: ActionInvocation<*>?) {
                     Timber.v("Success setting mute status ! ")
-                    rendererState.setMuted(mute)
+                    rendererStateObservable.setMuted(mute)
                 }
 
                 override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -161,7 +161,7 @@ class RendererCommand(
     }
 
     fun toggleMute() {
-        setMute(!rendererState.isMute)
+        setMute(!rendererStateObservable.isMute)
     }
 
     fun setURI(uri: String?, trackMetadata: TrackMetadata) {
@@ -240,7 +240,7 @@ class RendererCommand(
             controlPoint.execute(object : GetMediaInfo(it) {
                 override fun received(arg0: ActionInvocation<*>, arg1: MediaInfo) {
                     Timber.d("Receive media info ! $arg1")
-                    rendererState.setMediaInfo(arg1)
+                    rendererStateObservable.setMediaInfo(arg1)
                 }
 
                 override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -255,7 +255,7 @@ class RendererCommand(
             controlPoint.execute(object : GetPositionInfo(it) {
                 override fun received(arg0: ActionInvocation<*>, arg1: PositionInfo) {
                     Timber.d("Update position info: $arg1")
-                    rendererState.setPositionInfo(arg1)
+                    rendererStateObservable.setPositionInfo(arg1)
                 }
 
                 override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -276,7 +276,7 @@ class RendererCommand(
 
                 override fun received(arg0: ActionInvocation<*>, arg1: TransportInfo) {
                     Timber.d("Transport info: $arg1")
-                    rendererState.setTransportInfo(arg1)
+                    rendererStateObservable.setTransportInfo(arg1)
                     previousTransportState = arg1.currentTransportState
                 }
             })
@@ -288,7 +288,7 @@ class RendererCommand(
             controlPoint.execute(object : GetVolume(it) {
                 override fun received(arg0: ActionInvocation<*>, arg1: Int) {
                     Timber.d("Receive volume ! $arg1")
-                    rendererState.setVolume(arg1)
+                    rendererStateObservable.setVolume(arg1)
                 }
 
                 override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -303,7 +303,7 @@ class RendererCommand(
             controlPoint.execute(object : GetMute(it) {
                 override fun received(arg0: ActionInvocation<*>, arg1: Boolean) {
                     Timber.d("Receive mute status ! $arg1")
-                    rendererState.setMuted(arg1)
+                    rendererStateObservable.setMuted(arg1)
                 }
 
                 override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {

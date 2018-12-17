@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp
 
 import android.content.Context
-import org.droidupnp.legacy.cling.UpnpRendererState
+import org.droidupnp.legacy.cling.UpnpRendererStateObservable
 import org.droidupnp.legacy.upnp.Factory
 import javax.inject.Inject
 
@@ -12,12 +12,13 @@ class UpnpFactory @Inject constructor(private val controller: UpnpServiceControl
             ?.controlPoint
             ?.let { ContentDirectoryCommand(it, controller) }
 
-    override fun createRendererCommand(rendererState: UpnpRendererState?): RendererCommand? =
+    override fun createRendererCommand(rendererStateObservable: UpnpRendererStateObservable?): RendererCommand? =
         controller.serviceListener.upnpService
             ?.controlPoint
-            ?.let { rendererState?.let { rs -> RendererCommand(controller, it, rs) } }
+            ?.let { rendererStateObservable?.let { rs -> RendererCommand(controller, it, rs) } }
 
     override fun createUpnpServiceController(ctx: Context): UpnpServiceController = controller
 
-    override fun createRendererState(): UpnpRendererState = UpnpRendererState()
+    override fun createRendererState(): UpnpRendererStateObservable =
+        UpnpRendererStateObservable()
 }

@@ -34,7 +34,7 @@ import io.reactivex.Observer;
 import io.reactivex.android.MainThreadDisposable;
 import timber.log.Timber;
 
-public class UpnpRendererState extends Observable<UpnpRendererStateModel> {
+public class UpnpRendererStateObservable extends Observable<UpnpRendererStateModel> {
 
     private UpnpInnerState innerState;
 
