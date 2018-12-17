@@ -84,7 +84,9 @@ class DefaultUpnpManager constructor(
 
     init {
         renderItem.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::render, Timber::e)
-        browseTo.throttleLast(500, TimeUnit.MILLISECONDS).subscribe(::browse, Timber::e)
+        browseTo.doOnNext {
+            _contentData.postValue(ContentState.Loading)
+        }.throttleLast(500, TimeUnit.MILLISECONDS).subscribe(::browse, Timber::e)
     }
 
     override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
@@ -227,7 +229,6 @@ class DefaultUpnpManager constructor(
 
     private fun browse(model: BrowseToModel) {
         Timber.d("Browse: ${model.id}")
-        _contentData.postValue(ContentState.Loading)
 
         factory.createContentDirectoryCommand()?.browse(model.id, null) {
             _contentData.postValue(ContentState.Success(it ?: listOf()))
