@@ -4,12 +4,22 @@
 
 PlainUPnP - intially DroidUPnP - is an UPnP control point application for android.
 
-PlainUPnP allows you to browse content providers and render media content.
-With Plain UPnP you can browse UPnP content directory, select the media and play it on a connected UPnP renderer.
+PlainUPnP allows you to stream videos, music and photos. 
+Browse UPnP media sources and stream media content to a selected UPnP device or play locally. 
 
-It also allows you to use your Android device as an UPnP content provider.
+Compatible with UPnP/DLNA/Smart TV.
+
+Features: 
+— Simple and easy to use interface
+— UPnP content streaming
+— Dark/Light themes
+— Launching UPnP content locally
+
+
+*In order to stream your content to another device using PlainUPnP, your TV/Android device must have UPnP server installed, such as Kodi/Plex
 
 This is a rewrite of trishika's [DroidUPnP](https://github.com/trishika/DroidUPnP), original project can be found [here](https://github.com/trishika/DroidUPnP).
+
 
 <a href="https://play.google.com/store/apps/details?id=com.m3sv.plainupnp">
   <img alt="Android app on Google Play" src="https://play.google.com/intl/en_gb/badges/images/badge_new.png" />
