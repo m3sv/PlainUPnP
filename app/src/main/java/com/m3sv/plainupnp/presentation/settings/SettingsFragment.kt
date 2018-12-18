@@ -14,12 +14,10 @@ import javax.inject.Inject
 class SettingsFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener {
 
-    private val darkThemeKey by lazy(LazyThreadSafetyMode.NONE) {
-        getString(R.string.dark_theme_key)
-    }
-
     @Inject
     lateinit var upnpManager: UpnpManager
+
+    private val darkThemeKey by lazy(LazyThreadSafetyMode.NONE) { getString(R.string.dark_theme_key) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (activity as? DaggerAppCompatActivity)?.supportFragmentInjector()?.inject(this)

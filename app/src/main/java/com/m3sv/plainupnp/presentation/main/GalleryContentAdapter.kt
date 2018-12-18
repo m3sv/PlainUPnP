@@ -139,9 +139,6 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         filterWithDiff { it.name.toLowerCase().contains(text) }
     }
 
-    companion object {
-        val diffCallback = DiffCallback(listOf(), listOf())
-    }
 
     class DiffCallback(
         oldItems: List<Item>,
@@ -151,5 +148,9 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
         }
+    }
+
+    companion object {
+        val diffCallback = DiffCallback(listOf(), listOf())
     }
 }
