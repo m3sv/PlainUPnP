@@ -18,6 +18,7 @@ import org.fourthline.cling.support.model.item.ImageItem
 import org.fourthline.cling.support.model.item.VideoItem
 import timber.log.Timber
 import java.util.*
+import java.util.concurrent.Future
 
 typealias ContentCallback = (List<DIDLObjectDisplay>?) -> Unit
 
@@ -75,9 +76,9 @@ class ContentDirectoryCommand(
         directoryID: String,
         parent: String?,
         callback: ContentCallback
-    ) {
+    ): Future<Any>? {
         contentDirectoryService?.let {
-            controlPoint.execute(object : Browse(
+            return controlPoint.execute(object : Browse(
                 it,
                 directoryID,
                 BrowseFlag.DIRECT_CHILDREN,

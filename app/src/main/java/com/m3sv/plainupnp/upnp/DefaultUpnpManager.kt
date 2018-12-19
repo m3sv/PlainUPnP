@@ -19,6 +19,7 @@ import org.droidupnp.legacy.cling.UpnpRendererStateObservable
 import org.droidupnp.legacy.upnp.Factory
 import timber.log.Timber
 import java.util.*
+import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
 
@@ -227,12 +228,17 @@ class DefaultUpnpManager constructor(
         browseTo.onNext(model)
     }
 
+    private var browseFuture: Future<Any>? = null
+
     private fun browse(model: BrowseToModel) {
         Timber.d("Browse: ${model.id}")
 
-        factory.createContentDirectoryCommand()?.browse(model.id, null) {
+        browseFuture?.cancel(true)
+
+        browseFuture = factory.createContentDirectoryCommand()?.browse(model.id, null) {
             _contentData.postValue(ContentState.Success(it ?: listOf()))
         }
+
         when (model.id) {
             "0" -> {
                 selectedDirectory.onNext(Directory.Home)
