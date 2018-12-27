@@ -4,19 +4,17 @@ import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.UpnpServiceController
 import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
-
 import org.droidupnp.legacy.CObservable
-
-import java.util.Observer
+import java.util.*
 
 abstract class BaseUpnpServiceController protected constructor() : UpnpServiceController {
 
     private var contentDirectoryObservable: CObservable = CObservable()
 
-    override val contentDirectoryDiscovery: ContentDirectoryDiscovery by lazy {
+    override val contentDirectoryDiscovery: ContentDirectoryDiscovery by lazy(mode = LazyThreadSafetyMode.NONE) {
         ContentDirectoryDiscovery(this)
     }
-    override val rendererDiscovery: RendererDiscovery by lazy {
+    override val rendererDiscovery: RendererDiscovery by lazy(mode = LazyThreadSafetyMode.NONE) {
         RendererDiscovery(this)
     }
 

@@ -19,6 +19,8 @@
 
 package org.droidupnp.legacy.cling;
 
+import android.support.annotation.Nullable;
+
 import com.m3sv.plainupnp.upnp.UpnpRendererStateModel;
 
 import org.fourthline.cling.support.model.MediaInfo;
@@ -27,7 +29,6 @@ import org.fourthline.cling.support.model.TransportInfo;
 import org.fourthline.cling.support.model.TransportState;
 
 
-import javax.annotation.Nullable;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;

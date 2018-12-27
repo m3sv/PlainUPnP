@@ -48,7 +48,7 @@ abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
         transaction.commit()
     }
 
-    protected inline fun <reified T : ViewModel> BaseActivity.getViewModel(): T {
+    protected inline fun <reified T : ViewModel> getViewModel(): T {
         return ViewModelProviders.of(this, viewModelFactory).get(T::class.java)
     }
 

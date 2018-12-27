@@ -12,7 +12,6 @@ import org.droidupnp.legacy.upnp.Factory
 
 
 @Module
-@ApplicationScope
 internal object AppModule {
 
     @Provides
