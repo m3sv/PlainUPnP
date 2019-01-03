@@ -52,7 +52,9 @@ abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
         return ViewModelProviders.of(this, viewModelFactory).get(T::class.java)
     }
 
-    protected fun <T> LiveData<T>.observe(observer: Observer<T>) {
-        observe(this@BaseActivity, observer)
+    protected inline fun <T> LiveData<T>.nonNullObserve(crossinline observer: (t: T) -> Unit) {
+        this.observe(this@BaseActivity, Observer {
+            it?.let(observer)
+        })
     }
 }

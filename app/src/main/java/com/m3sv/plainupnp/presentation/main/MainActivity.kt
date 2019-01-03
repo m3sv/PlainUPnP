@@ -1,7 +1,6 @@
 package com.m3sv.plainupnp.presentation.main
 
 import android.Manifest
-import android.arch.lifecycle.Observer
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.content.pm.PackageManager
@@ -78,54 +77,41 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private val renderersObserver = Observer<Set<DeviceDisplay>>(::handleRenderers)
-
-    private val contentDirectoriesObserver =
-        Observer<Set<DeviceDisplay>>(::handleContentDirectories)
-
-    private val rendererStateObserver = Observer<RendererState>(::handleRendererState)
-
-    private fun handleContentDirectories(it: Set<DeviceDisplay>?) {
-        it?.let {
-            Timber.d("Received new set of content directories: ${it.size}")
-            contentDirectoryAdapter.setNewItems(it.toList())
-        }
+    private fun handleContentDirectories(contentDirectories: Set<DeviceDisplay>) {
+        Timber.d("Received new set of content directories: ${contentDirectories.size}")
+        contentDirectoryAdapter.setNewItems(contentDirectories.toList())
     }
 
-    private fun handleRenderers(it: Set<DeviceDisplay>?) {
-        it?.run {
-            Timber.d("Received new set of renderers: ${it.size}")
-            rendererAdapter.setNewItems(it.toList())
-        }
+    private fun handleRenderers(renderers: Set<DeviceDisplay>) {
+        Timber.d("Received new set of renderers: ${renderers.size}")
+        rendererAdapter.setNewItems(renderers.toList())
     }
 
-    private fun handleRendererState(it: RendererState?) {
-        it?.let {
-            with(binding.controlsSheet) {
-                progress.isEnabled = it.state != UpnpRendererState.State.STOP
-                progress.progress = it.progress
+    private fun handleRendererState(rendererState: RendererState) {
+        with(binding.controlsSheet) {
+            progress.isEnabled = rendererState.state != UpnpRendererState.State.STOP
+            progress.progress = rendererState.progress
 
-                disposables += when (it.state) {
-                    UpnpRendererState.State.STOP -> {
-                        play.setImageResource(R.drawable.ic_play_arrow)
-                        RxView.clicks(play).subscribeBy(onNext = {
-                            viewModel.resumePlayback()
-                        }, onError = Timber::e)
-                    }
+            disposables += when (rendererState.state) {
+                UpnpRendererState.State.STOP -> {
+                    play.setImageResource(R.drawable.ic_play_arrow)
+                    RxView.clicks(play).subscribeBy(onNext = {
+                        viewModel.resumePlayback()
+                    }, onError = Timber::e)
+                }
 
-                    UpnpRendererState.State.PLAY -> {
-                        play.setImageResource(R.drawable.ic_pause)
-                        RxView.clicks(play).subscribeBy(onNext = {
-                            viewModel.pausePlayback()
-                        }, onError = Timber::e)
-                    }
+                UpnpRendererState.State.PLAY -> {
+                    play.setImageResource(R.drawable.ic_pause)
+                    RxView.clicks(play).subscribeBy(onNext = {
+                        viewModel.pausePlayback()
+                    }, onError = Timber::e)
+                }
 
-                    UpnpRendererState.State.PAUSE -> {
-                        play.setImageResource(R.drawable.ic_play_arrow)
-                        RxView.clicks(play).subscribeBy(onNext = {
-                            viewModel.resumePlayback()
-                        }, onError = Timber::e)
-                    }
+                UpnpRendererState.State.PAUSE -> {
+                    play.setImageResource(R.drawable.ic_play_arrow)
+                    RxView.clicks(play).subscribeBy(onNext = {
+                        viewModel.resumePlayback()
+                    }, onError = Timber::e)
                 }
             }
         }
@@ -142,6 +128,7 @@ class MainActivity : BaseActivity() {
         }
 
         setupBottomNavigation(binding.bottomNav)
+
         initBottomSheet()
 
         if (savedInstanceState == null) {
@@ -157,21 +144,21 @@ class MainActivity : BaseActivity() {
             viewModel.playNext()
         }, onError = Timber::e)
 
-        disposables += RxView.clicks(binding.controlsSheet.previous).subscribeBy(onNext = {
+        disposables += RxView.clicks(binding.controlsSheet.previous).subscribeBy(onComplete = {
             viewModel.playPrevious()
         }, onError = Timber::e)
-
-        with(viewModel) {
-            renderers.observe(renderersObserver)
-            contentDirectories.observe(contentDirectoriesObserver)
-            rendererState.observe(rendererStateObserver)
-            renderedItem.observe(renderedItemObserver)
-        }
 
         disposables += viewModel.launchLocally.subscribeBy(
             onNext = ::launchLocally,
             onError = Timber::e
         )
+
+        with(viewModel) {
+            renderers.nonNullObserve(::handleRenderers)
+            contentDirectories.nonNullObserve(::handleContentDirectories)
+            rendererState.nonNullObserve(::handleRendererState)
+            renderedItem.nonNullObserve(::handleRenderedItem)
+        }
 
         initPickers()
 
@@ -250,8 +237,8 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private val renderedItemObserver = Observer<RenderedItem> { item ->
-        item?.run {
+    private fun handleRenderedItem(item: RenderedItem) {
+        with(item) {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             Glide.with(this@MainActivity)
                 .load(first)

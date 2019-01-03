@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.presentation.main
 
+import android.databinding.ViewDataBinding
 import android.support.annotation.DrawableRes
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +13,7 @@ import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.GalleryContentFolderItemBinding
 import com.m3sv.plainupnp.databinding.GalleryContentItemBinding
 import com.m3sv.plainupnp.presentation.base.BaseAdapter
-import com.m3sv.plainupnp.presentation.base.BaseViewHolder
+import com.m3sv.plainupnp.presentation.base.ItemViewHolder
 import com.m3sv.plainupnp.presentation.main.data.ContentType
 import com.m3sv.plainupnp.presentation.main.data.Item
 
@@ -33,8 +34,8 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): BaseViewHolder<*> = when (ContentType.values()[viewType]) {
-        ContentType.DIRECTORY -> BaseViewHolder(
+    ): ItemViewHolder<ViewDataBinding> = when (ContentType.values()[viewType]) {
+        ContentType.DIRECTORY -> ItemViewHolder(
             GalleryContentFolderItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
@@ -42,7 +43,7 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
             )
         )
 
-        else -> BaseViewHolder(
+        else -> ItemViewHolder(
             GalleryContentItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
@@ -51,7 +52,7 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         )
     }
 
-    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
+    override fun onBindViewHolder(holder: ItemViewHolder<ViewDataBinding>, position: Int) {
         val item = items[position]
 
         val itemClickListener = View.OnClickListener {
@@ -93,14 +94,17 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         }
     }
 
+    private fun <T : ViewDataBinding> ItemViewHolder<*>.extractBinding(): T =
+        (this as ItemViewHolder<T>).binding
+
     private fun loadData(
-        holder: BaseViewHolder<*>,
+        holder: ItemViewHolder<ViewDataBinding>,
         item: Item,
         @DrawableRes contentTypeIcon: Int,
         onClick: View.OnClickListener,
         requestOptions: RequestOptions
     ) {
-        with((holder as BaseViewHolder<GalleryContentItemBinding>).binding) {
+        with(holder.extractBinding<GalleryContentItemBinding>()) {
             Glide.with(holder.itemView)
                 .load(item.uri)
                 .thumbnail(0.25f)
@@ -117,10 +121,10 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
     }
 
     private fun loadDirectory(
-        holder: BaseViewHolder<*>,
+        holder: ItemViewHolder<*>,
         item: Item
     ) {
-        with((holder as BaseViewHolder<GalleryContentFolderItemBinding>).binding) {
+        with(holder.extractBinding<GalleryContentFolderItemBinding>()) {
             title.text = item.name
             thumbnail.setImageResource(R.drawable.ic_folder)
             container.setOnClickListener {

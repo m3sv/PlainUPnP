@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.ArrayAdapter
 
 
-class SimpleArrayAdapter<T : Any>(context: Context?) :
+class SimpleArrayAdapter<T : Any>(context: Context) :
     ArrayAdapter<T>(context, android.R.layout.simple_list_item_1) {
 
     init {
@@ -13,7 +13,6 @@ class SimpleArrayAdapter<T : Any>(context: Context?) :
 
     var items: List<T> = emptyList()
         private set
-
 
     fun setNewItems(items: List<T>) {
         if (this.items != items) {

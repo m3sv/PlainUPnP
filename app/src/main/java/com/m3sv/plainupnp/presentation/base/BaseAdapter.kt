@@ -7,7 +7,7 @@ import com.m3sv.plainupnp.common.ItemsDiffCallback
 import kotlin.properties.Delegates
 
 abstract class BaseAdapter<T>(private val diffCallback: ItemsDiffCallback<T>) :
-    RecyclerView.Adapter<BaseViewHolder<*>>() {
+    RecyclerView.Adapter<ItemViewHolder<*>>() {
     private var originalItems = listOf<T>()
 
     var items: List<T> by Delegates.observable(mutableListOf()) { _, _, newValue ->

@@ -30,7 +30,6 @@
             android:layout_height="?android:actionBarSize"
             android:layout_gravity="bottom"
             android:background="?attr/backgroundColor"
-            android:focusable="true"
             app:menu="@menu/main" />
 
     </android.support.design.widget.CoordinatorLayout>

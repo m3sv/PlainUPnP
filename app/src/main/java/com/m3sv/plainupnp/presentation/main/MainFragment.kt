@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.presentation.main
 
-import android.arch.lifecycle.Observer
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
@@ -30,17 +29,15 @@ class MainFragment : BaseFragment() {
 
     private lateinit var contentAdapter: GalleryContentAdapter
 
-    private val upnpContentObserver = Observer<ContentState> { content ->
-        content?.let {
-            when (it) {
-                is ContentState.Success -> {
-                    contentAdapter.setWithDiff(it.content.toItems())
-                    hideProgress()
-                }
+    private fun handleContentState(contentState: ContentState) {
+        when (contentState) {
+            is ContentState.Success -> {
+                contentAdapter.setWithDiff(contentState.content.toItems())
+                hideProgress()
+            }
 
-                is ContentState.Loading -> {
-                    showProgress()
-                }
+            is ContentState.Loading -> {
+                showProgress()
             }
         }
     }
@@ -96,7 +93,7 @@ class MainFragment : BaseFragment() {
             }, onError = Timber::e)
 
         with(viewModel.contentData) {
-            observe(upnpContentObserver)
+            nonNullObserve(::handleContentState)
 
             if (value is ContentState.Success)
                 contentAdapter.setWithDiff((value as ContentState.Success).content.toItems())
