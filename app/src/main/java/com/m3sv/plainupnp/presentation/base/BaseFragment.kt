@@ -22,9 +22,8 @@ abstract class BaseFragment : DaggerFragment() {
         super.onDestroyView()
     }
 
-    protected inline fun <reified T : ViewModel> BaseFragment.getViewModel(): T {
-        return ViewModelProviders.of(requireActivity(), viewModelFactory).get(T::class.java)
-    }
+    protected inline fun <reified T : ViewModel> getViewModel(): T =
+        ViewModelProviders.of(requireActivity(), viewModelFactory).get(T::class.java)
 
     protected inline fun <T> LiveData<T>.nonNullObserve(crossinline observer: (t: T) -> Unit) {
         this.observe(this@BaseFragment, Observer {

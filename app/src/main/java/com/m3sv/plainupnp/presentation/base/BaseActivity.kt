@@ -48,9 +48,8 @@ abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
         transaction.commit()
     }
 
-    protected inline fun <reified T : ViewModel> getViewModel(): T {
-        return ViewModelProviders.of(this, viewModelFactory).get(T::class.java)
-    }
+    protected inline fun <reified T : ViewModel> getViewModel(): T =
+        ViewModelProviders.of(this, viewModelFactory).get(T::class.java)
 
     protected inline fun <T> LiveData<T>.nonNullObserve(crossinline observer: (t: T) -> Unit) {
         this.observe(this@BaseActivity, Observer {

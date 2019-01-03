@@ -51,24 +51,26 @@ abstract class BaseAdapter<T>(private val diffCallback: ItemsDiffCallback<T>) :
     }
 
     fun filterWithDiff(predicate: (T) -> Boolean) {
-        diffCallback.oldItems = diffCallback.newItems
-        diffCallback.newItems = originalItems.filter(predicate)
+        with(diffCallback) {
+            oldItems = newItems
+            newItems = originalItems.filter(predicate)
 
-        if (diffCallback.newItems.isEmpty()) {
-            items = listOf()
-            notifyDataSetChanged()
-            return
-        }
+            if (newItems.isEmpty()) {
+                items = listOf()
+                notifyDataSetChanged()
+                return
+            }
 
-        if (items.isEmpty()) {
+            if (items.isEmpty()) {
+                items = newItems
+                notifyDataSetChanged()
+                return
+            }
+
+            val diffResult = DiffUtil.calculateDiff(diffCallback)
+            diffResult.dispatchUpdatesTo(this@BaseAdapter)
             items = diffCallback.newItems
-            notifyDataSetChanged()
-            return
         }
-
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-        diffResult.dispatchUpdatesTo(this)
-        items = diffCallback.newItems
     }
 
     /**
