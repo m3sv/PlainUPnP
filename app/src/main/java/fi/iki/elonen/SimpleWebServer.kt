@@ -145,8 +145,12 @@ open class SimpleWebServer(
         f: File,
         mime: String,
         header: Map<String, String>
-    ): NanoHTTPD.Response? {
-        var res: Response?
+    ): NanoHTTPD.Response {
+        var res: Response = NanoHTTPD.Response(
+            NanoHTTPD.Response.Status.FORBIDDEN,
+            NanoHTTPD.MIME_PLAINTEXT,
+            "FORBIDDEN: Reading file failed."
+        )
 
         try {
             // Calculate etag
@@ -219,18 +223,15 @@ open class SimpleWebServer(
                 }
             }
         } catch (ioe: IOException) {
-            res = NanoHTTPD.Response(
-                NanoHTTPD.Response.Status.FORBIDDEN,
-                NanoHTTPD.MIME_PLAINTEXT,
-                "FORBIDDEN: Reading file failed."
-            )
+            Timber.e(ioe)
         }
 
         // Announce that the file server accepts partial content requests
-        res?.addHeader(
+        res.addHeader(
             "Accept-Ranges",
             "bytes"
         )
+
         return res
     }
 

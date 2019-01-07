@@ -1,26 +1,3 @@
-/**
- * Copyright (C) 2013 Aurélien Chabot <aurelien></aurelien>@chabot.fr>
- *
- *
- * This file is part of DroidUPNP.
- *
- *
- * DroidUPNP is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- *
- * DroidUPNP is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- * You should have received a copy of the GNU General Public License
- * along with DroidUPNP.  If not, see <http:></http:>//www.gnu.org/licenses/>.
- */
-
 package org.droidupnp.legacy.mediaserver
 
 import android.content.Context
@@ -180,10 +157,13 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             }
 
             if (subtype.size == 0) {
-                if (type == ROOT_ID) container = rootContainer
-                if (type == AUDIO_ID) container = audioContainer
-                if (type == VIDEO_ID) container = videoContainer
-                if (type == IMAGE_ID) container = imageContainer
+                container = when (type) {
+                    ROOT_ID -> rootContainer
+                    AUDIO_ID -> audioContainer
+                    VIDEO_ID -> videoContainer
+                    IMAGE_ID -> imageContainer
+                    else -> container
+                }
             } else {
                 if (type == VIDEO_ID) {
                     if (subtype[0] == ALL_ID) {
@@ -306,6 +286,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         const val IMAGE_PREFIX = "i-"
         const val DIRECTORY_PREFIX = "d-"
 
-        fun isRoot(parentId: String?) = parentId?.compareTo(ContentDirectoryService.ROOT_ID.toString()) == 0
+        fun isRoot(parentId: String?) =
+            parentId?.compareTo(ContentDirectoryService.ROOT_ID.toString()) == 0
     }
 }

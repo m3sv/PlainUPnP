@@ -20,14 +20,15 @@
 package com.m3sv.plainupnp.upnp.discovery;
 
 
+import android.support.annotation.NonNull;
+
 import com.m3sv.plainupnp.data.upnp.UpnpDevice;
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent;
-
 import com.m3sv.plainupnp.upnp.ServiceListener;
 import com.m3sv.plainupnp.upnp.UpnpServiceController;
 
-import org.droidupnp.legacy.upnp.DeviceDiscoveryObserver;
 import org.droidupnp.legacy.upnp.CallableFilter;
+import org.droidupnp.legacy.upnp.DeviceDiscoveryObserver;
 import org.droidupnp.legacy.upnp.RegistryListener;
 
 import java.util.Collection;
@@ -37,23 +38,17 @@ import timber.log.Timber;
 
 public abstract class DeviceDiscovery {
 
-    protected boolean extendedInformation;
-
     protected final UpnpServiceController controller;
 
     private final BrowsingRegistryListener browsingRegistryListener;
 
     private final CopyOnWriteArrayList<DeviceDiscoveryObserver> observerList;
 
-    public DeviceDiscovery(UpnpServiceController controller, boolean extendedInformation) {
-        this.controller = controller;
-        browsingRegistryListener = new BrowsingRegistryListener();
-        this.extendedInformation = extendedInformation;
-        observerList = new CopyOnWriteArrayList<>();
-    }
-
     public DeviceDiscovery(UpnpServiceController controller) {
-        this(controller, false);
+        this.controller = controller;
+
+        browsingRegistryListener = new BrowsingRegistryListener();
+        observerList = new CopyOnWriteArrayList<>();
     }
 
     public void resume(ServiceListener serviceListener) {
@@ -68,7 +63,7 @@ public abstract class DeviceDiscovery {
     public class BrowsingRegistryListener implements RegistryListener {
 
         @Override
-        public void deviceAdded(final UpnpDevice device) {
+        public void deviceAdded(@NonNull final UpnpDevice device) {
             Timber.v("New device detected : " + device.getDisplayString());
 
             if (device.isFullyHydrated() && filter(device)) {
@@ -82,7 +77,7 @@ public abstract class DeviceDiscovery {
         }
 
         @Override
-        public void deviceRemoved(final UpnpDevice device) {
+        public void deviceRemoved(@NonNull final UpnpDevice device) {
             Timber.v("Device removed : " + device.getFriendlyName());
 
             if (filter(device)) {
@@ -105,6 +100,7 @@ public abstract class DeviceDiscovery {
 
         final Collection<UpnpDevice> upnpDevices = controller.getServiceListener()
                 .getFilteredDeviceList(getCallableFilter());
+
         for (UpnpDevice d : upnpDevices)
             o.addedDevice(new UpnpDeviceEvent.Added(d));
     }
@@ -113,12 +109,12 @@ public abstract class DeviceDiscovery {
         observerList.remove(o);
     }
 
-    public void notifyAdded(UpnpDevice device) {
+    private void notifyAdded(UpnpDevice device) {
         for (DeviceDiscoveryObserver o : observerList)
             o.addedDevice(new UpnpDeviceEvent.Added(device));
     }
 
-    public void notifyRemoved(UpnpDevice device) {
+    private void notifyRemoved(UpnpDevice device) {
         for (DeviceDiscoveryObserver o : observerList)
             o.removedDevice(new UpnpDeviceEvent.Removed(device));
     }
@@ -128,7 +124,6 @@ public abstract class DeviceDiscovery {
      *
      * @param device the device to test
      * @return add it or not
-     * @throws Exception
      */
     protected boolean filter(UpnpDevice device) {
         CallableFilter filter = getCallableFilter();
@@ -141,40 +136,13 @@ public abstract class DeviceDiscovery {
         return false;
     }
 
-    /**
-     * Get a callable device filter
-     *
-     * @return
-     */
     protected abstract CallableFilter getCallableFilter();
 
-    /**
-     * Filter to know if device is selected
-     *
-     * @param d
-     * @return
-     */
-    protected abstract boolean isSelected(UpnpDevice d);
+    protected abstract boolean isSelected(UpnpDevice device);
 
-    /**
-     * Select a device
-     *
-     * @param device
-     */
     protected abstract void select(UpnpDevice device);
 
-    /**
-     * Select a device
-     *
-     * @param device
-     * @param force
-     */
     protected abstract void select(UpnpDevice device, boolean force);
 
-    /**
-     * Callback when device removed
-     *
-     * @param d
-     */
-    protected abstract void removed(UpnpDevice d);
+    protected abstract void removed(UpnpDevice device);
 }

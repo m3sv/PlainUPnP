@@ -31,11 +31,9 @@ import com.m3sv.plainupnp.data.upnp.UpnpDevice;
 
 import org.droidupnp.legacy.cling.CDevice;
 import org.droidupnp.legacy.cling.CRegistryListener;
-import org.droidupnp.legacy.mediaserver.MediaServer;
 import org.droidupnp.legacy.upnp.CallableFilter;
 import org.droidupnp.legacy.upnp.RegistryListener;
 import org.fourthline.cling.android.AndroidUpnpService;
-import org.fourthline.cling.model.ValidationException;
 import org.fourthline.cling.model.message.header.STAllHeader;
 import org.fourthline.cling.model.meta.Device;
 
@@ -108,13 +106,13 @@ public class ServiceListener {
                 try {
                     // Local content directory
                     if (mediaServer == null) {
-                        mediaServer = new MediaServer(Utils.getLocalIpAddress(ctx), ctx);
+                        mediaServer = new MediaServer(ctx, Utils.getLocalIpAddress(ctx));
                         mediaServer.start();
                     } else {
                         mediaServer.restart();
                     }
-                    upnpService.getRegistry().addDevice(mediaServer.getDevice());
-                } catch (UnknownHostException | ValidationException e1) {
+                    upnpService.getRegistry().addDevice(mediaServer.getLocalDevice());
+                } catch (UnknownHostException e1) {
                     Timber.e(e1, "Creating demo device failed");
                 } catch (IOException e3) {
                     Timber.e(e3, "Starting http server failed");
