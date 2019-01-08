@@ -3,6 +3,7 @@ package com.m3sv.plainupnp.upnp
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.preference.PreferenceManager
 import android.provider.MediaStore
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.getSettingContentDirectoryName
@@ -81,6 +82,7 @@ class MediaServer(private val context: Context, private val localAddress: InetAd
         with(localService.manager.implementation as ContentDirectoryService) {
             context = this@MediaServer.context
             baseURL = address
+            sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
         }
     }
 

@@ -50,5 +50,8 @@
 
     <string name="search">Search…</string>
     <string name="play_locally">play locally</string>
+    <string name="about">About</string>
+    <string name="rate">Rate us</string>
+    <string name="open_play_store">Open Google Play</string>
 
 </resources>

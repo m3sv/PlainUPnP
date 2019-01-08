@@ -28,4 +28,17 @@
             android:title="@string/share_videos" />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="@string/about">
+        <PreferenceScreen
+            android:key="version"
+            android:summary="1.0"
+            android:title="Version" />
+
+        <Preference
+            android:key="rate"
+            android:summary="@string/open_play_store"
+            android:title="@string/rate" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
