@@ -3,6 +3,7 @@
     <PreferenceCategory android:title="@string/general_category">
         <SwitchPreference
             android:defaultValue="@bool/default_enable_dark_theme"
+            android:icon="@drawable/ic_theme"
             android:key="@string/dark_theme_key"
             android:title="@string/enable_dark_theme" />
     </PreferenceCategory>
@@ -10,16 +11,19 @@
     <PreferenceCategory android:title="@string/upnp_category">
         <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"
+            android:icon="@drawable/ic_image"
             android:key="pref_contentDirectoryService_image"
             android:title="@string/share_images" />
 
         <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"
+            android:icon="@drawable/ic_music"
             android:key="pref_contentDirectoryService_audio"
             android:title="@string/share_music" />
 
         <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"
+            android:icon="@drawable/ic_video"
             android:key="pref_contentDirectoryService_video"
             android:title="@string/share_videos" />
     </PreferenceCategory>
