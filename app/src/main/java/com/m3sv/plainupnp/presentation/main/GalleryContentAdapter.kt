@@ -112,8 +112,8 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
                 .into(thumbnail)
 
             title.text = item.name
-            title.setOnClickListener(onClick)
-            thumbnail.setOnClickListener(onClick)
+
+            container.setOnClickListener(onClick)
 
             contentType.setImageResource(contentTypeIcon)
             contentType.setOnClickListener(onClick)
