@@ -84,7 +84,9 @@ class ArtistContainer(
 
                 } while (moveToNext())
             }
-        }?.close()
+
+            close()
+        }
 
         return containers
     }
