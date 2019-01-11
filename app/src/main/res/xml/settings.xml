@@ -39,6 +39,11 @@
             android:summary="@string/open_play_store"
             android:title="@string/rate" />
 
+        <Preference
+            android:key="github"
+            android:summary="@string/github_link"
+            android:title="@string/github_link_title" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

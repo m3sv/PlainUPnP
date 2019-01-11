@@ -53,5 +53,7 @@
     <string name="about">About</string>
     <string name="rate">Rate us</string>
     <string name="open_play_store">Open Google Play</string>
+    <string name="github_link">https://github.com/m3sv/PlainUPnP</string>
+    <string name="github_link_title">Source code on Github</string>
 
 </resources>

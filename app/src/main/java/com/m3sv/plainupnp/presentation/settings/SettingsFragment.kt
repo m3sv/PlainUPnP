@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatDelegate
 import android.support.v7.preference.Preference
 import android.support.v7.preference.PreferenceFragmentCompat
 import android.view.View
+import android.view.ViewGroup
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.upnp.UpnpManager
 import dagger.android.support.DaggerAppCompatActivity
@@ -40,6 +41,13 @@ class SettingsFragment : PreferenceFragmentCompat(),
         val rate = findPreference("rate")
 
         rate.onPreferenceClickListener = this
+
+        val github = findPreference("github")
+        github.onPreferenceClickListener = this
+
+        listView.layoutParams = (listView.layoutParams as ViewGroup.MarginLayoutParams).apply {
+            bottomMargin = 64.toPx()
+        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -97,9 +105,22 @@ class SettingsFragment : PreferenceFragmentCompat(),
             true
         }
 
+        "github" -> {
+            val browserIntent =
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/m3sv/PlainUPnP"))
+            startActivity(browserIntent)
+            true
+        }
+
         else -> false
     }
 
+
+    private fun Int.toDp(): Int =
+        (this / this@SettingsFragment.resources.displayMetrics.density).toInt()
+
+    private fun Int.toPx(): Int =
+        (this * this@SettingsFragment.resources.displayMetrics.density).toInt()
 
     companion object {
         val TAG: String = SettingsFragment::class.java.simpleName

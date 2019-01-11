@@ -73,9 +73,7 @@ class MainFragment : BaseFragment() {
         })
 
         binding.content.run {
-            val spanCount =
-                if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 5
-                else 8
+            val spanCount = 5
 
             addItemDecoration(SpaceItemDecoration(16.dp))
             layoutManager = GridLayoutManager(
