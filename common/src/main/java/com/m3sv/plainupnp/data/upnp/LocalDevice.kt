@@ -1,10 +1,10 @@
 package com.m3sv.plainupnp.data.upnp
 
 
-class LocalDevice : UpnpDevice {
+class LocalDevice(private val _friendlyName: String = "Play locally") : UpnpDevice {
     override fun getDisplayString(): String = ""
 
-    override fun getFriendlyName(): String = "Play locally"
+    override fun getFriendlyName(): String = _friendlyName
 
     override fun getExtendedInformation(): String = ""
 

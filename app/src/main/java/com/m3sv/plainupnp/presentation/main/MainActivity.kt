@@ -58,7 +58,7 @@ class MainActivity : BaseActivity() {
             id: Long
         ) {
             Timber.d("Selected item: $position")
-            viewModel.selectContentDirectory(contentDirectoryAdapter.getItem(position).device)
+            viewModel.selectContentDirectory(contentDirectoryAdapter.getItem(position)?.device)
         }
     }
 
@@ -73,7 +73,7 @@ class MainActivity : BaseActivity() {
             id: Long
         ) {
             Timber.d("Selected renderer: $position")
-            viewModel.selectRenderer(rendererAdapter.getItem(position).device)
+            viewModel.selectRenderer(rendererAdapter.getItem(position)?.device)
         }
     }
 

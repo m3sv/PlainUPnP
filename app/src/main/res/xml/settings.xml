@@ -32,7 +32,7 @@
         <PreferenceScreen
             android:key="version"
             android:summary="1.0"
-            android:title="Version" />
+            android:title="@string/version" />
 
         <Preference
             android:key="rate"
@@ -41,7 +41,7 @@
 
         <Preference
             android:key="github"
-            android:summary="@string/github_link"
+            android:summary="@string/source_url"
             android:title="@string/github_link_title" />
 
     </PreferenceCategory>

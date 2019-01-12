@@ -90,7 +90,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_AUDIO, true)) {
                 audioContainer = BaseContainer(
                     AUDIO_ID.toString(), ROOT_ID.toString(),
-                    AUDIO_TXT, appName, baseURL
+                    context.getString(R.string.audio), appName, baseURL
                 )
 
                 with(rootContainer) {
@@ -101,7 +101,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 with(audioContainer) {
                     artistAudioContainer = ArtistContainer(
                         ARTIST_ID.toString(), AUDIO_ID.toString(),
-                        "Artist", appName, baseURL, context
+                        context.getString(R.string.artist), appName, baseURL, context
                     )
 
                     addContainer(artistAudioContainer)
@@ -109,7 +109,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                     albumAudioContainer = AlbumContainer(
                         ALBUM_ID.toString(), AUDIO_ID.toString(),
-                        "Album", appName, baseURL, context, null
+                        context.getString(R.string.album), appName, baseURL, context, null
                     )
 
                     addContainer(albumAudioContainer)
@@ -117,7 +117,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                     allAudioContainer = AudioContainer(
                         ALL_ID.toString(), AUDIO_ID.toString(),
-                        "All", appName, baseURL, context, null, null
+                        context.getString(R.string.all), appName, baseURL, context, null, null
                     )
 
                     addContainer(allAudioContainer)
@@ -131,14 +131,14 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)) {
                 imageContainer = BaseContainer(
-                    IMAGE_ID.toString(), ROOT_ID.toString(), IMAGE_TXT,
+                    IMAGE_ID.toString(), ROOT_ID.toString(), context.getString(R.string.images),
                     appName, baseURL
                 )
                 rootContainer.addContainer(imageContainer)
                 rootContainer.childCount = rootContainer.childCount + 1
 
                 allImageContainer = ImageContainer(
-                    "" + ALL_ID, "" + IMAGE_ID, "All",
+                    "" + ALL_ID, "" + IMAGE_ID, context.getString(R.string.all),
                     appName, baseURL, context
                 )
                 imageContainer.addContainer(allImageContainer)
@@ -260,7 +260,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         if (sharedPref.getBoolean(CONTENT_DIRECTORY_VIDEO, true)) {
             videoContainer = BaseContainer(
                 VIDEO_ID.toString(), ROOT_ID.toString(),
-                VIDEO_TXT, appName, baseURL
+                context.getString(R.string.videos), appName, baseURL
             )
 
             with(rootContainer) {
@@ -270,7 +270,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
             allVideoContainer = VideoContainer(
                 ALL_ID.toString(), VIDEO_ID.toString(),
-                "All", appName, baseURL, context
+                context.getString(R.string.all), appName, baseURL, context
             )
 
             with(videoContainer) {
@@ -289,11 +289,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         const val VIDEO_ID = 1
         const val AUDIO_ID = 2
         const val IMAGE_ID = 3
-
-        // Test
-        const val VIDEO_TXT = "Videos"
-        const val AUDIO_TXT = "Music"
-        const val IMAGE_TXT = "Images"
 
         // Type subfolder
         const val ALL_ID = 0

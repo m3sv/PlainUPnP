@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.upnp
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import android.content.Context
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.data.upnp.*
@@ -29,11 +30,13 @@ import java.util.concurrent.TimeUnit
 typealias RenderedItem = Triple<String?, String, RequestOptions>
 
 class DefaultUpnpManager constructor(
+    private val context: Context,
     private val controller: UpnpServiceController,
     private val factory: Factory
 ) : Observer, UpnpManager {
 
-    override val rendererDiscovery = RendererDiscoveryObservable(controller.rendererDiscovery)
+    override val rendererDiscovery =
+        RendererDiscoveryObservable(context, controller.rendererDiscovery)
 
     override val contentDirectoryDiscovery =
         ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)

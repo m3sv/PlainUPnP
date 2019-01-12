@@ -27,5 +27,5 @@ internal object AppModule {
     @ApplicationScope
     @JvmStatic
     fun provideUPnPManager(context: Context, factory: Factory) =
-        DefaultUpnpManager(factory.createUpnpServiceController(context), factory)
+        DefaultUpnpManager(context, factory.createUpnpServiceController(context), factory)
 }
