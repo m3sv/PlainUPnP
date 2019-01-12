@@ -66,8 +66,8 @@ class VideoContainer(
             MediaStore.Video.Media.MIME_TYPE,
             MediaStore.Video.Media.SIZE,
             MediaStore.Video.Media.DURATION,
-            MediaStore.Images.Media.HEIGHT,
-            MediaStore.Images.Media.WIDTH
+            MediaStore.Video.Media.HEIGHT,
+            MediaStore.Video.Media.WIDTH
         )
 
         ctx.contentResolver.query(uri, columns, where, whereVal, orderBy)?.apply {

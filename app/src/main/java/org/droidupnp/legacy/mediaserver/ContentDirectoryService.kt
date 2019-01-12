@@ -245,7 +245,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             )
         }
 
-        Timber.e("No container for this ID !!!")
+        Timber.e("No container for: $objectID")
         throw ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)
     }
 
@@ -255,6 +255,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
     ): Pair<Container?, Container?> {
         // Video
         var videoContainer: Container? = null
+
         var allVideoContainer: Container? = null
 
         if (sharedPref.getBoolean(CONTENT_DIRECTORY_VIDEO, true)) {
