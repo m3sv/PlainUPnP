@@ -67,7 +67,7 @@ public class ServiceListener {
     }
 
     public Collection<UpnpDevice> getDeviceList() {
-        ArrayList<UpnpDevice> deviceList = new ArrayList<>();
+        List<UpnpDevice> deviceList = new ArrayList<>();
         if (upnpService != null && upnpService.getRegistry() != null) {
             for (Device device : upnpService.getRegistry().getDevices()) {
                 deviceList.add(new CDevice(device));
@@ -77,7 +77,7 @@ public class ServiceListener {
     }
 
     public Collection<UpnpDevice> getFilteredDeviceList(CallableFilter filter) {
-        ArrayList<UpnpDevice> deviceList = new ArrayList<>();
+        List<UpnpDevice> deviceList = new ArrayList<>();
         try {
             if (upnpService != null && upnpService.getRegistry() != null) {
                 for (Device device : upnpService.getRegistry().getDevices()) {

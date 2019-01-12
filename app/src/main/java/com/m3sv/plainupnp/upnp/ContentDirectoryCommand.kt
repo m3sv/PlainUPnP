@@ -12,12 +12,10 @@ import org.fourthline.cling.support.contentdirectory.callback.Browse
 import org.fourthline.cling.support.contentdirectory.callback.Search
 import org.fourthline.cling.support.model.BrowseFlag
 import org.fourthline.cling.support.model.DIDLContent
-import org.fourthline.cling.support.model.SortCriterion
 import org.fourthline.cling.support.model.item.AudioItem
 import org.fourthline.cling.support.model.item.ImageItem
 import org.fourthline.cling.support.model.item.VideoItem
 import timber.log.Timber
-import java.util.*
 import java.util.concurrent.Future
 
 typealias ContentCallback = (List<DIDLObjectDisplay>?) -> Unit
@@ -41,10 +39,11 @@ class ContentDirectoryCommand(
         parent: String?,
         didl: DIDLContent?
     ): List<DIDLObjectDisplay> {
-        val result = ArrayList<DIDLObjectDisplay>()
+        val result = mutableListOf<DIDLObjectDisplay>()
 
-        if (parent != null)
-            result.add(DIDLObjectDisplay(ClingDIDLParentContainer(parent)))
+        parent?.let {
+            result.add(DIDLObjectDisplay(ClingDIDLParentContainer(it)))
+        }
 
         didl?.let {
             for (item in it.containers) {
@@ -84,8 +83,7 @@ class ContentDirectoryCommand(
                 BrowseFlag.DIRECT_CHILDREN,
                 "*",
                 0,
-                null,
-                SortCriterion(true, "dc:title")
+                null
             ) {
                 override fun received(actionInvocation: ActionInvocation<*>, didl: DIDLContent) {
                     callback(buildContentList(parent, didl))

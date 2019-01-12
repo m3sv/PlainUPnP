@@ -18,7 +18,6 @@ import org.fourthline.cling.support.model.DIDLContent
 import org.fourthline.cling.support.model.SortCriterion
 import org.fourthline.cling.support.model.container.Container
 import timber.log.Timber
-import java.util.*
 
 class ContentDirectoryService : AbstractContentDirectoryService() {
 
@@ -28,7 +27,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     lateinit var sharedPref: SharedPreferences
 
-    private val ss by lazy(mode = LazyThreadSafetyMode.NONE) {
+    private val stringSplitter by lazy(mode = LazyThreadSafetyMode.NONE) {
         TextUtils.SimpleStringSplitter(SEPARATOR)
     }
 
@@ -45,12 +44,12 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
         try {
             val didl = DIDLContent()
-            ss.setString(objectID)
+            stringSplitter.setString(objectID)
 
             var type = -1
-            val subtype = ArrayList<Int>()
+            val subtype = mutableListOf<Int>()
 
-            for (s in ss) {
+            for (s in stringSplitter) {
                 val i = Integer.parseInt(s)
                 if (type == -1) {
                     type = i
