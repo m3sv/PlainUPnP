@@ -12,5 +12,6 @@ class ClingDIDLParentContainer(id: String) : ClingDIDLObject(Container()),
         didlObject.id = id
     }
 
-    override fun getTitle(): String = "build/generated/not_namespaced_r_class_sources/debug/processDebugResources"
+    override val title: String
+        get() = ".."
 }

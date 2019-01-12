@@ -5,16 +5,17 @@ import com.m3sv.plainupnp.R
 import org.fourthline.cling.support.model.item.VideoItem
 
 class ClingVideoItem(item: VideoItem) : ClingDIDLItem(item) {
+    override val dataType: String
+        get() = "video/*"
 
-    override fun getDataType(): String = "video/*"
+    override val description: String
+        get() = didlObject.resources
+            ?.takeIf { it.isNotEmpty() }
+            ?.get(0)
+            ?.resolution ?: ""
 
-    override fun getDescription(): String = didlObject.resources
-        ?.takeIf { it.isNotEmpty() }
-        ?.get(0)
-        ?.resolution ?: ""
-
-    override fun getCount(): String =
-        didlObject.resources
+    override val count: String
+        get() = didlObject.resources
             ?.takeIf { it.isNotEmpty() }
             ?.get(0)
             ?.duration
@@ -24,5 +25,6 @@ class ClingVideoItem(item: VideoItem) : ClingDIDLItem(item) {
                     .toTypedArray()[0]
             } ?: ""
 
-    override fun getIcon(): Int = R.drawable.ic_action_video
+    override val icon: Int
+        get() = R.drawable.ic_action_video
 }

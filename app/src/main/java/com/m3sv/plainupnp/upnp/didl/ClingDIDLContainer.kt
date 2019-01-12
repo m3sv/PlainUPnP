@@ -34,7 +34,9 @@ class ClingDIDLContainer(item: Container) : ClingDIDLObject(item),
     override val childCount: Int
         get() = didlObject.takeIf { it is Container }?.let { (it as Container).childCount } ?: 0
 
-    override fun getCount(): String = Integer.toString(childCount)
+    override val count: String
+        get() = Integer.toString(childCount)
 
-    override fun getIcon(): Int = R.drawable.ic_action_collection
+    override val icon: Int
+        get() = R.drawable.ic_action_collection
 }

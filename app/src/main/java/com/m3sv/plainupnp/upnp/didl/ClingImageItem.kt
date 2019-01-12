@@ -9,25 +9,29 @@ import java.util.*
 
 class ClingImageItem(item: ImageItem) : ClingDIDLItem(item) {
 
-    override fun getDataType(): String = "image/*"
+    override val dataType: String
+        get() = "image/*"
 
-    override fun getDescription(): String = didlObject.resources
-        ?.takeIf { it.isNotEmpty() }
-        ?.get(0)
-        ?.resolution ?: ""
+    override val description: String
+        get() = didlObject.resources
+            ?.takeIf { it.isNotEmpty() }
+            ?.get(0)
+            ?.resolution ?: ""
 
-    override fun getCount(): String {
-        try {
-            val formatIn = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
-            val date = formatIn.parse((didlObject as ImageItem).date)
-            val formatOut = DateFormat.getDateTimeInstance()
-            return formatOut.format(date)
-        } catch (e: Exception) {
-            Timber.e(e)
+    override val count: String
+        get() {
+            try {
+                val formatIn = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US)
+                val date = formatIn.parse((didlObject as ImageItem).date)
+                val formatOut = DateFormat.getDateTimeInstance()
+                return formatOut.format(date)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
+
+            return ""
         }
 
-        return ""
-    }
-
-    override fun getIcon(): Int = R.drawable.ic_action_picture
+    override val icon: Int
+        get() = R.drawable.ic_action_picture
 }
