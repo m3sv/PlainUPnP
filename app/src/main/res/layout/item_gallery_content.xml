@@ -46,6 +46,8 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
+            android:maxLines="2"
+            android:ellipsize="end"
             android:gravity="top"
             android:includeFontPadding="false"
             app:layout_constraintBottom_toBottomOf="parent"
