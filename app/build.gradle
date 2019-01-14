@@ -67,23 +67,27 @@ dependencies {
     implementation deps.support.cardView
     implementation deps.support.constraintLayout
     implementation deps.support.preferences
+
     implementation deps.architectureComponents.lifecycle
     implementation deps.architectureComponents.lifecycleReactiveStreams
+
     implementation deps.timber
     implementation deps.kotlin
+
     implementation deps.rx.kotlin
     implementation deps.rx.binding
     implementation deps.rx.android
     implementation deps.rx.relay
+
     implementation deps.okHttp.loggingInterceptor
-    implementation deps.retrofit.core
-    implementation deps.retrofit.rxAdapter
-    implementation deps.retrofit.moshiConverter
+
     implementation deps.coroutines
+
     implementation(deps.glide.core) {
         exclude group: "com.android.support"
     }
     kapt deps.glide.compiler
+
     implementation deps.dagger.core
     compileOnly deps.dagger.annotation
     kapt deps.dagger.compiler
