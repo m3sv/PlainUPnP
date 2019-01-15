@@ -4,7 +4,10 @@
 <h2 align="center"><b>PlainUPnP</b></h2>
 <a href="https://play.google.com/store/apps/details?id=com.m3sv.plainupnp">
   <img alt="Android app on Google Play" src="https://play.google.com/intl/en_gb/badges/images/badge_new.png" />
-</a>
+</a> 
+
+[![CircleCI](https://circleci.com/gh/m3sv/PlainUPnP.svg?style=svg)](https://circleci.com/gh/m3sv/PlainUPnP)
+
 
 ## Table of contents
 
