@@ -181,11 +181,11 @@ public abstract class NanoHTTPD {
      *
      * @param uri     Percent-decoded URI without parameters, for example "/index.cgi"
      * @param method  "GET", "POST" etc.
-     * @param parms   Parsed, percent decoded parameters from URI and, in case of POST, data.
+     * @param params   Parsed, percent decoded parameters from URI and, in case of POST, data.
      * @param headers Header entries, percent decoded
      * @return HTTP response, see class Response for details
      */
-    public abstract Response serve(String uri, Method method, Map<String, String> headers, Map<String, String> parms,
+    public abstract Response serve(String uri, Method method, Map<String, String> headers, Map<String, String> params,
                                    Map<String, String> files);
 
     /**

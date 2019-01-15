@@ -43,7 +43,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         Timber.d("Will browse $objectID")
 
         try {
-            val didl = DIDLContent()
             stringSplitter.setString(objectID)
 
             var type = -1
@@ -68,6 +67,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             Timber.d("Browsing type $type")
 
             val appName = context.getString(R.string.app_name)
+
             val rootContainer = BaseContainer(
                 ROOT_ID.toString(), ROOT_ID.toString(),
                 appName, appName, baseURL
@@ -125,25 +125,10 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 }
             }
 
-            // Image
-            var imageContainer: Container? = null
-            var allImageContainer: Container? = null
-
-            if (sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)) {
-                imageContainer = BaseContainer(
-                    IMAGE_ID.toString(), ROOT_ID.toString(), context.getString(R.string.images),
-                    appName, baseURL
-                )
-                rootContainer.addContainer(imageContainer)
-                rootContainer.childCount = rootContainer.childCount + 1
-
-                allImageContainer = ImageContainer(
-                    "" + ALL_ID, "" + IMAGE_ID, context.getString(R.string.all),
-                    appName, baseURL, context
-                )
-                imageContainer.addContainer(allImageContainer)
-                imageContainer.childCount = imageContainer.childCount + 1
-            }
+            val (imageContainer: Container?, allImageContainer: Container?) = populateImageContainer(
+                appName,
+                rootContainer
+            )
 
             if (subtype.size == 0) {
                 container = when (type) {
@@ -208,24 +193,27 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 }
             }
 
-            if (container != null) {
+            container?.let {
                 Timber.d("List container...")
+                val didl = DIDLContent()
 
                 // Get container first
-                for (c in container.containers)
+                for (c in it.containers)
                     didl.addContainer(c)
 
                 Timber.d("List item...")
 
                 // Then get item
-                for (i in container.items)
+                for (i in it.items)
                     didl.addItem(i)
 
                 Timber.d("Return result...")
 
-                val count = container.childCount!!
+                val count = it.childCount
+
                 Timber.d("Child count: $count")
-                var answer = ""
+                val answer: String
+
                 try {
                     answer = DIDLParser().generate(didl)
                 } catch (ex: Exception) {
@@ -246,6 +234,32 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
         Timber.e("No container for: $objectID")
         throw ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)
+    }
+
+    private fun populateImageContainer(
+        appName: String,
+        rootContainer: BaseContainer
+    ): Pair<Container?, Container?> {
+        // Image
+        var imageContainer: Container? = null
+        var allImageContainer: Container? = null
+
+        if (sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)) {
+            imageContainer = BaseContainer(
+                IMAGE_ID.toString(), ROOT_ID.toString(), context.getString(R.string.images),
+                appName, baseURL
+            )
+            rootContainer.addContainer(imageContainer)
+            rootContainer.childCount = rootContainer.childCount + 1
+
+            allImageContainer = ImageContainer(
+                ALL_ID.toString(), IMAGE_ID.toString(), context.getString(R.string.all),
+                appName, baseURL, context
+            )
+            imageContainer.addContainer(allImageContainer)
+            imageContainer.childCount = imageContainer.childCount + 1
+        }
+        return Pair(imageContainer, allImageContainer)
     }
 
     private fun populateVideoContainer(
