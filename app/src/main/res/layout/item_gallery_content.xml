@@ -1,61 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data class="GalleryContentItemBinding" />
 
-    <android.support.constraint.ConstraintLayout
+    <FrameLayout
         android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="wrap_content"
+        android:layout_height="158dp">
 
         <ImageView
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitCenter"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_height="126dp"
+            android:scaleType="centerCrop"
             tools:src="@drawable/ic_folder" />
 
         <View
             android:id="@+id/content_shadow"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="24dp"
-            android:background="@drawable/content_shadow"
-            app:layout_constraintBottom_toBottomOf="@+id/thumbnail"
-            app:layout_constraintEnd_toEndOf="@+id/thumbnail"
-            app:layout_constraintStart_toStartOf="@id/thumbnail" />
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/content_shadow" />
 
         <ImageView
             android:id="@+id/content_type"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            app:layout_constraintBottom_toBottomOf="@+id/thumbnail"
-            app:layout_constraintEnd_toEndOf="@+id/thumbnail" />
+            android:layout_gravity="bottom|end"
+            android:layout_marginBottom="32dp" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
+            android:layout_gravity="bottom|center"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:maxLines="2"
             android:ellipsize="end"
             android:gravity="top"
             android:includeFontPadding="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@id/thumbnail"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/thumbnail"
-            app:layout_constraintVertical_bias="0.0"
-            tools:text="title" />
+            android:maxLines="2"
+            tools:text="Really long title for the tst " />
 
-    </android.support.constraint.ConstraintLayout>
+    </FrameLayout>
 </layout>

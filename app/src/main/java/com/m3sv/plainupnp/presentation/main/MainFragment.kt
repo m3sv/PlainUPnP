@@ -1,12 +1,12 @@
 package com.m3sv.plainupnp.presentation.main
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.jakewharton.rxbinding2.widget.RxTextView
-import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.SpaceItemDecoration
 import com.m3sv.plainupnp.common.utils.dp
 import com.m3sv.plainupnp.data.upnp.DIDLItem
@@ -73,9 +73,14 @@ class MainFragment : BaseFragment() {
         })
 
         binding.content.run {
-            val spanCount = resources.getInteger(R.integer.span_count)
+            val orientation = resources.configuration.orientation
+            val spanCount = if (orientation == Configuration.ORIENTATION_PORTRAIT) {
+                4
+            } else {
+                6
+            }
 
-            addItemDecoration(SpaceItemDecoration(16.dp))
+            addItemDecoration(SpaceItemDecoration(2.dp))
             layoutManager = GridLayoutManager(
                 requireActivity(),
                 spanCount,
