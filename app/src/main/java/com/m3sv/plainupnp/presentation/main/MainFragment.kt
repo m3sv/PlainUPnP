@@ -1,7 +1,10 @@
 package com.m3sv.plainupnp.presentation.main
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.res.Configuration
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +14,12 @@ import com.m3sv.plainupnp.common.SpaceItemDecoration
 import com.m3sv.plainupnp.common.utils.dp
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
+import com.m3sv.plainupnp.disposeBy
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.main.data.toItems
 import com.m3sv.plainupnp.upnp.BrowseToModel
 import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.RenderItem
-import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 
@@ -60,6 +63,8 @@ class MainFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
+
         contentAdapter = GalleryContentAdapter(object : OnItemClickListener {
             override fun onDirectoryClick(itemUri: String?, parentId: String?) {
                 itemUri?.let {
@@ -88,14 +93,42 @@ class MainFragment : BaseFragment() {
                 false
             )
 
-
             adapter = contentAdapter
         }
 
-        disposables += RxTextView.textChanges(binding.filter)
-            .subscribeBy(onNext = {
-                contentAdapter.filter(it)
-            }, onError = Timber::e)
+        RxTextView.textChanges(binding.filter)
+            .subscribeBy(onNext = contentAdapter::filter, onError = Timber::e)
+            .disposeBy(disposables)
+
+        with(binding) {
+            expandSearch.setOnClickListener {
+                filter.translationX = filter.width.toFloat()
+                filter.animate().x(0f)
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationStart(animation: Animator?) {
+                            filter.visibility = View.VISIBLE
+                        }
+                    })
+
+                closeSearch.visibility = View.VISIBLE
+                expandSearch.visibility = View.GONE
+            }
+
+            closeSearch.setOnClickListener {
+                filter.animate()
+                    .translationX(filter.width.toFloat())
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                            filter.visibility = View.INVISIBLE
+                        }
+                    })
+
+                closeSearch.visibility = View.GONE
+                expandSearch.visibility = View.VISIBLE
+            }
+        }
+
 
         with(viewModel.contentData) {
             nonNullObserve(::handleContentState)

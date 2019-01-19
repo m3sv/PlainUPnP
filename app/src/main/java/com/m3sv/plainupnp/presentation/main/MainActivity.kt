@@ -13,8 +13,11 @@ import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v4.view.MenuItemCompat
+import android.view.Menu
 import android.view.View
 import android.widget.AdapterView
+import android.widget.SearchView
 import android.widget.SeekBar
 import android.widget.Toast
 import com.bumptech.glide.Glide

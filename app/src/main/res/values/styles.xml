@@ -17,6 +17,7 @@
   along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
+
     <style name="ActivityTheme.Primary.Base.Light" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="primaryTextColor">@color/colorPrimary</item>
         <item name="secondaryTextColor">@color/colorPrimary</item>
@@ -26,6 +27,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="backgroundColor">@color/lightBackground</item>
+        <item name="searchViewColor">@color/colorPrimary</item>
     </style>
 
     <style name="ActivityTheme.Primary.Base.Dark" parent="Theme.AppCompat.NoActionBar">
@@ -37,6 +39,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="backgroundColor">@color/darkBackground</item>
+        <item name="searchViewColor">@color/whiteHalfTransparent</item>
     </style>
 
     <!-- Specific Feed activity theme -->

@@ -26,14 +26,38 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <EditText
-                android:id="@+id/filter"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/transparent"
-                android:hint="@string/search"
-                android:inputType="text"
-                android:singleLine="true" />
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/filter"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/transparent"
+                    android:hint="@string/search"
+                    android:inputType="text"
+                    android:visibility="invisible"
+                    android:singleLine="true" />
+
+                <ImageView
+                    android:id="@+id/expand_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_search" />
+
+                <ImageView
+                    android:id="@+id/close_search"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_close"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+
         </android.support.v7.widget.Toolbar>
 
         <android.support.v7.widget.RecyclerView

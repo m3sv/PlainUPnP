@@ -6,5 +6,6 @@
         <attr name="dividerColor" format="color" />
         <attr name="iconPlaceholder" format="integer" />
         <attr name="backgroundColor" format="color" />
+        <attr name="searchViewColor" format="color" />
     </declare-styleable>
 </resources>
