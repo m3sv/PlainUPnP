@@ -65,9 +65,9 @@ data class RenderItem(val item: DIDLItem, val position: Int)
 
 data class LaunchLocally(val uri: String, val contentType: String)
 
-data class BrowseToModel(val id: String, val parentId: String?, val addToStructure: Boolean = true)
+data class BrowseToModel(val id: String, val directoryName: String, val parentId: String?, val addToStructure: Boolean = true)
 
 sealed class ContentState {
     object Loading : ContentState()
-    data class Success(val content: List<DIDLObjectDisplay>) : ContentState()
+    data class Success(val folderName: String, val content: List<DIDLObjectDisplay>) : ContentState()
 }

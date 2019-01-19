@@ -224,7 +224,7 @@ class DefaultUpnpManager constructor(
     }
 
     override fun browseHome() {
-        browseTo.onNext(BrowseToModel("0", null))
+        browseTo.onNext(BrowseToModel("0", currentContentDirectory?.friendlyName ?: "Home", null))
     }
 
     override fun browseTo(model: BrowseToModel) {
@@ -239,16 +239,22 @@ class DefaultUpnpManager constructor(
         browseFuture?.cancel(true)
 
         browseFuture = factory.createContentDirectoryCommand()?.browse(model.id, null) {
-            _contentData.postValue(ContentState.Success(it ?: listOf()))
+            _contentData.postValue(ContentState.Success(model.directoryName, it ?: listOf()))
         }
 
         when (model.id) {
             "0" -> {
-                selectedDirectory.onNext(Directory.Home)
-                directoriesStructure = LinkedList<Directory>().apply { add(Directory.Home) }
+                selectedDirectory.onNext(
+                    Directory.Home(
+                        currentContentDirectory?.friendlyName ?: "Home"
+                    )
+                )
+                directoriesStructure =
+                        LinkedList<Directory>().apply { add(Directory.Home(model.directoryName)) }
             }
             else -> {
-                val subDirectory = Directory.SubDirectory(model.id, model.parentId)
+                val subDirectory =
+                    Directory.SubDirectory(model.id, model.directoryName, model.parentId)
                 selectedDirectory.onNext(subDirectory)
                 if (model.addToStructure)
                     directoriesStructure.addFirst(subDirectory)
@@ -261,11 +267,22 @@ class DefaultUpnpManager constructor(
         val element = directoriesStructure.pop()
         when (element) {
             is Directory.Home -> {
-                browseTo(BrowseToModel("0", null))
+                browseTo(BrowseToModel("0", currentContentDirectory?.friendlyName ?: "Home", null))
             }
 
             is Directory.SubDirectory -> {
-                browseTo(BrowseToModel(element.parentId!!, element.parentId, false))
+                browseTo(
+                    if (element.parentId == "0")
+                        BrowseToModel("0", currentContentDirectory?.friendlyName ?: "Home", null)
+                    else
+                        BrowseToModel(
+                            element.parentId ?: "0",
+                            element.name,
+                            element.parentId,
+                            false
+                        )
+                )
+
             }
         }
         Timber.d("Browse previous: $element")

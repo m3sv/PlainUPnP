@@ -19,7 +19,7 @@ import com.m3sv.plainupnp.presentation.main.data.Item
 
 
 interface OnItemClickListener {
-    fun onDirectoryClick(itemUri: String?, parentId: String?)
+    fun onDirectoryClick(directoryName: String, itemUri: String?, parentId: String?)
 
     fun onItemClick(item: DIDLItem, position: Int)
 }
@@ -129,7 +129,7 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
             thumbnail.setImageResource(R.drawable.ic_folder)
             container.setOnClickListener {
                 if (clickable)
-                    onItemClickListener.onDirectoryClick(item.uri, item.parentId)
+                    onItemClickListener.onDirectoryClick(item.name, item.uri, item.parentId)
             }
         }
     }

@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.presentation.main
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.animation.AnimatorSet
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -35,6 +36,7 @@ class MainFragment : BaseFragment() {
     private fun handleContentState(contentState: ContentState) {
         when (contentState) {
             is ContentState.Success -> {
+                binding.folderName.text = contentState.folderName
                 contentAdapter.setWithDiff(contentState.content.toItems())
                 hideProgress()
             }
@@ -66,9 +68,13 @@ class MainFragment : BaseFragment() {
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
 
         contentAdapter = GalleryContentAdapter(object : OnItemClickListener {
-            override fun onDirectoryClick(itemUri: String?, parentId: String?) {
+            override fun onDirectoryClick(
+                directoryName: String,
+                itemUri: String?,
+                parentId: String?
+            ) {
                 itemUri?.let {
-                    viewModel.browseTo(BrowseToModel(itemUri, parentId))
+                    viewModel.browseTo(BrowseToModel(itemUri, directoryName, parentId))
                 } ?: Timber.e("Item URI is null")
             }
 
@@ -103,6 +109,12 @@ class MainFragment : BaseFragment() {
         with(binding) {
             expandSearch.setOnClickListener {
                 filter.translationX = filter.width.toFloat()
+                folderName.animate().translationX(-folderName.width.toFloat())
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            folderName.visibility = View.GONE
+                        }
+                    })
                 filter.animate().x(0f)
                     .setListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationStart(animation: Animator?) {
@@ -115,6 +127,11 @@ class MainFragment : BaseFragment() {
             }
 
             closeSearch.setOnClickListener {
+                folderName.animate().x(0f).setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator?) {
+                        folderName.visibility = View.VISIBLE
+                    }
+                })
                 filter.animate()
                     .translationX(filter.width.toFloat())
                     .setListener(object : AnimatorListenerAdapter() {
