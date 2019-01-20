@@ -1,5 +1,6 @@
 package fi.iki.elonen
 
+import android.os.Debug
 import fi.iki.elonen.nanohttpd.Method
 import fi.iki.elonen.nanohttpd.NanoHTTPD
 import timber.log.Timber
@@ -131,11 +132,7 @@ open class SimpleWebServer(
                 res = serveFile(f, mime, header)
             }
         } catch (ioe: IOException) {
-            res = NanoHTTPD.Response(
-                NanoHTTPD.Response.Status.FORBIDDEN,
-                NanoHTTPD.MIME_PLAINTEXT,
-                "FORBIDDEN: Reading file failed."
-            )
+            res = FORBIDDEN_READING_FAILED
         }
 
         return res
@@ -146,11 +143,7 @@ open class SimpleWebServer(
         mime: String,
         header: Map<String, String>
     ): NanoHTTPD.Response {
-        var res: Response = NanoHTTPD.Response(
-            NanoHTTPD.Response.Status.FORBIDDEN,
-            NanoHTTPD.MIME_PLAINTEXT,
-            "FORBIDDEN: Reading file failed."
-        )
+        var res: Response = FORBIDDEN_READING_FAILED
 
         try {
             // Calculate etag
@@ -160,14 +153,14 @@ open class SimpleWebServer(
             var startFrom: Long = 0
             var endAt: Long = -1
             var range: String? = header["range"]
-            if (range != null) {
-                if (range.startsWith("bytes=")) {
-                    range = range.substring("bytes=".length)
-                    val minus = range.indexOf('-')
+            range?.let {
+                if (it.startsWith("bytes=")) {
+                    range = it.substring("bytes=".length)
+                    val minus = it.indexOf('-')
                     try {
                         if (minus > 0) {
-                            startFrom = java.lang.Long.parseLong(range.substring(0, minus))
-                            endAt = java.lang.Long.parseLong(range.substring(minus + 1))
+                            startFrom = java.lang.Long.parseLong(it.substring(0, minus))
+                            endAt = java.lang.Long.parseLong(it.substring(minus + 1))
                         }
                     } catch (ignored: NumberFormatException) {
                     }
@@ -372,6 +365,12 @@ open class SimpleWebServer(
             "zip" to "application/octet-stream",
             "exe" to "application/octet-stream",
             "class" to "application/octet-stream"
+        )
+
+        private val FORBIDDEN_READING_FAILED = NanoHTTPD.Response(
+            NanoHTTPD.Response.Status.FORBIDDEN,
+            NanoHTTPD.MIME_PLAINTEXT,
+            "FORBIDDEN: Reading file failed."
         )
     }
 }

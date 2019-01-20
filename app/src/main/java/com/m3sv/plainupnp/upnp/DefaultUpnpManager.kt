@@ -88,7 +88,8 @@ class DefaultUpnpManager constructor(
 
     init {
         renderItem.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::render, Timber::e)
-        browseTo.doOnNext {
+
+        browseTo.distinctUntilChanged().doOnNext {
             _contentData.postValue(ContentState.Loading)
         }.throttleLast(500, TimeUnit.MILLISECONDS).subscribe(::browse, Timber::e)
     }
@@ -151,13 +152,24 @@ class DefaultUpnpManager constructor(
 
             Timber.i("New renderer state: $newRendererState")
             newRendererState
-        }?.subscribeBy(onNext = _rendererState::postValue, onError = Timber::e)
+        }?.subscribeBy(onNext = {
+            _rendererState.postValue(it)
+            if (it.state == UpnpRendererState.State.STOP) {
+                rendererCommand?.pause()
+            }
+        }, onError = Timber::e)
 
         rendererCommand = factory.createRendererCommand(upnpRendererStateObservable)
             ?.apply {
                 if (item.item !is ClingImageItem)
                     resume()
-                updateFull()
+                else
+                    _rendererState.postValue(
+                        RendererState(
+                            progress = 0,
+                            state = UpnpRendererState.State.STOP
+                        )
+                    )
                 launchItem(item.item)
             }
     }
@@ -264,11 +276,12 @@ class DefaultUpnpManager constructor(
     }
 
     override fun browsePrevious() {
-        val element = directoriesStructure.pop()
+        val element = if (!directoriesStructure.isEmpty())
+            directoriesStructure.pop()
+        else Directory.Home(currentContentDirectory?.friendlyName ?: "Home")
+
         when (element) {
-            is Directory.Home -> {
-                browseTo(BrowseToModel("0", currentContentDirectory?.friendlyName ?: "Home", null))
-            }
+            is Directory.Home -> browseHome()
 
             is Directory.SubDirectory -> {
                 browseTo(

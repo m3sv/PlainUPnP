@@ -22,7 +22,7 @@ package com.m3sv.plainupnp.data.upnp;
 public interface UpnpRendererState {
 
     enum State {
-        PLAY, PAUSE, STOP
+        PLAY, PAUSE, STOP, INITIALIZING
     }
 
     State getState();

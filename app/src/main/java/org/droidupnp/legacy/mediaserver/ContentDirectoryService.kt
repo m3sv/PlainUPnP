@@ -79,6 +79,10 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 appName, appName, baseURL
             )
 
+            val (imageContainer: Container?, allImageContainer: Container?) = populateImageContainer(
+                rootContainer
+            )
+
             // Audio
             var audioContainer: Container? = null
 
@@ -126,9 +130,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 }
             }
 
-            val (imageContainer: Container?, allImageContainer: Container?) = populateImageContainer(
-                rootContainer
-            )
+
 
             val (videoContainer: Container?, allVideoContainer: Container?) = populateVideoContainer(
                 rootContainer

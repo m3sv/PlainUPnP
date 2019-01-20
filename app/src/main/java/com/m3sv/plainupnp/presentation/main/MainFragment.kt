@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.presentation.main
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.animation.AnimatorSet
 import android.content.res.Configuration
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -13,6 +12,8 @@ import android.view.ViewGroup
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.m3sv.plainupnp.common.SpaceItemDecoration
 import com.m3sv.plainupnp.common.utils.dp
+import com.m3sv.plainupnp.common.utils.hideSoftInput
+import com.m3sv.plainupnp.common.utils.showSoftInput
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
 import com.m3sv.plainupnp.disposeBy
@@ -108,50 +109,68 @@ class MainFragment : BaseFragment() {
 
         with(binding) {
             expandSearch.setOnClickListener {
-                filter.translationX = filter.width.toFloat()
-                folderName.animate().translationX(-folderName.width.toFloat())
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            folderName.visibility = View.GONE
-                        }
-                    })
-                filter.animate().x(0f)
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationStart(animation: Animator?) {
-                            filter.visibility = View.VISIBLE
-                        }
-                    })
-
-                closeSearch.visibility = View.VISIBLE
-                expandSearch.visibility = View.GONE
+                showFilter()
             }
 
             closeSearch.setOnClickListener {
-                folderName.animate().x(0f).setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationStart(animation: Animator?) {
-                        folderName.visibility = View.VISIBLE
-                    }
-                })
-                filter.animate()
-                    .translationX(filter.width.toFloat())
-                    .setListener(object : AnimatorListenerAdapter() {
-                        override fun onAnimationEnd(animation: Animator?) {
-                            super.onAnimationEnd(animation)
-                            filter.visibility = View.INVISIBLE
-                        }
-                    })
-
-                closeSearch.visibility = View.GONE
-                expandSearch.visibility = View.VISIBLE
+                hideFilter()
             }
         }
-
 
         with(viewModel.contentData) {
             nonNullObserve(::handleContentState)
 
             if (value is ContentState.Success)
                 contentAdapter.setWithDiff((value as ContentState.Success).content.toItems())
+        }
+    }
+
+    private fun hideFilter() {
+        with(binding) {
+            folderName.animate().x(0f).setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationStart(animation: Animator?) {
+                    filter.hideSoftInput()
+                    folderName.visibility = View.VISIBLE
+                }
+            })
+
+            filter.animate()
+                .translationX(filter.width.toFloat())
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        super.onAnimationEnd(animation)
+                        filter.visibility = View.INVISIBLE
+                        filter.setText("")
+                    }
+                })
+
+            closeSearch.visibility = View.GONE
+            expandSearch.visibility = View.VISIBLE
+        }
+    }
+
+    private fun showFilter() {
+        with(binding) {
+            filter.translationX = filter.width.toFloat()
+
+            folderName.animate().translationX(-folderName.width.toFloat())
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        folderName.visibility = View.GONE
+                    }
+                })
+
+            filter.animate().x(0f)
+                .setListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationStart(animation: Animator?) {
+                        filter.visibility = View.VISIBLE
+                        filter.requestFocus()
+                        filter.showSoftInput()
+                    }
+                })
+
+            closeSearch.visibility = View.VISIBLE
+            expandSearch.visibility = View.GONE
         }
     }
 

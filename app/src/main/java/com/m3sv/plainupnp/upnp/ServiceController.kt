@@ -33,14 +33,10 @@ import javax.inject.Inject
 class ServiceController @Inject constructor(private val context: Context) :
     BaseUpnpServiceController() {
 
-    private val upnpServiceListener: ServiceListener =
-        ServiceListener(context)
-
-    override val serviceListener: ServiceListener
-        get() = upnpServiceListener
+    override val serviceListener: ServiceListener = ServiceListener(context)
 
     override fun pause() {
-        context.unbindService(upnpServiceListener.serviceConnection)
+        context.unbindService(serviceListener.serviceConnection)
         super.pause()
     }
 
@@ -49,16 +45,16 @@ class ServiceController @Inject constructor(private val context: Context) :
         // This will start the UPnP service if it wasn't already started
         Timber.d("Start UPnP service")
         context.bindService(
-            Intent(context, UpnpService::class.java), upnpServiceListener.serviceConnection,
+            Intent(context, UpnpService::class.java), serviceListener.serviceConnection,
             Context.BIND_AUTO_CREATE
         )
     }
 
     override fun addDevice(localDevice: LocalDevice) {
-        upnpServiceListener.upnpService.registry.addDevice(localDevice)
+        serviceListener.upnpService.registry.addDevice(localDevice)
     }
 
     override fun removeDevice(localDevice: LocalDevice) {
-        upnpServiceListener.upnpService.registry.removeDevice(localDevice)
+        serviceListener.upnpService.registry.removeDevice(localDevice)
     }
 }

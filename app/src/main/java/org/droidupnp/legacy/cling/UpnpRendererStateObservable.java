@@ -118,7 +118,7 @@ public class UpnpRendererStateObservable extends Observable<UpnpRendererStateMod
         public UpnpInnerState(Observer<? super UpnpRendererStateModel> observer) {
             super();
             this.observer = observer;
-            state = State.STOP;
+            state = State.INITIALIZING;
             volume = -1;
             resetTrackInfo();
 

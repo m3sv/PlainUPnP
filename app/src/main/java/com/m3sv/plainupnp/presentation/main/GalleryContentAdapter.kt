@@ -29,6 +29,10 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
 
     var clickable = true
 
+    private val emptyRequestOptions = RequestOptions()
+
+    private val audioRequestOptions = RequestOptions().placeholder(R.drawable.ic_music_note)
+
     override fun getItemViewType(position: Int): Int = items[position].type.ordinal
 
     override fun onCreateViewHolder(
@@ -73,21 +77,17 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
                 item,
                 R.drawable.ic_image,
                 itemClickListener,
-                RequestOptions()
+                emptyRequestOptions
             )
             ContentType.VIDEO -> loadData(
                 holder,
                 item,
                 R.drawable.ic_video,
                 itemClickListener,
-                RequestOptions()
+                emptyRequestOptions
             )
             ContentType.AUDIO -> loadData(
-                holder,
-                item,
-                R.drawable.ic_music,
-                itemClickListener,
-                RequestOptions().placeholder(R.drawable.ic_music_note)
+                holder, item, R.drawable.ic_music, itemClickListener, audioRequestOptions
             )
 
             ContentType.DIRECTORY -> loadDirectory(holder, item)
@@ -107,14 +107,13 @@ class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener
         with(holder.extractBinding<GalleryContentItemBinding>()) {
             Glide.with(holder.itemView)
                 .load(item.uri)
-                .thumbnail(0.25f)
+                .thumbnail(0.1f)
                 .apply(requestOptions)
                 .into(thumbnail)
 
             title.text = item.name
 
             container.setOnClickListener(onClick)
-
             contentType.setImageResource(contentTypeIcon)
             contentType.setOnClickListener(onClick)
         }

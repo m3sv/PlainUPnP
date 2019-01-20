@@ -2,10 +2,10 @@ package com.m3sv.plainupnp.data.upnp
 
 
 data class RendererState(
-    val durationRemaining: String?,
-    val durationElapse: String?,
+    val durationRemaining: String? = null,
+    val durationElapse: String? = null,
     val progress: Int,
-    val title: String?,
-    val artist: String?,
+    val title: String? = null,
+    val artist: String? = null,
     val state: UpnpRendererState.State
 )

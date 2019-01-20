@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.upnp
 
+import android.os.Handler
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
 import kotlinx.coroutines.*
@@ -45,7 +46,7 @@ class RendererCommand(
         Timber.v("Resume renderer")
         job.cancel()
         job = Job()
-        launch { updateInfo() }
+        Handler().postDelayed({launch { updateInfo() }}, 500)
     }
 
     private fun getRenderingControlService(): Service<*, *>? =

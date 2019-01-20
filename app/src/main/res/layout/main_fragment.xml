@@ -10,7 +10,7 @@
             type="com.m3sv.plainupnp.presentation.main.MainFragmentViewModel" />
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -21,10 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
             android:background="?attr/backgroundColor"
-            android:elevation="4dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:elevation="4dp">
 
             <FrameLayout
                 android:layout_width="match_parent"
@@ -67,21 +64,16 @@
                     android:src="@drawable/ic_close"
                     android:visibility="gone" />
             </FrameLayout>
-
-
         </android.support.v7.widget.Toolbar>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/content"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="match_parent"
             android:layout_marginBottom="64dp"
             android:clipToPadding="false"
-            android:paddingTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar" />
+            android:layout_marginTop="?actionBarSize"
+            android:paddingTop="8dp" />
 
         <ProgressBar
             android:id="@+id/progress"
@@ -89,11 +81,7 @@
             android:layout_height="wrap_content"
             android:indeterminateTint="@color/colorPrimary"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar"
-            app:layout_constraintVertical_bias="0.45"
+            android:layout_gravity="center"
             tools:visibility="visible" />
-    </android.support.constraint.ConstraintLayout>
+    </FrameLayout>
 </layout>

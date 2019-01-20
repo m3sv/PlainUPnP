@@ -1,41 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         android:id="@+id/container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_width="72dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/thumbnail"
             android:layout_width="64dp"
-            android:layout_height="wrap_content"
+            android:layout_height="68dp"
             android:layout_marginTop="8dp"
-            android:adjustViewBounds="true"
-            android:scaleType="centerCrop"
-            app:layout_constraintEnd_toEndOf="@id/title"
-            app:layout_constraintStart_toStartOf="@id/title"
-            app:layout_constraintTop_toTopOf="parent"
             tools:src="@drawable/ic_folder" />
 
         <TextView
             android:id="@+id/title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:layout_marginBottom="8dp"
             android:gravity="center"
-            android:singleLine="true"
             android:ellipsize="end"
             android:includeFontPadding="false"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/thumbnail"
-            app:layout_constraintVertical_bias="0.0"
+            android:maxLines="2"
             tools:text="very long title" />
 
-    </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
 </layout>

@@ -1,7 +1,6 @@
 package com.m3sv.plainupnp.upnp
 
 import android.arch.lifecycle.LiveData
-import com.jakewharton.rxrelay2.Relay
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
@@ -65,9 +64,18 @@ data class RenderItem(val item: DIDLItem, val position: Int)
 
 data class LaunchLocally(val uri: String, val contentType: String)
 
-data class BrowseToModel(val id: String, val directoryName: String, val parentId: String?, val addToStructure: Boolean = true)
+/**
+ * Seed is a workaround for distinct in Relay, just set it to random number when going home
+ */
+data class BrowseToModel(
+    val id: String,
+    val directoryName: String,
+    val parentId: String?,
+    val addToStructure: Boolean = true
+)
 
 sealed class ContentState {
     object Loading : ContentState()
-    data class Success(val folderName: String, val content: List<DIDLObjectDisplay>) : ContentState()
+    data class Success(val folderName: String, val content: List<DIDLObjectDisplay>) :
+        ContentState()
 }

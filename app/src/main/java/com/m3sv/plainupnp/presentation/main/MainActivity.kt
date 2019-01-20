@@ -116,6 +116,13 @@ class MainActivity : BaseActivity() {
                         viewModel.resumePlayback()
                     }, onError = Timber::e)
                 }
+
+                UpnpRendererState.State.INITIALIZING-> {
+                    play.setImageResource(R.drawable.ic_play_arrow)
+                    RxView.clicks(play).subscribeBy(onNext = {
+                        viewModel.resumePlayback()
+                    }, onError = Timber::e)
+                }
             }
         }
     }
