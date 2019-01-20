@@ -8,7 +8,7 @@
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="wrap_content"
-        android:layout_height="158dp">
+        android:layout_height="172dp">
 
         <ImageView
             android:id="@+id/thumbnail"
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="24dp"
             android:layout_gravity="bottom"
-            android:layout_marginBottom="32dp"
+            android:layout_marginBottom="46dp"
             android:background="@drawable/content_shadow" />
 
         <ImageView
@@ -30,12 +30,12 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="bottom|end"
-            android:layout_marginBottom="32dp" />
+            android:layout_marginBottom="46dp" />
 
         <TextView
             android:id="@+id/title"
             android:layout_width="wrap_content"
-            android:layout_height="32dp"
+            android:layout_height="38dp"
             android:layout_gravity="bottom|center"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
@@ -43,7 +43,7 @@
             android:gravity="top"
             android:includeFontPadding="false"
             android:maxLines="2"
-            tools:text="Really long title for the tst " />
+            tools:text="really long titlereally long titlereally long titlereally long titlereally long titlereally long titlereally long title " />
 
     </FrameLayout>
 </layout>

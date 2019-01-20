@@ -9,6 +9,7 @@ import android.support.v7.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.m3sv.plainupnp.common.SpaceItemDecoration
 import com.m3sv.plainupnp.common.utils.dp
@@ -68,7 +69,7 @@ class MainFragment : BaseFragment() {
 
         (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
 
-        contentAdapter = GalleryContentAdapter(object : OnItemClickListener {
+        contentAdapter = GalleryContentAdapter(Glide.with(this), object : OnItemClickListener {
             override fun onDirectoryClick(
                 directoryName: String,
                 itemUri: String?,

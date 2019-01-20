@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ItemsDiffCallback
@@ -24,7 +25,7 @@ interface OnItemClickListener {
     fun onItemClick(item: DIDLItem, position: Int)
 }
 
-class GalleryContentAdapter(private val onItemClickListener: OnItemClickListener) :
+class GalleryContentAdapter(private val glide: RequestManager, private val onItemClickListener: OnItemClickListener) :
     BaseAdapter<Item>(GalleryContentAdapter.diffCallback) {
 
     var clickable = true
