@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -70,18 +69,30 @@
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="?actionBarSize"
             android:layout_marginBottom="64dp"
             android:clipToPadding="false"
-            android:layout_marginTop="?actionBarSize"
             android:paddingTop="8dp" />
 
         <ProgressBar
             android:id="@+id/progress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:indeterminateTint="@color/colorPrimary"
             android:visibility="gone"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/instant_app_notice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
+            android:text="@string/download_full_version"
+            android:visibility="gone"
             tools:visibility="visible" />
     </FrameLayout>
 </layout>

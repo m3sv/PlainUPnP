@@ -62,5 +62,6 @@
     <string name="videos">Videos</string>
     <string name="images">Images</string>
     <string name="audio">Music</string>
+    <string name="download_full_version">To access this functionality download full version from Google Play</string>
 
 </resources>

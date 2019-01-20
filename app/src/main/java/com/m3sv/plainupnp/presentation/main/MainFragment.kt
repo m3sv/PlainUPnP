@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
+import com.google.android.instantapps.InstantApps
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.m3sv.plainupnp.common.SpaceItemDecoration
 import com.m3sv.plainupnp.common.utils.dp
@@ -41,6 +42,12 @@ class MainFragment : BaseFragment() {
                 binding.folderName.text = contentState.folderName
                 contentAdapter.setWithDiff(contentState.content.toItems())
                 hideProgress()
+
+                if (InstantApps.isInstantApp(this.requireContext()) && contentState.content.toItems().isEmpty()) {
+                    binding.instantAppNotice.visibility = View.VISIBLE
+                } else {
+                    binding.instantAppNotice.visibility = View.GONE
+                }
             }
 
             is ContentState.Loading -> {

@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit
 typealias RenderedItem = Triple<String?, String, RequestOptions>
 
 class DefaultUpnpManager constructor(
-    private val context: Context,
+    context: Context,
     private val controller: UpnpServiceController,
     private val factory: Factory
 ) : Observer, UpnpManager {
@@ -89,7 +89,7 @@ class DefaultUpnpManager constructor(
     init {
         renderItem.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::render, Timber::e)
 
-        browseTo.distinctUntilChanged().doOnNext {
+        browseTo.doOnNext {
             _contentData.postValue(ContentState.Loading)
         }.throttleLast(500, TimeUnit.MILLISECONDS).subscribe(::browse, Timber::e)
     }
@@ -252,25 +252,25 @@ class DefaultUpnpManager constructor(
 
         browseFuture = factory.createContentDirectoryCommand()?.browse(model.id, null) {
             _contentData.postValue(ContentState.Success(model.directoryName, it ?: listOf()))
-        }
 
-        when (model.id) {
-            "0" -> {
-                selectedDirectory.onNext(
-                    Directory.Home(
-                        currentContentDirectory?.friendlyName ?: "Home"
+            when (model.id) {
+                "0" -> {
+                    selectedDirectory.onNext(
+                        Directory.Home(
+                            currentContentDirectory?.friendlyName ?: "Home"
+                        )
                     )
-                )
-                directoriesStructure =
-                        LinkedList<Directory>().apply { add(Directory.Home(model.directoryName)) }
-            }
-            else -> {
-                val subDirectory =
-                    Directory.SubDirectory(model.id, model.directoryName, model.parentId)
-                selectedDirectory.onNext(subDirectory)
-                if (model.addToStructure)
-                    directoriesStructure.addFirst(subDirectory)
-                Timber.d("Adding subdirectory: $subDirectory")
+                    directoriesStructure =
+                            LinkedList<Directory>().apply { add(Directory.Home(model.directoryName)) }
+                }
+                else -> {
+                    val subDirectory =
+                        Directory.SubDirectory(model.id, model.directoryName, model.parentId)
+                    selectedDirectory.onNext(subDirectory)
+                    if (model.addToStructure)
+                        directoriesStructure.addFirst(subDirectory)
+                    Timber.d("Adding subdirectory: $subDirectory")
+                }
             }
         }
     }
@@ -278,7 +278,8 @@ class DefaultUpnpManager constructor(
     override fun browsePrevious() {
         val element = if (!directoriesStructure.isEmpty())
             directoriesStructure.pop()
-        else Directory.Home(currentContentDirectory?.friendlyName ?: "Home")
+        else
+            Directory.Home(currentContentDirectory?.friendlyName ?: "Home")
 
         when (element) {
             is Directory.Home -> browseHome()
@@ -298,6 +299,7 @@ class DefaultUpnpManager constructor(
 
             }
         }
+
         Timber.d("Browse previous: $element")
     }
 

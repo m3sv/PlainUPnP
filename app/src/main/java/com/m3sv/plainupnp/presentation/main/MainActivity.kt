@@ -13,11 +13,8 @@ import android.support.design.widget.BottomNavigationView
 import android.support.design.widget.BottomSheetBehavior
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.view.MenuItemCompat
-import android.view.Menu
 import android.view.View
 import android.widget.AdapterView
-import android.widget.SearchView
 import android.widget.SeekBar
 import android.widget.Toast
 import com.bumptech.glide.Glide
@@ -117,7 +114,7 @@ class MainActivity : BaseActivity() {
                     }, onError = Timber::e)
                 }
 
-                UpnpRendererState.State.INITIALIZING-> {
+                UpnpRendererState.State.INITIALIZING -> {
                     play.setImageResource(R.drawable.ic_play_arrow)
                     RxView.clicks(play).subscribeBy(onNext = {
                         viewModel.resumePlayback()
@@ -146,6 +143,7 @@ class MainActivity : BaseActivity() {
                 .beginTransaction()
                 .add(R.id.container, MainFragment.newInstance())
                 .commit()
+
 
             viewModel.resumeUpnpController()
         }
