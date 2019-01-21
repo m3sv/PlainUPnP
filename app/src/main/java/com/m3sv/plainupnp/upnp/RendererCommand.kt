@@ -327,10 +327,10 @@ class RendererCommand(
         while (true) {
             Timber.d("Update state!")
 
-            if (counter % 3 == 0) {
-                updateVolume()
-                updateMute()
-            }
+//            if (counter % 3 == 0) {
+//                updateVolume()
+//                updateMute()
+//            }
 
             if (counter % 6 == 0) {
                 updateMediaInfo()
