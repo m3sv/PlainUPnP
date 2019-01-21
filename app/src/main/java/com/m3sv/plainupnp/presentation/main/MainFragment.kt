@@ -13,14 +13,11 @@ import com.bumptech.glide.Glide
 import com.google.android.instantapps.InstantApps
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.m3sv.plainupnp.common.SpaceItemDecoration
-import com.m3sv.plainupnp.common.utils.dp
-import com.m3sv.plainupnp.common.utils.hideSoftInput
-import com.m3sv.plainupnp.common.utils.showSoftInput
+import com.m3sv.plainupnp.common.utils.*
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
 import com.m3sv.plainupnp.disposeBy
 import com.m3sv.plainupnp.presentation.base.BaseFragment
-import com.m3sv.plainupnp.presentation.main.data.toItems
 import com.m3sv.plainupnp.upnp.BrowseToModel
 import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.RenderItem
@@ -39,15 +36,18 @@ class MainFragment : BaseFragment() {
     private fun handleContentState(contentState: ContentState) {
         when (contentState) {
             is ContentState.Success -> {
-                binding.folderName.text = contentState.folderName
-                contentAdapter.setWithDiff(contentState.content.toItems())
-                hideProgress()
+                with(binding) {
+                    folderName.text = contentState.folderName
+                    contentAdapter.setWithDiff(contentState.content)
+                    hideProgress()
 
-                if (InstantApps.isInstantApp(this.requireContext()) && contentState.content.toItems().isEmpty()) {
-                    binding.instantAppNotice.visibility = View.VISIBLE
-                } else {
-                    binding.instantAppNotice.visibility = View.GONE
+                    if (InstantApps.isInstantApp(requireContext()) && contentState.content.isEmpty()) {
+                        instantAppNotice.show()
+                    } else {
+                        instantAppNotice.disappear()
+                    }
                 }
+
             }
 
             is ContentState.Loading -> {
@@ -125,12 +125,8 @@ class MainFragment : BaseFragment() {
             }
         }
 
-        with(viewModel.contentData) {
-            nonNullObserve(::handleContentState)
 
-            if (value is ContentState.Success)
-                contentAdapter.setWithDiff((value as ContentState.Success).content.toItems())
-        }
+        viewModel.contentData.nonNullObserve(::handleContentState)
     }
 
     private fun hideFilter() {
@@ -138,7 +134,7 @@ class MainFragment : BaseFragment() {
             folderName.animate().x(0f).setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator?) {
                     filter.hideSoftInput()
-                    folderName.visibility = View.VISIBLE
+                    folderName.show()
                 }
             })
 
@@ -147,13 +143,13 @@ class MainFragment : BaseFragment() {
                 .setListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator?) {
                         super.onAnimationEnd(animation)
-                        filter.visibility = View.INVISIBLE
+                        filter.hide()
                         filter.setText("")
                     }
                 })
 
-            closeSearch.visibility = View.GONE
-            expandSearch.visibility = View.VISIBLE
+            closeSearch.disappear()
+            expandSearch.show()
         }
     }
 
@@ -164,31 +160,33 @@ class MainFragment : BaseFragment() {
             folderName.animate().translationX(-folderName.width.toFloat())
                 .setListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationEnd(animation: Animator?) {
-                        folderName.visibility = View.GONE
+                        folderName.disappear()
                     }
                 })
 
             filter.animate().x(0f)
                 .setListener(object : AnimatorListenerAdapter() {
                     override fun onAnimationStart(animation: Animator?) {
-                        filter.visibility = View.VISIBLE
-                        filter.requestFocus()
-                        filter.showSoftInput()
+                        with(filter) {
+                            show()
+                            requestFocus()
+                            showSoftInput()
+                        }
                     }
                 })
 
-            closeSearch.visibility = View.VISIBLE
-            expandSearch.visibility = View.GONE
+            closeSearch.show()
+            expandSearch.disappear()
         }
     }
 
     private fun showProgress() {
         contentAdapter.clickable = false
-        binding.progress.visibility = View.VISIBLE
+        binding.progress.show()
     }
 
     private fun hideProgress() {
-        binding.progress.visibility = View.GONE
+        binding.progress.disappear()
         contentAdapter.clickable = true
     }
 

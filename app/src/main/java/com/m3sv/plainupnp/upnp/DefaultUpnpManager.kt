@@ -6,6 +6,7 @@ import android.content.Context
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.data.upnp.*
+import com.m3sv.plainupnp.presentation.main.data.toItems
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
@@ -204,7 +205,7 @@ class DefaultUpnpManager constructor(
     override fun playNext() {
         _contentData.value?.let {
             if (it is ContentState.Success && (next in 0..it.content.size)) {
-                renderItem(RenderItem(it.content[next].didlObject as DIDLItem, next))
+                renderItem(RenderItem(it.content[next].didlObjectDisplay as DIDLItem, next))
             }
         }
     }
@@ -212,7 +213,7 @@ class DefaultUpnpManager constructor(
     override fun playPrevious() {
         _contentData.value?.let {
             if (it is ContentState.Success && (previous in 0..it.content.size)) {
-                renderItem(RenderItem(it.content[previous].didlObject as DIDLItem, previous))
+                renderItem(RenderItem(it.content[previous].didlObjectDisplay as DIDLItem, previous))
             }
         }
     }
@@ -251,7 +252,7 @@ class DefaultUpnpManager constructor(
         browseFuture?.cancel(true)
 
         browseFuture = factory.createContentDirectoryCommand()?.browse(model.id, null) {
-            _contentData.postValue(ContentState.Success(model.directoryName, it ?: listOf()))
+            _contentData.postValue(ContentState.Success(model.directoryName, it?.toItems() ?: listOf()))
 
             when (model.id) {
                 "0" -> {

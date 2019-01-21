@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.upnp
 
 import android.arch.lifecycle.LiveData
 import com.m3sv.plainupnp.data.upnp.*
+import com.m3sv.plainupnp.presentation.main.data.Item
 import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
 import io.reactivex.Observable
@@ -76,6 +77,6 @@ data class BrowseToModel(
 
 sealed class ContentState {
     object Loading : ContentState()
-    data class Success(val folderName: String, val content: List<DIDLObjectDisplay>) :
+    data class Success(val folderName: String, val content: List<Item>) :
         ContentState()
 }

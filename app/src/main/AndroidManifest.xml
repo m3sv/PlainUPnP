@@ -19,10 +19,16 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:theme="@style/MainActivityThemeLight">
+        android:theme="@style/MainActivityThemeLight"
+        android:usesCleartextTraffic="true">
+
         <activity
             android:name="com.m3sv.plainupnp.presentation.main.MainActivity"
+            android:label="@string/app_name" />
+
+        <activity
+            android:name=".presentation.splash.SplashActivity"
+            android:theme="@style/SplashTheme"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

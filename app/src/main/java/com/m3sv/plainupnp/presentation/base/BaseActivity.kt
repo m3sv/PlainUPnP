@@ -34,8 +34,8 @@ abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         disposables.clear()
+        super.onDestroy()
     }
 
     override fun navigateTo(fragment: Fragment, tag: String, addToBackStack: Boolean) {
