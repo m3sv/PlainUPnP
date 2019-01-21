@@ -6,7 +6,6 @@ import android.content.Context
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.data.upnp.*
-import com.m3sv.plainupnp.presentation.main.data.toItems
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
@@ -34,7 +33,7 @@ class DefaultUpnpManager constructor(
     context: Context,
     private val controller: UpnpServiceController,
     private val factory: Factory
-) : Observer, UpnpManager {
+) : UpnpManager {
 
     override val rendererDiscovery =
         RendererDiscoveryObservable(context, controller.rendererDiscovery)
@@ -52,9 +51,9 @@ class DefaultUpnpManager constructor(
     override val renderedItem: LiveData<RenderedItem>
         get() = _renderedItem
 
-    private val _contentData = MutableLiveData<ContentState>()
+    private val _content = MutableLiveData<ContentState>()
 
-    override val contentData: LiveData<ContentState> = _contentData
+    override val content: LiveData<ContentState> = _content
 
     override val currentContentDirectory: UpnpDevice?
         get() = controller.selectedContentDirectory
@@ -91,7 +90,7 @@ class DefaultUpnpManager constructor(
         renderItem.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::render, Timber::e)
 
         browseTo.doOnNext {
-            _contentData.postValue(ContentState.Loading)
+            _content.postValue(ContentState.Loading)
         }.throttleLast(500, TimeUnit.MILLISECONDS).subscribe(::browse, Timber::e)
     }
 
@@ -193,27 +192,37 @@ class DefaultUpnpManager constructor(
     /**
      * Updates control sheet with latest launched item
      */
-    private fun updateUi(item: RenderItem) {
-        val requestOptions = when (item.item) {
+    private fun updateUi(toRender: RenderItem) {
+        val requestOptions = when (toRender.item) {
             is ClingAudioItem -> RequestOptions().placeholder(R.drawable.ic_music_note)
             else -> RequestOptions()
         }
 
-        _renderedItem.postValue(RenderedItem(item.item.uri, item.item.title, requestOptions))
+        _renderedItem.postValue(
+            RenderedItem(
+                toRender.item.uri,
+                toRender.item.title,
+                requestOptions
+            )
+        )
     }
 
     override fun playNext() {
-        _contentData.value?.let {
-            if (it is ContentState.Success && (next in 0..it.content.size)) {
-                renderItem(RenderItem(it.content[next].didlObjectDisplay as DIDLItem, next))
+        _content.value?.let {
+            if (it is ContentState.Success
+                && next in 0 until it.content.size
+                && it.content[next].didlObject is DIDLItem) {
+                renderItem(RenderItem(it.content[next].didlObject as DIDLItem, next))
             }
         }
     }
 
     override fun playPrevious() {
-        _contentData.value?.let {
-            if (it is ContentState.Success && (previous in 0..it.content.size)) {
-                renderItem(RenderItem(it.content[previous].didlObjectDisplay as DIDLItem, previous))
+        _content.value?.let {
+            if (it is ContentState.Success
+                && previous in 0 until it.content.size
+                && it.content[previous].didlObject is DIDLItem) {
+                renderItem(RenderItem(it.content[previous].didlObject as DIDLItem, previous))
             }
         }
     }
@@ -252,7 +261,7 @@ class DefaultUpnpManager constructor(
         browseFuture?.cancel(true)
 
         browseFuture = factory.createContentDirectoryCommand()?.browse(model.id, null) {
-            _contentData.postValue(ContentState.Success(model.directoryName, it?.toItems() ?: listOf()))
+            _content.postValue(ContentState.Success(model.directoryName, it ?: listOf()))
 
             when (model.id) {
                 "0" -> {
@@ -304,10 +313,6 @@ class DefaultUpnpManager constructor(
         Timber.d("Browse previous: $element")
     }
 
-    override fun update(o: Observable?, arg: Any?) {
-        Timber.d("Selected new content directory: ${controller.selectedContentDirectory}")
-    }
-
     override fun moveTo(progress: Int, max: Int) {
         fun formatTime(h: Long, m: Long, s: Long): String {
             return ((if (h >= 10) "" + h else "0$h") + ":" + (if (m >= 10) "" + m else "0$m") + ":"
@@ -335,13 +340,5 @@ class DefaultUpnpManager constructor(
     override fun pauseUpnpController() {
         Timber.d("Pause UPnP controller")
         controller.pause()
-    }
-
-    override fun addObservers() = controller.run {
-        addSelectedContentDirectoryObserver(this@DefaultUpnpManager)
-    }
-
-    override fun removeObservers() = controller.run {
-        delSelectedContentDirectoryObserver(this@DefaultUpnpManager)
     }
 }

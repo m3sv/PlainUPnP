@@ -4,12 +4,9 @@ import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.UpnpServiceController
 import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
-import org.droidupnp.legacy.CObservable
 import java.util.*
 
 abstract class BaseUpnpServiceController protected constructor() : UpnpServiceController {
-
-    private var contentDirectoryObservable: CObservable = CObservable()
 
     override val contentDirectoryDiscovery: ContentDirectoryDiscovery by lazy(mode = LazyThreadSafetyMode.NONE) {
         ContentDirectoryDiscovery(this)
@@ -30,7 +27,6 @@ abstract class BaseUpnpServiceController protected constructor() : UpnpServiceCo
             return
 
         this.selectedContentDirectory = contentDirectory
-        contentDirectoryObservable.notifyAllObservers()
     }
 
     override fun setSelectedRenderer(renderer: UpnpDevice, force: Boolean) {
@@ -39,14 +35,6 @@ abstract class BaseUpnpServiceController protected constructor() : UpnpServiceCo
             return
 
         this.selectedRenderer = renderer
-    }
-
-    override fun addSelectedContentDirectoryObserver(o: Observer) {
-        contentDirectoryObservable.addObserver(o)
-    }
-
-    override fun delSelectedContentDirectoryObserver(o: Observer) {
-        contentDirectoryObservable.deleteObserver(o)
     }
 
     // Pause the service

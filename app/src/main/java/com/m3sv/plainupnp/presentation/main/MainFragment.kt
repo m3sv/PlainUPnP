@@ -16,8 +16,9 @@ import com.m3sv.plainupnp.common.SpaceItemDecoration
 import com.m3sv.plainupnp.common.utils.*
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
-import com.m3sv.plainupnp.disposeBy
+import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.presentation.base.BaseFragment
+import com.m3sv.plainupnp.presentation.main.data.toItems
 import com.m3sv.plainupnp.upnp.BrowseToModel
 import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.RenderItem
@@ -38,7 +39,7 @@ class MainFragment : BaseFragment() {
             is ContentState.Success -> {
                 with(binding) {
                     folderName.text = contentState.folderName
-                    contentAdapter.setWithDiff(contentState.content)
+                    contentAdapter.setWithDiff(contentState.content.toItems())
                     hideProgress()
 
                     if (InstantApps.isInstantApp(requireContext()) && contentState.content.isEmpty()) {
@@ -66,8 +67,9 @@ class MainFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = MainFragmentBinding.inflate(inflater, container, false)
-        binding.vm = viewModel
+        binding = MainFragmentBinding.inflate(inflater, container, false).also {
+            it.vm = viewModel
+        }
         return binding.root
     }
 
@@ -126,7 +128,7 @@ class MainFragment : BaseFragment() {
         }
 
 
-        viewModel.contentData.nonNullObserve(::handleContentState)
+        viewModel.content.nonNullObserve(::handleContentState)
     }
 
     private fun hideFilter() {

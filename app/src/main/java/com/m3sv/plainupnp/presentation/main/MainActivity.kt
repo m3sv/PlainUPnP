@@ -152,7 +152,7 @@ class MainActivity : BaseActivity() {
             viewModel.playNext()
         }, onError = Timber::e)
 
-        disposables += RxView.clicks(binding.controlsSheet.previous).subscribeBy(onComplete = {
+        disposables += RxView.clicks(binding.controlsSheet.previous).subscribeBy(onNext = {
             viewModel.playPrevious()
         }, onError = Timber::e)
 
@@ -204,7 +204,6 @@ class MainActivity : BaseActivity() {
     override fun onStart() {
         super.onStart()
         with(viewModel) {
-            addObservers()
             resumeUpnp()
             resumeRendererUpdate()
         }
@@ -213,7 +212,6 @@ class MainActivity : BaseActivity() {
     override fun onStop() {
         with(viewModel) {
             pauseRendererUpdate()
-            removeObservers()
             pauseUpnp()
         }
         super.onStop()

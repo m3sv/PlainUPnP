@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp
+package com.m3sv.plainupnp.common.utils
 
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable

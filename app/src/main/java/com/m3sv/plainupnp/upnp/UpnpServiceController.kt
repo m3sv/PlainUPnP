@@ -46,10 +46,6 @@ interface UpnpServiceController {
 
     fun setSelectedContentDirectory(contentDirectory: UpnpDevice, force: Boolean)
 
-    fun addSelectedContentDirectoryObserver(o: Observer)
-
-    fun delSelectedContentDirectoryObserver(o: Observer)
-
     // Pause the service
     fun pause()
 

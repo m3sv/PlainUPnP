@@ -18,17 +18,13 @@ interface UpnpManager {
 
     val renderedItem: LiveData<RenderedItem>
 
-    val contentData: LiveData<ContentState>
+    val content: LiveData<ContentState>
 
     val launchLocally: Observable<LaunchLocally>
 
     val currentContentDirectory: UpnpDevice?
 
     fun renderItem(item: RenderItem)
-
-    fun addObservers()
-
-    fun removeObservers()
 
     fun selectContentDirectory(contentDirectory: UpnpDevice?)
 
@@ -77,6 +73,6 @@ data class BrowseToModel(
 
 sealed class ContentState {
     object Loading : ContentState()
-    data class Success(val folderName: String, val content: List<Item>) :
+    data class Success(val folderName: String, val content: List<DIDLObjectDisplay>) :
         ContentState()
 }
