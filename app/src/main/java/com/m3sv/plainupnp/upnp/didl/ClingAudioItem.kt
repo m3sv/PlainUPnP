@@ -16,6 +16,7 @@ class ClingAudioItem(item: AudioItem) : ClingDIDLItem(item) {
                 return (track.firstArtist?.name?.let { it } ?: "") +
                         (track.album?.let { " - $it" } ?: "")
             }
+
             return (didlObject as AudioItem).description
         }
 
@@ -31,7 +32,6 @@ class ClingAudioItem(item: AudioItem) : ClingDIDLItem(item) {
                     .toTypedArray()[0]
             } ?: ""
 
-    override val icon: Int
-        get() = R.drawable.ic_action_headphones
+    override val icon: Int = R.drawable.ic_action_headphones
 
 }

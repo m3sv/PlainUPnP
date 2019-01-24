@@ -9,14 +9,12 @@ import java.util.*
 
 class ClingImageItem(item: ImageItem) : ClingDIDLItem(item) {
 
-    override val dataType: String
-        get() = "image/*"
+    override val dataType: String = "image/*"
 
-    override val description: String
-        get() = didlObject.resources
-            ?.takeIf { it.isNotEmpty() }
-            ?.get(0)
-            ?.resolution ?: ""
+    override val description: String = didlObject.resources
+        ?.takeIf { it.isNotEmpty() }
+        ?.get(0)
+        ?.resolution ?: ""
 
     override val count: String
         get() {
@@ -32,6 +30,5 @@ class ClingImageItem(item: ImageItem) : ClingDIDLItem(item) {
             return ""
         }
 
-    override val icon: Int
-        get() = R.drawable.ic_action_picture
+    override val icon: Int = R.drawable.ic_action_picture
 }

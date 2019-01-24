@@ -31,6 +31,5 @@ open class ClingDIDLItem(item: Item) : ClingDIDLObject(item), DIDLItem {
 
     override val uri: String? get() = didlObject.firstResource?.value
 
-    override val icon: Int
-        get() = R.drawable.ic_file
+    override val icon: Int = R.drawable.ic_file
 }

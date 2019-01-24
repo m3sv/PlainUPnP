@@ -2,9 +2,8 @@ package com.m3sv.plainupnp.upnp
 
 import android.arch.lifecycle.LiveData
 import com.m3sv.plainupnp.data.upnp.*
-import com.m3sv.plainupnp.presentation.main.data.Item
-import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
-import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
+import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscoveryObservable
+import com.m3sv.plainupnp.upnp.discovery.RendererDiscoveryObservable
 import io.reactivex.Observable
 
 interface UpnpManager {

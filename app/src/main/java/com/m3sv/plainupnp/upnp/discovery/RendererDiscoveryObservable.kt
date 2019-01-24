@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp.observables
+package com.m3sv.plainupnp.upnp.discovery
 
 import android.content.Context
 import com.m3sv.plainupnp.R
@@ -6,7 +6,6 @@ import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.LocalDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
-import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable

@@ -12,6 +12,5 @@ class ClingDIDLParentContainer(id: String) : ClingDIDLObject(Container()),
         didlObject.id = id
     }
 
-    override val title: String
-        get() = ".."
+    override val title: String = ".."
 }

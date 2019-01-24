@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp.observables
+package com.m3sv.plainupnp.upnp.discovery
 
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
@@ -6,7 +6,6 @@ import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
-import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery
 import org.droidupnp.legacy.upnp.DeviceDiscoveryObserver
 import timber.log.Timber
 

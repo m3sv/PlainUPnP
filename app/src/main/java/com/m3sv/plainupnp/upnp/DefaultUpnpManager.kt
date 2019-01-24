@@ -9,8 +9,8 @@ import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
-import com.m3sv.plainupnp.upnp.observables.ContentDirectoryDiscoveryObservable
-import com.m3sv.plainupnp.upnp.observables.RendererDiscoveryObservable
+import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscoveryObservable
+import com.m3sv.plainupnp.upnp.discovery.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
