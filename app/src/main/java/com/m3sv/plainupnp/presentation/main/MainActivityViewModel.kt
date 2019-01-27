@@ -1,6 +1,7 @@
 package com.m3sv.plainupnp.presentation.main
 
 import android.arch.lifecycle.MutableLiveData
+import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.Directory
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
@@ -27,20 +28,20 @@ class MainActivityViewModel @Inject constructor(
         { Timber.e("Exception during discovery: ${it.message}") }
 
     init {
-        disposables += selectedDirectoryObservable.subscribeBy(
+        selectedDirectoryObservable.subscribeBy(
             onNext = { currentDirectory = it },
             onError = Timber::e
-        )
+        ).disposeBy(disposables)
 
-        discoveryDisposable += rendererDiscovery.subscribeBy(
+        rendererDiscovery.subscribeBy(
             onNext = renderers::postValue,
             onError = errorHandler
-        )
+        ).disposeBy(discoveryDisposable)
 
-        discoveryDisposable += contentDirectoryDiscovery.subscribeBy(
+        contentDirectoryDiscovery.subscribeBy(
             onNext = contentDirectories::postValue,
             onError = errorHandler
-        )
+        ).disposeBy(discoveryDisposable)
     }
 
     fun resumeUpnp() {
