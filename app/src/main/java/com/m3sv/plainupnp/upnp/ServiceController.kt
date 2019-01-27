@@ -49,10 +49,10 @@ class ServiceController @Inject constructor(override val serviceListener: Servic
     }
 
     override fun addDevice(localDevice: LocalDevice) {
-        serviceListener.upnpService.registry.addDevice(localDevice)
+        serviceListener.upnpService?.registry?.addDevice(localDevice)
     }
 
     override fun removeDevice(localDevice: LocalDevice) {
-        serviceListener.upnpService.registry.removeDevice(localDevice)
+        serviceListener.upnpService?.registry?.removeDevice(localDevice)
     }
 }
