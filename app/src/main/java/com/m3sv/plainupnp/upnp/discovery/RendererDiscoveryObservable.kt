@@ -15,8 +15,7 @@ import timber.log.Timber
 class RendererDiscoveryObservable(
     private val context: Context,
     private val rendererDiscovery: RendererDiscovery
-) :
-    Observable<Set<DeviceDisplay>>() {
+) : Observable<Set<DeviceDisplay>>() {
 
     private val renderers = LinkedHashSet<DeviceDisplay>().apply {
         add(DeviceDisplay(LocalDevice(context.getString(R.string.play_locally))))
@@ -45,9 +44,10 @@ class RendererDiscoveryObservable(
     }
 
     override fun subscribeActual(observer: Observer<in Set<DeviceDisplay>>) {
-        val deviceObserver = RendererDeviceObserver(rendererDiscovery, observer)
-        observer.onSubscribe(deviceObserver)
-        observer.onNext(renderers)
+        with(observer) {
+            onSubscribe(RendererDeviceObserver(rendererDiscovery, observer))
+            onNext(renderers)
+        }
     }
 
     private inner class RendererDeviceObserver(
