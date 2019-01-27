@@ -43,12 +43,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import timber.log.Timber;
 
 import static com.m3sv.plainupnp.common.utils.PrefUtils.CONTENT_DIRECTORY_SERVICE;
 
 
-@SuppressWarnings("rawtypes")
 public class ServiceListener {
 
     private AndroidUpnpService upnpService;
@@ -57,6 +58,7 @@ public class ServiceListener {
     private MediaServer mediaServer = null;
     private Context ctx;
 
+    @Inject
     public ServiceListener(Context ctx) {
         waitingListener = new ArrayList<>();
         this.ctx = ctx;
