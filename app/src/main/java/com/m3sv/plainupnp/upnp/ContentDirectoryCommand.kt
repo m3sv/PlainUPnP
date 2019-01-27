@@ -75,8 +75,7 @@ class ContentDirectoryCommand(
         directoryID: String,
         parent: String?,
         callback: ContentCallback
-    ): Future<Any>? {
-        contentDirectoryService?.let {
+    ): Future<Any>? = contentDirectoryService?.let {
             return controlPoint.execute(object : Browse(
                 it,
                 directoryID,
@@ -103,7 +102,6 @@ class ContentDirectoryCommand(
                 }
             })
         }
-    }
 
     fun search(search: String, parent: String?, callback: ContentCallback) {
         contentDirectoryService?.let {
