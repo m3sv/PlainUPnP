@@ -16,8 +16,8 @@ import javax.inject.Inject
 
 
 class SettingsFragment : PreferenceFragmentCompat(),
-    SharedPreferences.OnSharedPreferenceChangeListener,
-    Preference.OnPreferenceClickListener {
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        Preference.OnPreferenceClickListener {
 
     @Inject
     lateinit var upnpManager: UpnpManager
@@ -26,24 +26,19 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     private val appVersion: String
         get() = activity
-            ?.packageManager
-            ?.getPackageInfo(activity?.packageName, 0)
-            ?.versionName
+                ?.packageManager
+                ?.getPackageInfo(activity?.packageName, 0)
+                ?.versionName
                 ?: "1.0"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (activity as? DaggerAppCompatActivity)?.supportFragmentInjector()?.inject(this)
         super.onViewCreated(view, savedInstanceState)
 
-        val version = findPreference("version")
-        version.summary = appVersion
-
-        val rate = findPreference("rate")
-
-        rate.onPreferenceClickListener = this
-
-        val github = findPreference("github")
-        github.onPreferenceClickListener = this
+        findPreference("version").apply { summary = appVersion }
+        findPreference("rate").also { it.onPreferenceClickListener = this }
+        findPreference("github").also { it.onPreferenceClickListener = this }
+        findPreference("privacy_policy").also { it.onPreferenceClickListener = this }
 
         listView.layoutParams = (listView.layoutParams as ViewGroup.MarginLayoutParams).apply {
             bottomMargin = 64.toPx()
@@ -71,6 +66,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                     activity?.recreate()
                 }
+
                 false -> {
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                     activity?.recreate()
@@ -88,17 +84,17 @@ class SettingsFragment : PreferenceFragmentCompat(),
         "rate" -> {
             try {
                 startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("market://details?id=" + this.activity?.packageName)
-                    )
+                        Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("market://details?id=" + this.activity?.packageName)
+                        )
                 )
-            } catch (e: android.content.ActivityNotFoundException) {
+            } catch (e: Throwable) {
                 startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("http://play.google.com/store/apps/details?id=" + this.activity?.packageName)
-                    )
+                        Intent(
+                                Intent.ACTION_VIEW,
+                                Uri.parse("http://play.google.com/store/apps/details?id=" + this.activity?.packageName)
+                        )
                 )
             }
 
@@ -107,7 +103,14 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
         "github" -> {
             val browserIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/m3sv/PlainUPnP"))
+                    Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/m3sv/PlainUPnP"))
+            startActivity(browserIntent)
+            true
+        }
+
+        "privacy_policy" -> {
+            val browserIntent =
+                    Intent(Intent.ACTION_VIEW, Uri.parse("https://www.freeprivacypolicy.com/privacy/view/bf0284b77ca1af94b405030efd47d254"))
             startActivity(browserIntent)
             true
         }
@@ -115,12 +118,8 @@ class SettingsFragment : PreferenceFragmentCompat(),
         else -> false
     }
 
-
-    private fun Int.toDp(): Int =
-        (this / this@SettingsFragment.resources.displayMetrics.density).toInt()
-
     private fun Int.toPx(): Int =
-        (this * this@SettingsFragment.resources.displayMetrics.density).toInt()
+            (this * this@SettingsFragment.resources.displayMetrics.density).toInt()
 
     companion object {
         val TAG: String = SettingsFragment::class.java.simpleName

@@ -44,6 +44,11 @@
             android:summary="@string/source_url"
             android:title="@string/github_link_title" />
 
+        <Preference
+            android:key="privacy_policy"
+            android:summary="@string/open_privacy_policy"
+            android:title="@string/privacy_policy" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
