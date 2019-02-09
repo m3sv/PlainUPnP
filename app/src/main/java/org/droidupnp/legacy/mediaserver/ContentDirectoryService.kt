@@ -44,7 +44,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         orderby: Array<SortCriterion>
     ): BrowseResult {
         Timber.d("Will browse $objectID")
-
         return browseContent(objectID)
     }
 

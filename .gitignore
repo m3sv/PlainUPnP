@@ -15,5 +15,7 @@ projectFilesBackup
 captures/*
 app/app.iml
 
+.DS_Store
+
 PlainUPnP.iml
 network/network.iml
