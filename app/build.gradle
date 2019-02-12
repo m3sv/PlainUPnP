@@ -1,6 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'io.fabric'
+
 
 android {
     compileSdkVersion versions.compileSdk
@@ -55,14 +57,14 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation deps.test.core
     androidTestImplementation deps.test.rules
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation deps.test.espresso.core
     androidTestImplementation deps.test.assertions.junit
 
     testImplementation deps.test.core
     testImplementation deps.test.rules
     testImplementation deps.test.assertions.junit
     testImplementation deps.test.mockito.core
-    testImplementation "android.arch.core:core-testing:1.1.1"
+    testImplementation deps.test.coreTesting
 
     implementation deps.support.appCompat
     implementation deps.support.v4
@@ -109,6 +111,8 @@ dependencies {
 
     implementation deps.instantApps
     implementation deps.firebase.core
+
+    implementation deps.crashlytics
 
     implementation project(':common')
 
