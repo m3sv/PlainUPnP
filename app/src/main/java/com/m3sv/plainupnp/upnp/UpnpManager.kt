@@ -2,8 +2,6 @@ package com.m3sv.plainupnp.upnp
 
 import android.arch.lifecycle.LiveData
 import com.m3sv.plainupnp.data.upnp.*
-import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscoveryObservable
-import com.m3sv.plainupnp.upnp.discovery.RendererDiscoveryObservable
 import io.reactivex.Observable
 
 interface UpnpManager {
@@ -64,14 +62,14 @@ data class LaunchLocally(val uri: String, val contentType: String)
  * Seed is a workaround for distinct in Relay, just set it to random number when going home
  */
 data class BrowseToModel(
-    val id: String,
-    val directoryName: String,
-    val parentId: String?,
-    val addToStructure: Boolean = true
+        val id: String,
+        val directoryName: String,
+        val parentId: String?,
+        val addToStructure: Boolean = true
 )
 
 sealed class ContentState {
     object Loading : ContentState()
     data class Success(val folderName: String, val content: List<DIDLObjectDisplay>) :
-        ContentState()
+            ContentState()
 }

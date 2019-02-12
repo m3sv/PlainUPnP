@@ -16,7 +16,6 @@ import com.m3sv.plainupnp.common.SpaceItemDecoration
 import com.m3sv.plainupnp.common.utils.*
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
-import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.main.data.toItems
 import com.m3sv.plainupnp.upnp.BrowseToModel
@@ -63,9 +62,9 @@ class MainFragment : BaseFragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater,
+            container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         binding = MainFragmentBinding.inflate(inflater, container, false).also {
             it.vm = viewModel
@@ -80,9 +79,9 @@ class MainFragment : BaseFragment() {
 
         contentAdapter = GalleryContentAdapter(Glide.with(this), object : OnItemClickListener {
             override fun onDirectoryClick(
-                directoryName: String,
-                itemUri: String?,
-                parentId: String?
+                    directoryName: String,
+                    itemUri: String?,
+                    parentId: String?
             ) {
                 itemUri?.let {
                     viewModel.browseTo(BrowseToModel(itemUri, directoryName, parentId))
@@ -104,29 +103,24 @@ class MainFragment : BaseFragment() {
 
             addItemDecoration(SpaceItemDecoration(2.dp))
             layoutManager = GridLayoutManager(
-                requireActivity(),
-                spanCount,
-                GridLayoutManager.VERTICAL,
-                false
+                    requireActivity(),
+                    spanCount,
+                    GridLayoutManager.VERTICAL,
+                    false
             )
 
             adapter = contentAdapter
         }
 
         RxTextView.textChanges(binding.filter)
-            .subscribeBy(onNext = contentAdapter::filter, onError = Timber::e)
-            .disposeBy(disposables)
+                .subscribeBy(onNext = contentAdapter::filter, onError = Timber::e)
+                .disposeBy(disposables)
 
         with(binding) {
-            expandSearch.setOnClickListener {
-                showFilter()
-            }
+            expandSearch.setOnClickListener { showFilter() }
 
-            closeSearch.setOnClickListener {
-                hideFilter()
-            }
+            closeSearch.setOnClickListener { hideFilter() }
         }
-
 
         viewModel.content.nonNullObserve(::handleContentState)
     }
@@ -141,14 +135,14 @@ class MainFragment : BaseFragment() {
             })
 
             filter.animate()
-                .translationX(filter.width.toFloat())
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator?) {
-                        super.onAnimationEnd(animation)
-                        filter.hide()
-                        filter.setText("")
-                    }
-                })
+                    .translationX(filter.width.toFloat())
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            super.onAnimationEnd(animation)
+                            filter.hide()
+                            filter.setText("")
+                        }
+                    })
 
             closeSearch.disappear()
             expandSearch.show()
@@ -160,22 +154,22 @@ class MainFragment : BaseFragment() {
             filter.translationX = filter.width.toFloat()
 
             folderName.animate().translationX(-folderName.width.toFloat())
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationEnd(animation: Animator?) {
-                        folderName.disappear()
-                    }
-                })
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationEnd(animation: Animator?) {
+                            folderName.disappear()
+                        }
+                    })
 
             filter.animate().x(0f)
-                .setListener(object : AnimatorListenerAdapter() {
-                    override fun onAnimationStart(animation: Animator?) {
-                        with(filter) {
-                            show()
-                            requestFocus()
-                            showSoftInput()
+                    .setListener(object : AnimatorListenerAdapter() {
+                        override fun onAnimationStart(animation: Animator?) {
+                            with(filter) {
+                                show()
+                                requestFocus()
+                                showSoftInput()
+                            }
                         }
-                    }
-                })
+                    })
 
             closeSearch.show()
             expandSearch.disappear()

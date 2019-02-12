@@ -23,7 +23,6 @@
 
 package org.droidupnp.legacy.upnp
 
-import android.content.Context
 import com.m3sv.plainupnp.upnp.ContentDirectoryCommand
 import com.m3sv.plainupnp.upnp.RendererCommand
 import com.m3sv.plainupnp.upnp.UpnpServiceController

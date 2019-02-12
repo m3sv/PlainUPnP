@@ -20,6 +20,7 @@ import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.view.RxView
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.Directory
 import com.m3sv.plainupnp.data.upnp.RendererState
@@ -30,7 +31,6 @@ import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.upnp.LaunchLocally
 import com.m3sv.plainupnp.upnp.RenderedItem
-import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 
@@ -52,10 +52,10 @@ class MainActivity : BaseActivity() {
         }
 
         override fun onItemSelected(
-            parent: AdapterView<*>?,
-            view: View?,
-            position: Int,
-            id: Long
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
         ) {
             Timber.d("Selected item: $position")
             viewModel.selectContentDirectory(contentDirectoryAdapter.getItem(position)?.device)
@@ -67,10 +67,10 @@ class MainActivity : BaseActivity() {
         }
 
         override fun onItemSelected(
-            parent: AdapterView<*>?,
-            view: View?,
-            position: Int,
-            id: Long
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
         ) {
             Timber.d("Selected renderer: $position")
             viewModel.selectRenderer(rendererAdapter.getItem(position)?.device)
@@ -92,35 +92,31 @@ class MainActivity : BaseActivity() {
             progress.isEnabled = rendererState.state != UpnpRendererState.State.STOP
             progress.progress = rendererState.progress
 
-            disposables += when (rendererState.state) {
+            when (rendererState.state) {
                 UpnpRendererState.State.STOP -> {
                     play.setImageResource(R.drawable.ic_play_arrow)
-                    RxView.clicks(play).subscribeBy(onNext = {
-                        viewModel.resumePlayback()
-                    }, onError = Timber::e)
+                    RxView.clicks(play)
+                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
                 }
 
                 UpnpRendererState.State.PLAY -> {
                     play.setImageResource(R.drawable.ic_pause)
-                    RxView.clicks(play).subscribeBy(onNext = {
-                        viewModel.pausePlayback()
-                    }, onError = Timber::e)
+                    RxView.clicks(play)
+                            .subscribeBy(onNext = { viewModel.pausePlayback() }, onError = Timber::e)
                 }
 
                 UpnpRendererState.State.PAUSE -> {
                     play.setImageResource(R.drawable.ic_play_arrow)
-                    RxView.clicks(play).subscribeBy(onNext = {
-                        viewModel.resumePlayback()
-                    }, onError = Timber::e)
+                    RxView.clicks(play)
+                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
                 }
 
                 UpnpRendererState.State.INITIALIZING -> {
                     play.setImageResource(R.drawable.ic_play_arrow)
-                    RxView.clicks(play).subscribeBy(onNext = {
-                        viewModel.resumePlayback()
-                    }, onError = Timber::e)
+                    RxView.clicks(play)
+                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
                 }
-            }
+            }.disposeBy(disposables)
         }
     }
 
@@ -131,7 +127,7 @@ class MainActivity : BaseActivity() {
 
         with(binding) {
             vm = viewModel
-            setLifecycleOwner(this@MainActivity)
+            lifecycleOwner = this@MainActivity
         }
 
         setupBottomNavigation(binding.bottomNav)
@@ -140,26 +136,25 @@ class MainActivity : BaseActivity() {
 
         if (savedInstanceState == null) {
             supportFragmentManager
-                .beginTransaction()
-                .add(R.id.container, MainFragment.newInstance())
-                .commit()
+                    .beginTransaction()
+                    .add(R.id.container, MainFragment.newInstance())
+                    .commit()
 
 
             viewModel.resumeUpnpController()
         }
 
-        disposables += RxView.clicks(binding.controlsSheet.next).subscribeBy(onNext = {
-            viewModel.playNext()
-        }, onError = Timber::e)
+        RxView.clicks(binding.controlsSheet.next)
+                .subscribeBy(onNext = { viewModel.playNext() }, onError = Timber::e)
+                .disposeBy(disposables)
 
-        disposables += RxView.clicks(binding.controlsSheet.previous).subscribeBy(onNext = {
-            viewModel.playPrevious()
-        }, onError = Timber::e)
+        RxView.clicks(binding.controlsSheet.previous)
+                .subscribeBy(onNext = { viewModel.playPrevious() }, onError = Timber::e)
+                .disposeBy(disposables)
 
-        disposables += viewModel.launchLocally.subscribeBy(
-            onNext = ::launchLocally,
-            onError = Timber::e
-        )
+        viewModel.launchLocally
+                .subscribeBy(onNext = ::launchLocally, onError = Timber::e)
+                .disposeBy(disposables)
 
         with(viewModel) {
             renderers.nonNullObserve(::handleRenderers)
@@ -171,20 +166,17 @@ class MainActivity : BaseActivity() {
         initPickers()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    REQUEST_READ_EXT_STORAGE
+                        this,
+                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                        REQUEST_READ_EXT_STORAGE
                 )
             }
         }
 
         binding.controlsSheet.progress.setOnSeekBarChangeListener(object :
-            SeekBar.OnSeekBarChangeListener {
+                SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser)
                     Timber.i("From user")
@@ -247,9 +239,9 @@ class MainActivity : BaseActivity() {
         with(item) {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             Glide.with(this@MainActivity)
-                .load(first)
-                .apply(third)
-                .into(binding.controlsSheet.art)
+                    .load(first)
+                    .apply(third)
+                    .into(binding.controlsSheet.art)
 
             binding.controlsSheet.title.text = second
         }

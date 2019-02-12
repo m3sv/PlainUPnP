@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.upnp
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.content.Context
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.formatTime
@@ -11,9 +10,9 @@ import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscoveryObservable
-import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
+import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
@@ -54,11 +53,11 @@ class DefaultUpnpManager constructor(
 
     private val _launchLocally: PublishSubject<LaunchLocally> = PublishSubject.create()
 
-    override val launchLocally: io.reactivex.Observable<LaunchLocally> = _launchLocally.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    override val launchLocally: Observable<LaunchLocally> = _launchLocally.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private val selectedDirectory = PublishSubject.create<Directory>()
 
-    override val selectedDirectoryObservable: io.reactivex.Observable<Directory> = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    override val selectedDirectoryObservable: Observable<Directory> = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private var upnpRendererStateObservable: UpnpRendererStateObservable? = null
 
@@ -79,11 +78,13 @@ class DefaultUpnpManager constructor(
     private val browseTo: Subject<BrowseToModel> = PublishSubject.create()
 
     init {
-        renderItem.throttleFirst(500, TimeUnit.MILLISECONDS).subscribe(::render, Timber::e)
+        renderItem
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
+                .subscribe(::render, Timber::e)
 
-        browseTo.doOnNext {
-            _content.postValue(ContentState.Loading)
-        }.throttleLast(500, TimeUnit.MILLISECONDS).subscribe(::browse, Timber::e)
+        browseTo.doOnNext { _content.postValue(ContentState.Loading) }
+                .throttleLast(500, TimeUnit.MILLISECONDS)
+                .subscribe(::browse, Timber::e)
     }
 
     override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
@@ -146,6 +147,7 @@ class DefaultUpnpManager constructor(
             newRendererState
         }?.subscribeBy(onNext = {
             _rendererState.postValue(it)
+
             if (it.state == UpnpRendererState.State.STOP) {
                 rendererCommand?.pause()
             }
@@ -156,12 +158,7 @@ class DefaultUpnpManager constructor(
                     if (item.item !is ClingImageItem)
                         resume()
                     else
-                        _rendererState.postValue(
-                                RendererState(
-                                        progress = 0,
-                                        state = UpnpRendererState.State.STOP
-                                )
-                        )
+                        _rendererState.postValue(RendererState(progress = 0, state = UpnpRendererState.State.STOP))
                     launchItem(item.item)
                 }
     }
