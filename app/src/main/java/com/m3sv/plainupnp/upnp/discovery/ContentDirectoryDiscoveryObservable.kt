@@ -3,6 +3,7 @@ package com.m3sv.plainupnp.upnp.discovery
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
+import com.m3sv.plainupnp.upnp.UpnpServiceController
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
@@ -10,12 +11,12 @@ import org.droidupnp.legacy.upnp.DeviceDiscoveryObserver
 import timber.log.Timber
 
 
-class ContentDirectoryDiscoveryObservable(private val contentDiscovery: DeviceDiscovery) :
+class ContentDirectoryDiscoveryObservable(private val controller: UpnpServiceController) :
     Observable<Set<DeviceDisplay>>() {
     private val contentDirectories = LinkedHashSet<DeviceDisplay>()
 
     override fun subscribeActual(observer: Observer<in Set<DeviceDisplay>>) {
-        val deviceObserver = ContentDeviceObserver(contentDiscovery, observer)
+        val deviceObserver = ContentDeviceObserver(controller.contentDirectoryDiscovery, observer)
         observer.onSubscribe(deviceObserver)
     }
 

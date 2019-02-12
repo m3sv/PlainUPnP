@@ -11,6 +11,7 @@ import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscoveryObservable
+import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscoveryObservable
 import io.reactivex.BackpressureStrategy
 import io.reactivex.disposables.Disposable
@@ -31,16 +32,11 @@ import java.util.concurrent.TimeUnit
 typealias RenderedItem = Triple<String?, String, RequestOptions>
 
 class DefaultUpnpManager constructor(
-        context: Context,
         private val controller: UpnpServiceController,
-        private val factory: Factory
+        private val factory: Factory,
+        override val rendererDiscovery: RendererDiscoveryObservable,
+        override val contentDirectoryDiscovery: ContentDirectoryDiscoveryObservable
 ) : UpnpManager {
-
-    override val rendererDiscovery =
-            RendererDiscoveryObservable(context, controller.rendererDiscovery)
-
-    override val contentDirectoryDiscovery =
-            ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
 
     private val _rendererState: MutableLiveData<RendererState> = MutableLiveData()
 
@@ -321,12 +317,12 @@ class DefaultUpnpManager constructor(
     }
 
     override fun resumeUpnpController() {
-        Timber.d("Resume UPnP controller")
+        Timber.d("Resume UPnP upnpServiceController")
         controller.resume()
     }
 
     override fun pauseUpnpController() {
-        Timber.d("Pause UPnP controller")
+        Timber.d("Pause UPnP upnpServiceController")
         controller.pause()
     }
 }

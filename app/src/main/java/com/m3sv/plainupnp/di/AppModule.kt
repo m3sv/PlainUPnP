@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import com.m3sv.plainupnp.di.scope.ApplicationScope
 import com.m3sv.plainupnp.upnp.DefaultUpnpManager
+import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscoveryObservable
+import com.m3sv.plainupnp.upnp.discovery.RendererDiscoveryObservable
 import dagger.Module
 import dagger.Provides
 import org.droidupnp.legacy.upnp.Factory
@@ -20,5 +22,8 @@ internal object AppModule {
     @ApplicationScope
     @JvmStatic
     fun provideUPnPManager(context: Context, factory: Factory) =
-        DefaultUpnpManager(context, factory.createUpnpServiceController(context), factory)
+            DefaultUpnpManager(factory.upnpServiceController,
+                    factory,
+                    RendererDiscoveryObservable(context, factory.upnpServiceController),
+                    ContentDirectoryDiscoveryObservable(factory.upnpServiceController))
 }

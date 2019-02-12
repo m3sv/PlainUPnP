@@ -30,9 +30,9 @@ import com.m3sv.plainupnp.upnp.UpnpServiceController
 import org.droidupnp.legacy.cling.UpnpRendererStateObservable
 
 interface Factory {
-    fun createContentDirectoryCommand(): ContentDirectoryCommand?
+    val upnpServiceController: UpnpServiceController
 
-    fun createUpnpServiceController(ctx: Context): UpnpServiceController
+    fun createContentDirectoryCommand(): ContentDirectoryCommand?
 
     fun createRendererState(): UpnpRendererStateObservable
 

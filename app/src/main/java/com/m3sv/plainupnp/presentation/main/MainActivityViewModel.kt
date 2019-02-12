@@ -45,12 +45,12 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun resumeUpnp() {
-        Timber.d("Resuming UPnP controller")
+        Timber.d("Resuming UPnP upnpServiceController")
         resumeRendererUpdate()
     }
 
     fun pauseUpnp() {
-        Timber.d("Pausing UPnP controller")
+        Timber.d("Pausing UPnP upnpServiceController")
         pauseRendererUpdate()
     }
 }

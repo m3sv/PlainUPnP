@@ -6,6 +6,7 @@ import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.LocalDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
+import com.m3sv.plainupnp.upnp.UpnpServiceController
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
@@ -14,7 +15,7 @@ import timber.log.Timber
 
 class RendererDiscoveryObservable(
     private val context: Context,
-    private val rendererDiscovery: RendererDiscovery
+    private val controller: UpnpServiceController
 ) : Observable<Set<DeviceDisplay>>() {
 
     private val renderers = LinkedHashSet<DeviceDisplay>().apply {
@@ -45,7 +46,7 @@ class RendererDiscoveryObservable(
 
     override fun subscribeActual(observer: Observer<in Set<DeviceDisplay>>) {
         with(observer) {
-            onSubscribe(RendererDeviceObserver(rendererDiscovery, observer))
+            onSubscribe(RendererDeviceObserver(controller.rendererDiscovery, observer))
             onNext(renderers)
         }
     }

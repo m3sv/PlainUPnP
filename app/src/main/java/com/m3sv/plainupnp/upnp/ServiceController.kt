@@ -40,7 +40,6 @@ class ServiceController @Inject constructor(override val serviceListener: Servic
 
     override fun resume() {
         super.resume()
-        // This will start the UPnP service if it wasn't already started
         Timber.d("Start UPnP service")
         context.bindService(
             Intent(context, UpnpService::class.java), serviceListener.serviceConnection,
