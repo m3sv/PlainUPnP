@@ -44,30 +44,25 @@ class DefaultUpnpManager constructor(
 
     private val _rendererState: MutableLiveData<RendererState> = MutableLiveData()
 
-    override val rendererState: LiveData<RendererState>
-        get() = _rendererState
+    override val rendererState: LiveData<RendererState> = _rendererState
 
     private val _renderedItem: MutableLiveData<RenderedItem> = MutableLiveData()
 
-    override val renderedItem: LiveData<RenderedItem>
-        get() = _renderedItem
+    override val renderedItem: LiveData<RenderedItem> = _renderedItem
 
     private val _content = MutableLiveData<ContentState>()
 
     override val content: LiveData<ContentState> = _content
 
-    override val currentContentDirectory: UpnpDevice?
-        get() = controller.selectedContentDirectory
+    override val currentContentDirectory: UpnpDevice? = controller.selectedContentDirectory
 
     private val _launchLocally: PublishSubject<LaunchLocally> = PublishSubject.create()
 
-    override val launchLocally: io.reactivex.Observable<LaunchLocally>
-        get() = _launchLocally.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    override val launchLocally: io.reactivex.Observable<LaunchLocally> = _launchLocally.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private val selectedDirectory = PublishSubject.create<Directory>()
 
-    override val selectedDirectoryObservable: io.reactivex.Observable<Directory>
-        get() = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    override val selectedDirectoryObservable: io.reactivex.Observable<Directory> = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private var upnpRendererStateObservable: UpnpRendererStateObservable? = null
 

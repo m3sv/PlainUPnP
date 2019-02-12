@@ -14,7 +14,7 @@ class CDevice(val device: Device<*, *, *>?) : UpnpDevice {
 
     override val manufacturer: String = device?.details?.manufacturerDetails?.manufacturer ?: ""
 
-    override val manufacturerURL: String = device?.details?.manufacturerDetails?.manufacturerURI?.toString()
+    override val manufacturerUrl: String = device?.details?.manufacturerDetails?.manufacturerURI?.toString()
             ?: ""
 
     override val modelName: String = device?.details?.modelDetails?.modelName ?: ""
@@ -23,9 +23,9 @@ class CDevice(val device: Device<*, *, *>?) : UpnpDevice {
 
     override val modelNumber: String = device?.details?.modelDetails?.modelNumber ?: ""
 
-    override val modelURL: String = device?.details?.modelDetails?.modelURI?.toString() ?: ""
+    override val modelUrl: String = device?.details?.modelDetails?.modelURI?.toString() ?: ""
 
-    override val xmlurl: String = device?.details?.baseURL?.toString() ?: ""
+    override val xmlUrl: String = device?.details?.baseURL?.toString() ?: ""
 
     override val presentationURL: String = device?.details?.presentationURI?.toString() ?: ""
 

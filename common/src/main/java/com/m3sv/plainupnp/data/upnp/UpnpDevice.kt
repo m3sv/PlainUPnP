@@ -10,7 +10,7 @@ interface UpnpDevice {
 
     val manufacturer: String
 
-    val manufacturerURL: String
+    val manufacturerUrl: String
 
     val modelName: String
 
@@ -18,9 +18,9 @@ interface UpnpDevice {
 
     val modelNumber: String
 
-    val modelURL: String
+    val modelUrl: String
 
-    val xmlurl: String
+    val xmlUrl: String
 
     val presentationURL: String
 
