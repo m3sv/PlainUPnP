@@ -8,24 +8,51 @@ import timber.log.Timber
 
 class CDevice(val device: Device<*, *, *>?) : UpnpDevice {
 
-    override fun getDisplayString(): String = device?.displayString ?: ""
+    override val displayString: String = device?.displayString ?: ""
 
-    override fun getFriendlyName(): String = device?.details?.friendlyName ?: displayString
+    override val friendlyName: String = device?.details?.friendlyName ?: displayString
 
-    override fun equals(otherDevice: UpnpDevice): Boolean =
-        device?.let {
-            it.identity.udn == (otherDevice as CDevice).device?.identity?.udn
-        } ?: false
+    override val manufacturer: String = device?.details?.manufacturerDetails?.manufacturer ?: ""
 
-    override fun getUID(): String = device?.identity?.udn?.toString() ?: ""
+    override val manufacturerURL: String = device?.details?.manufacturerDetails?.manufacturerURI?.toString()
+            ?: ""
 
-    override fun getExtendedInformation(): String {
-        val info = StringBuilder()
-        device?.findServiceTypes()?.forEach {
-            info.append("\n\t").append(it.type).append(" : ").append(it.toFriendlyString())
+    override val modelName: String = device?.details?.modelDetails?.modelName ?: ""
+
+    override val modelDesc: String = device?.details?.modelDetails?.modelDescription ?: ""
+
+    override val modelNumber: String = device?.details?.modelDetails?.modelNumber ?: ""
+
+    override val modelURL: String = device?.details?.modelDetails?.modelURI?.toString() ?: ""
+
+    override val xmlurl: String = device?.details?.baseURL?.toString() ?: ""
+
+    override val presentationURL: String = device?.details?.presentationURI?.toString() ?: ""
+
+    override val serialNumber: String = device?.details?.serialNumber ?: ""
+
+    override val udn: String = device?.identity?.udn?.toString() ?: ""
+
+    override val uid: String = device?.identity?.udn?.toString() ?: ""
+
+    override val isFullyHydrated: Boolean = device?.isFullyHydrated ?: false
+
+    override val isLocal: Boolean = device is LocalDevice
+
+    override val extendedInformation: String
+        get() {
+            val info = StringBuilder()
+            device?.findServiceTypes()?.forEach {
+                info.append("\n\t").append(it.type).append(" : ").append(it.toFriendlyString())
+            }
+            return info.toString()
         }
-        return info.toString()
-    }
+
+    override fun equals(otherDevice: UpnpDevice?): Boolean =
+            device?.let {
+                it.identity.udn == (otherDevice as CDevice).device?.identity?.udn
+            } ?: false
+
 
     override fun printService() {
         device?.findServices()?.forEach {
@@ -37,31 +64,7 @@ class CDevice(val device: Device<*, *, *>?) : UpnpDevice {
     }
 
     override fun asService(service: String): Boolean =
-        device?.findService(UDAServiceType(service)) != null
-
-    override fun getManufacturer(): String =
-        device?.details?.manufacturerDetails?.manufacturer ?: ""
-
-    override fun getManufacturerURL(): String =
-        device?.details?.manufacturerDetails?.manufacturerURI?.toString() ?: ""
-
-    override fun getModelName(): String = device?.details?.modelDetails?.modelName ?: ""
-
-    override fun getModelDesc(): String = device?.details?.modelDetails?.modelDescription ?: ""
-
-    override fun getModelNumber(): String = device?.details?.modelDetails?.modelNumber ?: ""
-
-    override fun getModelURL(): String = device?.details?.modelDetails?.modelURI?.toString() ?: ""
-
-    override fun getXMLURL(): String = device?.details?.baseURL?.toString() ?: ""
-
-    override fun getPresentationURL(): String = device?.details?.presentationURI?.toString() ?: ""
-
-    override fun getSerialNumber(): String = device?.details?.serialNumber ?: ""
-
-    override fun getUDN(): String = device?.identity?.udn?.toString() ?: ""
-
-    override fun isFullyHydrated(): Boolean = device?.isFullyHydrated ?: false
+            device?.findService(UDAServiceType(service)) != null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -78,5 +81,4 @@ class CDevice(val device: Device<*, *, *>?) : UpnpDevice {
 
     override fun toString(): String = "CDevice{ device=$device }"
 
-    override fun isLocal(): Boolean = device is LocalDevice
 }

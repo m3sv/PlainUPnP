@@ -1,45 +1,28 @@
 package com.m3sv.plainupnp.data.upnp
 
-
-class LocalDevice(private val _friendlyName: String = "Play locally") : UpnpDevice {
-    override fun getDisplayString(): String = ""
-
-    override fun getFriendlyName(): String = _friendlyName
-
-    override fun getExtendedInformation(): String = ""
-
-    override fun getManufacturer(): String = ""
-
-    override fun getManufacturerURL(): String = ""
-
-    override fun getModelName(): String = ""
-
-    override fun getModelDesc(): String = ""
-
-    override fun getModelNumber(): String = ""
-
-    override fun getModelURL(): String = ""
-
-    override fun getXMLURL(): String = ""
-
-    override fun getPresentationURL(): String = ""
-
-    override fun getSerialNumber(): String = ""
-
-    override fun getUDN(): String = ""
-
+//private val _friendlyName: String = "Play locally"
+class LocalDevice(override val displayString: String = "",
+                  override val friendlyName: String = "Play locally",
+                  override val extendedInformation: String = "",
+                  override val manufacturer: String = "",
+                  override val manufacturerURL: String = "",
+                  override val modelName: String = "",
+                  override val modelDesc: String = "",
+                  override val modelNumber: String = "",
+                  override val modelURL: String = "",
+                  override val xmlurl: String = "",
+                  override val presentationURL: String = "",
+                  override val serialNumber: String = "",
+                  override val udn: String = "",
+                  override val uid: String = "",
+                  override val isFullyHydrated: Boolean = false,
+                  override val isLocal: Boolean = true) : UpnpDevice {
     override fun equals(otherDevice: UpnpDevice?): Boolean = otherDevice is LocalDevice
 
-    override fun getUID(): String = ""
-
-    override fun asService(service: String?): Boolean = false
+    override fun asService(service: String): Boolean = false
 
     override fun printService() {
         // do nothing
     }
-
-    override fun isFullyHydrated(): Boolean = false
-
-    override fun isLocal(): Boolean = true
 }
 
