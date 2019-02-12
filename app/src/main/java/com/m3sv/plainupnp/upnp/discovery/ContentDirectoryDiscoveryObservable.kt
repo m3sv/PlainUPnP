@@ -10,7 +10,7 @@ import org.droidupnp.legacy.upnp.DeviceDiscoveryObserver
 import timber.log.Timber
 
 
-class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentDirectoryDiscovery) :
+class ContentDirectoryDiscoveryObservable(private val contentDiscovery: DeviceDiscovery) :
     Observable<Set<DeviceDisplay>>() {
     private val contentDirectories = LinkedHashSet<DeviceDisplay>()
 
@@ -45,7 +45,7 @@ class ContentDirectoryDiscoveryObservable(private val contentDiscovery: ContentD
     }
 
     private inner class ContentDeviceObserver(
-        private val contentDirectoryDiscovery: ContentDirectoryDiscovery,
+        private val contentDirectoryDiscovery: DeviceDiscovery,
         private val observer: Observer<in Set<DeviceDisplay>>
     ) : Disposable, DeviceDiscoveryObserver {
 

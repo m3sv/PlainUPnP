@@ -13,7 +13,7 @@ android {
 
         versionCode versions.versionCode
         versionName versions.versionName
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     packagingOptions {
@@ -53,12 +53,16 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:2.13.0'
-    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit:1.3.10'
+    androidTestImplementation deps.test.core
+    androidTestImplementation deps.test.rules
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    androidTestImplementation deps.test.assertions.junit
 
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    testImplementation deps.test.core
+    testImplementation deps.test.rules
+    testImplementation deps.test.assertions.junit
+    testImplementation deps.test.mockito.core
+    testImplementation "android.arch.core:core-testing:1.1.1"
 
     implementation deps.support.appCompat
     implementation deps.support.v4
@@ -107,6 +111,7 @@ dependencies {
     implementation deps.firebase.core
 
     implementation project(':common')
+
 }
 
 kapt {

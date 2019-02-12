@@ -87,6 +87,7 @@ abstract class DeviceDiscovery(protected val controller: UpnpServiceController) 
     }
 
     fun addObserver(o: DeviceDiscoveryObserver) {
+        println(o)
         observerList.add(o)
 
         controller

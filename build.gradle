@@ -64,9 +64,22 @@ buildscript {
             'okHttp'                : [
                     'loggingInterceptor': "com.squareup.okhttp3:logging-interceptor:$versions.okhttp"
             ],
-            'instantApps' : "com.google.android.instantapps:instantapps:1.0.0",
-            'firebase' : [
+            'instantApps'           : "com.google.android.instantapps:instantapps:1.0.0",
+            'firebase'              : [
                     'core': "com.google.firebase:firebase-core:16.0.6"
+            ],
+            'test'                  : [
+                    'core'       : "androidx.test:core:1.0.0",
+                    'runner'     : "androidx.test:runner:1.1.0",
+                    'rules'      : "androidx.test:rules:1.1.0",
+                    'assertions' : [
+                            'junit'      : "androidx.test.ext:junit:1.0.0",
+                            'truth'      : "androidx.test.ext:truth:1.0.0",
+                            'googleTruth': "com.google.truth:truth:0.42"
+                    ],
+                    'mockito'    : [
+                            'core': "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
+                    ]
             ]
     ]
 

@@ -5,6 +5,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.content.Context
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.utils.formatTime
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
@@ -30,16 +31,16 @@ import java.util.concurrent.TimeUnit
 typealias RenderedItem = Triple<String?, String, RequestOptions>
 
 class DefaultUpnpManager constructor(
-    context: Context,
-    private val controller: UpnpServiceController,
-    private val factory: Factory
+        context: Context,
+        private val controller: UpnpServiceController,
+        private val factory: Factory
 ) : UpnpManager {
 
     override val rendererDiscovery =
-        RendererDiscoveryObservable(context, controller.rendererDiscovery)
+            RendererDiscoveryObservable(context, controller.rendererDiscovery)
 
     override val contentDirectoryDiscovery =
-        ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
+            ContentDirectoryDiscoveryObservable(controller.contentDirectoryDiscovery)
 
     private val _rendererState: MutableLiveData<RendererState> = MutableLiveData()
 
@@ -142,12 +143,12 @@ class DefaultUpnpManager constructor(
 
         rendererStateDisposable = upnpRendererStateObservable?.map {
             val newRendererState = RendererState(
-                it.remainingDuration,
-                it.elapsedDuration,
-                it.progress,
-                it.title,
-                it.artist,
-                it.state
+                    it.remainingDuration,
+                    it.elapsedDuration,
+                    it.progress,
+                    it.title,
+                    it.artist,
+                    it.state
             )
 
             Timber.i("New renderer state: $newRendererState")
@@ -160,18 +161,18 @@ class DefaultUpnpManager constructor(
         }, onError = Timber::e)
 
         rendererCommand = factory.createRendererCommand(upnpRendererStateObservable)
-            ?.apply {
-                if (item.item !is ClingImageItem)
-                    resume()
-                else
-                    _rendererState.postValue(
-                        RendererState(
-                            progress = 0,
-                            state = UpnpRendererState.State.STOP
+                ?.apply {
+                    if (item.item !is ClingImageItem)
+                        resume()
+                    else
+                        _rendererState.postValue(
+                                RendererState(
+                                        progress = 0,
+                                        state = UpnpRendererState.State.STOP
+                                )
                         )
-                    )
-                launchItem(item.item)
-            }
+                    launchItem(item.item)
+                }
     }
 
     private fun launchItemLocally(item: RenderItem) {
@@ -199,19 +200,19 @@ class DefaultUpnpManager constructor(
         }
 
         _renderedItem.postValue(
-            RenderedItem(
-                toRender.item.uri,
-                toRender.item.title,
-                requestOptions
-            )
+                RenderedItem(
+                        toRender.item.uri,
+                        toRender.item.title,
+                        requestOptions
+                )
         )
     }
 
     override fun playNext() {
         _content.value?.let {
             if (it is ContentState.Success
-                && next in 0 until it.content.size
-                && it.content[next].didlObject is DIDLItem) {
+                    && next in 0 until it.content.size
+                    && it.content[next].didlObject is DIDLItem) {
                 renderItem(RenderItem(it.content[next].didlObject as DIDLItem, next))
             }
         }
@@ -220,8 +221,8 @@ class DefaultUpnpManager constructor(
     override fun playPrevious() {
         _content.value?.let {
             if (it is ContentState.Success
-                && previous in 0 until it.content.size
-                && it.content[previous].didlObject is DIDLItem) {
+                    && previous in 0 until it.content.size
+                    && it.content[previous].didlObject is DIDLItem) {
                 renderItem(RenderItem(it.content[previous].didlObject as DIDLItem, previous))
             }
         }
@@ -265,17 +266,15 @@ class DefaultUpnpManager constructor(
 
             when (model.id) {
                 "0" -> {
-                    selectedDirectory.onNext(
-                        Directory.Home(
-                            currentContentDirectory?.friendlyName ?: "Home"
-                        )
-                    )
+                    selectedDirectory.onNext(Directory.Home(currentContentDirectory?.friendlyName
+                            ?: "Home"))
+
                     directoriesStructure =
                             LinkedList<Directory>().apply { add(Directory.Home(model.directoryName)) }
                 }
                 else -> {
                     val subDirectory =
-                        Directory.SubDirectory(model.id, model.directoryName, model.parentId)
+                            Directory.SubDirectory(model.id, model.directoryName, model.parentId)
                     selectedDirectory.onNext(subDirectory)
                     if (model.addToStructure)
                         directoriesStructure.addFirst(subDirectory)
@@ -296,15 +295,16 @@ class DefaultUpnpManager constructor(
 
             is Directory.SubDirectory -> {
                 browseTo(
-                    if (element.parentId == "0")
-                        BrowseToModel("0", currentContentDirectory?.friendlyName ?: "Home", null)
-                    else
-                        BrowseToModel(
-                            element.parentId ?: "0",
-                            element.name,
-                            element.parentId,
-                            false
-                        )
+                        if (element.parentId == "0")
+                            BrowseToModel("0", currentContentDirectory?.friendlyName
+                                    ?: "Home", null)
+                        else
+                            BrowseToModel(
+                                    element.parentId ?: "0",
+                                    element.name,
+                                    element.parentId,
+                                    false
+                            )
                 )
 
             }
@@ -314,20 +314,13 @@ class DefaultUpnpManager constructor(
     }
 
     override fun moveTo(progress: Int, max: Int) {
-        fun formatTime(h: Long, m: Long, s: Long): String {
-            return ((if (h >= 10) "" + h else "0$h") + ":" + (if (m >= 10) "" + m else "0$m") + ":"
-                    + if (s >= 10) "" + s else "0$s")
-        }
-
         upnpRendererStateObservable?.run {
-            val t = ((1.0 - (max.toDouble() - progress) / max) * durationSeconds).toLong()
-            val h = t / 3600
-            val m = (t - h * 3600) / 60
-            val s = t - h * 3600 - m * 60
-            val seek = formatTime(h, m, s)
             rendererCommand?.run {
-                Timber.d("Seek to $seek")
-                commandSeek(seek)
+                formatTime(max, progress, durationSeconds)?.let {
+                    Timber.d("Seek to $it")
+                    commandSeek(it)
+                }
+
             }
         }
     }

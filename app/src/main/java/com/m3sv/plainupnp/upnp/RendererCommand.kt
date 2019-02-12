@@ -215,7 +215,7 @@ class RendererCommand(
                 )
             }
 
-            Timber.i("TrackMetadata : " + trackMetadata.toString())
+            Timber.i("TrackMetadata : $trackMetadata")
 
             // Stop playback before setting URI
             controlPoint.execute(object : Stop(it) {
