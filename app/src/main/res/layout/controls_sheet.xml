@@ -10,7 +10,6 @@
         android:layout_marginBottom="?actionBarSize"
         android:background="@drawable/bg_rounded_corners"
         android:clickable="true"
-        android:focusable="true"
         app:behavior_peekHeight="@dimen/controls_peek_height"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 

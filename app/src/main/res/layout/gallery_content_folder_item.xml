@@ -7,6 +7,8 @@
         android:id="@+id/container"
         android:layout_width="72dp"
         android:layout_height="120dp"
+        android:background="@drawable/item_background"
+        android:descendantFocusability="beforeDescendants"
         android:focusable="true"
         android:gravity="center"
         android:orientation="vertical">

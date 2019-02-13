@@ -12,8 +12,8 @@
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:focusableInTouchMode="true">
+        android:descendantFocusability="afterDescendants"
+        android:layout_height="match_parent">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -71,6 +71,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="?actionBarSize"
             android:layout_marginBottom="64dp"
+            android:descendantFocusability="afterDescendants"
             android:clipToPadding="false"
             android:paddingTop="8dp" />
 
