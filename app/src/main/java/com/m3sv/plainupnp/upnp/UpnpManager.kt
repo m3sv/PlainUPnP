@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.upnp
 
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.LiveData
 import com.m3sv.plainupnp.data.upnp.*
 import io.reactivex.Observable
 

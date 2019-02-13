@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.formatTime

@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.presentation.main
 
-import android.databinding.ViewDataBinding
-import android.support.annotation.DrawableRes
+import androidx.databinding.ViewDataBinding
+import androidx.annotation.DrawableRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

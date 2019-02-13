@@ -1,9 +1,9 @@
 package com.m3sv.plainupnp.presentation.base
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import com.m3sv.plainupnp.di.ViewModelFactory
 import dagger.android.support.DaggerFragment
 import io.reactivex.disposables.CompositeDisposable

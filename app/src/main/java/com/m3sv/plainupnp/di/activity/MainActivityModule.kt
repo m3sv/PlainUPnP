@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.di.activity
 
-import android.arch.lifecycle.ViewModel
-import android.support.v7.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
+import androidx.appcompat.app.AppCompatActivity
 import com.m3sv.plainupnp.di.ViewModelKey
 import com.m3sv.plainupnp.di.scope.ActivityScope
 import com.m3sv.plainupnp.presentation.main.MainActivity

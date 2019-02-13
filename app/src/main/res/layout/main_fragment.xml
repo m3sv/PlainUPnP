@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:focusableInTouchMode="true">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?android:actionBarSize"
@@ -63,9 +63,9 @@
                     android:src="@drawable/ic_close"
                     android:visibility="gone" />
             </FrameLayout>
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

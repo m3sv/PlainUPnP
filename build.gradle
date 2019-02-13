@@ -7,9 +7,9 @@ buildscript {
             'buildTools'            : '28.0.3',
             'minSdk'                : 21,
             'targetSdk'             : 28,
-            'supportLibrary'        : '28.0.0',
-            'architectureComponents': '1.1.1',
-            'dagger'                : '2.20',
+            'supportLibrary'        : '1.0.0-beta01',
+            'architectureComponents': '2.0.0-beta01',
+            'dagger'                : '2.21',
             'glide'                 : '4.8.0',
             'cling'                 : '2.1.1',
             'jetty'                 : '8.2.0.v20160908',
@@ -23,17 +23,17 @@ buildscript {
                     'leanback': "androidx.leanback:leanback:1.0.0"
             ],
             'support'               : [
-                    'appCompat'       : "com.android.support:appcompat-v7:${versions.supportLibrary}",
-                    'v4'              : "com.android.support:support-v4:${versions.supportLibrary}",
-                    'design'          : "com.android.support:design:${versions.supportLibrary}",
-                    'recyclerView'    : "com.android.support:recyclerview-v7:${versions.supportLibrary}",
-                    'cardView'        : "com.android.support:cardview-v7:${versions.supportLibrary}",
-                    'constraintLayout': "com.android.support.constraint:constraint-layout:1.1.0",
-                    'preferences'     : "com.android.support:preference-v7:${versions.supportLibrary}"
+                    'appCompat'       : "androidx.appcompat:appcompat:${versions.supportLibrary}",
+                    'v4'              : "androidx.legacy:legacy-support-v4:${versions.supportLibrary}",
+                    'design'          : "com.google.android.material:material:${versions.supportLibrary}",
+                    'recyclerView'    : "androidx.recyclerview:recyclerview:${versions.supportLibrary}",
+                    'cardView'        : "androidx.cardview:cardview:${versions.supportLibrary}",
+                    'constraintLayout': 'androidx.constraintlayout:constraintlayout:1.1.2',
+                    'preferences'     : "androidx.preference:preference:${versions.supportLibrary}"
             ],
             'architectureComponents': [
-                    'lifecycle'               : "android.arch.lifecycle:extensions:${versions.architectureComponents}",
-                    'lifecycleReactiveStreams': "android.arch.lifecycle:reactivestreams:${versions.architectureComponents}",
+                    'lifecycle'               : "androidx.lifecycle:lifecycle-extensions:${versions.architectureComponents}",
+                    'lifecycleReactiveStreams': "androidx.lifecycle:lifecycle-reactivestreams:${versions.architectureComponents}",
             ],
             'rx'                    : [
                     'kotlin' : "com.github.ReactiveX:rxKotlin:2.2.0",
@@ -72,7 +72,7 @@ buildscript {
             'crashlytics'           : "com.crashlytics.sdk.android:crashlytics:2.9.9",
             'test'                  : [
                     'core'       : "androidx.test:core:1.0.0",
-                    'coreTesting': "android.arch.core:core-testing:1.1.1",
+                    'coreTesting': 'androidx.arch.core:core-testing:2.0.0-beta01',
                     'espresso'   : [
                             'core': "androidx.test.espresso:espresso-core:3.1.1"
                     ],

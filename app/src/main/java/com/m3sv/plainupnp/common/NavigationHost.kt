@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.common
 
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 
 
 interface NavigationHost {

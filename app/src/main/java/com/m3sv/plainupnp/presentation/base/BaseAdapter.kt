@@ -1,8 +1,8 @@
 package com.m3sv.plainupnp.presentation.base
 
-import android.arch.lifecycle.MutableLiveData
-import android.support.v7.util.DiffUtil
-import android.support.v7.widget.RecyclerView
+import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.m3sv.plainupnp.common.ItemsDiffCallback
 import kotlin.properties.Delegates
 

@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.common
 
-import android.support.v7.util.DiffUtil
+import androidx.recyclerview.widget.DiffUtil
 
 abstract class ItemsDiffCallback<T>(
     var oldItems: List<T>,

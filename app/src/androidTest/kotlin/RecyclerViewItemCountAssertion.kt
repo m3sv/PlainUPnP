@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.View
 import androidx.test.espresso.NoMatchingViewException
 import androidx.test.espresso.ViewAssertion

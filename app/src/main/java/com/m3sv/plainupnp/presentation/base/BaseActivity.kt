@@ -1,12 +1,12 @@
 package com.m3sv.plainupnp.presentation.base
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModel
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.NavigationHost
 import com.m3sv.plainupnp.di.ViewModelFactory

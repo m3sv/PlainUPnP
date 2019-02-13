@@ -3,7 +3,7 @@
 package com.m3sv.plainupnp.common.utils
 
 import android.content.Context
-import android.support.v7.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 
 
 const val CONTENT_DIRECTORY_SERVICE = "pref_contentDirectoryService"
