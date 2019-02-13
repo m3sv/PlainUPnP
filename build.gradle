@@ -19,7 +19,8 @@ buildscript {
 
     ext.deps = [
             'androidx'              : [
-                    'ktx': "androidx.core:core-ktx:1.0.0"
+                    'ktx': "androidx.core:core-ktx:1.0.0",
+                    'leanback': "androidx.leanback:leanback:1.0.0"
             ],
             'support'               : [
                     'appCompat'       : "com.android.support:appcompat-v7:${versions.supportLibrary}",

@@ -66,6 +66,8 @@ dependencies {
     testImplementation deps.test.mockito.core
     testImplementation deps.test.coreTesting
 
+    implementation deps.androidx.leanback
+
     implementation deps.support.appCompat
     implementation deps.support.v4
     implementation deps.support.design
