@@ -1,22 +1,16 @@
 package com.m3sv.plainupnp.presentation.main
 
-import android.Manifest
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.content.pm.PackageManager
 import androidx.databinding.DataBindingUtil
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import android.view.View
 import android.widget.AdapterView
 import android.widget.SeekBar
-import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.view.RxView
 import com.m3sv.plainupnp.R
@@ -165,16 +159,6 @@ class MainActivity : BaseActivity() {
 
         initPickers()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(
-                        this,
-                        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                        REQUEST_READ_EXT_STORAGE
-                )
-            }
-        }
-
         binding.controlsSheet.progress.setOnSeekBarChangeListener(object :
                 SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -191,6 +175,8 @@ class MainActivity : BaseActivity() {
                 viewModel.moveTo(seekBar.progress, seekBar.max)
             }
         })
+
+        requestReadStoragePermission()
     }
 
     override fun onStart() {
@@ -306,21 +292,5 @@ class MainActivity : BaseActivity() {
         } else {
             finish()
         }
-    }
-
-    private fun doubleTapExit() {
-        val currentTime = System.currentTimeMillis()
-
-        if (currentTime - lastBackClick < 500)
-            finish()
-
-        lastBackClick = currentTime
-        Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
-    }
-
-    private var lastBackClick = System.currentTimeMillis()
-
-    companion object {
-        private const val REQUEST_READ_EXT_STORAGE = 12345
     }
 }

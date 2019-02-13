@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.instantapps.InstantApps
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -105,7 +106,7 @@ class MainFragment : BaseFragment() {
             layoutManager = GridLayoutManager(
                     requireActivity(),
                     spanCount,
-                    GridLayoutManager.VERTICAL,
+                    RecyclerView.VERTICAL,
                     false
             )
 
@@ -187,6 +188,8 @@ class MainFragment : BaseFragment() {
     }
 
     companion object {
+        const val TAG = "main_fragment"
+
         fun newInstance(): MainFragment = MainFragment().apply {
             arguments = Bundle()
         }
