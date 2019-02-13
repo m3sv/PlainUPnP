@@ -6,7 +6,7 @@
     <LinearLayout
         android:id="@+id/container"
         android:layout_width="72dp"
-        android:layout_height="120dp"
+        android:layout_height="100dp"
         android:background="@drawable/item_background"
         android:descendantFocusability="beforeDescendants"
         android:focusable="true"
