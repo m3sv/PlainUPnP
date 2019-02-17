@@ -38,6 +38,18 @@ android {
         }
     }
 
+    flavorDimensions "store"
+
+    productFlavors {
+        playstore {
+            dimension "store"
+        }
+
+        fdroid {
+            dimension "store"
+        }
+    }
+
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
@@ -54,20 +66,19 @@ android {
 }
 
 dependencies {
+    compile fileTree(dir: 'libs', include: '*.jar')
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     androidTestImplementation deps.test.core
     androidTestImplementation deps.test.rules
     androidTestImplementation deps.test.espresso.core
     androidTestImplementation deps.test.assertions.junit
-
     testImplementation deps.test.core
     testImplementation deps.test.rules
     testImplementation deps.test.assertions.junit
     testImplementation deps.test.mockito.core
     testImplementation deps.test.coreTesting
-
     implementation deps.androidx.leanback
-
     implementation deps.support.appCompat
     implementation deps.support.v4
     implementation deps.support.design
@@ -75,27 +86,20 @@ dependencies {
     implementation deps.support.cardView
     implementation deps.support.constraintLayout
     implementation deps.support.preferences
-
     implementation deps.architectureComponents.lifecycle
     implementation deps.architectureComponents.lifecycleReactiveStreams
-
     implementation deps.timber
     implementation deps.kotlin
-
     implementation deps.rx.kotlin
     implementation deps.rx.binding
     implementation deps.rx.android
     implementation deps.rx.relay
-
     implementation deps.okHttp.loggingInterceptor
-
     implementation deps.coroutines
-
     implementation(deps.glide.core) {
         exclude group: "com.android.support"
     }
     kapt deps.glide.compiler
-
     implementation deps.dagger.core
     compileOnly deps.dagger.annotation
     kapt deps.dagger.compiler
@@ -111,13 +115,11 @@ dependencies {
     implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: versions.jetty
     implementation 'org.slf4j:slf4j-jdk14:1.7.14'
 
-    implementation deps.instantApps
-    implementation deps.firebase.core
-
-    implementation deps.crashlytics
+    playstoreImplementation deps.instantApps
+    playstoreImplementation deps.firebase.core
+    playstoreImplementation deps.crashlytics
 
     implementation project(':common')
-
 }
 
 kapt {

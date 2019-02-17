@@ -11,7 +11,6 @@
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:descendantFocusability="afterDescendants"
         android:layout_height="match_parent"
         tools:context=".presentation.main.MainActivity">
 
@@ -23,7 +22,8 @@
 
         <include
             android:id="@+id/controls_sheet"
-            layout="@layout/controls_sheet" />
+            layout="@layout/controls_sheet"
+            android:clipChildren="false" />
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_nav"
@@ -32,6 +32,17 @@
             android:layout_gravity="bottom"
             android:background="?attr/backgroundColor"
             app:menu="@menu/main" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/search"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:src="@drawable/ic_search"
+            app:layout_anchor="@id/controls_sheet"
+            app:layout_anchorGravity="top|end" />
+
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

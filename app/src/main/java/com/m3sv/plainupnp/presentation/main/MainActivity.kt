@@ -2,16 +2,16 @@ package com.m3sv.plainupnp.presentation.main
 
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import androidx.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Bundle
-import androidx.constraintlayout.widget.ConstraintLayout
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import android.view.View
 import android.widget.AdapterView
 import android.widget.SeekBar
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.jakewharton.rxbinding2.view.RxView
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.disposeBy
@@ -114,6 +114,8 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private lateinit var mainFragment: MainFragment
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
@@ -129,13 +131,19 @@ class MainActivity : BaseActivity() {
         initBottomSheet()
 
         if (savedInstanceState == null) {
+            mainFragment = MainFragment.newInstance()
+
             supportFragmentManager
                     .beginTransaction()
-                    .add(R.id.container, MainFragment.newInstance())
+                    .add(R.id.container, mainFragment, MainFragment.TAG)
                     .commit()
 
+            searchListener = mainFragment
 
             viewModel.resumeUpnpController()
+        } else {
+            mainFragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment
+            searchListener = mainFragment
         }
 
         RxView.clicks(binding.controlsSheet.next)
@@ -176,8 +184,12 @@ class MainActivity : BaseActivity() {
             }
         })
 
+        binding.search.setOnClickListener { searchListener?.onSearchClicked() }
+
         requestReadStoragePermission()
     }
+
+    var searchListener: SearchClickListener? = null
 
     override fun onStart() {
         super.onStart()

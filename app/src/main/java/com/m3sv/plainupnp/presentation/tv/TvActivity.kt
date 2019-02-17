@@ -1,18 +1,22 @@
 package com.m3sv.plainupnp.presentation.tv
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
+import androidx.databinding.DataBindingUtil
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.Directory
+import com.m3sv.plainupnp.databinding.TvActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.main.MainActivityViewModel
 import com.m3sv.plainupnp.presentation.main.MainFragment
+import com.m3sv.plainupnp.presentation.main.SearchClickListener
 import timber.log.Timber
 
 class TvActivity : BaseActivity() {
 
     private lateinit var viewModel: MainActivityViewModel
+
+    private lateinit var binding: TvActivityBinding
 
     private fun handleContentDirectories(contentDirectories: Set<DeviceDisplay>) {
         Timber.d("Received new set of content directories: ${contentDirectories.size}")
@@ -21,11 +25,14 @@ class TvActivity : BaseActivity() {
 //        contentDirectoryAdapter.setNewItems(contentDirectories.toList())
     }
 
-    private lateinit var mainFragment: Fragment
+    private lateinit var mainFragment: MainFragment
+
+    var searchListener: SearchClickListener? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tv_activity)
+        binding = DataBindingUtil.setContentView(this, R.layout.tv_activity)
 
         viewModel = getViewModel()
 
@@ -37,9 +44,12 @@ class TvActivity : BaseActivity() {
                     .add(R.id.container, mainFragment, MainFragment.TAG)
                     .commit()
 
+            searchListener = mainFragment
+
             viewModel.resumeUpnpController()
         } else {
             mainFragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment
+            searchListener = mainFragment
         }
 
         with(viewModel) {
@@ -48,6 +58,8 @@ class TvActivity : BaseActivity() {
 //            rendererState.nonNullObserve(::handleRendererState)
 //            renderedItem.nonNullObserve(::handleRenderedItem)
         }
+
+        binding.search.setOnClickListener { searchListener?.onSearchClicked() }
 
         requestReadStoragePermission()
     }

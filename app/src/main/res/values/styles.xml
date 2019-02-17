@@ -39,7 +39,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="backgroundColor">@color/darkBackground</item>
-        <item name="searchViewColor">@color/whiteHalfTransparent</item>
+        <item name="searchViewColor">@android:color/white</item>
     </style>
 
     <!-- Specific Feed activity theme -->

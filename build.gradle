@@ -11,7 +11,7 @@ buildscript {
             'architectureComponents': '2.0.0-beta01',
             'dagger'                : '2.21',
             'glide'                 : '4.8.0',
-            'cling'                 : '2.1.1',
+            'cling'                 : '2.1.2-SNAPSHOT',
             'jetty'                 : '8.2.0.v20160908',
             'retrofit'              : '2.4.0',
             'okhttp'                : '3.9.1'

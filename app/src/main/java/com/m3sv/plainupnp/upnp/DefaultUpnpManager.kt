@@ -17,6 +17,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import kotlinx.coroutines.Deferred
 import org.droidupnp.legacy.cling.UpnpRendererStateObservable
 import org.droidupnp.legacy.upnp.Factory
 import timber.log.Timber
@@ -242,7 +243,7 @@ class DefaultUpnpManager constructor(
         browseTo.onNext(model)
     }
 
-    private var browseFuture: Future<Any>? = null
+    private var browseFuture: Future<*>? = null
 
     private fun browse(model: BrowseToModel) {
         Timber.d("Browse: ${model.id}")

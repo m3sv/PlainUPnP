@@ -4,16 +4,16 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.GridLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.google.android.instantapps.InstantApps
 import com.jakewharton.rxbinding2.widget.RxTextView
 import com.m3sv.plainupnp.common.SpaceItemDecoration
+import com.m3sv.plainupnp.common.isInstantApp
 import com.m3sv.plainupnp.common.utils.*
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
@@ -26,7 +26,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 
 
-class MainFragment : BaseFragment() {
+class MainFragment : BaseFragment(), SearchClickListener {
 
     private lateinit var viewModel: MainFragmentViewModel
 
@@ -42,7 +42,7 @@ class MainFragment : BaseFragment() {
                     contentAdapter.setWithDiff(contentState.content.toItems())
                     hideProgress()
 
-                    if (InstantApps.isInstantApp(requireContext()) && contentState.content.isEmpty()) {
+                    if (isInstantApp(requireContext()) && contentState.content.isEmpty()) {
                         instantAppNotice.show()
                     } else {
                         instantAppNotice.disappear()
@@ -117,14 +117,24 @@ class MainFragment : BaseFragment() {
                 .subscribeBy(onNext = contentAdapter::filter, onError = Timber::e)
                 .disposeBy(disposables)
 
-        with(binding) {
-            expandSearch.setOnClickListener { showFilter() }
-
-            closeSearch.setOnClickListener { hideFilter() }
-        }
 
         viewModel.content.nonNullObserve(::handleContentState)
     }
+
+    override fun onSearchClicked() {
+        if (view != null)
+            if (!expanded)
+                showFilter()
+            else
+                hideFilter()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        (activity as? MainActivity)?.searchListener = null
+    }
+
+    private var expanded = false
 
     private fun hideFilter() {
         with(binding) {
@@ -142,11 +152,9 @@ class MainFragment : BaseFragment() {
                             super.onAnimationEnd(animation)
                             filter.hide()
                             filter.setText("")
+                            expanded = false
                         }
                     })
-
-            closeSearch.disappear()
-            expandSearch.show()
         }
     }
 
@@ -168,12 +176,10 @@ class MainFragment : BaseFragment() {
                                 show()
                                 requestFocus()
                                 showSoftInput()
+                                expanded = true
                             }
                         }
                     })
-
-            closeSearch.show()
-            expandSearch.disappear()
         }
     }
 

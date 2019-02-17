@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import com.m3sv.plainupnp.upnp.didl.*
+import kotlinx.coroutines.Deferred
 import org.droidupnp.legacy.cling.CDevice
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
@@ -21,8 +22,8 @@ import java.util.concurrent.Future
 typealias ContentCallback = (List<DIDLObjectDisplay>?) -> Unit
 
 class ContentDirectoryCommand(
-    private val controlPoint: ControlPoint,
-    private val controller: UpnpServiceController
+        private val controlPoint: ControlPoint,
+        private val controller: UpnpServiceController
 ) {
 
     private val mediaReceiverRegistarService: Service<*, *>?
@@ -36,8 +37,8 @@ class ContentDirectoryCommand(
         else (controller.selectedContentDirectory as CDevice).device?.findService(UDAServiceType("ContentDirectory"))
 
     private fun buildContentList(
-        parent: String?,
-        didl: DIDLContent?
+            parent: String?,
+            didl: DIDLContent?
     ): List<DIDLObjectDisplay> {
         val result = mutableListOf<DIDLObjectDisplay>()
 
@@ -72,36 +73,36 @@ class ContentDirectoryCommand(
     }
 
     fun browse(
-        directoryID: String,
-        parent: String?,
-        callback: ContentCallback
-    ): Future<Any>? = contentDirectoryService?.let {
-            return controlPoint.execute(object : Browse(
+            directoryID: String,
+            parent: String?,
+            callback: ContentCallback
+    ): Future<*>? = contentDirectoryService?.let {
+        return controlPoint.execute(object : Browse(
                 it,
                 directoryID,
                 BrowseFlag.DIRECT_CHILDREN,
                 "*",
                 0,
                 null
-            ) {
-                override fun received(actionInvocation: ActionInvocation<*>, didl: DIDLContent) {
-                    callback(buildContentList(parent, didl))
-                }
+        ) {
+            override fun received(actionInvocation: ActionInvocation<*>, didl: DIDLContent) {
+                callback(buildContentList(parent, didl))
+            }
 
-                override fun updateStatus(status: Browse.Status) {
-                    Timber.v("updateStatus ! ")
-                }
+            override fun updateStatus(status: Browse.Status) {
+                Timber.v("updateStatus ! ")
+            }
 
-                override fun failure(
+            override fun failure(
                     invocation: ActionInvocation<*>,
                     operation: UpnpResponse,
                     defaultMsg: String
-                ) {
-                    Timber.w("Fail to browse! $defaultMsg")
-                    callback(null)
-                }
-            })
-        }
+            ) {
+                Timber.w("Fail to browse! $defaultMsg")
+                callback(null)
+            }
+        })
+    }
 
     fun search(search: String, parent: String?, callback: ContentCallback) {
         contentDirectoryService?.let {
@@ -119,9 +120,9 @@ class ContentDirectoryCommand(
                 }
 
                 override fun failure(
-                    invocation: ActionInvocation<*>,
-                    operation: UpnpResponse,
-                    defaultMsg: String
+                        invocation: ActionInvocation<*>,
+                        operation: UpnpResponse,
+                        defaultMsg: String
                 ) {
                     Timber.w("Fail to browse ! $defaultMsg")
                 }

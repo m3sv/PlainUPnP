@@ -12,7 +12,6 @@
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:descendantFocusability="afterDescendants"
         android:layout_height="match_parent">
 
         <androidx.appcompat.widget.Toolbar
@@ -45,23 +44,6 @@
                     android:inputType="text"
                     android:singleLine="true"
                     android:visibility="invisible" />
-
-                <ImageView
-                    android:id="@+id/expand_search"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="end|center"
-                    android:padding="4dp"
-                    android:src="@drawable/ic_search" />
-
-                <ImageView
-                    android:id="@+id/close_search"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="end|center"
-                    android:padding="4dp"
-                    android:src="@drawable/ic_close"
-                    android:visibility="gone" />
             </FrameLayout>
         </androidx.appcompat.widget.Toolbar>
 
@@ -71,7 +53,6 @@
             android:layout_height="match_parent"
             android:layout_marginTop="?actionBarSize"
             android:layout_marginBottom="64dp"
-            android:descendantFocusability="afterDescendants"
             android:clipToPadding="false"
             android:paddingTop="8dp" />
 
@@ -90,9 +71,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="16dp"
-            android:textSize="16sp"
             android:fontFamily="sans-serif-medium"
             android:text="@string/download_full_version"
+            android:textSize="16sp"
             android:visibility="gone"
             tools:visibility="visible" />
     </FrameLayout>
