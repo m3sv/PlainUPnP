@@ -18,7 +18,7 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?android:actionBarSize" />
+            android:layout_marginBottom="64dp" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -27,7 +27,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:background="@drawable/bg_rounded_corners"
-            android:clipChildren="false">
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             <ImageView
                 android:id="@+id/art"
@@ -46,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintGuide_begin="54dp" />
+                app:layout_constraintGuide_begin="64dp" />
 
             <Spinner
                 android:id="@+id/main_content_device_picker"
@@ -81,43 +82,51 @@
                 app:layout_constraintVertical_bias="0.0"
                 tools:listitem="@android:layout/simple_spinner_item" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/play"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
                 app:layout_constraintBottom_toBottomOf="@+id/next"
-                app:layout_constraintEnd_toStartOf="@+id/next"
-                app:layout_constraintTop_toTopOf="@+id/next"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_play_arrow" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/previous"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
                 app:layout_constraintBottom_toBottomOf="@+id/play"
                 app:layout_constraintEnd_toStartOf="@+id/play"
-                app:layout_constraintTop_toTopOf="@+id/play"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_skip_previous" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:padding="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/art"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/art"
+                app:layout_constraintStart_toEndOf="@+id/play"
+                app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_skip_next" />
 
             <TextView
                 android:id="@+id/title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:ellipsize="end"
                 android:singleLine="true"
@@ -125,24 +134,22 @@
                 app:layout_constraintBottom_toTopOf="@+id/progress"
                 app:layout_constraintEnd_toStartOf="@+id/previous"
                 app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/progress"
+                app:layout_constraintStart_toEndOf="@+id/art"
                 app:layout_constraintTop_toTopOf="@+id/art" />
 
             <SeekBar
                 android:id="@+id/progress"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
+                android:layout_marginTop="8dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
                 android:progressBackgroundTint="@color/whiteHalfTransparent"
                 android:progressTint="@color/colorPrimaryLight"
                 android:thumbTint="@color/colorPrimary"
-                app:layout_constraintBottom_toBottomOf="@+id/art"
-                app:layout_constraintEnd_toStartOf="@+id/previous"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/art"
-                app:layout_constraintTop_toBottomOf="@+id/title" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/previous" />
 
             <ImageView
                 android:id="@+id/content_directory_icon"
@@ -177,15 +184,6 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/search"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="94dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:src="@drawable/ic_search" />
 
     </FrameLayout>
 </layout>

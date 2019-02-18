@@ -65,5 +65,6 @@
     <string name="download_full_version">To access this functionality download full version from Google Play</string>
     <string name="open_privacy_policy">Open privacy policy</string>
     <string name="privacy_policy">Privacy policy</string>
+    <string name="cant_launch_locally">Can\'t launch locally</string>
 
 </resources>

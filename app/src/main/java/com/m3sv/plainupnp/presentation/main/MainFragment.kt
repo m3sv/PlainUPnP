@@ -26,7 +26,7 @@ import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 
 
-class MainFragment : BaseFragment(), SearchClickListener {
+class MainFragment : BaseFragment() {
 
     private lateinit var viewModel: MainFragmentViewModel
 
@@ -76,8 +76,6 @@ class MainFragment : BaseFragment(), SearchClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as AppCompatActivity).setSupportActionBar(binding.toolbar)
-
         contentAdapter = GalleryContentAdapter(Glide.with(this), object : OnItemClickListener {
             override fun onDirectoryClick(
                     directoryName: String,
@@ -117,21 +115,15 @@ class MainFragment : BaseFragment(), SearchClickListener {
                 .subscribeBy(onNext = contentAdapter::filter, onError = Timber::e)
                 .disposeBy(disposables)
 
-
-        viewModel.content.nonNullObserve(::handleContentState)
-    }
-
-    override fun onSearchClicked() {
-        if (view != null)
+        binding.search.setOnClickListener {
             if (!expanded)
                 showFilter()
             else
                 hideFilter()
-    }
+        }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        (activity as? MainActivity)?.searchListener = null
+
+        viewModel.content.nonNullObserve(::handleContentState)
     }
 
     private var expanded = false

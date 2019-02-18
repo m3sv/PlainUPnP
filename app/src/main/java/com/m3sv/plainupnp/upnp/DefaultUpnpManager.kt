@@ -17,7 +17,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-import kotlinx.coroutines.Deferred
 import org.droidupnp.legacy.cling.UpnpRendererStateObservable
 import org.droidupnp.legacy.upnp.Factory
 import timber.log.Timber
@@ -50,7 +49,8 @@ class DefaultUpnpManager constructor(
 
     override val content: LiveData<ContentState> = _content
 
-    override val currentContentDirectory: UpnpDevice? = controller.selectedContentDirectory
+    override val currentContentDirectory: UpnpDevice?
+        get() = controller.selectedContentDirectory
 
     private val _launchLocally: PublishSubject<LaunchLocally> = PublishSubject.create()
 

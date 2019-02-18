@@ -114,6 +114,18 @@ class MainActivity : BaseActivity() {
         }
     }
 
+    private fun handleRenderedItem(item: RenderedItem) {
+        with(item) {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            Glide.with(this@MainActivity)
+                    .load(first)
+                    .apply(third)
+                    .into(binding.controlsSheet.art)
+
+            binding.controlsSheet.title.text = second
+        }
+    }
+
     private lateinit var mainFragment: MainFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -138,12 +150,10 @@ class MainActivity : BaseActivity() {
                     .add(R.id.container, mainFragment, MainFragment.TAG)
                     .commit()
 
-            searchListener = mainFragment
 
             viewModel.resumeUpnpController()
         } else {
             mainFragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment
-            searchListener = mainFragment
         }
 
         RxView.clicks(binding.controlsSheet.next)
@@ -184,12 +194,9 @@ class MainActivity : BaseActivity() {
             }
         })
 
-        binding.search.setOnClickListener { searchListener?.onSearchClicked() }
-
         requestReadStoragePermission()
     }
 
-    var searchListener: SearchClickListener? = null
 
     override fun onStart() {
         super.onStart()
@@ -233,17 +240,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun handleRenderedItem(item: RenderedItem) {
-        with(item) {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-            Glide.with(this@MainActivity)
-                    .load(first)
-                    .apply(third)
-                    .into(binding.controlsSheet.art)
-
-            binding.controlsSheet.title.text = second
-        }
-    }
 
     private fun launchLocally(item: LaunchLocally?) {
         item?.let {

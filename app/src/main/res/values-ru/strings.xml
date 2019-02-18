@@ -52,4 +52,5 @@
     <string name="download_full_version">Чтобы получить доступ к данному функционалу скачайте полную версию с Google Play</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
     <string name="open_privacy_policy">Открыть политику конфиденциальности</string>
+    <string name="cant_launch_locally">Невозможно воспроизвести локально</string>
 </resources>
