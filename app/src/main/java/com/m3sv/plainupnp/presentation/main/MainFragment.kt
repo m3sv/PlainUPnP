@@ -122,7 +122,6 @@ class MainFragment : BaseFragment() {
                 hideFilter()
         }
 
-
         viewModel.content.nonNullObserve(::handleContentState)
     }
 

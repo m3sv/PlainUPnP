@@ -183,7 +183,5 @@
                 app:layout_constraintGuide_end="8dp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-
     </FrameLayout>
 </layout>

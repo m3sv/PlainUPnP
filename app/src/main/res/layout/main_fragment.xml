@@ -15,52 +15,35 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:layout_marginStart="64dp"
+            android:layout_marginTop="8dp">
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/search"
+            <TextView
+                android:id="@+id/folder_name"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:backgroundTint="@color/colorPrimary"
-                android:scaleType="center"
-                android:src="@drawable/ic_search"
-                app:fabCustomSize="48dp" />
+                android:layout_height="match_parent"
+                android:layout_gravity="top|start"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:textSize="18sp"
+                tools:text="Sample text" />
 
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_weight="1">
+            <EditText
+                android:id="@+id/filter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/transparent"
+                android:hint="@string/search"
+                android:inputType="text"
+                android:singleLine="true"
+                android:visibility="invisible"
+                tools:visibility="visible" />
+        </FrameLayout>
 
-                <TextView
-                    android:id="@+id/folder_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="top|start"
-                    android:fontFamily="sans-serif-medium"
-                    android:gravity="center"
-                    android:textSize="18sp"
-                    tools:text="Sample text" />
-
-                <EditText
-                    android:id="@+id/filter"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:backgroundTint="@color/transparent"
-                    android:hint="@string/search"
-                    android:inputType="text"
-                    android:singleLine="true"
-                    android:visibility="invisible"
-                    tools:visibility="visible" />
-            </FrameLayout>
-
-
-        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/content"
@@ -92,6 +75,52 @@
             android:textSize="16sp"
             android:visibility="gone"
             tools:visibility="visible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:scaleType="center"
+                android:src="@drawable/ic_search"
+                android:visibility="gone"
+                app:fabCustomSize="48dp" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/search1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:scaleType="center"
+                android:src="@drawable/ic_search"
+                android:visibility="gone"
+                app:fabCustomSize="48dp" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/search2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:backgroundTint="@color/colorPrimary"
+                android:scaleType="center"
+                android:src="@drawable/ic_search"
+                android:visibility="gone"
+                app:fabCustomSize="48dp" />
+        </LinearLayout>
+
+        <com.m3sv.plainupnp.presentation.views.FabMenu
+            android:id="@+id/fab_menu"
+            android:layout_width="wrap_content"
+            android:descendantFocusability="afterDescendants"
+            android:layout_height="wrap_content" />
+
 
     </FrameLayout>
 </layout>
