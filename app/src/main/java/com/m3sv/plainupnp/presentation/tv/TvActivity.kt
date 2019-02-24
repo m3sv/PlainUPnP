@@ -18,6 +18,7 @@ import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.main.MainActivityViewModel
 import com.m3sv.plainupnp.presentation.main.MainFragment
+import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.upnp.LaunchLocally
 import com.m3sv.plainupnp.upnp.RenderedItem
 import io.reactivex.rxkotlin.subscribeBy
@@ -136,7 +137,6 @@ class TvActivity : BaseActivity() {
     private lateinit var mainFragment: MainFragment
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.tv_activity)
@@ -213,10 +213,10 @@ class TvActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-//        if (supportFragmentManager.backStackEntryCount == 1) {
-//            binding.bottomNav.selectedItemId = R.id.nav_home
-//            return
-//        }
+        if (supportFragmentManager.backStackEntryCount > 0) {
+            supportFragmentManager.popBackStack()
+            return
+        }
 
         if (supportFragmentManager.backStackEntryCount == 0 && viewModel.currentDirectory is Directory.Home) {
             doubleTapExit()

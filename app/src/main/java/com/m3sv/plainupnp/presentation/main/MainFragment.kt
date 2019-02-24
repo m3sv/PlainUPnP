@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -17,8 +16,10 @@ import com.m3sv.plainupnp.common.isInstantApp
 import com.m3sv.plainupnp.common.utils.*
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
+import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.main.data.toItems
+import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.upnp.BrowseToModel
 import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.RenderItem
@@ -111,23 +112,30 @@ class MainFragment : BaseFragment() {
             adapter = contentAdapter
         }
 
+        with(binding.fabMenu) {
+            setOnSearchClickListener {
+                if (!expanded)
+                    showSearch()
+                else
+                    hideSearch()
+            }
+
+            if (requireContext().isRunningOnTv()) {
+                // use navigator
+                setOnSettingsClickListener { (activity as BaseActivity).navigateTo(SettingsFragment(), SettingsFragment.TAG, true) }
+            }
+        }
+
         RxTextView.textChanges(binding.filter)
                 .subscribeBy(onNext = contentAdapter::filter, onError = Timber::e)
                 .disposeBy(disposables)
-
-        binding.search.setOnClickListener {
-            if (!expanded)
-                showFilter()
-            else
-                hideFilter()
-        }
 
         viewModel.content.nonNullObserve(::handleContentState)
     }
 
     private var expanded = false
 
-    private fun hideFilter() {
+    private fun hideSearch() {
         with(binding) {
             folderName.animate().x(0f).setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator?) {
@@ -149,7 +157,7 @@ class MainFragment : BaseFragment() {
         }
     }
 
-    private fun showFilter() {
+    private fun showSearch() {
         with(binding) {
             filter.translationX = filter.width.toFloat()
 
