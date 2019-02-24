@@ -139,6 +139,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="end|bottom"
+            android:elevation="0dp"
             android:gravity="end"
             android:nextFocusLeft="@id/content"
             app:layout_constraintEnd_toEndOf="parent"

@@ -5,6 +5,7 @@ import android.content.res.ColorStateList
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
@@ -38,7 +39,6 @@ class FabMenu : LinearLayout {
 
 
     private lateinit var searchButton: FloatingActionButton
-
 
     private lateinit var expandMenuButton: FloatingActionButton
 
@@ -79,7 +79,13 @@ class FabMenu : LinearLayout {
         }
     }
 
-    fun setOnSearchClickListener(clickListener: (View) -> Unit) = searchButton.setOnClickListener(clickListener)
+    fun setOnSearchClickListener(clickListener: (View) -> Unit) {
+        if (context.isRunningOnTv()) {
+            searchButton.setOnClickListener(clickListener)
+        } else {
+            mobileSearchButton.setOnClickListener(clickListener)
+        }
+    }
 
     fun setOnSettingsClickListener(clickListener: (View) -> Unit) = settingsButton.setOnClickListener(clickListener)
 
@@ -103,7 +109,15 @@ class FabMenu : LinearLayout {
         }
     }
 
+    private lateinit var mobileSearchButton: ImageView
+
     private fun initializeMobileLayout(context: Context) {
-        searchButton = createFab(context, false, true, R.drawable.ic_search)
+        mobileSearchButton = ImageView(context).apply {
+            setImageDrawable(resources.getDrawable(R.drawable.ic_search_half_grey))
+
+            layoutParams = MarginLayoutParams(32.dp, 32.dp).also { it.setMargins(16.dp, 16.dp, 16.dp, 16.dp) }
+        }
+
+        addView(mobileSearchButton)
     }
 }
