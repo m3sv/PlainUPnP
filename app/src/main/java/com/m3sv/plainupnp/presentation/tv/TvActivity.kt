@@ -158,12 +158,11 @@ class TvActivity : BaseActivity() {
         with(viewModel) {
             renderers.nonNullObserve(::handleRenderers)
             contentDirectories.nonNullObserve(::handleContentDirectories)
-            upnpRendererState.nonNullObserve(::handleRendererState)
-            renderedItem.nonNullObserve(::handleRenderedItem)
+            rendererState.nonNullObserve(::handleRendererState)
+            renderedNewItem.nonNullObserve(::handleRenderedItem)
         }
 
         initPickers()
-
 
         RxView.clicks(binding.next)
                 .subscribeBy(onNext = { viewModel.playNext() }, onError = Timber::e)
@@ -217,10 +216,8 @@ class TvActivity : BaseActivity() {
             return
         }
 
-        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.currentDirectory is Directory.Home) {
+        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.browsePrevious()) {
             doubleTapExit()
-        } else if (viewModel.currentDirectory != null) {
-            viewModel.browsePrevious()
         } else {
             finish()
         }

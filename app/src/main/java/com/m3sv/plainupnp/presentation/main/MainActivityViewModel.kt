@@ -18,8 +18,6 @@ class MainActivityViewModel @Inject constructor(
         private val defaultUpnpManager: UpnpManager
 ) : BaseViewModel(), UpnpManager by defaultUpnpManager {
 
-    var currentDirectory: Directory? = null
-
     private val _contentDirectories = MutableLiveData<Set<DeviceDisplay>>()
 
     val contentDirectories: LiveData<Set<DeviceDisplay>> = _contentDirectories
@@ -42,12 +40,6 @@ class MainActivityViewModel @Inject constructor(
             { Timber.e("Exception during discovery: ${it.message}") }
 
     init {
-        selectedDirectoryObservable
-                .subscribeBy(
-                        onNext = { currentDirectory = it },
-                        onError = Timber::e
-                ).disposeBy(disposables)
-
         rendererDiscovery
                 .subscribe(_renderers::postValue, errorHandler)
                 .disposeBy(discoveryDisposable)

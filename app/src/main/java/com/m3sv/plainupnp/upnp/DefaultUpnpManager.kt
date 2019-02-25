@@ -43,7 +43,8 @@ class DefaultUpnpManager constructor(
 
     override val renderedItem: Observable<RenderedItem> = renderedItemSubject
 
-    private var contentState: ContentState? = null
+    var contentState: ContentState? = null
+        private set
 
     private val contentSubject = PublishSubject.create<ContentState>()
 
@@ -70,7 +71,7 @@ class DefaultUpnpManager constructor(
 
     private var isLocal: Boolean = false
 
-    private var directoriesStructure = LinkedList<Directory>()
+    private var directoriesStructure = Stack<ContentState>()
 
     private var next: Int = -1
 
@@ -238,6 +239,8 @@ class DefaultUpnpManager constructor(
     }
 
     override fun browseTo(model: BrowseToModel) {
+        if (contentState is ContentState.Success)
+            directoriesStructure.push(contentState)
         browseTo.onNext(model)
     }
 
@@ -249,55 +252,32 @@ class DefaultUpnpManager constructor(
         browseFuture?.cancel(true)
 
         browseFuture = factory.createContentDirectoryCommand()?.browse(model.id, null) {
-            contentSubject.onNext(ContentState.Success(model.directoryName, it ?: listOf()))
+            val successState = ContentState.Success(model.directoryName, it ?: listOf())
+            contentSubject.onNext(successState)
 
             when (model.id) {
                 "0" -> {
-                    selectedDirectory.onNext(Directory.Home(currentContentDirectory?.friendlyName
-                            ?: "Home"))
-
-                    directoriesStructure =
-                            LinkedList<Directory>().apply { add(Directory.Home(model.directoryName)) }
+                    selectedDirectory
+                            .onNext(Directory.Home(currentContentDirectory?.friendlyName ?: "Home"))
                 }
                 else -> {
                     val subDirectory =
                             Directory.SubDirectory(model.id, model.directoryName, model.parentId)
+
                     selectedDirectory.onNext(subDirectory)
-                    if (model.addToStructure)
-                        directoriesStructure.addFirst(subDirectory)
                     Timber.d("Adding subdirectory: $subDirectory")
                 }
             }
         }
     }
 
-    override fun browsePrevious() {
-        val element = if (!directoriesStructure.isEmpty())
-            directoriesStructure.pop()
-        else
-            Directory.Home(currentContentDirectory?.friendlyName ?: "Home")
-
-        when (element) {
-            is Directory.Home -> browseHome()
-
-            is Directory.SubDirectory -> {
-                browseTo(
-                        if (element.parentId == "0")
-                            BrowseToModel("0", currentContentDirectory?.friendlyName
-                                    ?: "Home", null)
-                        else
-                            BrowseToModel(
-                                    element.parentId ?: "0",
-                                    element.name,
-                                    element.parentId,
-                                    false
-                            )
-                )
-
-            }
+    override fun browsePrevious(): Boolean {
+        return if (!directoriesStructure.empty()) {
+            contentSubject.onNext(directoriesStructure.pop())
+            true
+        } else {
+            false
         }
-
-        Timber.d("Browse previous: $element")
     }
 
     override fun moveTo(progress: Int, max: Int) {

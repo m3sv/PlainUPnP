@@ -48,7 +48,10 @@ interface UpnpManager {
 
     fun browseTo(model: BrowseToModel)
 
-    fun browsePrevious()
+    /**
+     * @return true if browsed previous directory, false if at the root
+     */
+    fun browsePrevious(): Boolean
 
     fun moveTo(progress: Int, max: Int)
 }

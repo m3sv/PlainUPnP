@@ -16,7 +16,6 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
-import com.m3sv.plainupnp.data.upnp.Directory
 import com.m3sv.plainupnp.data.upnp.RendererState
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
@@ -288,17 +287,21 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount == 1) {
-            binding.bottomNav.selectedItemId = R.id.nav_home
-            return
+        with(supportFragmentManager) {
+            if (backStackEntryCount > 0) {
+                popBackStack()
+                binding.bottomNav.selectedItemId = R.id.nav_home
+
+                return
+            }
         }
 
-        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.currentDirectory is Directory.Home) {
-            doubleTapExit()
-        } else if (viewModel.currentDirectory != null) {
-            viewModel.browsePrevious()
-        } else {
-            finish()
-        }
+        viewModel.browsePrevious()
+
+//        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.browsePrevious()) {
+//            doubleTapExit()
+//        } else {
+//            finish()
+//        }
     }
 }
