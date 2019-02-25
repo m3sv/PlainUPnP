@@ -130,7 +130,7 @@ class MainFragment : BaseFragment() {
                 .subscribeBy(onNext = contentAdapter::filter, onError = Timber::e)
                 .disposeBy(disposables)
 
-        viewModel.content.nonNullObserve(::handleContentState)
+        viewModel.serverContent.nonNullObserve(::handleContentState)
     }
 
     private var expanded = false

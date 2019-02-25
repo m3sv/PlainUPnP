@@ -1,7 +1,5 @@
 package com.m3sv.plainupnp.upnp
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.formatTime
@@ -37,24 +35,28 @@ class DefaultUpnpManager constructor(
         override val contentDirectoryDiscovery: ContentDirectoryDiscoveryObservable
 ) : UpnpManager {
 
-    private val _rendererState: MutableLiveData<RendererState> = MutableLiveData()
+    private val rendererStateSubject = PublishSubject.create<RendererState>()
 
-    override val rendererState: LiveData<RendererState> = _rendererState
+    override val upnpRendererState: Observable<RendererState> = rendererStateSubject
 
-    private val _renderedItem: MutableLiveData<RenderedItem> = MutableLiveData()
+    private val renderedItemSubject = PublishSubject.create<RenderedItem>()
 
-    override val renderedItem: LiveData<RenderedItem> = _renderedItem
+    override val renderedItem: Observable<RenderedItem> = renderedItemSubject
 
-    private val _content = MutableLiveData<ContentState>()
+    private var contentState: ContentState? = null
 
-    override val content: LiveData<ContentState> = _content
+    private val contentSubject = PublishSubject.create<ContentState>()
+
+    override val content: Observable<ContentState> = contentSubject.doOnNext {
+        contentState = it
+    }
 
     override val currentContentDirectory: UpnpDevice?
         get() = controller.selectedContentDirectory
 
-    private val _launchLocally: PublishSubject<LaunchLocally> = PublishSubject.create()
+    private val launchLocallySubject: PublishSubject<LaunchLocally> = PublishSubject.create()
 
-    override val launchLocally: Observable<LaunchLocally> = _launchLocally.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    override val launchLocally: Observable<LaunchLocally> = launchLocallySubject.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private val selectedDirectory = PublishSubject.create<Directory>()
 
@@ -83,7 +85,7 @@ class DefaultUpnpManager constructor(
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe(::render, Timber::e)
 
-        browseTo.doOnNext { _content.postValue(ContentState.Loading) }
+        browseTo.doOnNext { contentSubject.onNext(ContentState.Loading) }
                 .throttleLast(500, TimeUnit.MILLISECONDS)
                 .subscribe(::browse, Timber::e)
     }
@@ -147,7 +149,7 @@ class DefaultUpnpManager constructor(
             Timber.i("New renderer state: $newRendererState")
             newRendererState
         }?.subscribeBy(onNext = {
-            _rendererState.postValue(it)
+            rendererStateSubject.onNext(it)
 
             if (it.state == UpnpRendererState.State.STOP) {
                 rendererCommand?.pause()
@@ -159,7 +161,7 @@ class DefaultUpnpManager constructor(
                     if (item.item !is ClingImageItem)
                         resume()
                     else
-                        _rendererState.postValue(RendererState(progress = 0, state = UpnpRendererState.State.STOP))
+                        rendererStateSubject.onNext(RendererState(progress = 0, state = UpnpRendererState.State.STOP))
                     launchItem(item.item)
                 }
     }
@@ -174,7 +176,7 @@ class DefaultUpnpManager constructor(
             }
 
             contentType?.let {
-                _launchLocally.onNext(LaunchLocally(uri, it))
+                launchLocallySubject.onNext(LaunchLocally(uri, it))
             }
         }
     }
@@ -188,17 +190,11 @@ class DefaultUpnpManager constructor(
             else -> RequestOptions()
         }
 
-        _renderedItem.postValue(
-                RenderedItem(
-                        toRender.item.uri,
-                        toRender.item.title,
-                        requestOptions
-                )
-        )
+        renderedItemSubject.onNext(RenderedItem(toRender.item.uri, toRender.item.title, requestOptions))
     }
 
     override fun playNext() {
-        _content.value?.let {
+        contentState?.let {
             if (it is ContentState.Success
                     && next in 0 until it.content.size
                     && it.content[next].didlObject is DIDLItem) {
@@ -208,7 +204,7 @@ class DefaultUpnpManager constructor(
     }
 
     override fun playPrevious() {
-        _content.value?.let {
+        contentState?.let {
             if (it is ContentState.Success
                     && previous in 0 until it.content.size
                     && it.content[previous].didlObject is DIDLItem) {
@@ -225,7 +221,9 @@ class DefaultUpnpManager constructor(
         rendererCommand?.pause()
     }
 
-    override fun pausePlayback() = rendererCommand?.commandPause()
+    override fun pausePlayback() {
+        rendererCommand?.commandPause()
+    }
 
     override fun stopPlayback() {
         rendererCommand?.commandStop()
@@ -251,7 +249,7 @@ class DefaultUpnpManager constructor(
         browseFuture?.cancel(true)
 
         browseFuture = factory.createContentDirectoryCommand()?.browse(model.id, null) {
-            _content.postValue(ContentState.Success(model.directoryName, it ?: listOf()))
+            contentSubject.onNext(ContentState.Success(model.directoryName, it ?: listOf()))
 
             when (model.id) {
                 "0" -> {

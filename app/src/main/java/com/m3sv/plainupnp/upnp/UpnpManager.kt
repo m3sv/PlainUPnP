@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.upnp
 
-import androidx.lifecycle.LiveData
 import com.m3sv.plainupnp.data.upnp.*
 import io.reactivex.Observable
 
@@ -11,11 +10,11 @@ interface UpnpManager {
 
     val selectedDirectoryObservable: Observable<Directory>
 
-    val rendererState: LiveData<RendererState>
+    val upnpRendererState: Observable<RendererState>
 
-    val renderedItem: LiveData<RenderedItem>
+    val renderedItem: Observable<RenderedItem>
 
-    val content: LiveData<ContentState>
+    val content: Observable<ContentState>
 
     val launchLocally: Observable<LaunchLocally>
 
@@ -35,7 +34,7 @@ interface UpnpManager {
 
     fun pauseRendererUpdate()
 
-    fun pausePlayback(): Unit?
+    fun pausePlayback()
 
     fun stopPlayback()
 
@@ -70,6 +69,5 @@ data class BrowseToModel(
 
 sealed class ContentState {
     object Loading : ContentState()
-    data class Success(val folderName: String, val content: List<DIDLObjectDisplay>) :
-            ContentState()
+    data class Success(val folderName: String, val content: List<DIDLObjectDisplay>) : ContentState()
 }

@@ -18,7 +18,6 @@ import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.main.MainActivityViewModel
 import com.m3sv.plainupnp.presentation.main.MainFragment
-import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.upnp.LaunchLocally
 import com.m3sv.plainupnp.upnp.RenderedItem
 import io.reactivex.rxkotlin.subscribeBy
@@ -159,7 +158,7 @@ class TvActivity : BaseActivity() {
         with(viewModel) {
             renderers.nonNullObserve(::handleRenderers)
             contentDirectories.nonNullObserve(::handleContentDirectories)
-            rendererState.nonNullObserve(::handleRendererState)
+            upnpRendererState.nonNullObserve(::handleRendererState)
             renderedItem.nonNullObserve(::handleRenderedItem)
         }
 

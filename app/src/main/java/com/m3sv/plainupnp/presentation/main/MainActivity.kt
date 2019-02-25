@@ -172,7 +172,7 @@ class MainActivity : BaseActivity() {
             renderers.nonNullObserve(::handleRenderers)
             contentDirectories.nonNullObserve(::handleContentDirectories)
             rendererState.nonNullObserve(::handleRendererState)
-            renderedItem.nonNullObserve(::handleRenderedItem)
+            renderedNewItem.nonNullObserve(::handleRenderedItem)
         }
 
         initPickers()

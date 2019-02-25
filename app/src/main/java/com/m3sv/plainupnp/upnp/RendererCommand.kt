@@ -105,7 +105,7 @@ class RendererCommand(
     }
 //
 //    fun commandToggle() {
-//        val state = rendererState.state
+//        val state = upnpRendererState.state
 //        if (state == com.m3sv.plainupnp.data.upnp.UpnpRendererState.State.PLAY) {
 //            commandPause()
 //        } else {
