@@ -49,7 +49,6 @@ class MainFragment : BaseFragment() {
                         instantAppNotice.disappear()
                     }
                 }
-
             }
 
             is ContentState.Loading -> {
@@ -183,13 +182,12 @@ class MainFragment : BaseFragment() {
     }
 
     private fun showProgress() {
-        contentAdapter.clickable = false
         binding.progress.show()
+        contentAdapter.setWithDiff(listOf())
     }
 
     private fun hideProgress() {
         binding.progress.disappear()
-        contentAdapter.clickable = true
     }
 
     companion object {

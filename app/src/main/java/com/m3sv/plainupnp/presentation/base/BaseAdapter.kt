@@ -7,7 +7,7 @@ import com.m3sv.plainupnp.common.ItemsDiffCallback
 import kotlin.properties.Delegates
 
 abstract class BaseAdapter<T>(private val diffCallback: ItemsDiffCallback<T>) :
-    RecyclerView.Adapter<ItemViewHolder<*>>() {
+        RecyclerView.Adapter<ItemViewHolder<*>>() {
     private var originalItems = listOf<T>()
 
     var items: List<T> by Delegates.observable(mutableListOf()) { _, _, newValue ->
@@ -27,19 +27,6 @@ abstract class BaseAdapter<T>(private val diffCallback: ItemsDiffCallback<T>) :
         diffCallback.oldItems = items
         diffCallback.newItems = newItems
 
-        if (diffCallback.newItems.isEmpty()) {
-            items = listOf()
-            diffCallback.oldItems = items
-            notifyDataSetChanged()
-            return
-        }
-
-        if (items.isEmpty()) {
-            items = diffCallback.newItems
-            notifyDataSetChanged()
-            return
-        }
-
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         diffResult.dispatchUpdatesTo(this)
         items = diffCallback.newItems
@@ -51,26 +38,12 @@ abstract class BaseAdapter<T>(private val diffCallback: ItemsDiffCallback<T>) :
     }
 
     fun filterWithDiff(predicate: (T) -> Boolean) {
-        with(diffCallback) {
-            oldItems = newItems
-            newItems = originalItems.filter(predicate)
+        diffCallback.oldItems = diffCallback.newItems
+        diffCallback.newItems = originalItems.filter(predicate)
 
-            if (newItems.isEmpty()) {
-                items = listOf()
-                notifyDataSetChanged()
-                return
-            }
-
-            if (items.isEmpty()) {
-                items = newItems
-                notifyDataSetChanged()
-                return
-            }
-
-            val diffResult = DiffUtil.calculateDiff(diffCallback)
-            diffResult.dispatchUpdatesTo(this@BaseAdapter)
-            items = diffCallback.newItems
-        }
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        diffResult.dispatchUpdatesTo(this)
+        items = diffCallback.newItems
     }
 
     /**

@@ -133,7 +133,6 @@
                 app:fabCustomSize="48dp" />
         </LinearLayout>
 
-
         <com.m3sv.plainupnp.presentation.views.FabMenu
             android:id="@+id/fab_menu"
             android:layout_width="match_parent"
@@ -144,7 +143,6 @@
             android:nextFocusLeft="@id/content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

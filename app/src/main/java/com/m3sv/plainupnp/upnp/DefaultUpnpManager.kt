@@ -87,7 +87,6 @@ class DefaultUpnpManager constructor(
                 .subscribe(::render, Timber::e)
 
         browseTo.doOnNext { contentSubject.onNext(ContentState.Loading) }
-                .throttleLast(500, TimeUnit.MILLISECONDS)
                 .subscribe(::browse, Timber::e)
     }
 
@@ -250,7 +249,6 @@ class DefaultUpnpManager constructor(
         Timber.d("Browse: ${model.id}")
 
         browseFuture?.cancel(true)
-
         browseFuture = factory.createContentDirectoryCommand()?.browse(model.id, null) {
             val successState = ContentState.Success(model.directoryName, it ?: listOf())
             contentSubject.onNext(successState)

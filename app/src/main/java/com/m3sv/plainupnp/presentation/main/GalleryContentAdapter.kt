@@ -1,11 +1,10 @@
 package com.m3sv.plainupnp.presentation.main
 
-import androidx.databinding.ViewDataBinding
-import androidx.annotation.DrawableRes
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.bumptech.glide.Glide
+import androidx.annotation.DrawableRes
+import androidx.databinding.ViewDataBinding
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
@@ -26,7 +25,7 @@ interface OnItemClickListener {
 }
 
 class GalleryContentAdapter(private val glide: RequestManager, private val onItemClickListener: OnItemClickListener) :
-    BaseAdapter<Item>(GalleryContentAdapter.diffCallback) {
+        BaseAdapter<Item>(GalleryContentAdapter.diffCallback) {
 
     var clickable = true
 
@@ -37,23 +36,23 @@ class GalleryContentAdapter(private val glide: RequestManager, private val onIte
     override fun getItemViewType(position: Int): Int = items[position].type.ordinal
 
     override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
+            parent: ViewGroup,
+            viewType: Int
     ): ItemViewHolder<ViewDataBinding> = when (ContentType.values()[viewType]) {
         ContentType.DIRECTORY -> ItemViewHolder(
-            GalleryContentFolderItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
+                GalleryContentFolderItemBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                )
         )
 
         else -> ItemViewHolder(
-            GalleryContentItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
+                GalleryContentItemBinding.inflate(
+                        LayoutInflater.from(parent.context),
+                        parent,
+                        false
+                )
         )
     }
 
@@ -65,8 +64,8 @@ class GalleryContentAdapter(private val glide: RequestManager, private val onIte
                 holder.adapterPosition.takeIf { it >= 0 }?.let { adapterPosition ->
                     item.didlObjectDisplay?.get(adapterPosition)?.let {
                         onItemClickListener.onItemClick(
-                            it.didlObject as DIDLItem,
-                            holder.adapterPosition
+                                it.didlObject as DIDLItem,
+                                holder.adapterPosition
                         )
                     }
                 }
@@ -74,21 +73,21 @@ class GalleryContentAdapter(private val glide: RequestManager, private val onIte
 
         when (item.type) {
             ContentType.IMAGE -> loadData(
-                holder,
-                item,
-                R.drawable.ic_image,
-                itemClickListener,
-                emptyRequestOptions
+                    holder,
+                    item,
+                    R.drawable.ic_image,
+                    itemClickListener,
+                    emptyRequestOptions
             )
             ContentType.VIDEO -> loadData(
-                holder,
-                item,
-                R.drawable.ic_video,
-                itemClickListener,
-                emptyRequestOptions
+                    holder,
+                    item,
+                    R.drawable.ic_video,
+                    itemClickListener,
+                    emptyRequestOptions
             )
             ContentType.AUDIO -> loadData(
-                holder, item, R.drawable.ic_music, itemClickListener, audioRequestOptions
+                    holder, item, R.drawable.ic_music, itemClickListener, audioRequestOptions
             )
 
             ContentType.DIRECTORY -> loadDirectory(holder, item)
@@ -96,21 +95,21 @@ class GalleryContentAdapter(private val glide: RequestManager, private val onIte
     }
 
     private fun <T : ViewDataBinding> ItemViewHolder<*>.extractBinding(): T =
-        (this as ItemViewHolder<T>).binding
+            (this as ItemViewHolder<T>).binding
 
     private fun loadData(
-        holder: ItemViewHolder<ViewDataBinding>,
-        item: Item,
-        @DrawableRes contentTypeIcon: Int,
-        onClick: View.OnClickListener,
-        requestOptions: RequestOptions
+            holder: ItemViewHolder<ViewDataBinding>,
+            item: Item,
+            @DrawableRes contentTypeIcon: Int,
+            onClick: View.OnClickListener,
+            requestOptions: RequestOptions
     ) {
         with(holder.extractBinding<GalleryContentItemBinding>()) {
-            Glide.with(holder.itemView)
-                .load(item.uri)
-                .thumbnail(0.1f)
-                .apply(requestOptions)
-                .into(thumbnail)
+            glide
+                    .load(item.uri)
+                    .thumbnail(0.1f)
+                    .apply(requestOptions)
+                    .into(thumbnail)
 
             title.text = item.name
 
@@ -121,8 +120,8 @@ class GalleryContentAdapter(private val glide: RequestManager, private val onIte
     }
 
     private fun loadDirectory(
-        holder: ItemViewHolder<*>,
-        item: Item
+            holder: ItemViewHolder<*>,
+            item: Item
     ) {
         with(holder.extractBinding<GalleryContentFolderItemBinding>()) {
             title.text = item.name
@@ -145,10 +144,10 @@ class GalleryContentAdapter(private val glide: RequestManager, private val onIte
 
 
     class DiffCallback(
-        oldItems: List<Item>,
-        newItems: List<Item>
+            oldItems: List<Item>,
+            newItems: List<Item>
     ) :
-        ItemsDiffCallback<Item>(oldItems, newItems) {
+            ItemsDiffCallback<Item>(oldItems, newItems) {
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
             return oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
         }
