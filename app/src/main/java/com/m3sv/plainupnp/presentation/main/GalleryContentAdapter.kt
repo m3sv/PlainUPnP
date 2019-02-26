@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.presentation.main
 
+import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +25,9 @@ interface OnItemClickListener {
     fun onItemClick(item: DIDLItem, position: Int)
 }
 
-class GalleryContentAdapter(private val glide: RequestManager, private val onItemClickListener: OnItemClickListener) :
+class GalleryContentAdapter(private val glide: RequestManager,
+                            private val onItemClickListener: OnItemClickListener,
+                            private val sharedPreferences: SharedPreferences) :
         BaseAdapter<Item>(GalleryContentAdapter.diffCallback) {
 
     var clickable = true
@@ -105,11 +108,13 @@ class GalleryContentAdapter(private val glide: RequestManager, private val onIte
             requestOptions: RequestOptions
     ) {
         with(holder.extractBinding<GalleryContentItemBinding>()) {
-            glide
-                    .load(item.uri)
-                    .thumbnail(0.1f)
-                    .apply(requestOptions)
-                    .into(thumbnail)
+            if (sharedPreferences.getBoolean("THUMBNAIL_ENABLED", false))
+                glide.load(item.uri)
+                        .thumbnail(0.1f)
+                        .apply(requestOptions)
+                        .into(thumbnail)
+            else
+                thumbnail.setImageResource(contentTypeIcon)
 
             title.text = item.name
 
