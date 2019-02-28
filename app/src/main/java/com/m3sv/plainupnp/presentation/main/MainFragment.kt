@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -90,7 +91,7 @@ class MainFragment : BaseFragment() {
             override fun onItemClick(item: DIDLItem, position: Int) {
                 viewModel.renderItem(RenderItem(item, position))
             }
-        })
+        }, PreferenceManager.getDefaultSharedPreferences(requireContext()))
 
         binding.content.run {
             val orientation = resources.configuration.orientation

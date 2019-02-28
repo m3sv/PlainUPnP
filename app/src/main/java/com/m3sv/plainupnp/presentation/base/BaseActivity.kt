@@ -74,7 +74,7 @@ abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
         val currentTime = System.currentTimeMillis()
 
         if (currentTime - lastBackClick < 500)
-            finish()
+            finishAndRemoveTask()
 
         lastBackClick = currentTime
         Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()

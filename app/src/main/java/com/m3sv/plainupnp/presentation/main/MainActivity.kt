@@ -296,12 +296,8 @@ class MainActivity : BaseActivity() {
             }
         }
 
-        viewModel.browsePrevious()
-
-//        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.browsePrevious()) {
-//            doubleTapExit()
-//        } else {
-//            finish()
-//        }
+        if (!viewModel.browsePrevious()) {
+            doubleTapExit()
+        }
     }
 }

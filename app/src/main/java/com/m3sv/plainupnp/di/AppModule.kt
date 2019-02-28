@@ -16,14 +16,14 @@ internal object AppModule {
 
     @Provides
     @JvmStatic
+    @ApplicationScope
     fun provideContext(app: Application): Context = app.applicationContext
 
     @Provides
-    @ApplicationScope
     @JvmStatic
+    @ApplicationScope
     fun provideUPnPManager(context: Context, factory: Factory) =
-            DefaultUpnpManager(factory.upnpServiceController,
-                    factory,
+            DefaultUpnpManager(factory.upnpServiceController, factory,
                     RendererDiscoveryObservable(context, factory.upnpServiceController),
                     ContentDirectoryDiscoveryObservable(factory.upnpServiceController))
 }

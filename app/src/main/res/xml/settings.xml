@@ -26,6 +26,12 @@
             android:icon="@drawable/ic_video"
             android:key="pref_contentDirectoryService_video"
             android:title="@string/share_videos" />
+
+        <SwitchPreference
+            android:defaultValue="@bool/default_enable_thumbnails"
+            android:icon="@drawable/ic_visibility_off"
+            android:key="pref_enable_thumbnails"
+            android:title="@string/enable_thumbnails" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/about">

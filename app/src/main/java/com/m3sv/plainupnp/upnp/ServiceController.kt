@@ -25,12 +25,13 @@ package com.m3sv.plainupnp.upnp
 
 import android.content.Context
 import android.content.Intent
+import com.m3sv.plainupnp.di.scope.ApplicationScope
 import org.droidupnp.legacy.cling.BaseUpnpServiceController
 import org.fourthline.cling.model.meta.LocalDevice
 import timber.log.Timber
 import javax.inject.Inject
-
-class ServiceController @Inject constructor(override val serviceListener: ServiceListener, private val context: Context) :
+@ApplicationScope
+class ServiceController @Inject  constructor(override val serviceListener: ServiceListener, private val context: Context) :
     BaseUpnpServiceController() {
 
     override fun pause() {

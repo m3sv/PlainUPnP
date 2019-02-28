@@ -1,9 +1,11 @@
 package com.m3sv.plainupnp.upnp
 
+import com.m3sv.plainupnp.di.scope.ApplicationScope
 import org.droidupnp.legacy.cling.UpnpRendererStateObservable
 import org.droidupnp.legacy.upnp.Factory
 import javax.inject.Inject
 
+@ApplicationScope
 class UpnpFactory @Inject constructor(override val upnpServiceController: UpnpServiceController) : Factory {
 
     override fun createContentDirectoryCommand(): ContentDirectoryCommand? =

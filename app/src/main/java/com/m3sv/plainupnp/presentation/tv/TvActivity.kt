@@ -11,7 +11,6 @@ import com.jakewharton.rxbinding2.view.RxView
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
-import com.m3sv.plainupnp.data.upnp.Directory
 import com.m3sv.plainupnp.data.upnp.RendererState
 import com.m3sv.plainupnp.databinding.TvActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
@@ -216,10 +215,8 @@ class TvActivity : BaseActivity() {
             return
         }
 
-        if (supportFragmentManager.backStackEntryCount == 0 && viewModel.browsePrevious()) {
+        if (!viewModel.browsePrevious()) {
             doubleTapExit()
-        } else {
-            finish()
         }
     }
 }

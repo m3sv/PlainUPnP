@@ -108,7 +108,7 @@ class GalleryContentAdapter(private val glide: RequestManager,
             requestOptions: RequestOptions
     ) {
         with(holder.extractBinding<GalleryContentItemBinding>()) {
-            if (sharedPreferences.getBoolean("THUMBNAIL_ENABLED", false))
+            if (sharedPreferences.getBoolean("pref_enable_thumbnails", true))
                 glide.load(item.uri)
                         .thumbnail(0.1f)
                         .apply(requestOptions)
