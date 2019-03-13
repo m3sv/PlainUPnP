@@ -27,21 +27,18 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     lateinit var sharedPref: SharedPreferences
 
-    private val appName by lazy(mode = LazyThreadSafetyMode.NONE) {
-        context.getString(R.string.app_name)
-    }
-    private val stringSplitter by lazy(mode = LazyThreadSafetyMode.NONE) {
-        TextUtils.SimpleStringSplitter(SEPARATOR)
-    }
+    private val appName by lazy(mode = LazyThreadSafetyMode.NONE) { context.getString(R.string.app_name) }
+
+    private val stringSplitter by lazy(mode = LazyThreadSafetyMode.NONE) { TextUtils.SimpleStringSplitter(SEPARATOR) }
 
     @Throws(ContentDirectoryException::class)
     override fun browse(
-        objectID: String,
-        browseFlag: BrowseFlag,
-        filter: String,
-        firstResult: Long,
-        maxResults: Long,
-        orderby: Array<SortCriterion>
+            objectID: String,
+            browseFlag: BrowseFlag,
+            filter: String,
+            firstResult: Long,
+            maxResults: Long,
+            orderby: Array<SortCriterion>
     ): BrowseResult {
         Timber.d("Will browse $objectID")
         return browseContent(objectID)
@@ -60,10 +57,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 if (type == -1) {
                     type = i
                     if (type != ROOT_ID && type != VIDEO_ID && type != AUDIO_ID && type != IMAGE_ID)
-                        throw ContentDirectoryException(
-                            ContentDirectoryErrorCode.NO_SUCH_OBJECT,
-                            "Invalid type!"
-                        )
+                        throw ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT, "Invalid type!")
                 } else {
                     subtype.add(i)
                 }
@@ -74,13 +68,11 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             Timber.d("Browsing type $type")
 
             val rootContainer = BaseContainer(
-                ROOT_ID.toString(), ROOT_ID.toString(),
-                appName, appName, baseURL
+                    ROOT_ID.toString(), ROOT_ID.toString(),
+                    appName, appName, baseURL
             )
 
-            val (imageContainer: Container?, allImageContainer: Container?) = populateImageContainer(
-                rootContainer
-            )
+            val (imageContainer: Container?, allImageContainer: Container?) = populateImageContainer(rootContainer)
 
             // Audio
             var audioContainer: Container? = null
@@ -93,8 +85,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
             if (sharedPref.getBoolean(CONTENT_DIRECTORY_AUDIO, true)) {
                 audioContainer = BaseContainer(
-                    AUDIO_ID.toString(), ROOT_ID.toString(),
-                    context.getString(R.string.audio), appName, baseURL
+                        AUDIO_ID.toString(), ROOT_ID.toString(),
+                        context.getString(R.string.audio), appName, baseURL
                 )
 
                 with(rootContainer) {
@@ -104,24 +96,24 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                 with(audioContainer) {
                     artistAudioContainer = ArtistContainer(
-                        ARTIST_ID.toString(), AUDIO_ID.toString(),
-                        context.getString(R.string.artist), appName, baseURL, context
+                            ARTIST_ID.toString(), AUDIO_ID.toString(),
+                            context.getString(R.string.artist), appName, baseURL, context
                     )
 
                     addContainer(artistAudioContainer)
                     childCount += 1
 
                     albumAudioContainer = AlbumContainer(
-                        ALBUM_ID.toString(), AUDIO_ID.toString(),
-                        context.getString(R.string.album), appName, baseURL, context, null
+                            ALBUM_ID.toString(), AUDIO_ID.toString(),
+                            context.getString(R.string.album), appName, baseURL, context, null
                     )
 
                     addContainer(albumAudioContainer)
                     childCount += 1
 
                     allAudioContainer = AudioContainer(
-                        ALL_ID.toString(), AUDIO_ID.toString(),
-                        context.getString(R.string.all), appName, baseURL, context, null, null
+                            ALL_ID.toString(), AUDIO_ID.toString(),
+                            context.getString(R.string.all), appName, baseURL, context, null, null
                     )
 
                     addContainer(allAudioContainer)
@@ -129,10 +121,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 }
             }
 
-
-
             val (videoContainer: Container?, allVideoContainer: Container?) = populateVideoContainer(
-                rootContainer
+                    rootContainer
             )
 
             if (subtype.isEmpty()) {
@@ -173,8 +163,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         Timber.d("Listing album of artist $artistId")
 
                         container = AlbumContainer(
-                            artistId, parentId, "",
-                            appName, baseURL, context, artistId
+                                artistId, parentId, "",
+                                appName, baseURL, context, artistId
                         )
                     } else if (subtype.size == 2 && subtype[0] == ALBUM_ID) {
                         val albumId = subtype[1].toString()
@@ -182,22 +172,22 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         Timber.d("Listing song of album $albumId")
 
                         container = AudioContainer(
-                            albumId, parentId, "",
-                            appName, baseURL, context, null, albumId
+                                albumId, parentId, "",
+                                appName, baseURL, context, null, albumId
                         )
                     } else if (subtype.size == 3 && subtype[0] == ARTIST_ID) {
                         val albumId = subtype[2].toString()
                         val parentId =
-                            "$AUDIO_ID$SEPARATOR${subtype[0]}$SEPARATOR${subtype[1]}"
+                                "$AUDIO_ID$SEPARATOR${subtype[0]}$SEPARATOR${subtype[1]}"
                         Timber.d(
-                            "Listing song of album %s for artist %s",
-                            albumId,
-                            subtype[1]
+                                "Listing song of album %s for artist %s",
+                                albumId,
+                                subtype[1]
                         )
 
                         container = AudioContainer(
-                            albumId, parentId, "",
-                            appName, baseURL, context, null, albumId
+                                albumId, parentId, "",
+                                appName, baseURL, context, null, albumId
                         )
                     }
 
@@ -233,7 +223,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                     answer = DIDLParser().generate(didl)
                 } catch (ex: Exception) {
                     throw ContentDirectoryException(
-                        ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString()
+                            ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString()
                     )
                 }
 
@@ -242,9 +232,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 return BrowseResult(answer, count.toLong(), count.toLong())
             }
         } catch (ex: Exception) {
-            throw ContentDirectoryException(
-                ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString()
-            )
+            throw ContentDirectoryException(ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString())
         }
 
         Timber.e("No container for: $objectID")
@@ -258,15 +246,15 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
         if (sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)) {
             imageContainer = BaseContainer(
-                IMAGE_ID.toString(), ROOT_ID.toString(), context.getString(R.string.images),
-                appName, baseURL
+                    IMAGE_ID.toString(), ROOT_ID.toString(), context.getString(R.string.images),
+                    appName, baseURL
             )
             rootContainer.addContainer(imageContainer)
             rootContainer.childCount = rootContainer.childCount + 1
 
             allImageContainer = ImageContainer(
-                ALL_ID.toString(), IMAGE_ID.toString(), context.getString(R.string.all),
-                appName, baseURL, context
+                    ALL_ID.toString(), IMAGE_ID.toString(), context.getString(R.string.all),
+                    appName, baseURL, context
             )
             imageContainer.addContainer(allImageContainer)
             imageContainer.childCount = imageContainer.childCount + 1
@@ -282,8 +270,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
         if (sharedPref.getBoolean(CONTENT_DIRECTORY_VIDEO, true)) {
             videoContainer = BaseContainer(
-                VIDEO_ID.toString(), ROOT_ID.toString(),
-                context.getString(R.string.videos), appName, baseURL
+                    VIDEO_ID.toString(), ROOT_ID.toString(),
+                    context.getString(R.string.videos), appName, baseURL
             )
 
             with(rootContainer) {
@@ -292,8 +280,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             }
 
             allVideoContainer = VideoContainer(
-                ALL_ID.toString(), VIDEO_ID.toString(),
-                context.getString(R.string.all), appName, baseURL, context
+                    ALL_ID.toString(), VIDEO_ID.toString(),
+                    context.getString(R.string.all), appName, baseURL, context
             )
 
             with(videoContainer) {
@@ -327,6 +315,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         const val DIRECTORY_PREFIX = "d-"
 
         fun isRoot(parentId: String?) =
-            parentId?.compareTo(ContentDirectoryService.ROOT_ID.toString()) == 0
+                parentId?.compareTo(ContentDirectoryService.ROOT_ID.toString()) == 0
     }
 }

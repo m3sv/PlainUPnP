@@ -92,7 +92,6 @@ class DefaultUpnpManager constructor(
 
     override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
         Timber.d("Selected content directory: ${contentDirectory?.displayString}")
-
         controller.selectedContentDirectory = contentDirectory
         browseHome()
     }
@@ -230,6 +229,7 @@ class DefaultUpnpManager constructor(
     }
 
     override fun browseHome() {
+        directoriesStructure.clear()
         browseTo.onNext(BrowseToModel("0", currentContentDirectory?.friendlyName ?: "Home", null))
     }
 

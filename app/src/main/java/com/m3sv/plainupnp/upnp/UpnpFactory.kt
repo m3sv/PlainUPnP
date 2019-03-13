@@ -8,13 +8,16 @@ import javax.inject.Inject
 @ApplicationScope
 class UpnpFactory @Inject constructor(override val upnpServiceController: UpnpServiceController) : Factory {
 
-    override fun createContentDirectoryCommand(): ContentDirectoryCommand? =
-            upnpServiceController.serviceListener.upnpService
-                    ?.controlPoint
-                    ?.let { ContentDirectoryCommand(it, upnpServiceController) }
+    override fun createContentDirectoryCommand(): ContentDirectoryCommand? = upnpServiceController
+            .serviceListener
+            .upnpService
+            ?.controlPoint
+            ?.let { ContentDirectoryCommand(it, upnpServiceController) }
 
     override fun createRendererCommand(rendererStateObservable: UpnpRendererStateObservable?): RendererCommand? =
-            upnpServiceController.serviceListener.upnpService
+            upnpServiceController
+                    .serviceListener
+                    .upnpService
                     ?.controlPoint
                     ?.let { rendererStateObservable?.let { rs -> RendererCommand(upnpServiceController, it, rs) } }
 

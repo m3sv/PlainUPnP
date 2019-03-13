@@ -94,6 +94,7 @@ class MainFragment : BaseFragment() {
         }, PreferenceManager.getDefaultSharedPreferences(requireContext()))
 
         binding.content.run {
+            setHasFixedSize(true)
             val orientation = resources.configuration.orientation
             val spanCount = if (orientation == Configuration.ORIENTATION_PORTRAIT) {
                 4

@@ -62,39 +62,35 @@ class GalleryContentAdapter(private val glide: RequestManager,
     override fun onBindViewHolder(holder: ItemViewHolder<ViewDataBinding>, position: Int) {
         val item = items[position]
 
-        val itemClickListener = View.OnClickListener {
-            if (clickable)
-                holder.adapterPosition.takeIf { it >= 0 }?.let { adapterPosition ->
-                    item.didlObjectDisplay?.get(adapterPosition)?.let {
-                        onItemClickListener.onItemClick(
-                                it.didlObject as DIDLItem,
-                                holder.adapterPosition
-                        )
-                    }
-                }
-        }
-
         when (item.type) {
             ContentType.IMAGE -> loadData(
                     holder,
                     item,
                     R.drawable.ic_image,
-                    itemClickListener,
                     emptyRequestOptions
             )
             ContentType.VIDEO -> loadData(
                     holder,
                     item,
                     R.drawable.ic_video,
-                    itemClickListener,
                     emptyRequestOptions
             )
-            ContentType.AUDIO -> loadData(
-                    holder, item, R.drawable.ic_music, itemClickListener, audioRequestOptions
-            )
+            ContentType.AUDIO -> loadData(holder, item, R.drawable.ic_music, audioRequestOptions)
 
             ContentType.DIRECTORY -> loadDirectory(holder, item)
         }
+    }
+
+    private fun onItemClick(holder: ItemViewHolder<ViewDataBinding>, item: Item) {
+        if (clickable)
+            holder.adapterPosition.takeIf { it >= 0 }?.let { adapterPosition ->
+                item.didlObjectDisplay?.get(adapterPosition)?.let {
+                    onItemClickListener.onItemClick(
+                            it.didlObject as DIDLItem,
+                            holder.adapterPosition
+                    )
+                }
+            }
     }
 
     private fun <T : ViewDataBinding> ItemViewHolder<*>.extractBinding(): T =
@@ -104,9 +100,10 @@ class GalleryContentAdapter(private val glide: RequestManager,
             holder: ItemViewHolder<ViewDataBinding>,
             item: Item,
             @DrawableRes contentTypeIcon: Int,
-            onClick: View.OnClickListener,
             requestOptions: RequestOptions
     ) {
+        val itemClickListener = View.OnClickListener { onItemClick(holder, item) }
+
         with(holder.extractBinding<GalleryContentItemBinding>()) {
             if (sharedPreferences.getBoolean("pref_enable_thumbnails", true))
                 glide.load(item.uri)
@@ -118,9 +115,8 @@ class GalleryContentAdapter(private val glide: RequestManager,
 
             title.text = item.name
 
-            container.setOnClickListener(onClick)
+            container.setOnClickListener(itemClickListener)
             contentType.setImageResource(contentTypeIcon)
-            contentType.setOnClickListener(onClick)
         }
     }
 

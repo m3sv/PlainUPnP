@@ -4,13 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
-import com.m3sv.plainupnp.data.upnp.Directory
 import com.m3sv.plainupnp.data.upnp.RendererState
+import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.upnp.RenderedItem
 import com.m3sv.plainupnp.upnp.UpnpManager
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -65,5 +64,14 @@ class MainActivityViewModel @Inject constructor(
     fun pauseUpnp() {
         Timber.d("Pausing UPnP upnpServiceController")
         pauseRendererUpdate()
+    }
+
+    private var selectedContentDirectory: UpnpDevice? = null
+
+    override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
+        if (selectedContentDirectory != contentDirectory) {
+            defaultUpnpManager.selectContentDirectory(contentDirectory)
+            selectedContentDirectory = contentDirectory
+        }
     }
 }
