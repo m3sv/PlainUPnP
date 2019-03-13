@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.presentation.main
 
 import android.content.SharedPreferences
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.databinding.ViewDataBinding
@@ -30,8 +29,6 @@ class GalleryContentAdapter(private val glide: RequestManager,
                             private val sharedPreferences: SharedPreferences) :
         BaseAdapter<Item>(GalleryContentAdapter.diffCallback) {
 
-    var clickable = true
-
     private val emptyRequestOptions = RequestOptions()
 
     private val audioRequestOptions = RequestOptions().placeholder(R.drawable.ic_music_note)
@@ -47,7 +44,7 @@ class GalleryContentAdapter(private val glide: RequestManager,
                         LayoutInflater.from(parent.context),
                         parent,
                         false
-                )
+                ), onItemClickListener
         )
 
         else -> ItemViewHolder(
@@ -55,12 +52,14 @@ class GalleryContentAdapter(private val glide: RequestManager,
                         LayoutInflater.from(parent.context),
                         parent,
                         false
-                )
+                ), onItemClickListener
         )
     }
 
     override fun onBindViewHolder(holder: ItemViewHolder<ViewDataBinding>, position: Int) {
         val item = items[position]
+
+        holder.bind(item)
 
         when (item.type) {
             ContentType.IMAGE -> loadData(
@@ -81,20 +80,7 @@ class GalleryContentAdapter(private val glide: RequestManager,
         }
     }
 
-    private fun onItemClick(holder: ItemViewHolder<ViewDataBinding>, item: Item) {
-        if (clickable)
-            holder.adapterPosition.takeIf { it >= 0 }?.let { adapterPosition ->
-                item.didlObjectDisplay?.get(adapterPosition)?.let {
-                    onItemClickListener.onItemClick(
-                            it.didlObject as DIDLItem,
-                            holder.adapterPosition
-                    )
-                }
-            }
-    }
-
-    private fun <T : ViewDataBinding> ItemViewHolder<*>.extractBinding(): T =
-            (this as ItemViewHolder<T>).binding
+    private inline fun <T : ViewDataBinding> ItemViewHolder<*>.extractBinding(): T = (this as ItemViewHolder<T>).binding
 
     private fun loadData(
             holder: ItemViewHolder<ViewDataBinding>,
@@ -102,7 +88,6 @@ class GalleryContentAdapter(private val glide: RequestManager,
             @DrawableRes contentTypeIcon: Int,
             requestOptions: RequestOptions
     ) {
-        val itemClickListener = View.OnClickListener { onItemClick(holder, item) }
 
         with(holder.extractBinding<GalleryContentItemBinding>()) {
             if (sharedPreferences.getBoolean("pref_enable_thumbnails", true))
@@ -115,7 +100,6 @@ class GalleryContentAdapter(private val glide: RequestManager,
 
             title.text = item.name
 
-            container.setOnClickListener(itemClickListener)
             contentType.setImageResource(contentTypeIcon)
         }
     }
@@ -128,8 +112,7 @@ class GalleryContentAdapter(private val glide: RequestManager,
             title.text = item.name
             thumbnail.setImageResource(R.drawable.ic_folder)
             container.setOnClickListener {
-                if (clickable)
-                    onItemClickListener.onDirectoryClick(item.name, item.uri, item.parentId)
+                onItemClickListener.onDirectoryClick(item.name, item.uri, item.parentId)
             }
         }
     }
