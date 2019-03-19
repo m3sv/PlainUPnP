@@ -36,6 +36,8 @@ class MainFragment : BaseFragment() {
 
     private lateinit var contentAdapter: GalleryContentAdapter
 
+    private var expanded = false
+
     private fun handleContentState(contentState: ContentState) {
         when (contentState) {
             is ContentState.Success -> {
@@ -58,9 +60,18 @@ class MainFragment : BaseFragment() {
         }
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(IS_EXPANDED, expanded)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
+
+        savedInstanceState?.let {
+            expanded = it.getBoolean(IS_EXPANDED, false)
+        }
     }
 
     override fun onCreateView(
@@ -76,6 +87,18 @@ class MainFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (expanded) {
+            with(binding) {
+                folderName.hide()
+
+                with(filter) {
+                    show()
+
+                    postDelayed(this::showSoftInput, 200)
+                }
+            }
+        }
 
         contentAdapter = GalleryContentAdapter(Glide.with(this), object : OnItemClickListener {
             override fun onDirectoryClick(
@@ -133,8 +156,6 @@ class MainFragment : BaseFragment() {
 
         viewModel.serverContent.nonNullObserve(::handleContentState)
     }
-
-    private var expanded = false
 
     private fun hideSearch() {
         with(binding) {
@@ -194,6 +215,8 @@ class MainFragment : BaseFragment() {
 
     companion object {
         const val TAG = "main_fragment"
+
+        private const val IS_EXPANDED = "is_expanded"
 
         fun newInstance(): MainFragment = MainFragment().apply {
             arguments = Bundle()

@@ -239,7 +239,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-
     private fun launchLocally(item: LaunchLocally?) {
         item?.let {
             try {

@@ -113,7 +113,7 @@ class FabMenu : LinearLayout {
 
     private fun initializeMobileLayout(context: Context) {
         mobileSearchButton = ImageView(context).apply {
-            setImageDrawable(resources.getDrawable(R.drawable.ic_search_half_grey))
+            setImageResource(R.drawable.ic_search_half_grey)
 
             layoutParams = MarginLayoutParams(32.dp, 32.dp).also { it.setMargins(16.dp, 16.dp, 16.dp, 16.dp) }
         }
