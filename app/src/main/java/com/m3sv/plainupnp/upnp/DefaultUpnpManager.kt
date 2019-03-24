@@ -251,12 +251,10 @@ class DefaultUpnpManager constructor(
 
             when (model.id) {
                 "0" -> {
-                    selectedDirectory.onNext(Directory.Home(currentContentDirectory?.friendlyName
-                            ?: "Home"))
+                    selectedDirectory.onNext(Directory.Home)
                 }
                 else -> {
-                    val subDirectory =
-                            Directory.SubDirectory(model.id, model.directoryName, model.parentId)
+                    val subDirectory = Directory.SubDirectory(model.id)
 
                     selectedDirectory.onNext(subDirectory)
                     Timber.d("Adding subdirectory: $subDirectory")

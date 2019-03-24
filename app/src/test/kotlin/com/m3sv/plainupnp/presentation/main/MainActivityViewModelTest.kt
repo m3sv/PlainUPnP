@@ -1,18 +1,18 @@
 package com.m3sv.plainupnp.presentation.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.Directory
-import com.nhaarman.mockitokotlin2.*
+import com.nhaarman.mockitokotlin2.doReturn
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.verify
 import io.reactivex.Observable
 import org.droidupnp.legacy.cling.CDevice
 import org.junit.Before
-import org.junit.Test
 import org.junit.Rule
-
+import org.junit.Test
 
 
 class MainActivityViewModelTest {
@@ -36,7 +36,7 @@ class MainActivityViewModelTest {
     @Before
     fun setUp() {
         viewModel = MainActivityViewModel(mock {
-            on { selectedDirectoryObservable } doReturn Observable.just(Directory.Home("home"), Directory.SubDirectory("0", "1", null))
+            on { selectedDirectoryObservable } doReturn Observable.just(Directory.Home, Directory.SubDirectory("0"))
             on { rendererDiscovery } doReturn Observable.just(renderers)
             on { contentDirectoryDiscovery } doReturn Observable.just(contentDirectories)
         })
