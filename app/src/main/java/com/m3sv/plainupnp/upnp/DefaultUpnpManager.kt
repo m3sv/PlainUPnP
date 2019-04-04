@@ -9,6 +9,7 @@ import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscoveryObservable
+import com.m3sv.plainupnp.upnp.navigator.UpnpNavigator
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -18,8 +19,6 @@ import io.reactivex.subjects.Subject
 import org.droidupnp.legacy.cling.UpnpRendererStateObservable
 import org.droidupnp.legacy.upnp.Factory
 import timber.log.Timber
-import java.util.*
-import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 
 
@@ -31,6 +30,7 @@ typealias RenderedItem = Triple<String?, String, RequestOptions>
 class DefaultUpnpManager constructor(
         private val controller: UpnpServiceController,
         private val factory: Factory,
+        private val upnpNavigator: UpnpNavigator,
         override val rendererDiscovery: RendererDiscoveryObservable,
         override val contentDirectoryDiscovery: ContentDirectoryDiscoveryObservable
 ) : UpnpManager {
@@ -46,9 +46,7 @@ class DefaultUpnpManager constructor(
     var contentState: ContentState? = null
         private set
 
-    private val contentSubject = PublishSubject.create<ContentState>()
-
-    override val content: Observable<ContentState> = contentSubject.doOnNext {
+    override val content: Observable<ContentState> = upnpNavigator.state.doOnNext {
         contentState = it
     }
 
@@ -71,29 +69,23 @@ class DefaultUpnpManager constructor(
 
     private var isLocal: Boolean = false
 
-    private var directoriesStructure = Stack<ContentState>()
-
     private var next: Int = -1
 
     private var previous: Int = -1
 
     private val renderItem: Subject<RenderItem> = PublishSubject.create()
 
-    private val browseTo: Subject<BrowseToModel> = PublishSubject.create()
-
     init {
         renderItem
                 .throttleFirst(500, TimeUnit.MILLISECONDS)
                 .subscribe(::render, Timber::e)
 
-        browseTo.doOnNext { contentSubject.onNext(ContentState.Loading) }
-                .subscribe(::browse, Timber::e)
     }
 
     override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
         Timber.d("Selected content directory: ${contentDirectory?.displayString}")
         controller.selectedContentDirectory = contentDirectory
-        browseHome()
+        upnpNavigator.navigateHome()
     }
 
     override fun selectRenderer(renderer: UpnpDevice?) {
@@ -229,48 +221,14 @@ class DefaultUpnpManager constructor(
     }
 
     override fun browseHome() {
-        directoriesStructure.clear()
-        browseTo.onNext(BrowseToModel("0", currentContentDirectory?.friendlyName ?: "Home", null))
+        upnpNavigator.navigateHome()
     }
 
     override fun browseTo(model: BrowseToModel) {
-        if (contentState is ContentState.Success)
-            directoriesStructure.push(contentState)
-        browseTo.onNext(model)
+        upnpNavigator.navigateTo(model)
     }
 
-    private var browseFuture: Future<*>? = null
-
-    private fun browse(model: BrowseToModel) {
-        Timber.d("Browse: ${model.id}")
-
-        browseFuture?.cancel(true)
-        browseFuture = factory.createContentDirectoryCommand()?.browse(model.id, null) {
-            val successState = ContentState.Success(model.directoryName, it ?: listOf())
-            contentSubject.onNext(successState)
-
-            when (model.id) {
-                "0" -> {
-                    selectedDirectory.onNext(Directory.Home)
-                }
-                else -> {
-                    val subDirectory = Directory.SubDirectory(model.id)
-
-                    selectedDirectory.onNext(subDirectory)
-                    Timber.d("Adding subdirectory: $subDirectory")
-                }
-            }
-        }
-    }
-
-    override fun browsePrevious(): Boolean {
-        return if (!directoriesStructure.empty()) {
-            contentSubject.onNext(directoriesStructure.pop())
-            true
-        } else {
-            false
-        }
-    }
+    override fun browsePrevious(): Boolean = upnpNavigator.navigatePrevious()
 
     override fun moveTo(progress: Int, max: Int) {
         upnpRendererStateObservable?.run {
@@ -279,13 +237,12 @@ class DefaultUpnpManager constructor(
                     Timber.d("Seek to $it")
                     commandSeek(it)
                 }
-
             }
         }
     }
 
     override fun resumeUpnpController() {
-        Timber.d("Resume UPnP upnpServiceController")
+        Timber.d("Resume UPnP controller")
         controller.resume()
     }
 

@@ -90,7 +90,7 @@ class ContentDirectoryCommand(
             }
 
             override fun updateStatus(status: Browse.Status) {
-                Timber.v("updateStatus ! ")
+                Timber.v("Update browse status! ")
             }
 
             override fun failure(
