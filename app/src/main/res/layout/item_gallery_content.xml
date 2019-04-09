@@ -1,52 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="wrap_content"
+    android:layout_height="172dp"
+    android:background="@drawable/item_background"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="true">
 
-    <data class="GalleryContentItemBinding" />
+    <ImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="match_parent"
+        android:layout_height="126dp"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_folder" />
 
-    <FrameLayout
-        android:id="@+id/container"
-        android:focusable="true"
-        android:background="@drawable/item_background"
+    <View
+        android:id="@+id/content_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="46dp"
+        android:background="@drawable/content_shadow" />
+
+    <ImageView
+        android:id="@+id/content_type"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="46dp" />
+
+    <TextView
+        android:id="@+id/title"
         android:layout_width="wrap_content"
-        android:descendantFocusability="blocksDescendants"
-        android:layout_height="172dp">
+        android:layout_height="38dp"
+        android:layout_gravity="bottom|center"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:ellipsize="end"
+        android:gravity="top"
+        android:includeFontPadding="false"
+        android:maxLines="2"
+        tools:text="really long titlereally long titlereally long titlereally long titlereally long titlereally long titlereally long title " />
 
-        <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="match_parent"
-            android:layout_height="126dp"
-            android:scaleType="centerCrop"
-            tools:src="@drawable/ic_folder" />
-
-        <View
-            android:id="@+id/content_shadow"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="46dp"
-            android:background="@drawable/content_shadow" />
-
-        <ImageView
-            android:id="@+id/content_type"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="bottom|end"
-            android:layout_marginBottom="46dp" />
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="38dp"
-            android:layout_gravity="bottom|center"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:ellipsize="end"
-            android:gravity="top"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            tools:text="really long titlereally long titlereally long titlereally long titlereally long titlereally long titlereally long title " />
-
-    </FrameLayout>
-</layout>
+</FrameLayout>

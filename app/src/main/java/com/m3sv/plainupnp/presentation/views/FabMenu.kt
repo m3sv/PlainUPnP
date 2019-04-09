@@ -1,18 +1,22 @@
 package com.m3sv.plainupnp.presentation.views
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
+import android.os.Build
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.dp
 import com.m3sv.plainupnp.common.utils.isRunningOnTv
+
 
 class FabMenu : LinearLayout {
 
@@ -37,7 +41,6 @@ class FabMenu : LinearLayout {
             initializeMobileLayout(context)
     }
 
-
     private lateinit var searchButton: FloatingActionButton
 
     private lateinit var expandMenuButton: FloatingActionButton
@@ -46,11 +49,17 @@ class FabMenu : LinearLayout {
 
     private fun initializeTvLayout(context: Context) {
         orientation = LinearLayout.VERTICAL
-        layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
 
-        expandMenuButton = createFab(context, false, true, R.drawable.ic_add) { toggleMenuState() }
-        searchButton = createFab(context, true, true, R.drawable.ic_search)
-        settingsButton = createFab(context, true, true, R.drawable.ic_settings_white)
+        val tv = TypedValue()
+        val height = if (context.theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            TypedValue.complexToDimensionPixelSize(tv.data, resources.displayMetrics)
+        } else LayoutParams.WRAP_CONTENT
+
+        layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, height)
+
+        expandMenuButton = createFab(context, false, true, com.m3sv.plainupnp.R.drawable.ic_add) { toggleMenuState() }
+        searchButton = createFab(context, true, true, com.m3sv.plainupnp.R.drawable.ic_search)
+        settingsButton = createFab(context, true, true, com.m3sv.plainupnp.R.drawable.ic_settings_white)
 
         expandMenuButton.nextFocusDownId = searchButton.id
         searchButton.nextFocusDownId = settingsButton.id
@@ -60,20 +69,27 @@ class FabMenu : LinearLayout {
         addView(settingsButton)
     }
 
+    @SuppressLint("RestrictedApi")
     private fun createFab(context: Context,
                           isHidden: Boolean,
                           clickable: Boolean,
                           @DrawableRes icon: Int,
-                          @ColorRes backgroundTint: Int = R.color.colorPrimary,
+                          @ColorRes backgroundTint: Int = com.m3sv.plainupnp.R.color.colorPrimary,
                           clickListener: ((View) -> Unit)? = null): FloatingActionButton {
         return FloatingActionButton(context).apply {
             if (isHidden)
                 visibility = View.INVISIBLE
 
             isClickable = clickable
-            backgroundTintList = ColorStateList.valueOf(resources.getColor(backgroundTint))
+
+            backgroundTintList = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                ColorStateList.valueOf(resources.getColor(backgroundTint, context.theme))
+            } else {
+                ColorStateList.valueOf(resources.getColor(backgroundTint))
+
+            }
             setOnClickListener(clickListener)
-            setImageDrawable(resources.getDrawable(icon))
+            setImageDrawable(resources.getDrawable(icon, context.theme))
 
             layoutParams = MarginLayoutParams(WRAP_CONTENT, WRAP_CONTENT).also { it.setMargins(8.dp, 8.dp, 8.dp, 8.dp) }
         }
@@ -113,9 +129,9 @@ class FabMenu : LinearLayout {
 
     private fun initializeMobileLayout(context: Context) {
         mobileSearchButton = ImageView(context).apply {
-            setImageResource(R.drawable.ic_search_half_grey)
+            setImageResource(com.m3sv.plainupnp.R.drawable.ic_search_half_grey)
 
-            layoutParams = MarginLayoutParams(32.dp, 32.dp).also { it.setMargins(16.dp, 16.dp, 16.dp, 16.dp) }
+            layoutParams = MarginLayoutParams(32.dp, ViewGroup.LayoutParams.MATCH_PARENT)
         }
 
         addView(mobileSearchButton)

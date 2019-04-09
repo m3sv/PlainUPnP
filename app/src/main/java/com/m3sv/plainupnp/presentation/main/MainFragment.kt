@@ -8,11 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.preference.PreferenceManager
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.jakewharton.rxbinding2.widget.RxTextView
-import com.m3sv.plainupnp.common.SpaceItemDecoration
 import com.m3sv.plainupnp.common.isInstantApp
 import com.m3sv.plainupnp.common.utils.*
 import com.m3sv.plainupnp.data.upnp.DIDLItem
@@ -21,6 +19,7 @@ import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.main.data.toItems
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
+import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
 import com.m3sv.plainupnp.upnp.BrowseToModel
 import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.RenderItem
@@ -125,13 +124,16 @@ class MainFragment : BaseFragment() {
                 6
             }
 
-            addItemDecoration(SpaceItemDecoration(2.dp))
-            layoutManager = GridLayoutManager(
-                    requireActivity(),
-                    spanCount,
-                    RecyclerView.VERTICAL,
-                    false
-            )
+//            addItemDecoration(SpaceItemDecoration(2.dp))
+            addItemDecoration(OffsetItemDecoration(requireContext(), OffsetItemDecoration.HORIZONTAL))
+//            layoutManager = GridLayoutManager(
+//                    requireActivity(),
+//                    spanCount,
+//                    RecyclerView.VERTICAL,
+//                    false
+//            )
+
+            layoutManager = LinearLayoutManager(this@MainFragment.requireContext())
 
             adapter = contentAdapter
         }
@@ -159,7 +161,7 @@ class MainFragment : BaseFragment() {
 
     private fun hideSearch() {
         with(binding) {
-            folderName.animate().x(0f).setListener(object : AnimatorListenerAdapter() {
+            folderName.animate().x(8.dp.toFloat()).setListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationStart(animation: Animator?) {
                     filter.hideSoftInput()
                     folderName.show()
@@ -183,14 +185,14 @@ class MainFragment : BaseFragment() {
         with(binding) {
             filter.translationX = filter.width.toFloat()
 
-            folderName.animate().translationX(-folderName.width.toFloat())
+            folderName.animate().translationX(-folderName.width.toFloat() + 8.dp)
                     .setListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationEnd(animation: Animator?) {
                             folderName.disappear()
                         }
                     })
 
-            filter.animate().x(0f)
+            filter.animate().x(8.dp.toFloat())
                     .setListener(object : AnimatorListenerAdapter() {
                         override fun onAnimationStart(animation: Animator?) {
                             with(filter) {

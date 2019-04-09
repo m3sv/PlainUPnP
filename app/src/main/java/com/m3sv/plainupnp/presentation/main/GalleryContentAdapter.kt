@@ -11,7 +11,7 @@ import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ItemsDiffCallback
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.GalleryContentFolderItemBinding
-import com.m3sv.plainupnp.databinding.GalleryContentItemBinding
+import com.m3sv.plainupnp.databinding.MobileItemGalleryContentBinding
 import com.m3sv.plainupnp.presentation.base.BaseAdapter
 import com.m3sv.plainupnp.presentation.base.ItemViewHolder
 import com.m3sv.plainupnp.presentation.main.data.ContentType
@@ -48,7 +48,7 @@ class GalleryContentAdapter(private val glide: RequestManager,
         )
 
         else -> ItemViewHolder(
-                GalleryContentItemBinding.inflate(
+                MobileItemGalleryContentBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
@@ -89,7 +89,7 @@ class GalleryContentAdapter(private val glide: RequestManager,
             requestOptions: RequestOptions
     ) {
 
-        with(holder.extractBinding<GalleryContentItemBinding>()) {
+        with(holder.extractBinding<MobileItemGalleryContentBinding>()) {
             if (sharedPreferences.getBoolean("pref_enable_thumbnails", true))
                 glide.load(item.uri)
                         .thumbnail(0.1f)
