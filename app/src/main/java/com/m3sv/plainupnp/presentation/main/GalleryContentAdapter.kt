@@ -66,15 +66,15 @@ class GalleryContentAdapter(private val glide: RequestManager,
                     holder,
                     item,
                     R.drawable.ic_image,
-                    emptyRequestOptions
+                    emptyRequestOptions, item.type
             )
             ContentType.VIDEO -> loadData(
                     holder,
                     item,
                     R.drawable.ic_video,
-                    emptyRequestOptions
+                    emptyRequestOptions, item.type
             )
-            ContentType.AUDIO -> loadData(holder, item, R.drawable.ic_music, audioRequestOptions)
+            ContentType.AUDIO -> loadData(holder, item, R.drawable.ic_music, audioRequestOptions, item.type)
 
             ContentType.DIRECTORY -> loadDirectory(holder, item)
         }
@@ -86,20 +86,22 @@ class GalleryContentAdapter(private val glide: RequestManager,
             holder: ItemViewHolder<ViewDataBinding>,
             item: Item,
             @DrawableRes contentTypeIcon: Int,
-            requestOptions: RequestOptions
+            requestOptions: RequestOptions, type: ContentType
     ) {
 
         with(holder.extractBinding<MobileItemGalleryContentBinding>()) {
             if (sharedPreferences.getBoolean("pref_enable_thumbnails", true))
-                glide.load(item.uri)
-                        .thumbnail(0.1f)
-                        .apply(requestOptions)
-                        .into(thumbnail)
+                when (type) {
+                    ContentType.IMAGE, ContentType.VIDEO -> glide.load(item.uri)
+                            .thumbnail(0.1f)
+                            .apply(requestOptions)
+                            .into(thumbnail)
+                    else -> thumbnail.setImageResource(contentTypeIcon)
+                }
             else
                 thumbnail.setImageResource(contentTypeIcon)
 
             title.text = item.name
-
             contentType.setImageResource(contentTypeIcon)
         }
     }

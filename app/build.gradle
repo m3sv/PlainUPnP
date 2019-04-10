@@ -73,12 +73,18 @@ dependencies {
     androidTestImplementation deps.test.rules
     androidTestImplementation deps.test.espresso.core
     androidTestImplementation deps.test.assertions.junit
+
     testImplementation deps.test.core
     testImplementation deps.test.rules
     testImplementation deps.test.assertions.junit
     testImplementation deps.test.mockito.core
     testImplementation deps.test.coreTesting
+
     implementation deps.androidx.leanback
+
+    implementation deps.androidx.navigation.fragment
+    implementation deps.androidx.navigation.ui
+
     implementation deps.support.appCompat
     implementation deps.support.v4
     implementation deps.support.design

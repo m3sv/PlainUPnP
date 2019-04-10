@@ -27,9 +27,9 @@ import kotlin.coroutines.CoroutineContext
 
 
 class RendererCommand(
-    private val controller: UpnpServiceController,
-    private val controlPoint: ControlPoint,
-    private val rendererStateObservable: UpnpRendererStateObservable
+        private val controller: UpnpServiceController,
+        private val controlPoint: ControlPoint,
+        private val rendererStateObservable: UpnpRendererStateObservable
 ) : CoroutineScope {
 
     private var job: Job = Job()
@@ -46,18 +46,21 @@ class RendererCommand(
         Timber.v("Resume renderer")
         job.cancel()
         job = Job()
-        Handler().postDelayed({launch { updateInfo() }}, 500)
+        launch {
+            delay(500)
+            updateInfo()
+        }
     }
 
     private fun getRenderingControlService(): Service<*, *>? =
-        controller.selectedRenderer?.let {
-            (it as CDevice).device?.findService(UDAServiceType("RenderingControl"))
-        }
+            controller.selectedRenderer?.let {
+                (it as CDevice).device?.findService(UDAServiceType("RenderingControl"))
+            }
 
     private fun getAVTransportService(): Service<*, *>? =
-        controller.selectedRenderer?.let {
-            (it as CDevice).device?.findService(UDAServiceType("AVTransport"))
-        }
+            controller.selectedRenderer?.let {
+                (it as CDevice).device?.findService(UDAServiceType("AVTransport"))
+            }
 
     fun commandPlay() {
         getAVTransportService()?.let {
@@ -170,7 +173,7 @@ class RendererCommand(
 
         getAVTransportService()?.let {
             controlPoint.execute(object :
-                SetAVTransportURI(it, uri, trackMetadata.xml) {
+                    SetAVTransportURI(it, uri, trackMetadata.xml) {
 
                 override fun success(invocation: ActionInvocation<*>?) {
                     super.success(invocation)
@@ -205,13 +208,13 @@ class RendererCommand(
             // TODO genre && artURI
             val trackMetadata = obj.run {
                 TrackMetadata(
-                    id,
-                    title,
-                    creator,
-                    "",
-                    "",
-                    firstResource.value,
-                    "object.item.$type"
+                        id,
+                        title,
+                        creator,
+                        "",
+                        "",
+                        firstResource.value,
+                        "object.item.$type"
                 )
             }
 

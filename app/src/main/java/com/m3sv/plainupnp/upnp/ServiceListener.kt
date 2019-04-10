@@ -55,7 +55,7 @@ class ServiceListener @Inject constructor(private val ctx: Context) {
                     try {
                         if (mediaServer == null) {
                             mediaServer =
-                                MediaServer(ctx, Utils.getLocalIpAddress(ctx)).apply { start() }
+                                    MediaServer(ctx, Utils.getLocalIpAddress(ctx)).apply { start() }
                         }
 
                         upnpService?.registry?.addDevice(mediaServer?.localDevice)
@@ -115,12 +115,14 @@ class ServiceListener @Inject constructor(private val ctx: Context) {
     private fun addListenerSafe(registryListener: RegistryListener) {
         assert(upnpService != null)
 
-        // Get ready for future device advertisements
-        upnpService?.registry?.addListener(CRegistryListener(registryListener))
+        upnpService?.registry?.run {
+            // Get ready for future device advertisements
+            addListener(CRegistryListener(registryListener))
 
-        // Now add all devices to the list we already know about
-        upnpService?.registry?.devices?.forEach {
-            registryListener.deviceAdded(CDevice(it))
+            // Now add all devices to the list we already know about
+            devices?.forEach {
+                registryListener.deviceAdded(CDevice(it))
+            }
         }
     }
 

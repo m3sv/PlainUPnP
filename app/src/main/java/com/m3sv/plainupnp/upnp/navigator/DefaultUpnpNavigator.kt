@@ -12,6 +12,7 @@ import io.reactivex.subjects.Subject
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.Future
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class DefaultUpnpNavigator @Inject constructor(private val factory: UpnpFactory, private val controller: UpnpServiceController) : UpnpNavigator {
@@ -31,7 +32,7 @@ class DefaultUpnpNavigator @Inject constructor(private val factory: UpnpFactory,
 
 
     init {
-        browseTo.distinctUntilChanged().doOnNext {
+        browseTo.throttleFirst(250, TimeUnit.MILLISECONDS).doOnNext {
             browseFuture?.cancel(true)
             contentSubject.onNext(ContentState.Loading)
         }.subscribe(::navigate, Timber::e)

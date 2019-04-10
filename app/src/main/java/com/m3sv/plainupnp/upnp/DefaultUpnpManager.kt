@@ -77,7 +77,7 @@ class DefaultUpnpManager constructor(
 
     init {
         renderItem
-                .throttleFirst(500, TimeUnit.MILLISECONDS)
+                .throttleFirst(250, TimeUnit.MILLISECONDS)
                 .subscribe(::render, Timber::e)
 
     }

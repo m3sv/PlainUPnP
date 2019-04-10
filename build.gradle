@@ -14,13 +14,18 @@ buildscript {
             'cling'                 : '2.1.2-SNAPSHOT',
             'jetty'                 : '8.2.0.v20160908',
             'retrofit'              : '2.4.0',
-            'okhttp'                : '3.9.1'
+            'okhttp'                : '3.9.1',
+            'navigation'            : '2.1.0-alpha02'
     ]
 
     ext.deps = [
             'androidx'              : [
                     'ktx'     : "androidx.core:core-ktx:1.0.0",
-                    'leanback': "androidx.leanback:leanback:1.0.0"
+                    'leanback': "androidx.leanback:leanback:1.0.0",
+                    'navigation' : [
+                            "fragment": "androidx.navigation:navigation-fragment-ktx:${versions.navigation}",
+                            "ui" : "androidx.navigation:navigation-ui-ktx:${versions.navigation}"
+                    ]
             ],
             'support'               : [
                     'appCompat'       : "androidx.appcompat:appcompat:${versions.supportLibrary}",
