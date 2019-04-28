@@ -84,18 +84,10 @@ class SettingsFragment : PreferenceFragmentCompat(),
         "rate" -> {
             try {
                 startActivity(
-                        Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("market://details?id=" + this.activity?.packageName)
-                        )
+                        Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + this.activity?.packageName))
                 )
             } catch (e: Throwable) {
-                startActivity(
-                        Intent(
-                                Intent.ACTION_VIEW,
-                                Uri.parse("http://play.google.com/store/apps/details?id=" + this.activity?.packageName)
-                        )
-                )
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + this.activity?.packageName)))
             }
 
             true

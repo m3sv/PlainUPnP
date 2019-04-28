@@ -3,12 +3,13 @@ package com.m3sv.plainupnp.presentation.main
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
-import android.os.Bundle
+import android.os.*
 import android.view.View
 import android.widget.AdapterView
 import android.widget.SeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.DataBindingUtil
+import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -21,11 +22,11 @@ import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
-import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.upnp.LaunchLocally
 import com.m3sv.plainupnp.upnp.RenderedItem
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
+import kotlin.concurrent.thread
 
 
 class MainActivity : BaseActivity() {
@@ -142,17 +143,17 @@ class MainActivity : BaseActivity() {
         initBottomSheet()
 
         if (savedInstanceState == null) {
-            mainFragment = MainFragment.newInstance()
-
-            supportFragmentManager
-                    .beginTransaction()
-                    .add(R.id.container, mainFragment, MainFragment.TAG)
-                    .commit()
-
-
+//            mainFragment = MainFragment.newInstance()
+//
+//            supportFragmentManager
+//                    .beginTransaction()
+//                    .add(R.id.container, mainFragment, MainFragment.TAG)
+//                    .commit()
             viewModel.resumeUpnpController()
+
+
         } else {
-            mainFragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment
+//            mainFragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment
         }
 
         RxView.clicks(binding.controlsSheet.next)
@@ -195,6 +196,7 @@ class MainActivity : BaseActivity() {
 
         requestReadStoragePermission()
     }
+
 
 
     override fun onStart() {
@@ -271,21 +273,17 @@ class MainActivity : BaseActivity() {
     }
 
     private fun navigateToMain() {
-        supportFragmentManager.popBackStackImmediate()
+        findNavController(R.id.nav_host_container).popBackStack()
     }
 
     private fun navigateToSettings() {
-        val tag = SettingsFragment.TAG
-        val fragment = supportFragmentManager.findFragmentByTag(tag)
-
-        if (fragment == null) {
-            navigateTo(SettingsFragment.newInstance(), tag, true)
-        } else {
-            navigateTo(fragment, tag, true)
-        }
+        findNavController(R.id.nav_host_container).navigate(R.id.settings_fragment)
     }
 
     override fun onBackPressed() {
+        findNavController(R.id.nav_host_container).graph.startDestination == findNavController(R.id.nav_host_container).currentDestination?.id
+
+
         with(supportFragmentManager) {
             if (backStackEntryCount > 0) {
                 popBackStack()

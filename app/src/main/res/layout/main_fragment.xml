@@ -44,16 +44,16 @@
                 android:singleLine="true"
                 android:visibility="invisible"
                 tools:visibility="visible" />
-
-            <com.m3sv.plainupnp.presentation.views.FabMenu
-                android:id="@+id/fab_menu"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="end|bottom"
-                android:gravity="end"
-                android:nextFocusLeft="@id/content" />
-
         </FrameLayout>
+
+        <com.m3sv.plainupnp.presentation.views.FabMenu
+            android:id="@+id/fab_menu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:elevation="4dp"
+            android:gravity="end"
+            android:layout_gravity="top|end"
+            android:nextFocusLeft="@id/content" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/content"

@@ -2,7 +2,7 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     package="com.m3sv.plainupnp">
 
-    <dist:module dist:instant="true" />
+    <!--<dist:module dist:instant="true" />-->
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />

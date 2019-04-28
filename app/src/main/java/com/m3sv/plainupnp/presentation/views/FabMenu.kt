@@ -3,17 +3,18 @@ package com.m3sv.plainupnp.presentation.views
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.os.Build
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.dp
 import com.m3sv.plainupnp.common.utils.isRunningOnTv
 
@@ -48,7 +49,7 @@ class FabMenu : LinearLayout {
     private lateinit var settingsButton: FloatingActionButton
 
     private fun initializeTvLayout(context: Context) {
-        orientation = LinearLayout.VERTICAL
+        orientation = VERTICAL
 
         val tv = TypedValue()
         val height = if (context.theme.resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
@@ -57,9 +58,9 @@ class FabMenu : LinearLayout {
 
         layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, height)
 
-        expandMenuButton = createFab(context, false, true, com.m3sv.plainupnp.R.drawable.ic_add) { toggleMenuState() }
-        searchButton = createFab(context, true, true, com.m3sv.plainupnp.R.drawable.ic_search)
-        settingsButton = createFab(context, true, true, com.m3sv.plainupnp.R.drawable.ic_settings_white)
+        expandMenuButton = createFab(false, true, R.drawable.ic_add) { toggleMenuState() }
+        searchButton = createFab(true, true, R.drawable.ic_search)
+        settingsButton = createFab(true, true, R.drawable.ic_settings_white)
 
         expandMenuButton.nextFocusDownId = searchButton.id
         searchButton.nextFocusDownId = settingsButton.id
@@ -69,16 +70,26 @@ class FabMenu : LinearLayout {
         addView(settingsButton)
     }
 
+    private lateinit var mobileSearchButton: ImageView
+
+    private fun initializeMobileLayout(context: Context) {
+        mobileSearchButton = ImageView(context).apply {
+            setImageResource(R.drawable.ic_search_half_grey)
+            val topMargin = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) 12.dp else 8.dp
+            layoutParams = MarginLayoutParams(32.dp, 32.dp).also { it.setMargins(8.dp, topMargin, 8.dp, 8.dp) }
+        }
+
+        addView(mobileSearchButton)
+    }
+
     @SuppressLint("RestrictedApi")
-    private fun createFab(context: Context,
-                          isHidden: Boolean,
+    private fun createFab(isHidden: Boolean,
                           clickable: Boolean,
                           @DrawableRes icon: Int,
-                          @ColorRes backgroundTint: Int = com.m3sv.plainupnp.R.color.colorPrimary,
+                          @ColorRes backgroundTint: Int = R.color.colorPrimary,
                           clickListener: ((View) -> Unit)? = null): FloatingActionButton {
         return FloatingActionButton(context).apply {
-            if (isHidden)
-                visibility = View.INVISIBLE
+            if (isHidden) visibility = View.INVISIBLE
 
             isClickable = clickable
 
@@ -86,10 +97,10 @@ class FabMenu : LinearLayout {
                 ColorStateList.valueOf(resources.getColor(backgroundTint, context.theme))
             } else {
                 ColorStateList.valueOf(resources.getColor(backgroundTint))
-
             }
+
             setOnClickListener(clickListener)
-            setImageDrawable(resources.getDrawable(icon, context.theme))
+            setImageResource(icon)
 
             layoutParams = MarginLayoutParams(WRAP_CONTENT, WRAP_CONTENT).also { it.setMargins(8.dp, 8.dp, 8.dp, 8.dp) }
         }
@@ -117,23 +128,10 @@ class FabMenu : LinearLayout {
             searchButton.show()
 
             postDelayed({
-                if (shown)
-                    settingsButton.show()
+                if (shown) settingsButton.show()
             }, 150)
 
             true
         }
-    }
-
-    private lateinit var mobileSearchButton: ImageView
-
-    private fun initializeMobileLayout(context: Context) {
-        mobileSearchButton = ImageView(context).apply {
-            setImageResource(com.m3sv.plainupnp.R.drawable.ic_search_half_grey)
-
-            layoutParams = MarginLayoutParams(32.dp, ViewGroup.LayoutParams.MATCH_PARENT)
-        }
-
-        addView(mobileSearchButton)
     }
 }
