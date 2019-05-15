@@ -79,26 +79,26 @@ class TvActivity : BaseActivity() {
 
             when (rendererState.state) {
                 com.m3sv.plainupnp.data.upnp.UpnpRendererState.State.STOP -> {
-                    play.setImageResource(com.m3sv.plainupnp.R.drawable.ic_play_arrow)
-                    com.jakewharton.rxbinding2.view.RxView.clicks(play)
+                    play.setImageResource(R.drawable.ic_play_arrow)
+                    RxView.clicks(play)
                             .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = timber.log.Timber::e)
                 }
 
                 com.m3sv.plainupnp.data.upnp.UpnpRendererState.State.PLAY -> {
-                    play.setImageResource(com.m3sv.plainupnp.R.drawable.ic_pause)
-                    com.jakewharton.rxbinding2.view.RxView.clicks(play)
+                    play.setImageResource(R.drawable.ic_pause)
+                    RxView.clicks(play)
                             .subscribeBy(onNext = { viewModel.pausePlayback() }, onError = timber.log.Timber::e)
                 }
 
                 com.m3sv.plainupnp.data.upnp.UpnpRendererState.State.PAUSE -> {
-                    play.setImageResource(com.m3sv.plainupnp.R.drawable.ic_play_arrow)
-                    com.jakewharton.rxbinding2.view.RxView.clicks(play)
+                    play.setImageResource(R.drawable.ic_play_arrow)
+                    RxView.clicks(play)
                             .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = timber.log.Timber::e)
                 }
 
                 com.m3sv.plainupnp.data.upnp.UpnpRendererState.State.INITIALIZING -> {
-                    play.setImageResource(com.m3sv.plainupnp.R.drawable.ic_play_arrow)
-                    com.jakewharton.rxbinding2.view.RxView.clicks(play)
+                    play.setImageResource(R.drawable.ic_play_arrow)
+                    RxView.clicks(play)
                             .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = timber.log.Timber::e)
                 }
             }.disposeBy(disposables)

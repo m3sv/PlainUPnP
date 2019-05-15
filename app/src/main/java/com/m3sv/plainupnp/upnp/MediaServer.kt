@@ -9,7 +9,6 @@ import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.getSettingContentDirectoryName
 import fi.iki.elonen.SimpleWebServer
 import fi.iki.elonen.nanohttpd.Method
-import fi.iki.elonen.nanohttpd.NanoHTTPD
 import org.droidupnp.legacy.mediaserver.ContentDirectoryService
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
 import org.fourthline.cling.model.DefaultServiceManager
@@ -23,17 +22,17 @@ import java.util.*
 
 
 class MediaServer(private val context: Context, private val localAddress: InetAddress) :
-    SimpleWebServer(null, PORT, null, true) {
+        SimpleWebServer(null, PORT, null, true) {
 
     val localDevice: LocalDevice by lazy(mode = LazyThreadSafetyMode.NONE) {
         val details = DeviceDetails(
-            getSettingContentDirectoryName(context),
-            ManufacturerDetails(
-                context.getString(R.string.app_name),
-                context.getString(R.string.app_url)
-            ),
-            ModelDetails(context.getString(R.string.app_name), context.getString(R.string.app_url)),
-            context.getString(R.string.app_name), version
+                getSettingContentDirectoryName(context),
+                ManufacturerDetails(
+                        context.getString(R.string.app_name),
+                        context.getString(R.string.app_url)
+                ),
+                ModelDetails(context.getString(R.string.app_name), context.getString(R.string.app_url)),
+                context.getString(R.string.app_name), version
         )
 
         val validationErrors = details.validate()
@@ -71,11 +70,10 @@ class MediaServer(private val context: Context, private val localAddress: InetAd
     init {
         Timber.i("Creating media server!")
 
-        localService = (AnnotationLocalServiceBinder()
-            .read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>).apply {
+        localService = (AnnotationLocalServiceBinder().read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>).apply {
             manager = DefaultServiceManager<ContentDirectoryService>(
-                this,
-                ContentDirectoryService::class.java
+                    this,
+                    ContentDirectoryService::class.java
             )
         }
 
@@ -87,34 +85,26 @@ class MediaServer(private val context: Context, private val localAddress: InetAd
     }
 
     override fun serve(
-        uri: String,
-        method: Method,
-        header: Map<String, String>,
-        parms: Map<String, String>,
-        files: Map<String, String>
-    ): NanoHTTPD.Response? {
+            uri: String,
+            method: Method,
+            header: Map<String, String>,
+            parms: Map<String, String>,
+            files: Map<String, String>
+    ): Response? {
         Timber.i("Serve uri: $uri")
-
-        try {
+        return try {
             val obj = getFileServerObject(uri)
 
             Timber.i("Will serve " + obj.path)
 
-            return serveFile(File(obj.path), obj.mime, header).apply {
+            serveFile(File(obj.path), obj.mime, header).apply {
                 addHeader("realTimeInfo.dlna.org", "DLNA.ORG_TLAG=*")
                 addHeader("contentFeatures.dlna.org", "")
                 addHeader("transferMode.dlna.org", "Streaming")
-                addHeader(
-                    "Server",
-                    "DLNADOC/1.50 UPnP/1.0 Cling/2.0 PlainUPnP/" + version + " Android/" + Build.VERSION.RELEASE
-                )
+                addHeader("Server", "DLNADOC/1.50 UPnP/1.0 Cling/2.0 PlainUPnP/" + version + " Android/" + Build.VERSION.RELEASE)
             }
         } catch (e: InvalidIdentifierException) {
-            return NanoHTTPD.Response(
-                NanoHTTPD.Response.Status.NOT_FOUND,
-                NanoHTTPD.MIME_PLAINTEXT,
-                "Error 404, file not found."
-            )
+            Response(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found.")
         }
     }
 
@@ -156,12 +146,11 @@ class MediaServer(private val context: Context, private val localAddress: InetAd
                 else -> null
             }?.let { contentUri ->
                 val columns =
-                    arrayOf(MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.MIME_TYPE)
+                        arrayOf(MediaStore.MediaColumns.DATA, MediaStore.MediaColumns.MIME_TYPE)
                 val where = MediaStore.MediaColumns._ID + "=?"
                 val whereVal = arrayOf("" + mediaId)
 
-                val cursor =
-                    context.contentResolver.query(contentUri, columns, where, whereVal, null)
+                val cursor = context.contentResolver.query(contentUri, columns, where, whereVal, null)
 
                 cursor?.takeIf { it.moveToFirst() }?.run {
                     val path = getString(getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))

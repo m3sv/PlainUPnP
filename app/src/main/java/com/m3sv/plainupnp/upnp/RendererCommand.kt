@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.upnp
 
-import android.os.Handler
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
 import kotlinx.coroutines.*
@@ -23,6 +22,7 @@ import org.fourthline.cling.support.renderingcontrol.callback.GetVolume
 import org.fourthline.cling.support.renderingcontrol.callback.SetMute
 import org.fourthline.cling.support.renderingcontrol.callback.SetVolume
 import timber.log.Timber
+import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
 
@@ -34,8 +34,7 @@ class RendererCommand(
 
     private var job: Job = Job()
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + job
+    override val coroutineContext: CoroutineContext = Executors.newFixedThreadPool(16).asCoroutineDispatcher() + job
 
     fun pause() {
         Timber.v("Pause renderer")
@@ -45,6 +44,7 @@ class RendererCommand(
     fun resume() {
         Timber.v("Resume renderer")
         job.cancel()
+
         job = Job()
         launch {
             delay(500)

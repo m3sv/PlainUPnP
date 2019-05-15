@@ -82,9 +82,7 @@ abstract class DeviceDiscovery(protected val controller: UpnpServiceController) 
         }
     }
 
-    fun hasObserver(o: DeviceDiscoveryObserver): Boolean {
-        return observerList.contains(o)
-    }
+    fun hasObserver(o: DeviceDiscoveryObserver): Boolean = observerList.contains(o)
 
     fun addObserver(o: DeviceDiscoveryObserver) {
         println(o)

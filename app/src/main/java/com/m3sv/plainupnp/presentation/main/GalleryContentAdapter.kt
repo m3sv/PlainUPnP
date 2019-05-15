@@ -26,8 +26,7 @@ interface OnItemClickListener {
 
 class GalleryContentAdapter(private val glide: RequestManager,
                             private val onItemClickListener: OnItemClickListener,
-                            private val sharedPreferences: SharedPreferences) :
-        BaseAdapter<Item>(GalleryContentAdapter.diffCallback) {
+                            private val sharedPreferences: SharedPreferences) : BaseAdapter<Item>(diffCallback) {
 
     private val emptyRequestOptions = RequestOptions()
 

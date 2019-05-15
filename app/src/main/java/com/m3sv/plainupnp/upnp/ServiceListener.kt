@@ -23,7 +23,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class ServiceListener @Inject constructor(private val ctx: Context) {
+class ServiceListener @Inject constructor(private val context: Context) {
 
     var upnpService: AndroidUpnpService? = null
         private set
@@ -50,13 +50,11 @@ class ServiceListener @Inject constructor(private val ctx: Context) {
                 Timber.i("Connected service")
                 upnpService = service as AndroidUpnpService
 
-                val sharedPref = PreferenceManager.getDefaultSharedPreferences(ctx)
+                val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
                 if (sharedPref.getBoolean(CONTENT_DIRECTORY_SERVICE, true)) {
                     try {
-                        if (mediaServer == null) {
-                            mediaServer =
-                                    MediaServer(ctx, Utils.getLocalIpAddress(ctx)).apply { start() }
-                        }
+                        mediaServer = mediaServer
+                                ?: MediaServer(context, Utils.getLocalIpAddress(context)).apply { start() }
 
                         upnpService?.registry?.addDevice(mediaServer?.localDevice)
                     } catch (e1: UnknownHostException) {
@@ -70,9 +68,7 @@ class ServiceListener @Inject constructor(private val ctx: Context) {
                     mediaServer = null
                 }
 
-                for (registryListener in waitingListener) {
-                    addListenerSafe(registryListener)
-                }
+                waitingListener.map { addListenerSafe(it) }
 
                 upnpService?.controlPoint?.search()
             }

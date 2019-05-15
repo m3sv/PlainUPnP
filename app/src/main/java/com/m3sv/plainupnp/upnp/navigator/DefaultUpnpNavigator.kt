@@ -30,7 +30,6 @@ class DefaultUpnpNavigator @Inject constructor(private val factory: UpnpFactory,
     private val currentContentDirectory: UpnpDevice?
         get() = controller.selectedContentDirectory
 
-
     init {
         browseTo.throttleFirst(250, TimeUnit.MILLISECONDS).doOnNext {
             browseFuture?.cancel(true)

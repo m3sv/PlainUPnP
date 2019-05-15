@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
-import fi.iki.elonen.CoroutineAsyncRunner;
+import fi.iki.elonen.ThreadPoolRunner;
 import timber.log.Timber;
 
 /**
@@ -115,7 +115,7 @@ public abstract class NanoHTTPD {
         this.hostname = hostname;
         this.myPort = port;
         setTempFileManagerFactory(new DefaultTempFileManagerFactory());
-        setAsyncRunner(new CoroutineAsyncRunner());
+        setAsyncRunner(new ThreadPoolRunner());
     }
 
     /**

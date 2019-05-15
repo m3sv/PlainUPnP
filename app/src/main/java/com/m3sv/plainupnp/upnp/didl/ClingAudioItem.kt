@@ -6,8 +6,7 @@ import org.fourthline.cling.support.model.item.MusicTrack
 
 class ClingAudioItem(item: AudioItem) : ClingDIDLItem(item) {
 
-    override val dataType: String
-        get() = "audio/*"
+    override val dataType: String = "audio/*"
 
     override val description: String
         get() {

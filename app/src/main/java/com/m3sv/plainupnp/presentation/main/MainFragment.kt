@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.presentation.main
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -39,22 +38,21 @@ class MainFragment : BaseFragment() {
 
     private fun handleContentState(contentState: ContentState) {
         when (contentState) {
-            is ContentState.Success -> {
-                with(binding) {
-                    folderName.text = contentState.folderName
-                    contentAdapter.setWithDiff(contentState.content.toItems())
-                    hideProgress()
+            is ContentState.Success -> handleSuccess(contentState)
+            is ContentState.Loading -> showProgress()
+        }
+    }
 
-                    if (isInstantApp(requireContext()) && contentState.content.isEmpty()) {
-                        instantAppNotice.show()
-                    } else {
-                        instantAppNotice.disappear()
-                    }
-                }
-            }
+    private fun handleSuccess(contentState: ContentState.Success) {
+        with(binding) {
+            folderName.text = contentState.folderName
+            contentAdapter.setWithDiff(contentState.content.toItems())
+            hideProgress()
 
-            is ContentState.Loading -> {
-                showProgress()
+            if (isInstantApp(requireContext()) && contentState.content.isEmpty()) {
+                instantAppNotice.show()
+            } else {
+                instantAppNotice.disappear()
             }
         }
     }
@@ -117,24 +115,8 @@ class MainFragment : BaseFragment() {
 
         binding.content.run {
             setHasFixedSize(true)
-            val orientation = resources.configuration.orientation
-            val spanCount = if (orientation == Configuration.ORIENTATION_PORTRAIT) {
-                4
-            } else {
-                6
-            }
-
-//            addItemDecoration(SpaceItemDecoration(2.dp))
             addItemDecoration(OffsetItemDecoration(requireContext(), OffsetItemDecoration.HORIZONTAL))
-//            layoutManager = GridLayoutManager(
-//                    requireActivity(),
-//                    spanCount,
-//                    RecyclerView.VERTICAL,
-//                    false
-//            )
-
             layoutManager = LinearLayoutManager(this@MainFragment.requireContext())
-
             adapter = contentAdapter
         }
 

@@ -7,9 +7,9 @@ import timber.log.Timber
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class UpnpService : AndroidUpnpServiceImpl() {
+class AndroidUpnpService : AndroidUpnpServiceImpl() {
 
-    private val executor = Executors.newFixedThreadPool(32)
+    private val executor = Executors.newFixedThreadPool(64)
 
     override fun createConfiguration(): AndroidUpnpServiceConfiguration =
         object : AndroidUpnpServiceConfiguration() {

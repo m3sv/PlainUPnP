@@ -46,10 +46,8 @@ interface UpnpServiceController {
 
     fun setSelectedContentDirectory(contentDirectory: UpnpDevice, force: Boolean)
 
-    // Pause the service
     fun pause()
 
-    // Resume the service
     fun resume()
 
     fun addDevice(localDevice: LocalDevice)

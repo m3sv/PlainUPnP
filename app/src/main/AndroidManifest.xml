@@ -57,6 +57,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".upnp.UpnpService" />
+        <service android:name=".upnp.AndroidUpnpService" />
     </application>
 </manifest>

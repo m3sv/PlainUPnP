@@ -3,7 +3,7 @@ package com.m3sv.plainupnp.presentation.main
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
-import android.os.*
+import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.SeekBar
@@ -26,7 +26,6 @@ import com.m3sv.plainupnp.upnp.LaunchLocally
 import com.m3sv.plainupnp.upnp.RenderedItem
 import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
-import kotlin.concurrent.thread
 
 
 class MainActivity : BaseActivity() {
@@ -126,8 +125,6 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private lateinit var mainFragment: MainFragment
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
@@ -141,20 +138,6 @@ class MainActivity : BaseActivity() {
         setupBottomNavigation(binding.bottomNav)
 
         initBottomSheet()
-
-        if (savedInstanceState == null) {
-//            mainFragment = MainFragment.newInstance()
-//
-//            supportFragmentManager
-//                    .beginTransaction()
-//                    .add(R.id.container, mainFragment, MainFragment.TAG)
-//                    .commit()
-            viewModel.resumeUpnpController()
-
-
-        } else {
-//            mainFragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment
-        }
 
         RxView.clicks(binding.controlsSheet.next)
                 .subscribeBy(onNext = { viewModel.playNext() }, onError = Timber::e)
@@ -177,8 +160,7 @@ class MainActivity : BaseActivity() {
 
         initPickers()
 
-        binding.controlsSheet.progress.setOnSeekBarChangeListener(object :
-                SeekBar.OnSeekBarChangeListener {
+        binding.controlsSheet.progress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (fromUser)
                     Timber.i("From user")
@@ -195,8 +177,9 @@ class MainActivity : BaseActivity() {
         })
 
         requestReadStoragePermission()
-    }
 
+        savedInstanceState ?: viewModel.resumeUpnpController()
+    }
 
 
     override fun onStart() {

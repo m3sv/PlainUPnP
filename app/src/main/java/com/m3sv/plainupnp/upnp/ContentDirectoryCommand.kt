@@ -89,7 +89,7 @@ class ContentDirectoryCommand(
                 callback(buildContentList(parent, didl))
             }
 
-            override fun updateStatus(status: Browse.Status) {
+            override fun updateStatus(status: Status) {
                 Timber.v("Update browse status! ")
             }
 

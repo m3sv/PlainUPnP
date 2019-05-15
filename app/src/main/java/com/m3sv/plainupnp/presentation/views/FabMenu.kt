@@ -21,6 +21,10 @@ import com.m3sv.plainupnp.common.utils.isRunningOnTv
 
 class FabMenu : LinearLayout {
 
+
+    val k by lazy {
+
+    }
     constructor(context: Context) : super(context, null) {
         if (context.isRunningOnTv())
             initializeTvLayout(context)

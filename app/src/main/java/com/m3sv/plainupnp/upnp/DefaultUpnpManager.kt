@@ -33,7 +33,7 @@ class DefaultUpnpManager constructor(
         private val upnpNavigator: UpnpNavigator,
         override val rendererDiscovery: RendererDiscoveryObservable,
         override val contentDirectoryDiscovery: ContentDirectoryDiscoveryObservable
-) : UpnpManager {
+) : UpnpManager, UpnpNavigator by upnpNavigator {
 
     private val rendererStateSubject = PublishSubject.create<RendererState>()
 
@@ -85,7 +85,7 @@ class DefaultUpnpManager constructor(
     override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
         Timber.d("Selected content directory: ${contentDirectory?.displayString}")
         controller.selectedContentDirectory = contentDirectory
-        upnpNavigator.navigateHome()
+        navigateHome()
     }
 
     override fun selectRenderer(renderer: UpnpDevice?) {
@@ -221,11 +221,11 @@ class DefaultUpnpManager constructor(
     }
 
     override fun browseHome() {
-        upnpNavigator.navigateHome()
+        navigateHome()
     }
 
     override fun browseTo(model: BrowseToModel) {
-        upnpNavigator.navigateTo(model)
+        navigateTo(model)
     }
 
     override fun browsePrevious(): Boolean = upnpNavigator.navigatePrevious()
