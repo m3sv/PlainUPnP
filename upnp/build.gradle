@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 28
@@ -40,4 +42,22 @@ dependencies {
     implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: versions.jetty
     implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: versions.jetty
     implementation 'org.slf4j:slf4j-jdk14:1.7.14'
+
+    implementation deps.rx.kotlin
+    implementation deps.rx.binding
+    implementation deps.rx.android
+    implementation deps.rx.relay
+
+    implementation(deps.glide.core) {
+        exclude group: "com.android.support"
+    }
+    kapt deps.glide.compiler
+    implementation deps.coroutines
+
+
+    implementation deps.dagger.core
+    compileOnly deps.dagger.annotation
+    kapt deps.dagger.compiler
+    implementation deps.timber
+
 }

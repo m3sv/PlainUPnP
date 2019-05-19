@@ -9,7 +9,6 @@ import com.m3sv.plainupnp.presentation.main.MainActivityViewModel
 import com.m3sv.plainupnp.presentation.main.MainFragment
 import com.m3sv.plainupnp.presentation.main.MainFragmentViewModel
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
-import com.m3sv.plainupnp.upnp.DefaultUpnpManager
 import com.m3sv.plainupnp.upnp.UpnpManager
 import dagger.Binds
 import dagger.Module

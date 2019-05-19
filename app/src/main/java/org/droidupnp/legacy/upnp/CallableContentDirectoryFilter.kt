@@ -1,9 +1,0 @@
-package org.droidupnp.legacy.upnp
-
-import com.m3sv.plainupnp.data.upnp.UpnpDevice
-
-class CallableContentDirectoryFilter : CallableFilter {
-    override var device: UpnpDevice? = null
-
-    override fun call(): Boolean? = device?.asService("ContentDirectory") ?: false
-}
