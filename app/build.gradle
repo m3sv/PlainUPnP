@@ -126,6 +126,7 @@ dependencies {
     playstoreImplementation deps.crashlytics
 
     implementation project(':common')
+    implementation project(':upnp')
 }
 
 kapt {
