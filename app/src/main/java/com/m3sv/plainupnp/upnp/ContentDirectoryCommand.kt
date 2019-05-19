@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import com.m3sv.plainupnp.upnp.didl.*
-import kotlinx.coroutines.Deferred
 import org.droidupnp.legacy.cling.CDevice
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
@@ -115,7 +114,7 @@ class ContentDirectoryCommand(
                     }
                 }
 
-                override fun updateStatus(status: Search.Status) {
+                override fun updateStatus(status: Status) {
                     Timber.v("updateStatus ! ")
                 }
 
