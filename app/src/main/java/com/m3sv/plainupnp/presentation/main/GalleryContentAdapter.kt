@@ -65,15 +65,20 @@ class GalleryContentAdapter(private val glide: RequestManager,
                     holder,
                     item,
                     R.drawable.ic_image,
-                    emptyRequestOptions, item.type
+                    item.type
             )
             ContentType.VIDEO -> loadData(
                     holder,
                     item,
                     R.drawable.ic_video,
-                    emptyRequestOptions, item.type
+                    item.type
             )
-            ContentType.AUDIO -> loadData(holder, item, R.drawable.ic_music, audioRequestOptions, item.type)
+            ContentType.AUDIO -> loadData(holder,
+                    item,
+                    R.drawable.ic_music,
+                    item.type,
+                    audioRequestOptions
+            )
 
             ContentType.DIRECTORY -> loadDirectory(holder, item)
         }
@@ -85,7 +90,8 @@ class GalleryContentAdapter(private val glide: RequestManager,
             holder: ItemViewHolder<ViewDataBinding>,
             item: Item,
             @DrawableRes contentTypeIcon: Int,
-            requestOptions: RequestOptions, type: ContentType
+            type: ContentType,
+            requestOptions: RequestOptions = emptyRequestOptions
     ) {
 
         with(holder.extractBinding<MobileItemGalleryContentBinding>()) {
@@ -131,11 +137,8 @@ class GalleryContentAdapter(private val glide: RequestManager,
     class DiffCallback(
             oldItems: List<Item>,
             newItems: List<Item>
-    ) :
-            ItemsDiffCallback<Item>(oldItems, newItems) {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-            return oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
-        }
+    ) : ItemsDiffCallback<Item>(oldItems, newItems) {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
     }
 
     companion object {

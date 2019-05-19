@@ -10,7 +10,7 @@ buildscript {
             'supportLibrary'        : '1.0.0-beta01',
             'architectureComponents': '2.0.0-beta01',
             'dagger'                : '2.21',
-            'glide'                 : '4.8.0',
+            'glide'                 : '4.9.0',
             'cling'                 : '2.1.2-SNAPSHOT',
             'jetty'                 : '8.2.0.v20160908',
             'retrofit'              : '2.4.0',
@@ -104,7 +104,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.0'
+        classpath 'com.android.tools.build:gradle:3.4.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.google.gms:google-services:4.2.0'
         classpath 'io.fabric.tools:gradle:1.27.0'

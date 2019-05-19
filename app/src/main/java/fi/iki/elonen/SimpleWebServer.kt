@@ -56,7 +56,7 @@ open class SimpleWebServer(
         if (homeDir?.isDirectory != true) {
             res = Response(
                     Response.Status.INTERNAL_ERROR,
-                    NanoHTTPD.MIME_PLAINTEXT,
+                    MIME_PLAINTEXT,
                     "INTERNAL ERRROR: serveFile(): given homeDir is not a directory."
             )
         }
@@ -71,7 +71,7 @@ open class SimpleWebServer(
             if (newUri.startsWith("src/main") || newUri.endsWith("src/main") || newUri.contains("../"))
                 res = Response(
                         Response.Status.FORBIDDEN,
-                        NanoHTTPD.MIME_PLAINTEXT,
+                        MIME_PLAINTEXT,
                         "FORBIDDEN: Won't serve ../ for security reasons."
                 )
         }
@@ -80,7 +80,7 @@ open class SimpleWebServer(
         if (res == null && !f.exists()) {
             res = Response(
                     Response.Status.NOT_FOUND,
-                    NanoHTTPD.MIME_PLAINTEXT,
+                    MIME_PLAINTEXT,
                     "Error 404, file not found."
             )
         }
@@ -109,7 +109,7 @@ open class SimpleWebServer(
                         res = Response(listDirectory(newUri, f))
                     else -> res = Response(
                             Response.Status.FORBIDDEN,
-                            NanoHTTPD.MIME_PLAINTEXT,
+                            MIME_PLAINTEXT,
                             "FORBIDDEN: No directory listing."
                     )
                 }
@@ -121,11 +121,13 @@ open class SimpleWebServer(
                 // Get MIME type from file name extension, if possible
                 var mime: String? = null
                 val dot = f.canonicalPath.lastIndexOf('.')
+
                 if (dot >= 0) {
                     mime = MIME_TYPES[f.canonicalPath.substring(dot + 1).toLowerCase()]
                 }
+
                 if (mime == null) {
-                    mime = NanoHTTPD.MIME_DEFAULT_BINARY
+                    mime = MIME_DEFAULT_BINARY
                 }
                 res = serveFile(f, mime, header)
             }
@@ -171,7 +173,7 @@ open class SimpleWebServer(
                 if (startFrom >= fileLen) {
                     res = Response(
                             Response.Status.RANGE_NOT_SATISFIABLE,
-                            NanoHTTPD.MIME_PLAINTEXT,
+                            MIME_PLAINTEXT,
                             ""
                     ).also {
                         it.addHeader("Content-Range", "bytes 0-0/$fileLen")
@@ -312,7 +314,7 @@ open class SimpleWebServer(
             files: Map<String, String>
     ): Response? {
         if (!quiet) {
-            Timber.d(method.toString() + " '" + uri + "' ")
+            Timber.d("$method '$uri' ")
 
             var e = header.keys.iterator()
             while (e.hasNext()) {
@@ -367,7 +369,7 @@ open class SimpleWebServer(
 
         private val FORBIDDEN_READING_FAILED = Response(
                 Response.Status.FORBIDDEN,
-                NanoHTTPD.MIME_PLAINTEXT,
+                MIME_PLAINTEXT,
                 "FORBIDDEN: Reading file failed."
         )
     }
