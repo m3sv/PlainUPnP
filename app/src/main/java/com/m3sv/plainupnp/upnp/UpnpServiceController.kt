@@ -23,12 +23,10 @@
 
 package com.m3sv.plainupnp.upnp
 
-import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
+import com.m3sv.plainupnp.upnp.discovery.ContentDirectoryDiscovery
 import com.m3sv.plainupnp.upnp.discovery.RendererDiscovery
 import org.fourthline.cling.model.meta.LocalDevice
-
-import java.util.Observer
 
 interface UpnpServiceController {
 
