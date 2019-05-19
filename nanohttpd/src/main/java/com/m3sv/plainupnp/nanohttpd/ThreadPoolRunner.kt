@@ -1,6 +1,5 @@
-package fi.iki.elonen
+package com.m3sv.plainupnp.nanohttpd
 
-import fi.iki.elonen.nanohttpd.NanoHTTPD
 import java.util.concurrent.Executors
 
 

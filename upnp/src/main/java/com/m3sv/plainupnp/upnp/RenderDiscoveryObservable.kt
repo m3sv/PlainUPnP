@@ -1,24 +1,23 @@
 package com.m3sv.plainupnp.upnp
 
 
-import android.content.Context
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.LocalDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
-import com.m3sv.upnp.R
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.android.MainThreadDisposable
 import timber.log.Timber
+import javax.inject.Inject
 
-class RendererDiscoveryObservable(
-        private val controller: UpnpServiceController,
-        private val playLocally: String
+class RendererDiscoveryObservable @Inject constructor(
+        private val controller: UpnpServiceController
 ) : Observable<Set<DeviceDisplay>>() {
 
     private val renderers = LinkedHashSet<DeviceDisplay>().apply {
-        add(DeviceDisplay(LocalDevice(playLocally)))
+        // TODO use resource provider
+        add(DeviceDisplay(LocalDevice("play locally")))
     }
 
     private fun handleEvent(event: UpnpDeviceEvent) {

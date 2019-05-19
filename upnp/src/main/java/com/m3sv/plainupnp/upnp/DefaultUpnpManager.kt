@@ -2,11 +2,11 @@ package com.m3sv.plainupnp.upnp
 
 
 import com.bumptech.glide.request.RequestOptions
+import com.m3sv.plainupnp.common.utils.formatTime
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
-import com.m3sv.upnp.R
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -15,13 +15,13 @@ import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
 /**
  * First is uri to a file, second is a title and third is an artist
  */
-
-class DefaultUpnpManager constructor(
+class DefaultUpnpManager @Inject constructor(
         private val controller: UpnpServiceController,
         private val factory: Factory,
         private val upnpNavigator: UpnpNavigator,

@@ -1,4 +1,4 @@
-package fi.iki.elonen.nanohttpd
+package com.m3sv.plainupnp.nanohttpd
 
 /**
  * HTTP Request methods, with the ability to decode a `String` back to its enum value.

@@ -25,7 +25,7 @@ package com.m3sv.plainupnp.upnp.didl
 
 
 import com.m3sv.plainupnp.data.upnp.DIDLContainer
-import com.m3sv.upnp.R
+import com.m3sv.plainupnp.upnp.R
 import org.fourthline.cling.support.model.container.Container
 
 class ClingDIDLContainer(item: Container) : ClingDIDLObject(item),

@@ -28,6 +28,8 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation deps.coroutines
+
     implementation project(":common")
 
     implementation 'androidx.appcompat:appcompat:1.0.2'
@@ -52,12 +54,12 @@ dependencies {
         exclude group: "com.android.support"
     }
     kapt deps.glide.compiler
-    implementation deps.coroutines
-
 
     implementation deps.dagger.core
     compileOnly deps.dagger.annotation
     kapt deps.dagger.compiler
     implementation deps.timber
 
+    implementation project(":common")
+    implementation project(":nanohttpd")
 }

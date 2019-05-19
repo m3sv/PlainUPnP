@@ -1,18 +1,12 @@
 package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
-import com.m3sv.plainupnp.upnp.UpnpServiceController
-import com.m3sv.plainupnp.upnp.ContentDirectoryDiscovery
-import com.m3sv.plainupnp.upnp.RendererDiscovery
 
 abstract class BaseUpnpServiceController protected constructor() : UpnpServiceController {
 
-    override val contentDirectoryDiscovery: ContentDirectoryDiscovery by lazy(mode = LazyThreadSafetyMode.NONE) {
-        ContentDirectoryDiscovery(this)
-    }
-    override val rendererDiscovery: RendererDiscovery by lazy(mode = LazyThreadSafetyMode.NONE) {
-        RendererDiscovery(this)
-    }
+    override val contentDirectoryDiscovery: ContentDirectoryDiscovery = ContentDirectoryDiscovery(this)
+
+    override val rendererDiscovery: RendererDiscovery = RendererDiscovery(this)
 
     override var selectedRenderer: UpnpDevice? = null
 
@@ -20,9 +14,7 @@ abstract class BaseUpnpServiceController protected constructor() : UpnpServiceCo
 
     override fun setSelectedContentDirectory(contentDirectory: UpnpDevice, force: Boolean) {
         // Skip if no change and no force
-        if (!force && this.selectedContentDirectory != null && this.selectedContentDirectory!!.equals(
-                        contentDirectory
-                ))
+        if (!force && this.selectedContentDirectory != null && this.selectedContentDirectory!!.equals(contentDirectory))
             return
 
         this.selectedContentDirectory = contentDirectory

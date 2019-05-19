@@ -6,6 +6,7 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import android.preference.PreferenceManager
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.fourthline.cling.android.AndroidUpnpService
@@ -14,10 +15,8 @@ import timber.log.Timber
 import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
-import javax.inject.Inject
 
-
-class ServiceListener @Inject constructor(private val context: Context) {
+class ServiceListener(private val context: Context) {
 
     var upnpService: AndroidUpnpService? = null
         private set
@@ -40,7 +39,7 @@ class ServiceListener @Inject constructor(private val context: Context) {
     val serviceConnection: ServiceConnection = object : ServiceConnection {
 
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            GlobalScope.launch {
+            GlobalScope.launch(Dispatchers.IO) {
                 Timber.i("Connected service")
                 upnpService = service as AndroidUpnpService
 
@@ -48,7 +47,7 @@ class ServiceListener @Inject constructor(private val context: Context) {
                 if (sharedPref.getBoolean(CONTENT_DIRECTORY_SERVICE, true)) {
                     try {
                         mediaServer = mediaServer
-                                ?: MediaServer(context, Utils.getLocalIpAddress(context)).apply { start() }
+                                ?: MediaServer(context, getLocalIpAddress(context)).apply { start() }
 
                         upnpService?.registry?.addDevice(mediaServer?.localDevice)
                     } catch (e1: UnknownHostException) {

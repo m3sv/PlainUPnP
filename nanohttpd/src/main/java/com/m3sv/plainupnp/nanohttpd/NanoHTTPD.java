@@ -1,4 +1,4 @@
-package fi.iki.elonen.nanohttpd;
+package com.m3sv.plainupnp.nanohttpd;
 
 
 import java.io.BufferedReader;
@@ -32,7 +32,6 @@ import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 
-import fi.iki.elonen.ThreadPoolRunner;
 import timber.log.Timber;
 
 /**
@@ -181,7 +180,7 @@ public abstract class NanoHTTPD {
      *
      * @param uri     Percent-decoded URI without parameters, for example "/index.cgi"
      * @param method  "GET", "POST" etc.
-     * @param params   Parsed, percent decoded parameters from URI and, in case of POST, data.
+     * @param params  Parsed, percent decoded parameters from URI and, in case of POST, data.
      * @param headers Header entries, percent decoded
      * @return HTTP response, see class Response for details
      */

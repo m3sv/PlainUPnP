@@ -5,8 +5,8 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.preference.PreferenceManager
 import android.provider.MediaStore
-import com.m3sv.upnp.R
-import org.eclipse.jetty.server.Response
+import com.m3sv.plainupnp.nanohttpd.Method
+import com.m3sv.plainupnp.nanohttpd.SimpleWebServer
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
 import org.fourthline.cling.model.DefaultServiceManager
 import org.fourthline.cling.model.meta.*

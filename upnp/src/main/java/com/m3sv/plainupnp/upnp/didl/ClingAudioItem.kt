@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.upnp.didl
 
-import com.m3sv.upnp.R
+import com.m3sv.plainupnp.upnp.R
 import org.fourthline.cling.support.model.item.AudioItem
 import org.fourthline.cling.support.model.item.MusicTrack
 

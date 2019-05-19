@@ -26,7 +26,6 @@ package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
-import com.m3sv.plainupnp.upnp.ServiceListener
 import timber.log.Timber
 import java.util.concurrent.CopyOnWriteArrayList
 

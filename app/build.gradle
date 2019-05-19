@@ -69,6 +69,10 @@ dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
 
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    implementation deps.kotlin
+    implementation deps.coroutines
+
     androidTestImplementation deps.test.core
     androidTestImplementation deps.test.rules
     androidTestImplementation deps.test.espresso.core
@@ -95,13 +99,12 @@ dependencies {
     implementation deps.architectureComponents.lifecycle
     implementation deps.architectureComponents.lifecycleReactiveStreams
     implementation deps.timber
-    implementation deps.kotlin
     implementation deps.rx.kotlin
     implementation deps.rx.binding
     implementation deps.rx.android
     implementation deps.rx.relay
     implementation deps.okHttp.loggingInterceptor
-    implementation deps.coroutines
+
     implementation(deps.glide.core) {
         exclude group: "com.android.support"
     }

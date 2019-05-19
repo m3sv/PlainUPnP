@@ -3,7 +3,6 @@ package com.m3sv.plainupnp.upnp
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
 import kotlinx.coroutines.*
-import org.droidupnp.legacy.cling.TrackMetadata
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse

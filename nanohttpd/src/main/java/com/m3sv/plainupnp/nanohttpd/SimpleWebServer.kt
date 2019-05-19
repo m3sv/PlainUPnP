@@ -1,7 +1,5 @@
-package fi.iki.elonen
+package com.m3sv.plainupnp.nanohttpd
 
-import fi.iki.elonen.nanohttpd.Method
-import fi.iki.elonen.nanohttpd.NanoHTTPD
 import timber.log.Timber
 import java.io.File
 import java.io.FileInputStream

@@ -1,9 +1,8 @@
 package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
-import org.fourthline.cling.registry.event.DeviceDiscovery
 
-class RendererDiscovery(controller: UpnpServiceController) : DeviceDiscovery(controller) {
+class RendererDiscovery(controller: UpnpServiceController) : com.m3sv.plainupnp.upnp.DeviceDiscovery(controller) {
 
     override val callableFilter: CallableFilter = CallableRendererFilter()
 

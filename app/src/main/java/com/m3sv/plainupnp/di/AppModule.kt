@@ -3,11 +3,9 @@ package com.m3sv.plainupnp.di
 import android.app.Application
 import android.content.Context
 import com.m3sv.plainupnp.di.scope.ApplicationScope
-import com.m3sv.plainupnp.upnp.ContentDirectoryDiscoveryObservable
-import com.m3sv.plainupnp.upnp.UpnpNavigator
+import com.m3sv.plainupnp.upnp.*
 import dagger.Module
 import dagger.Provides
-import com.m3sv.plainupnp.upnp.Factory
 
 
 @Module
@@ -21,9 +19,14 @@ internal object AppModule {
     @Provides
     @JvmStatic
     @ApplicationScope
-    fun provideUPnPManager(context: Context, factory: Factory, upnpNavigator: UpnpNavigator) =
+    fun provideUPnPManager(factory: Factory, upnpNavigator: UpnpNavigator) =
             DefaultUpnpManager(factory.upnpServiceController, factory,
                     upnpNavigator,
-                    RendererDiscoveryObservable(context, factory.upnpServiceController),
+                    RendererDiscoveryObservable(factory.upnpServiceController),
                     ContentDirectoryDiscoveryObservable(factory.upnpServiceController))
+
+    @Provides
+    @JvmStatic
+    @ApplicationScope
+    fun provideServiceListener(context: Context) = ServiceListener(context)
 }

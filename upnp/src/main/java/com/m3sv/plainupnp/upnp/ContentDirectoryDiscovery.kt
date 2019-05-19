@@ -1,9 +1,6 @@
 package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
-import com.m3sv.plainupnp.upnp.UpnpServiceController
-import com.m3sv.plainupnp.upnp.CallableContentDirectoryFilter
-import com.m3sv.plainupnp.upnp.CallableFilter
 
 class ContentDirectoryDiscovery(controller: UpnpServiceController) : DeviceDiscovery(controller) {
 

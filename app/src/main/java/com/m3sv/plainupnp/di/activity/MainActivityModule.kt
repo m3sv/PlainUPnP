@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.di.activity
 
-import androidx.lifecycle.ViewModel
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModel
 import com.m3sv.plainupnp.di.ViewModelKey
 import com.m3sv.plainupnp.di.scope.ActivityScope
 import com.m3sv.plainupnp.presentation.main.MainActivity
@@ -9,6 +9,7 @@ import com.m3sv.plainupnp.presentation.main.MainActivityViewModel
 import com.m3sv.plainupnp.presentation.main.MainFragment
 import com.m3sv.plainupnp.presentation.main.MainFragmentViewModel
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
+import com.m3sv.plainupnp.upnp.DefaultUpnpManager
 import com.m3sv.plainupnp.upnp.UpnpManager
 import dagger.Binds
 import dagger.Module

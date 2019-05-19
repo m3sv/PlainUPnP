@@ -7,10 +7,11 @@ import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 import timber.log.Timber
+import javax.inject.Inject
 
 
-class ContentDirectoryDiscoveryObservable(private val controller: UpnpServiceController) :
-    Observable<Set<DeviceDisplay>>() {
+class ContentDirectoryDiscoveryObservable @Inject constructor(private val controller: UpnpServiceController) :
+        Observable<Set<DeviceDisplay>>() {
     private val contentDirectories = LinkedHashSet<DeviceDisplay>()
 
     override fun subscribeActual(observer: Observer<in Set<DeviceDisplay>>) {
@@ -24,9 +25,9 @@ class ContentDirectoryDiscoveryObservable(private val controller: UpnpServiceCon
                 Timber.d("Content directory added: ${event.upnpDevice.friendlyName}")
 
                 contentDirectories += DeviceDisplay(
-                    event.upnpDevice,
-                    false,
-                    DeviceType.CONTENT_DIRECTORY
+                        event.upnpDevice,
+                        false,
+                        DeviceType.CONTENT_DIRECTORY
                 )
             }
 
@@ -34,9 +35,9 @@ class ContentDirectoryDiscoveryObservable(private val controller: UpnpServiceCon
                 Timber.d("Content directory removed: ${event.upnpDevice.friendlyName}")
 
                 contentDirectories -= DeviceDisplay(
-                    event.upnpDevice,
-                    false,
-                    DeviceType.CONTENT_DIRECTORY
+                        event.upnpDevice,
+                        false,
+                        DeviceType.CONTENT_DIRECTORY
                 )
             }
         }
@@ -44,8 +45,8 @@ class ContentDirectoryDiscoveryObservable(private val controller: UpnpServiceCon
     }
 
     private inner class ContentDeviceObserver(
-        private val contentDirectoryDiscovery: DeviceDiscovery,
-        private val observer: Observer<in Set<DeviceDisplay>>
+            private val contentDirectoryDiscovery: DeviceDiscovery,
+            private val observer: Observer<in Set<DeviceDisplay>>
     ) : Disposable, DeviceDiscoveryObserver {
 
         init {

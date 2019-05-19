@@ -41,8 +41,10 @@ class ServiceController @Inject constructor(override val serviceListener: Servic
     override fun resume() {
         super.resume()
         Timber.d("Start UPnP service")
-        context.bindService(
-                Intent(context, AndroidUpnpService::class.java), serviceListener.serviceConnection,
+        context.bindService(Intent(
+                context,
+                AndroidUpnpService::class.java),
+                serviceListener.serviceConnection,
                 Context.BIND_AUTO_CREATE
         )
     }
