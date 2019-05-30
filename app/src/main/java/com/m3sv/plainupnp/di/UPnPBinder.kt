@@ -14,4 +14,7 @@ abstract class UPnPBinder {
 
     @Binds
     abstract fun bindUpnpNavigator(upnpNavigator: DefaultUpnpNavigator): UpnpNavigator
+
+    @Binds
+    abstract fun bindUpnpManager(defaultUpnpManager: DefaultUpnpManager): UpnpManager
 }

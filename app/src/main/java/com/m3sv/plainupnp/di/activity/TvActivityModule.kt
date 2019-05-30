@@ -27,13 +27,7 @@ interface TvActivityModule {
     @ViewModelKey(MainActivityViewModel::class)
     fun bindMainActivityViewModel(mainActivityViewModel: MainActivityViewModel): ViewModel
 
-    @Binds
-    @IntoMap
-    @ViewModelKey(MainFragmentViewModel::class)
-    fun bindMainFragmentViewModel(mainFragmentViewModel: MainFragmentViewModel): ViewModel
 
-    @Binds
-    fun bindUpnpManager(defaultUpnpManager: DefaultUpnpManager): UpnpManager
 
     @ActivityScope
     @ContributesAndroidInjector

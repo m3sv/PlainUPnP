@@ -30,8 +30,8 @@ import org.fourthline.cling.model.meta.LocalDevice
 import timber.log.Timber
 import javax.inject.Inject
 
-class ServiceController @Inject constructor(override val serviceListener: ServiceListener, private val context: Context) :
-        BaseUpnpServiceController() {
+class ServiceController @Inject constructor(override val serviceListener: ServiceListener,
+                                            private val context: Context) : BaseUpnpServiceController() {
 
     override fun pause() {
         context.unbindService(serviceListener.serviceConnection)

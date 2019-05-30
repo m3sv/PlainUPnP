@@ -28,5 +28,5 @@ internal object AppModule {
     @Provides
     @JvmStatic
     @ApplicationScope
-    fun provideServiceListener(context: Context) = ServiceListener(context)
+    fun provideServiceListener(context: Context): ServiceListener = ServiceListener(context)
 }
