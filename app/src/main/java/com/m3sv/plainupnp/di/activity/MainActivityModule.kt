@@ -14,23 +14,23 @@ import dagger.multibindings.IntoMap
 
 
 @Module
-abstract class MainActivityModule {
+interface MainActivityModule {
 
     @Binds
     @IntoMap
     @ViewModelKey(MainActivityViewModel::class)
-    abstract fun bindMainActivityViewModel(mainActivityViewModel: MainActivityViewModel): ViewModel
+    fun bindMainActivityViewModel(mainActivityViewModel: MainActivityViewModel): ViewModel
 
     @Binds
     @IntoMap
     @ViewModelKey(MainFragmentViewModel::class)
-    abstract fun bindMainFragmentViewModel(mainFragmentViewModel: MainFragmentViewModel): ViewModel
+    fun bindMainFragmentViewModel(mainFragmentViewModel: MainFragmentViewModel): ViewModel
 
     @ActivityScope
     @ContributesAndroidInjector
-    abstract fun contributeMainFragment(): MainFragment
+    fun contributeMainFragment(): MainFragment
 
     @ActivityScope
     @ContributesAndroidInjector
-    abstract fun contritubeSettingsFragment(): SettingsFragment
+    fun contritubeSettingsFragment(): SettingsFragment
 }

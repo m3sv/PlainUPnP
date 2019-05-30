@@ -23,30 +23,23 @@
 
 package com.m3sv.plainupnp.upnp
 
-import android.content.Context
-import android.content.Intent
-import org.fourthline.cling.android.AndroidUpnpService
+import com.m3sv.plainupnp.upnp.cleanslate.UpnpServiceListener
 import org.fourthline.cling.model.meta.LocalDevice
 import timber.log.Timber
 import javax.inject.Inject
 
-class ServiceController @Inject constructor(override val serviceListener: ServiceListener,
-                                            private val context: Context) : BaseUpnpServiceController() {
+class ServiceController @Inject constructor(override val serviceListener: UpnpServiceListener)
+    : BaseUpnpServiceController() {
 
     override fun pause() {
-        context.unbindService(serviceListener.serviceConnection)
         super.pause()
+        serviceListener.unbindService()
     }
 
     override fun resume() {
         super.resume()
         Timber.d("Start UPnP service")
-        context.bindService(Intent(
-                context,
-                AndroidUpnpService::class.java),
-                serviceListener.serviceConnection,
-                Context.BIND_AUTO_CREATE
-        )
+        serviceListener.bindService()
     }
 
     override fun addDevice(localDevice: LocalDevice) {

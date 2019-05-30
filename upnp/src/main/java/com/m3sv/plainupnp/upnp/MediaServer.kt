@@ -18,68 +18,10 @@ import java.net.InetAddress
 import java.util.*
 
 
-class MediaServer(private val context: Context, private val localAddress: InetAddress) :
+class MediaServer(private val context: Context) :
         SimpleWebServer(null, PORT, null, true) {
 
-    val localDevice: LocalDevice by lazy(mode = LazyThreadSafetyMode.NONE) {
-        val details = DeviceDetails(
-                getSettingContentDirectoryName(context),
-                ManufacturerDetails(
-                        context.getString(R.string.app_name),
-                        context.getString(R.string.app_url)
-                ),
-                ModelDetails(context.getString(R.string.app_name), context.getString(R.string.app_url)),
-                context.getString(R.string.app_name), version
-        )
-
-        val validationErrors = details.validate()
-
-        for (error in validationErrors) {
-            Timber.e("Validation pb for property " + error.propertyName)
-            Timber.e("Error is " + error.message)
-        }
-
-        val type = UDADeviceType("MediaServer", 1)
-
-        LocalDevice(DeviceIdentity(udn), type, details, localService)
-    }
-
-    private val udn: UDN by lazy(mode = LazyThreadSafetyMode.NONE) {
-        UDN.valueOf(UUID(0, 10).toString())
-    }
-
-    private val address by lazy(mode = LazyThreadSafetyMode.NONE) { "${localAddress.getHostAddress()}:$PORT" }
-
-    private val localService: LocalService<*>
-
     private val objectMap: MutableMap<String, ServerObject> = mutableMapOf()
-
-    private val version: String by lazy(mode = LazyThreadSafetyMode.NONE) {
-        var result = "1.0"
-        try {
-            result = context.packageManager.getPackageInfo(context.packageName, 0).versionName
-        } catch (e: PackageManager.NameNotFoundException) {
-            Timber.e(e, "Application version name not found")
-        }
-        result
-    }
-
-    init {
-        Timber.i("Creating media server!")
-
-        localService = (AnnotationLocalServiceBinder().read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>).apply {
-            manager = DefaultServiceManager<ContentDirectoryService>(
-                    this,
-                    ContentDirectoryService::class.java
-            )
-        }
-
-        with(localService.manager.implementation as ContentDirectoryService) {
-            context = this@MediaServer.context
-            baseURL = address
-            sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-        }
-    }
 
     override fun serve(
             uri: String,
@@ -98,7 +40,8 @@ class MediaServer(private val context: Context, private val localAddress: InetAd
                 addHeader("realTimeInfo.dlna.org", "DLNA.ORG_TLAG=*")
                 addHeader("contentFeatures.dlna.org", "")
                 addHeader("transferMode.dlna.org", "Streaming")
-                addHeader("Server", "DLNADOC/1.50 UPnP/1.0 Cling/2.0 PlainUPnP/" + version + " Android/" + Build.VERSION.RELEASE)
+                // TODO use real version number
+                addHeader("Server", "DLNADOC/1.50 UPnP/1.0 Cling/2.0 PlainUPnP/" + "0.0" + " Android/" + Build.VERSION.RELEASE)
             }
         } catch (e: InvalidIdentifierException) {
             Response(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found.")
@@ -171,8 +114,4 @@ class MediaServer(private val context: Context, private val localAddress: InetAd
     }
 
     class ServerObject(val path: String, val mime: String)
-
-    companion object {
-        private const val PORT = 8192
-    }
 }

@@ -26,6 +26,7 @@ package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
+import com.m3sv.plainupnp.upnp.cleanslate.UpnpServiceListener
 import timber.log.Timber
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -37,11 +38,11 @@ abstract class DeviceDiscovery(protected val controller: UpnpServiceController) 
 
     private val observerList: CopyOnWriteArrayList<DeviceDiscoveryObserver> = CopyOnWriteArrayList()
 
-    fun resume(serviceListener: ServiceListener) {
+    fun resume(serviceListener: UpnpServiceListener) {
         serviceListener.addListener(browsingRegistryListener)
     }
 
-    fun pause(serviceListener: ServiceListener) {
+    fun pause(serviceListener: UpnpServiceListener) {
         with(serviceListener) {
             removeListener(browsingRegistryListener)
             clearListener()
@@ -84,9 +85,9 @@ abstract class DeviceDiscovery(protected val controller: UpnpServiceController) 
         observerList.add(o)
 
         controller
-            .serviceListener
-            .getFilteredDeviceList(callableFilter)
-            .forEach { o.addedDevice(UpnpDeviceEvent.Added(it)) }
+                .serviceListener
+                .getFilteredDeviceList(callableFilter)
+                .forEach { o.addedDevice(UpnpDeviceEvent.Added(it)) }
     }
 
     fun removeObserver(o: DeviceDiscoveryObserver) {
