@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.di
 
+import com.m3sv.plainupnp.di.scope.ApplicationScope
 import com.m3sv.plainupnp.upnp.*
 import dagger.Binds
 import dagger.Module
@@ -10,6 +11,7 @@ abstract class UPnPBinder {
     abstract fun bindFactory(UpnpFactory: UpnpFactory): Factory
 
     @Binds
+    @ApplicationScope
     abstract fun bindController(controller: ServiceController): UpnpServiceController
 
     @Binds

@@ -24,6 +24,7 @@
 package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
+import com.m3sv.plainupnp.upnp.cleanslate.UpnpServiceListener
 import org.fourthline.cling.model.meta.LocalDevice
 
 interface UpnpServiceController {
@@ -32,7 +33,7 @@ interface UpnpServiceController {
 
     var selectedContentDirectory: UpnpDevice?
 
-    val serviceListener: ServiceListener
+    val serviceListener: UpnpServiceListener
 
     val contentDirectoryDiscovery: ContentDirectoryDiscovery
 

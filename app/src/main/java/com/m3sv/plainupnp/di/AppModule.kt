@@ -1,9 +1,11 @@
 package com.m3sv.plainupnp.di
 
 import android.app.Application
+import android.bluetooth.BluetoothProfile
 import android.content.Context
 import com.m3sv.plainupnp.di.scope.ApplicationScope
 import com.m3sv.plainupnp.upnp.*
+import com.m3sv.plainupnp.upnp.cleanslate.UpnpServiceListener
 import dagger.Module
 import dagger.Provides
 
@@ -28,5 +30,5 @@ internal object AppModule {
     @Provides
     @JvmStatic
     @ApplicationScope
-    fun provideServiceListener(context: Context): ServiceListener = ServiceListener(context)
+    fun provideServiceListener(context: Context): UpnpServiceListener = UpnpServiceListener(context)
 }
