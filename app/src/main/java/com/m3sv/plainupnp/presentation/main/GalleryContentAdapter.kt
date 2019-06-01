@@ -3,7 +3,6 @@ package com.m3sv.plainupnp.presentation.main
 import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.annotation.DrawableRes
 import androidx.databinding.ViewDataBinding
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
@@ -29,8 +28,6 @@ class GalleryContentAdapter(private val glide: RequestManager,
                             private val sharedPreferences: SharedPreferences) : BaseAdapter<Item>(diffCallback) {
 
     private val emptyRequestOptions = RequestOptions()
-
-    private val audioRequestOptions = RequestOptions().placeholder(R.drawable.ic_music_note)
 
     override fun getItemViewType(position: Int): Int = items[position].type.ordinal
 
@@ -61,26 +58,8 @@ class GalleryContentAdapter(private val glide: RequestManager,
         holder.bind(item)
 
         when (item.type) {
-            ContentType.IMAGE -> loadData(
-                    holder,
-                    item,
-                    R.drawable.ic_image,
-                    item.type
-            )
-            ContentType.VIDEO -> loadData(
-                    holder,
-                    item,
-                    R.drawable.ic_video,
-                    item.type
-            )
-            ContentType.AUDIO -> loadData(holder,
-                    item,
-                    R.drawable.ic_music,
-                    item.type,
-                    audioRequestOptions
-            )
-
             ContentType.DIRECTORY -> loadDirectory(holder, item)
+            else -> loadData(holder, item)
         }
     }
 
@@ -89,25 +68,23 @@ class GalleryContentAdapter(private val glide: RequestManager,
     private fun loadData(
             holder: ItemViewHolder<ViewDataBinding>,
             item: Item,
-            @DrawableRes contentTypeIcon: Int,
-            type: ContentType,
             requestOptions: RequestOptions = emptyRequestOptions
     ) {
 
         with(holder.extractBinding<MobileItemGalleryContentBinding>()) {
             if (sharedPreferences.getBoolean("pref_enable_thumbnails", true))
-                when (type) {
+                when (item.type) {
                     ContentType.IMAGE, ContentType.VIDEO -> glide.load(item.uri)
                             .thumbnail(0.1f)
                             .apply(requestOptions)
                             .into(thumbnail)
-                    else -> thumbnail.setImageResource(contentTypeIcon)
+                    else -> thumbnail.setImageResource(item.icon)
                 }
             else
-                thumbnail.setImageResource(contentTypeIcon)
+                thumbnail.setImageResource(item.icon)
 
             title.text = item.name
-            contentType.setImageResource(contentTypeIcon)
+            contentType.setImageResource(item.icon)
         }
     }
 

@@ -1,5 +1,7 @@
 package com.m3sv.plainupnp.presentation.main.data
 
+import androidx.annotation.DrawableRes
+import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
@@ -14,7 +16,8 @@ fun List<DIDLObjectDisplay>?.toItems(): List<Item> = this?.map {
                     it.title,
                     ContentType.DIRECTORY,
                     this,
-                    it.didlObject.parentID
+                    it.didlObject.parentID,
+                    icon = R.drawable.ic_folder
             )
         }
 
@@ -23,7 +26,8 @@ fun List<DIDLObjectDisplay>?.toItems(): List<Item> = this?.map {
                     (it.didlObject as ClingImageItem).uri,
                     it.title,
                     ContentType.IMAGE,
-                    this
+                    this,
+                    icon = R.drawable.ic_image
             )
         }
 
@@ -32,7 +36,8 @@ fun List<DIDLObjectDisplay>?.toItems(): List<Item> = this?.map {
                     (it.didlObject as ClingVideoItem).uri,
                     it.title,
                     ContentType.VIDEO,
-                    this
+                    this,
+                    icon = R.drawable.ic_video
             )
         }
 
@@ -41,7 +46,8 @@ fun List<DIDLObjectDisplay>?.toItems(): List<Item> = this?.map {
                     (it.didlObject as ClingAudioItem).uri,
                     it.title,
                     ContentType.AUDIO,
-                    this
+                    this,
+                    icon = R.drawable.ic_music
             )
         }
 
@@ -54,7 +60,8 @@ data class Item(
         val name: String,
         val type: ContentType,
         val didlObjectDisplay: List<DIDLObjectDisplay>? = null,
-        val parentId: String? = null
+        val parentId: String? = null,
+        @DrawableRes val icon: Int
 )
 
 enum class ContentType {
