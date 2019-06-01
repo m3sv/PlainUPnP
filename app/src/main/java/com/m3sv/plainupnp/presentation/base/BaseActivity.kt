@@ -25,8 +25,6 @@ abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
 
     protected val disposables = CompositeDisposable()
 
-    protected val REQUEST_READ_EXTERNAL_STORAGE = 12345
-
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
 
@@ -87,5 +85,9 @@ abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
         this.observe(this@BaseActivity, Observer {
             it?.let(observer)
         })
+    }
+
+    companion object {
+        protected const val REQUEST_READ_EXTERNAL_STORAGE = 12345
     }
 }
