@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.presentation.main
 
-import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
@@ -8,7 +7,6 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ItemsDiffCallback
-import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.databinding.GalleryContentFolderItemBinding
 import com.m3sv.plainupnp.databinding.MobileItemGalleryContentBinding
 import com.m3sv.plainupnp.presentation.base.BaseAdapter
@@ -17,15 +15,13 @@ import com.m3sv.plainupnp.presentation.main.data.ContentType
 import com.m3sv.plainupnp.presentation.main.data.Item
 
 
-interface OnItemClickListener {
-    fun onDirectoryClick(directoryName: String, itemUri: String?, parentId: String?)
-
-    fun onItemClick(item: DIDLItem, position: Int)
-}
+typealias OnItemClickListener = (Int) -> Unit
 
 class GalleryContentAdapter(private val glide: RequestManager,
-                            private val onItemClickListener: OnItemClickListener,
-                            private val sharedPreferences: SharedPreferences) : BaseAdapter<Item>(diffCallback) {
+                            private val onItemClickListener: OnItemClickListener) : BaseAdapter<Item>(diffCallback) {
+
+    // TODO update using OnSharePreferencesChangedListener
+    var loadThumbnails = true
 
     private val emptyRequestOptions = RequestOptions()
 
@@ -72,7 +68,7 @@ class GalleryContentAdapter(private val glide: RequestManager,
     ) {
 
         with(holder.extractBinding<MobileItemGalleryContentBinding>()) {
-            if (sharedPreferences.getBoolean("pref_enable_thumbnails", true))
+            if (loadThumbnails)
                 when (item.type) {
                     ContentType.IMAGE, ContentType.VIDEO -> glide.load(item.uri)
                             .thumbnail(0.1f)
@@ -95,9 +91,6 @@ class GalleryContentAdapter(private val glide: RequestManager,
         with(holder.extractBinding<GalleryContentFolderItemBinding>()) {
             title.text = item.name
             thumbnail.setImageResource(R.drawable.ic_folder)
-            container.setOnClickListener {
-                onItemClickListener.onDirectoryClick(item.name, item.uri, item.parentId)
-            }
         }
     }
 
@@ -109,7 +102,6 @@ class GalleryContentAdapter(private val glide: RequestManager,
 
         filterWithDiff { it.name.toLowerCase().contains(text) }
     }
-
 
     class DiffCallback(
             oldItems: List<Item>,

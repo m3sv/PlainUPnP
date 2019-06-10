@@ -6,6 +6,7 @@ import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.common.utils.formatTime
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
+import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import io.reactivex.BackpressureStrategy
@@ -232,10 +233,6 @@ class DefaultUpnpManager @Inject constructor(
         navigateHome()
     }
 
-    override fun browseTo(model: BrowseToModel) {
-        navigateTo(model)
-    }
-
     override fun browsePrevious() {
         upnpNavigator.navigatePrevious()
     }
@@ -261,5 +258,28 @@ class DefaultUpnpManager @Inject constructor(
 
     override fun dispose() {
         disposables.clear()
+    }
+
+    override fun itemClicked(position: Int) {
+        contentState?.let { state ->
+            when (state) {
+                is ContentState.Success -> {
+                    if (position in 0 until state.content.size) {
+                        val item = state.content[position]
+
+                        when (item.didlObject) {
+                            is ClingDIDLContainer -> {
+                                navigateTo(BrowseToModel(item.didlObject.id, item.title))
+                            }
+
+                            else -> renderItem(RenderItem(state.content[position].didlObject as DIDLItem, position))
+                        }
+                    }
+                }
+                is ContentState.Loading -> {
+                    // no-op
+                }
+            }
+        }
     }
 }

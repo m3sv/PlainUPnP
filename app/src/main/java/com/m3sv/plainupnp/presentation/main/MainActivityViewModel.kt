@@ -1,6 +1,7 @@
 package com.m3sv.plainupnp.presentation.main
 
 import com.m3sv.plainupnp.common.utils.disposeBy
+import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.upnp.UpnpManager
 import io.reactivex.disposables.CompositeDisposable
@@ -71,11 +72,9 @@ class MainActivityViewModel @Inject constructor(private val manager: UpnpManager
 
             is MainCommand.Navigate -> {
                 when (command.route) {
-                    is Route.Back -> {
-                        manager.browsePrevious()
-                    }
+                    is Route.Back -> manager.browsePrevious()
                     is Route.To -> {
-                        manager.browseTo(command.route.path)
+                        // no-op}
                     }
                 }
             }

@@ -3,28 +3,20 @@ package com.m3sv.plainupnp.presentation.main
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.jakewharton.rxbinding2.widget.RxTextView
+import com.m3sv.plainupnp.common.NavigationHost
 import com.m3sv.plainupnp.common.isInstantApp
 import com.m3sv.plainupnp.common.utils.*
-import com.m3sv.plainupnp.data.upnp.DIDLItem
-import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
-import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.base.BaseFragment
-import com.m3sv.plainupnp.presentation.main.data.toItems
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
-import com.m3sv.plainupnp.upnp.BrowseToModel
-import com.m3sv.plainupnp.upnp.ContentState
-import com.m3sv.plainupnp.upnp.RenderItem
-import io.reactivex.rxkotlin.subscribeBy
-import timber.log.Timber
 
 
 class MainFragment : BaseFragment() {
@@ -36,27 +28,6 @@ class MainFragment : BaseFragment() {
     private lateinit var contentAdapter: GalleryContentAdapter
 
     private var expanded = false
-
-    private fun handleContentState(contentState: ContentState) {
-        when (contentState) {
-            is ContentState.Success -> handleSuccess(contentState)
-            is ContentState.Loading -> showProgress()
-        }
-    }
-
-    private fun handleSuccess(contentState: ContentState.Success) {
-        with(binding) {
-            folderName.text = contentState.folderName
-            contentAdapter.setWithDiff(contentState.content.toItems())
-            hideProgress()
-
-            if (isInstantApp(requireContext()) && contentState.content.isEmpty()) {
-                instantAppNotice.show()
-            } else {
-                instantAppNotice.disappear()
-            }
-        }
-    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -92,54 +63,58 @@ class MainFragment : BaseFragment() {
 
                 with(filter) {
                     show()
-
                     postDelayed(this::showSoftInput, 200)
                 }
             }
         }
 
-        contentAdapter = GalleryContentAdapter(Glide.with(this), object : OnItemClickListener {
-            override fun onDirectoryClick(
-                    directoryName: String,
-                    itemUri: String?,
-                    parentId: String?
-            ) {
-                itemUri?.let {
-                    viewModel.browseTo(BrowseToModel(itemUri, directoryName, parentId))
-                } ?: Timber.e("Item URI is null")
-            }
-
-            override fun onItemClick(item: DIDLItem, position: Int) {
-                viewModel.renderItem(RenderItem(item, position))
-            }
-        }, PreferenceManager.getDefaultSharedPreferences(requireContext()))
-
-        binding.content.run {
-            setHasFixedSize(true)
-            addItemDecoration(OffsetItemDecoration(requireContext(), OffsetItemDecoration.HORIZONTAL))
-            layoutManager = LinearLayoutManager(this@MainFragment.requireContext())
-            adapter = contentAdapter
+        contentAdapter = GalleryContentAdapter(Glide.with(this)) {
+            viewModel.execute(MainFragmentCommand.ItemClick(it))
         }
 
-        with(binding.fabMenu) {
-            setOnSearchClickListener {
-                if (!expanded)
-                    showSearch()
-                else
-                    hideSearch()
+        with(binding) {
+            with(content) {
+                setHasFixedSize(true)
+                addItemDecoration(OffsetItemDecoration(requireContext(), OffsetItemDecoration.HORIZONTAL))
+                layoutManager = LinearLayoutManager(this@MainFragment.requireContext())
+                adapter = contentAdapter
             }
 
-            if (requireContext().isRunningOnTv()) {
-                // use navigator
-                setOnSettingsClickListener { (activity as BaseActivity<MainActivityBinding>).navigateTo(SettingsFragment(), SettingsFragment.TAG, true) }
+            with(fabMenu) {
+                setOnSearchClickListener {
+                    if (!expanded)
+                        showSearch()
+                    else
+                        hideSearch()
+                }
+
+                if (requireContext().isRunningOnTv()) {
+                    // use navigator
+                    setOnSettingsClickListener { (activity as NavigationHost).navigateTo(SettingsFragment(), SettingsFragment.TAG, true) }
+                }
             }
+
+            filter.addTextChangedListener(onTextChangedListener(contentAdapter::filter))
         }
 
-        RxTextView.textChanges(binding.filter)
-                .subscribeBy(onNext = contentAdapter::filter, onError = Timber::e)
-                .disposeBy(disposables)
+        viewModel.state.nonNullObserve { state ->
+            when (state) {
+                is MainFragmentState.Loading -> showProgress()
+                is MainFragmentState.Success -> {
+                    with(binding) {
+                        folderName.text = state.directoryName
+                        contentAdapter.setWithDiff(state.items)
 
-        viewModel.serverContent.nonNullObserve(::handleContentState)
+                        if (isInstantApp(requireContext()) && state.items.isEmpty()) {
+                            instantAppNotice.show()
+                        } else {
+                            instantAppNotice.disappear()
+                        }
+                    }
+                    hideProgress()
+                }
+            }
+        }
     }
 
     private fun hideSearch() {
@@ -191,7 +166,6 @@ class MainFragment : BaseFragment() {
 
     private fun showProgress() {
         binding.progress.show()
-        contentAdapter.setWithDiff(listOf())
     }
 
     private fun hideProgress() {

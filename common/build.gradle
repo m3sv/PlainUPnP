@@ -1,14 +1,60 @@
-apply plugin: 'java-library'
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'kotlin'
+
+android {
+    compileSdkVersion 28
+
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation deps.kotlin
-    implementation deps.rx.kotlin
-    implementation deps.rx.android
-}
 
-repositories {
-    mavenCentral()
+    implementation deps.coroutines
+
+    implementation 'androidx.appcompat:appcompat:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+
+    // Cling
+    implementation group: 'org.fourthline.cling', name: 'cling-core', version: versions.cling
+    implementation group: 'org.fourthline.cling', name: 'cling-support', version: versions.cling
+    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: versions.jetty
+    implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: versions.jetty
+    implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: versions.jetty
+    implementation 'org.slf4j:slf4j-jdk14:1.7.14'
+
+    implementation deps.rx.kotlin
+    implementation deps.rx.binding
+    implementation deps.rx.android
+    implementation deps.rx.relay
+
+    implementation(deps.glide.core) {
+        exclude group: "com.android.support"
+    }
+    kapt deps.glide.compiler
+
+    implementation deps.dagger.core
+    compileOnly deps.dagger.annotation
+    kapt deps.dagger.compiler
+    implementation deps.timber
 }

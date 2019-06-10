@@ -11,7 +11,8 @@ import java.util.concurrent.Future
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class DefaultUpnpNavigator @Inject constructor(private val factory: UpnpFactory, private val controller: UpnpServiceController) : UpnpNavigator {
+class DefaultUpnpNavigator @Inject constructor(private val factory: UpnpFactory,
+                                               private val controller: UpnpServiceController) : UpnpNavigator {
 
     private val contentSubject = PublishSubject.create<ContentState>()
 
@@ -27,17 +28,17 @@ class DefaultUpnpNavigator @Inject constructor(private val factory: UpnpFactory,
         get() = controller.selectedContentDirectory
 
     init {
-        browseTo.throttleFirst(250, TimeUnit.MILLISECONDS).doOnNext {
-            browseFuture?.cancel(true)
-            contentSubject.onNext(ContentState.Loading)
-        }.subscribe(::navigate, Timber::e)
+        browseTo.throttleFirst(250, TimeUnit.MILLISECONDS)
+                .doOnNext {
+                    browseFuture?.cancel(true)
+                    contentSubject.onNext(ContentState.Loading)
+                }.subscribe(::navigate, Timber::e)
     }
 
     override fun navigateHome() {
         directoriesStructure.clear()
         previousState = null
-        browseTo.onNext(BrowseToModel("0", currentContentDirectory?.friendlyName
-                ?: "Home", null))
+        browseTo.onNext(BrowseToModel("0", currentContentDirectory?.friendlyName ?: "Home"))
     }
 
     private var browseFuture: Future<*>? = null
@@ -65,8 +66,6 @@ class DefaultUpnpNavigator @Inject constructor(private val factory: UpnpFactory,
                 else -> {
                     val subDirectory = Directory.SubDirectory(model.id)
                     selectedDirectory.onNext(subDirectory)
-
-                    Timber.d("Adding subdirectory: $subDirectory")
                 }
             }
         }

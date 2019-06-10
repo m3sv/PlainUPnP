@@ -6,7 +6,7 @@ import io.reactivex.Observable
 
 data class RenderItem(val item: DIDLItem, val position: Int)
 
-typealias RenderedItem = Triple<String?, String, RequestOptions>
+data class RenderedItem(val uri: String?, val title: String, val requestOptions: RequestOptions)
 
 interface UpnpManager {
     val renderers: Observable<List<DeviceDisplay>>
@@ -24,6 +24,8 @@ interface UpnpManager {
     val launchLocally: Observable<LocalModel>
 
     val currentContentDirectory: UpnpDevice?
+
+    fun itemClicked(position: Int)
 
     fun renderItem(item: RenderItem)
 
@@ -51,8 +53,6 @@ interface UpnpManager {
 
     fun browseHome()
 
-    fun browseTo(model: BrowseToModel)
-
     fun browsePrevious()
 
     fun moveTo(progress: Int, max: Int = 100)
@@ -61,19 +61,16 @@ interface UpnpManager {
 }
 
 
-data class LocalModel(val uri: String, val contentType: String)
+data class LocalModel(val uri: String,
+                      val contentType: String)
 
-/**
- * Seed is a workaround for distinct in Relay, just set it to random number when going home
- */
 data class BrowseToModel(
         val id: String,
-        val directoryName: String,
-        val parentId: String?,
-        val addToStructure: Boolean = true
+        val directoryName: String
 )
 
 sealed class ContentState {
     object Loading : ContentState()
-    data class Success(val folderName: String, val content: List<DIDLObjectDisplay>) : ContentState()
+    data class Success(val directoryName: String,
+                       val content: List<DIDLObjectDisplay>) : ContentState()
 }

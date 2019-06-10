@@ -4,15 +4,14 @@ import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.net.Uri
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.SeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.utils.enforce
+import com.m3sv.plainupnp.common.utils.onItemSelectedListener
+import com.m3sv.plainupnp.common.utils.onSeekBarChangeListener
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.RendererState
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
@@ -24,33 +23,6 @@ import com.m3sv.plainupnp.upnp.LocalModel
 import com.m3sv.plainupnp.upnp.RenderedItem
 import timber.log.Timber
 
-val Any?.enforce get() = Unit
-
-private fun onItemSelectedListener(block: (Int) -> Unit): AdapterView.OnItemSelectedListener {
-    return object : AdapterView.OnItemSelectedListener {
-        override fun onNothingSelected(parent: AdapterView<*>?) {
-            // no-op
-        }
-
-        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-            block(position)
-        }
-    }
-}
-
-private fun onSeekBarChangeListener(block: (Int) -> Unit): SeekBar.OnSeekBarChangeListener {
-    return object : SeekBar.OnSeekBarChangeListener {
-        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-        }
-
-        override fun onStartTrackingTouch(seekBar: SeekBar) {
-        }
-
-        override fun onStopTrackingTouch(seekBar: SeekBar) {
-            block(seekBar.progress)
-        }
-    }
-}
 
 private val RendererState.icon: Int
     get() = when (state) {
@@ -70,10 +42,11 @@ private val RendererState.icon: Int
             R.drawable.ic_play_arrow
     }
 
-
 class MainActivity : BaseActivity<MainActivityBinding>() {
 
     override val activityConfig: ActivityConfig = ActivityConfig(R.layout.main_activity)
+
+    private lateinit var navigator: MainActivityNavigator
 
     private lateinit var viewModel: MainActivityViewModel
 
@@ -93,9 +66,14 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
 
     private fun handleRendererState(rendererState: RendererState) {
         with(binding.controlsSheet) {
-            progress.isEnabled = rendererState.state != UpnpRendererState.State.STOP
-            progress.progress = rendererState.progress
+            // TODO create a progress model
+            with(progress) {
+                isEnabled = rendererState.state != UpnpRendererState.State.STOP
+                progress = rendererState.progress
+            }
+
             play.setImageResource(rendererState.icon)
+// TODO implement play button in upnp manager
 
 //            when (rendererState.state) {
 //                UpnpRendererState.State.STOP -> {
@@ -130,16 +108,17 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
 
             Glide.with(this@MainActivity)
-                    .load(first)
-                    .apply(third)
+                    .load(uri)
+                    .apply(requestOptions)
                     .into(binding.controlsSheet.art)
 
-            binding.controlsSheet.title.text = second
+            binding.controlsSheet.title.text = title
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        navigator = MainActivityRouter(this)
         viewModel = getViewModel()
 
         with(binding) {
@@ -222,12 +201,12 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
             if (it.itemId != binding.bottomNav.selectedItemId)
                 when (it.itemId) {
                     R.id.nav_home -> {
-                        navigateToMain()
+                        navigator.navigateToMain()
                         true
                     }
 
                     R.id.nav_settings -> {
-                        navigateToSettings()
+                        navigator.navigateToSettings()
                         true
                     }
 
@@ -248,14 +227,6 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
         } catch (e: Exception) {
             Timber.e(e)
         }
-    }
-
-    private fun navigateToMain() {
-        findNavController(R.id.nav_host_container).popBackStack()
-    }
-
-    private fun navigateToSettings() {
-        findNavController(R.id.nav_host_container).navigate(R.id.settings_fragment)
     }
 
     override fun onBackPressed() {
