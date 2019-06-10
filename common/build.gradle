@@ -5,6 +5,8 @@ apply plugin: 'kotlin'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation deps.kotlin
+    implementation deps.rx.kotlin
+    implementation deps.rx.android
 }
 
 repositories {

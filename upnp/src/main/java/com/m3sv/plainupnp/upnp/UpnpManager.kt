@@ -9,9 +9,9 @@ data class RenderItem(val item: DIDLItem, val position: Int)
 typealias RenderedItem = Triple<String?, String, RequestOptions>
 
 interface UpnpManager {
-    val rendererDiscovery: Observable<Set<DeviceDisplay>>
+    val renderers: Observable<List<DeviceDisplay>>
 
-    val contentDirectoryDiscovery: Observable<Set<DeviceDisplay>>
+    val contentDirectories: Observable<List<DeviceDisplay>>
 
     val selectedDirectoryObservable: Observable<Directory>
 
@@ -21,15 +21,15 @@ interface UpnpManager {
 
     val content: Observable<ContentState>
 
-    val launchLocally: Observable<LaunchLocally>
+    val launchLocally: Observable<LocalModel>
 
     val currentContentDirectory: UpnpDevice?
 
     fun renderItem(item: RenderItem)
 
-    fun selectContentDirectory(contentDirectory: UpnpDevice?)
+    fun selectContentDirectory(position: Int)
 
-    fun selectRenderer(renderer: UpnpDevice?)
+    fun selectRenderer(position: Int)
 
     fun resumeUpnpController()
 
@@ -53,16 +53,15 @@ interface UpnpManager {
 
     fun browseTo(model: BrowseToModel)
 
-    /**
-     * @return true if browsed previous directory, false if at the root
-     */
-    fun browsePrevious(): Boolean
+    fun browsePrevious()
 
-    fun moveTo(progress: Int, max: Int)
+    fun moveTo(progress: Int, max: Int = 100)
+
+    fun dispose()
 }
 
 
-data class LaunchLocally(val uri: String, val contentType: String)
+data class LocalModel(val uri: String, val contentType: String)
 
 /**
  * Seed is a workaround for distinct in Relay, just set it to random number when going home

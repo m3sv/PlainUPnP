@@ -11,10 +11,12 @@ import javax.inject.Inject
 
 
 class ContentDirectoryDiscoveryObservable @Inject constructor(private val controller: UpnpServiceController) :
-        Observable<Set<DeviceDisplay>>() {
+        Observable<List<DeviceDisplay>>() {
     private val contentDirectories = LinkedHashSet<DeviceDisplay>()
 
-    override fun subscribeActual(observer: Observer<in Set<DeviceDisplay>>) {
+    fun currentContentDirectories() = contentDirectories.toList()
+
+    override fun subscribeActual(observer: Observer<in List<DeviceDisplay>>) {
         val deviceObserver = ContentDeviceObserver(controller.contentDirectoryDiscovery, observer)
         observer.onSubscribe(deviceObserver)
     }
@@ -46,7 +48,7 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(private val contro
 
     private inner class ContentDeviceObserver(
             private val contentDirectoryDiscovery: DeviceDiscovery,
-            private val observer: Observer<in Set<DeviceDisplay>>
+            private val observer: Observer<in List<DeviceDisplay>>
     ) : Disposable, DeviceDiscoveryObserver {
 
         init {
@@ -62,13 +64,13 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(private val contro
         override fun addedDevice(event: UpnpDeviceEvent) {
             handleEvent(event)
             if (!isDisposed)
-                observer.onNext(contentDirectories)
+                observer.onNext(contentDirectories.toList())
         }
 
         override fun removedDevice(event: UpnpDeviceEvent) {
             handleEvent(event)
             if (!isDisposed)
-                observer.onNext(contentDirectories)
+                observer.onNext(contentDirectories.toList())
         }
     }
 }

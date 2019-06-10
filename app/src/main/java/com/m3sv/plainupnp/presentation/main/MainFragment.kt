@@ -13,6 +13,7 @@ import com.jakewharton.rxbinding2.widget.RxTextView
 import com.m3sv.plainupnp.common.isInstantApp
 import com.m3sv.plainupnp.common.utils.*
 import com.m3sv.plainupnp.data.upnp.DIDLItem
+import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.base.BaseFragment
@@ -130,7 +131,7 @@ class MainFragment : BaseFragment() {
 
             if (requireContext().isRunningOnTv()) {
                 // use navigator
-                setOnSettingsClickListener { (activity as BaseActivity).navigateTo(SettingsFragment(), SettingsFragment.TAG, true) }
+                setOnSettingsClickListener { (activity as BaseActivity<MainActivityBinding>).navigateTo(SettingsFragment(), SettingsFragment.TAG, true) }
             }
         }
 

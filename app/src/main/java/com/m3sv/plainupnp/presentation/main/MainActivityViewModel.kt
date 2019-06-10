@@ -1,77 +1,84 @@
 package com.m3sv.plainupnp.presentation.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import com.m3sv.plainupnp.common.utils.disposeBy
-import com.m3sv.plainupnp.data.upnp.DeviceDisplay
-import com.m3sv.plainupnp.data.upnp.RendererState
-import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
-import com.m3sv.plainupnp.upnp.RenderedItem
 import com.m3sv.plainupnp.upnp.UpnpManager
 import io.reactivex.disposables.CompositeDisposable
-import timber.log.Timber
 import javax.inject.Inject
 
-class MainActivityViewModel @Inject constructor(
-        private val defaultUpnpManager: UpnpManager
-) : BaseViewModel(), UpnpManager by defaultUpnpManager {
+class MainActivityViewModel @Inject constructor(private val manager: UpnpManager)
+    : BaseViewModel<MainCommand, MainState>() {
 
-    private val _contentDirectories = MutableLiveData<Set<DeviceDisplay>>()
-
-    val contentDirectories: LiveData<Set<DeviceDisplay>> = _contentDirectories
-
-    private val _renderers = MutableLiveData<Set<DeviceDisplay>>()
-
-    val renderers: LiveData<Set<DeviceDisplay>> = _renderers
-
-    private val _rendererState = MutableLiveData<RendererState>()
-
-    val rendererState: LiveData<RendererState> = _rendererState
-
-    private val _renderedNewItem = MutableLiveData<RenderedItem>()
-
-    val renderedNewItem: LiveData<RenderedItem> = _renderedNewItem
+    init {
+        manager.resumeUpnpController()
+    }
 
     private val discoveryDisposable: CompositeDisposable = CompositeDisposable()
 
-    private val errorHandler: (Throwable) -> Unit =
-            { Timber.e("Exception during discovery: ${it.message}") }
-
     init {
-        rendererDiscovery
-                .subscribe(_renderers::postValue, errorHandler)
+        manager.renderers
+                .map(MainState::RenderersDiscovered)
+                .subscribe(this::updateState)
                 .disposeBy(discoveryDisposable)
 
-        contentDirectoryDiscovery
-                .subscribe(_contentDirectories::postValue, errorHandler)
+        manager.contentDirectories
+                .map(MainState::ContentDirectoriesDiscovered)
+                .subscribe(this::updateState)
                 .disposeBy(discoveryDisposable)
 
-        upnpRendererState
-                .subscribe(_rendererState::postValue, errorHandler)
+        manager.upnpRendererState
+                .map(MainState::UpdateRendererState)
+                .subscribe(this::updateState)
                 .disposeBy(disposables)
 
-        renderedItem
-                .subscribe(_renderedNewItem::postValue, errorHandler)
+        manager.renderedItem
+                .map(MainState::RenderItem)
+                .subscribe(this::updateState)
                 .disposeBy(disposables)
     }
 
-    fun resumeUpnp() {
-        Timber.d("Resuming UPnP upnpServiceController")
-        resumeRendererUpdate()
-    }
+    override fun execute(command: MainCommand) {
+        when (command) {
+            is MainCommand.ResumeUpnp -> {
+                manager.resumeRendererUpdate()
+            }
+            is MainCommand.PauseUpnp -> {
+                manager.pauseRendererUpdate()
+            }
+            is MainCommand.MoveTo -> {
+                manager.moveTo(command.progress)
+            }
 
-    fun pauseUpnp() {
-        Timber.d("Pausing UPnP upnpServiceController")
-        pauseRendererUpdate()
-    }
+            is MainCommand.SelectContentDirectory -> {
+                manager.selectContentDirectory(command.position)
+            }
 
-    private var selectedContentDirectory: UpnpDevice? = null
+            is MainCommand.SelectRenderer -> {
+                manager.selectRenderer(command.position)
+            }
 
-    override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
-        if (selectedContentDirectory != contentDirectory) {
-            defaultUpnpManager.selectContentDirectory(contentDirectory)
-            selectedContentDirectory = contentDirectory
-        }
+            is MainCommand.PlayClicked -> {
+
+            }
+
+            is MainCommand.NextClicked -> {
+                manager.playNext()
+            }
+
+            is MainCommand.PreviousClicked -> {
+                manager.playPrevious()
+            }
+
+            is MainCommand.Navigate -> {
+                when (command.route) {
+                    is Route.Back -> {
+                        manager.browsePrevious()
+                    }
+                    is Route.To -> {
+                        manager.browseTo(command.route.path)
+                    }
+                }
+            }
+        }.enforce
     }
 }

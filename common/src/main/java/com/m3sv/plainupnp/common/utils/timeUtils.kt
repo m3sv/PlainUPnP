@@ -5,12 +5,10 @@ package com.m3sv.plainupnp.common.utils
  */
 fun formatTime(max: Int, progress: Int, duration: Long): String? {
     if (progress < 0 || max < 0 || duration < 0) {
-//        Timber.e("Progress/max/duration can't be negative value")
         return null
     }
 
     if (progress > max) {
-//        Timber.e("Progress can't be bigger than max value")
         return null
     }
 

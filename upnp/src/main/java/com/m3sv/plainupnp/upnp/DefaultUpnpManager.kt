@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.upnp
 
 
 import com.bumptech.glide.request.RequestOptions
+import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.common.utils.formatTime
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
@@ -9,6 +10,7 @@ import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
@@ -25,9 +27,11 @@ class DefaultUpnpManager @Inject constructor(
         private val controller: UpnpServiceController,
         private val factory: Factory,
         private val upnpNavigator: UpnpNavigator,
-        override val rendererDiscovery: RendererDiscoveryObservable,
-        override val contentDirectoryDiscovery: ContentDirectoryDiscoveryObservable
+        override val renderers: RendererDiscoveryObservable,
+        override val contentDirectories: ContentDirectoryDiscoveryObservable
 ) : UpnpManager, UpnpNavigator by upnpNavigator {
+
+    private val disposables = CompositeDisposable()
 
     private val rendererStateSubject = PublishSubject.create<RendererState>()
 
@@ -47,9 +51,9 @@ class DefaultUpnpManager @Inject constructor(
     override val currentContentDirectory: UpnpDevice?
         get() = controller.selectedContentDirectory
 
-    private val launchLocallySubject: PublishSubject<LaunchLocally> = PublishSubject.create()
+    private val launchLocallySubject: PublishSubject<LocalModel> = PublishSubject.create()
 
-    override val launchLocally: Observable<LaunchLocally> = launchLocallySubject.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    override val launchLocally: Observable<LocalModel> = launchLocallySubject.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private val selectedDirectory = PublishSubject.create<Directory>()
 
@@ -72,18 +76,28 @@ class DefaultUpnpManager @Inject constructor(
     init {
         renderItem
                 .throttleFirst(250, TimeUnit.MILLISECONDS)
-                .subscribe(::render, Timber::e)
-
+                .subscribe(::render, Timber::e).disposeBy(disposables)
     }
 
-    override fun selectContentDirectory(contentDirectory: UpnpDevice?) {
-        Timber.d("Selected content directory: ${contentDirectory?.displayString}")
-        controller.selectedContentDirectory = contentDirectory
-        navigateHome()
+    override fun selectContentDirectory(position: Int) {
+        if (position !in 0 until contentDirectories.currentContentDirectories().size) {
+            return
+        }
+
+        val contentDirectory = contentDirectories.currentContentDirectories()[position].device
+
+        if (controller.selectedContentDirectory != contentDirectory) {
+            controller.selectedContentDirectory = contentDirectory
+            navigateHome()
+        }
     }
 
-    override fun selectRenderer(renderer: UpnpDevice?) {
-        Timber.d("Selected renderer: ${renderer?.displayString}")
+    override fun selectRenderer(position: Int) {
+        if (position !in 0 until renderers.currentRenderers().size) {
+            return
+        }
+
+        val renderer = renderers.currentRenderers()[position].device
 
         if (renderer is LocalDevice) {
             isLocal = true
@@ -157,7 +171,7 @@ class DefaultUpnpManager @Inject constructor(
             }
 
             contentType?.let {
-                launchLocallySubject.onNext(LaunchLocally(uri, it))
+                launchLocallySubject.onNext(LocalModel(uri, it))
             }
         }
     }
@@ -222,7 +236,9 @@ class DefaultUpnpManager @Inject constructor(
         navigateTo(model)
     }
 
-    override fun browsePrevious(): Boolean = upnpNavigator.navigatePrevious()
+    override fun browsePrevious() {
+        upnpNavigator.navigatePrevious()
+    }
 
     override fun moveTo(progress: Int, max: Int) {
         upnpRendererStateObservable?.run {
@@ -236,12 +252,14 @@ class DefaultUpnpManager @Inject constructor(
     }
 
     override fun resumeUpnpController() {
-        Timber.d("Resume UPnP controller")
         controller.resume()
     }
 
     override fun pauseUpnpController() {
-        Timber.d("Pause UPnP upnpServiceController")
         controller.pause()
+    }
+
+    override fun dispose() {
+        disposables.clear()
     }
 }

@@ -13,12 +13,14 @@ import javax.inject.Inject
 
 class RendererDiscoveryObservable @Inject constructor(
         private val controller: UpnpServiceController
-) : Observable<Set<DeviceDisplay>>() {
+) : Observable<List<DeviceDisplay>>() {
 
     private val renderers = LinkedHashSet<DeviceDisplay>().apply {
         // TODO use resource provider
         add(DeviceDisplay(LocalDevice("play locally")))
     }
+
+    fun currentRenderers(): List<DeviceDisplay> = renderers.toList()
 
     private fun handleEvent(event: UpnpDeviceEvent) {
         when (event) {
@@ -42,16 +44,16 @@ class RendererDiscoveryObservable @Inject constructor(
         }
     }
 
-    override fun subscribeActual(observer: Observer<in Set<DeviceDisplay>>) {
+    override fun subscribeActual(observer: Observer<in List<DeviceDisplay>>) {
         with(observer) {
             onSubscribe(RendererDeviceObserver(controller.rendererDiscovery, observer))
-            onNext(renderers)
+            onNext(renderers.toList())
         }
     }
 
     private inner class RendererDeviceObserver(
             private val rendererDiscovery: RendererDiscovery,
-            private val observer: Observer<in Set<DeviceDisplay>>
+            private val observer: Observer<in List<DeviceDisplay>>
     ) : MainThreadDisposable(), DeviceDiscoveryObserver {
 
         init {
@@ -66,7 +68,7 @@ class RendererDiscoveryObservable @Inject constructor(
             handleEvent(event)
 
             if (!isDisposed) {
-                observer.onNext(renderers)
+                observer.onNext(renderers.toList())
             }
         }
 
@@ -74,7 +76,7 @@ class RendererDiscoveryObservable @Inject constructor(
             handleEvent(event)
 
             if (!isDisposed)
-                observer.onNext(renderers)
+                observer.onNext(renderers.toList())
         }
     }
 }

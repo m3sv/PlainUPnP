@@ -6,8 +6,11 @@ import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.widget.Toast
+import androidx.annotation.LayoutRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -20,10 +23,16 @@ import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
+data class ActivityConfig(@LayoutRes val layoutId: Int)
 
-abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
+abstract class BaseActivity<Binding : ViewDataBinding> : DaggerAppCompatActivity(), NavigationHost {
 
     protected val disposables = CompositeDisposable()
+
+    protected abstract val activityConfig: ActivityConfig
+
+    protected lateinit var binding: Binding
+        private set
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -37,6 +46,7 @@ abstract class BaseActivity : DaggerAppCompatActivity(), NavigationHost {
             setTheme(R.style.MainActivityThemeLight)
         }
         super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView(this, activityConfig.layoutId)
     }
 
     override fun onDestroy() {

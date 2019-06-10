@@ -100,11 +100,8 @@ dependencies {
     implementation deps.architectureComponents.lifecycleReactiveStreams
     implementation deps.timber
     implementation deps.rx.kotlin
-    implementation deps.rx.binding
     implementation deps.rx.android
-    implementation deps.rx.relay
     implementation deps.okHttp.loggingInterceptor
-
     implementation(deps.glide.core) {
         exclude group: "com.android.support"
     }

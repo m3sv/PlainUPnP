@@ -8,31 +8,74 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.SeekBar
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.jakewharton.rxbinding2.view.RxView
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.RendererState
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
+import com.m3sv.plainupnp.presentation.base.ActivityConfig
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
-import com.m3sv.plainupnp.upnp.LaunchLocally
+import com.m3sv.plainupnp.upnp.LocalModel
 import com.m3sv.plainupnp.upnp.RenderedItem
-import io.reactivex.rxkotlin.subscribeBy
 import timber.log.Timber
 
+val Any?.enforce get() = Unit
 
-class MainActivity : BaseActivity() {
+private fun onItemSelectedListener(block: (Int) -> Unit): AdapterView.OnItemSelectedListener {
+    return object : AdapterView.OnItemSelectedListener {
+        override fun onNothingSelected(parent: AdapterView<*>?) {
+            // no-op
+        }
+
+        override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            block(position)
+        }
+    }
+}
+
+private fun onSeekBarChangeListener(block: (Int) -> Unit): SeekBar.OnSeekBarChangeListener {
+    return object : SeekBar.OnSeekBarChangeListener {
+        override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+        }
+
+        override fun onStartTrackingTouch(seekBar: SeekBar) {
+        }
+
+        override fun onStopTrackingTouch(seekBar: SeekBar) {
+            block(seekBar.progress)
+        }
+    }
+}
+
+private val RendererState.icon: Int
+    get() = when (state) {
+        UpnpRendererState.State.STOP ->
+            R.drawable.ic_play_arrow
+
+
+        UpnpRendererState.State.PLAY ->
+            R.drawable.ic_pause
+
+
+        UpnpRendererState.State.PAUSE ->
+            R.drawable.ic_play_arrow
+
+
+        UpnpRendererState.State.INITIALIZING ->
+            R.drawable.ic_play_arrow
+    }
+
+
+class MainActivity : BaseActivity<MainActivityBinding>() {
+
+    override val activityConfig: ActivityConfig = ActivityConfig(R.layout.main_activity)
 
     private lateinit var viewModel: MainActivityViewModel
-
-    private lateinit var binding: MainActivityBinding
 
     private lateinit var rendererAdapter: SimpleArrayAdapter<DeviceDisplay>
 
@@ -40,82 +83,52 @@ class MainActivity : BaseActivity() {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
-    private val contentDirectorySpinnerClickListener = object : AdapterView.OnItemSelectedListener {
-        override fun onNothingSelected(parent: AdapterView<*>?) {
-        }
-
-        override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-        ) {
-            Timber.d("Selected item: $position")
-            viewModel.selectContentDirectory(contentDirectoryAdapter.getItem(position)?.device)
-        }
+    private fun handleContentDirectories(contentDirectories: List<DeviceDisplay>) {
+        contentDirectoryAdapter.setNewItems(contentDirectories)
     }
 
-    private val rendererSpinnerClickListener = object : AdapterView.OnItemSelectedListener {
-        override fun onNothingSelected(parent: AdapterView<*>?) {
-        }
-
-        override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-        ) {
-            Timber.d("Selected renderer: $position")
-            viewModel.selectRenderer(rendererAdapter.getItem(position)?.device)
-        }
-    }
-
-    private fun handleContentDirectories(contentDirectories: Set<DeviceDisplay>) {
-        Timber.d("Received new set of content directories: ${contentDirectories.size}")
-        contentDirectoryAdapter.setNewItems(contentDirectories.toList())
-    }
-
-    private fun handleRenderers(renderers: Set<DeviceDisplay>) {
-        Timber.d("Received new set of renderers: ${renderers.size}")
-        rendererAdapter.setNewItems(renderers.toList())
+    private fun handleRenderers(renderers: List<DeviceDisplay>) {
+        rendererAdapter.setNewItems(renderers)
     }
 
     private fun handleRendererState(rendererState: RendererState) {
         with(binding.controlsSheet) {
             progress.isEnabled = rendererState.state != UpnpRendererState.State.STOP
             progress.progress = rendererState.progress
+            play.setImageResource(rendererState.icon)
 
-            when (rendererState.state) {
-                UpnpRendererState.State.STOP -> {
-                    play.setImageResource(R.drawable.ic_play_arrow)
-                    RxView.clicks(play)
-                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
-                }
-
-                UpnpRendererState.State.PLAY -> {
-                    play.setImageResource(R.drawable.ic_pause)
-                    RxView.clicks(play)
-                            .subscribeBy(onNext = { viewModel.pausePlayback() }, onError = Timber::e)
-                }
-
-                UpnpRendererState.State.PAUSE -> {
-                    play.setImageResource(R.drawable.ic_play_arrow)
-                    RxView.clicks(play)
-                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
-                }
-
-                UpnpRendererState.State.INITIALIZING -> {
-                    play.setImageResource(R.drawable.ic_play_arrow)
-                    RxView.clicks(play)
-                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
-                }
-            }.disposeBy(disposables)
+//            when (rendererState.state) {
+//                UpnpRendererState.State.STOP -> {
+//                    play.setImageResource(R.drawable.ic_play_arrow)
+//                    RxView.clicks(play)
+//                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
+//                }
+//
+//                UpnpRendererState.State.PLAY -> {
+//                    play.setImageResource(R.drawable.ic_pause)
+//                    RxView.clicks(play)
+//                            .subscribeBy(onNext = { viewModel.pausePlayback() }, onError = Timber::e)
+//                }
+//
+//                UpnpRendererState.State.PAUSE -> {
+//                    play.setImageResource(R.drawable.ic_play_arrow)
+//                    RxView.clicks(play)
+//                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
+//                }
+//
+//                UpnpRendererState.State.INITIALIZING -> {
+//                    play.setImageResource(R.drawable.ic_play_arrow)
+//                    RxView.clicks(play)
+//                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
+//                }
+//            }.disposeBy(disposables)
         }
     }
 
     private fun handleRenderedItem(item: RenderedItem) {
         with(item) {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
             Glide.with(this@MainActivity)
                     .load(first)
                     .apply(third)
@@ -128,84 +141,84 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
-        binding = DataBindingUtil.setContentView(this, R.layout.main_activity)
 
         with(binding) {
             vm = viewModel
             lifecycleOwner = this@MainActivity
         }
 
+        rendererAdapter = SimpleArrayAdapter(this)
+
+        contentDirectoryAdapter = SimpleArrayAdapter(this)
+
         setupBottomNavigation(binding.bottomNav)
 
-        initBottomSheet()
+        with(binding.controlsSheet) {
+            bottomSheetBehavior = BottomSheetBehavior.from(container)
 
-        RxView.clicks(binding.controlsSheet.next)
-                .subscribeBy(onNext = { viewModel.playNext() }, onError = Timber::e)
-                .disposeBy(disposables)
+            progress.isEnabled = false
 
-        RxView.clicks(binding.controlsSheet.previous)
-                .subscribeBy(onNext = { viewModel.playPrevious() }, onError = Timber::e)
-                .disposeBy(disposables)
+            next.setOnClickListener {
+                viewModel.execute(MainCommand.NextClicked)
+            }
 
-        viewModel.launchLocally
-                .subscribeBy(onNext = ::launchLocally, onError = Timber::e)
-                .disposeBy(disposables)
+            previous.setOnClickListener {
+                viewModel.execute(MainCommand.PreviousClicked)
+            }
 
-        with(viewModel) {
-            renderers.nonNullObserve(::handleRenderers)
-            contentDirectories.nonNullObserve(::handleContentDirectories)
-            rendererState.nonNullObserve(::handleRendererState)
-            renderedNewItem.nonNullObserve(::handleRenderedItem)
+            play.setOnClickListener {
+                viewModel.execute(MainCommand.PlayClicked)
+            }
+
+            progress.setOnSeekBarChangeListener(onSeekBarChangeListener {
+                viewModel.execute(MainCommand.MoveTo(it))
+            })
+
+            with(mainRendererDevicePicker) {
+                adapter = rendererAdapter
+                onItemSelectedListener = onItemSelectedListener { position ->
+                    viewModel.execute(MainCommand.SelectRenderer(position))
+                }
+            }
+
+            with(mainContentDevicePicker) {
+                adapter = contentDirectoryAdapter
+                onItemSelectedListener = onItemSelectedListener { position ->
+                    viewModel.execute(MainCommand.SelectContentDirectory(position))
+                }
+            }
         }
 
-        initPickers()
-
-        binding.controlsSheet.progress.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser)
-                    Timber.i("From user")
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {
-                Timber.i("onStartTrackingTouch")
-            }
-
-            override fun onStopTrackingTouch(seekBar: SeekBar) {
-                Timber.i("onStopTrackingTouch")
-                viewModel.moveTo(seekBar.progress, seekBar.max)
-            }
-        })
+        viewModel.state.nonNullObserve { state ->
+            when (state) {
+                is MainState.LaunchLocally -> launchLocally(state.model)
+                is MainState.ContentDirectoriesDiscovered -> handleContentDirectories(state.devices)
+                is MainState.RenderersDiscovered -> handleRenderers(state.devices)
+                is MainState.RenderItem -> handleRenderedItem(state.item)
+                is MainState.UpdateRendererState -> handleRendererState(state.rendererState)
+                is MainState.Exit -> finishAndRemoveTask()
+                is MainState.NavigateBack -> {
+                }
+            }.enforce
+        }
 
         requestReadStoragePermission()
-
-        savedInstanceState ?: viewModel.resumeUpnpController()
     }
-
 
     override fun onStart() {
         super.onStart()
-        with(viewModel) {
-            resumeUpnp()
-            resumeRendererUpdate()
-        }
+        viewModel.execute(MainCommand.ResumeUpnp)
     }
 
     override fun onStop() {
-        with(viewModel) {
-            pauseRendererUpdate()
-            pauseUpnp()
-        }
+        viewModel.execute(MainCommand.PauseUpnp)
         super.onStop()
-    }
-
-    private fun initBottomSheet() {
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.controlsSheet.container)
-        binding.controlsSheet.progress.isEnabled = false
     }
 
     private fun setupBottomNavigation(bottomNavigation: BottomNavigationView) {
         bottomNavigation.setOnNavigationItemSelectedListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
             if (it.itemId != binding.bottomNav.selectedItemId)
                 when (it.itemId) {
                     R.id.nav_home -> {
@@ -224,34 +237,16 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun launchLocally(item: LaunchLocally?) {
-        item?.let {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.uri)).apply {
-                    flags = FLAG_ACTIVITY_NEW_TASK
-                    setDataAndType(Uri.parse(item.uri), item.contentType)
-                }
-
-                startActivity(intent)
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
-        }
-    }
-
-    private fun initPickers() {
-        with(binding.controlsSheet) {
-            rendererAdapter = SimpleArrayAdapter(this@MainActivity)
-            with(mainRendererDevicePicker) {
-                adapter = rendererAdapter
-                onItemSelectedListener = rendererSpinnerClickListener
+    private fun launchLocally(item: LocalModel) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.uri)).apply {
+                flags = FLAG_ACTIVITY_NEW_TASK
+                setDataAndType(Uri.parse(item.uri), item.contentType)
             }
 
-            contentDirectoryAdapter = SimpleArrayAdapter(this@MainActivity)
-            with(mainContentDevicePicker) {
-                adapter = contentDirectoryAdapter
-                onItemSelectedListener = contentDirectorySpinnerClickListener
-            }
+            startActivity(intent)
+        } catch (e: Exception) {
+            Timber.e(e)
         }
     }
 
@@ -264,20 +259,20 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        findNavController(R.id.nav_host_container).graph.startDestination == findNavController(R.id.nav_host_container).currentDestination?.id
-
-
-        with(supportFragmentManager) {
-            if (backStackEntryCount > 0) {
-                popBackStack()
-                binding.bottomNav.selectedItemId = R.id.nav_home
-
-                return
-            }
-        }
-
-        if (!viewModel.browsePrevious()) {
-            doubleTapExit()
-        }
+        viewModel.execute(MainCommand.Navigate(Route.Back))
+//        findNavController(R.id.nav_host_container).graph.startDestination == findNavController(R.id.nav_host_container).currentDestination?.id
+//
+//        with(supportFragmentManager) {
+//            if (backStackEntryCount > 0) {
+//                popBackStack()
+//                binding.bottomNav.selectedItemId = R.id.nav_home
+//
+//                return
+//            }
+//        }
+//
+//        if (!viewModel.browsePrevious()) {
+//            doubleTapExit()
+//        }
     }
 }
