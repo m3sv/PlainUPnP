@@ -13,7 +13,7 @@ interface UpnpManager {
 
     val contentDirectories: Observable<List<DeviceDisplay>>
 
-    val selectedDirectoryObservable: Observable<Directory>
+    val selectedContentDirectory: Observable<Directory>
 
     val upnpRendererState: Observable<RendererState>
 

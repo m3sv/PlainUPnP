@@ -1,9 +1,6 @@
-package com.m3sv.plainupnp.presentation.main.data
+package com.m3sv.plainupnp.presentation.upnp
 
 import androidx.annotation.DrawableRes
-import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
-import com.m3sv.plainupnp.upnp.didl.*
 
 data class Item(
         val uri: String?,

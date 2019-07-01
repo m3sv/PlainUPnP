@@ -6,7 +6,7 @@
 
         <variable
             name="vm"
-            type="com.m3sv.plainupnp.presentation.main.MainFragmentViewModel" />
+            type="com.m3sv.plainupnp.presentation.upnp.UpnpViewModel" />
     </data>
 
     <FrameLayout

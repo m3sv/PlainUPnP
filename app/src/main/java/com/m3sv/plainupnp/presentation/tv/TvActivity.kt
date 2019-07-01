@@ -115,7 +115,7 @@ class TvActivity : BaseActivity<TvActivityBinding>() {
 //        }
 //    }
 //
-//    private lateinit var mainFragment: MainFragment
+//    private lateinit var mainFragment: UpnpFragment
 //
 //
 //    override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,16 +124,16 @@ class TvActivity : BaseActivity<TvActivityBinding>() {
 //        viewModel = getViewModel()
 //
 //        if (savedInstanceState == null) {
-//            mainFragment = MainFragment.newInstance()
+//            mainFragment = UpnpFragment.newInstance()
 //
 //            supportFragmentManager
 //                    .beginTransaction()
-//                    .add(R.id.container, mainFragment, MainFragment.TAG)
+//                    .add(R.id.container, mainFragment, UpnpFragment.TAG)
 //                    .commit()
 //
 //            viewModel.resumeUpnpController()
 //        } else {
-//            mainFragment = supportFragmentManager.findFragmentByTag(MainFragment.TAG) as MainFragment
+//            mainFragment = supportFragmentManager.findFragmentByTag(UpnpFragment.TAG) as UpnpFragment
 //        }
 //
 //        with(viewModel) {

@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.presentation.main
+package com.m3sv.plainupnp.presentation.upnp
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -11,8 +11,6 @@ import com.m3sv.plainupnp.databinding.GalleryContentFolderItemBinding
 import com.m3sv.plainupnp.databinding.MobileItemGalleryContentBinding
 import com.m3sv.plainupnp.presentation.base.BaseAdapter
 import com.m3sv.plainupnp.presentation.base.ItemViewHolder
-import com.m3sv.plainupnp.presentation.main.data.ContentType
-import com.m3sv.plainupnp.presentation.main.data.Item
 
 
 typealias OnItemClickListener = (Int) -> Unit

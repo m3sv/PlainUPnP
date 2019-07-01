@@ -1,10 +1,8 @@
-package com.m3sv.plainupnp.presentation.main
+package com.m3sv.plainupnp.presentation.upnp
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,9 +17,9 @@ import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
 
 
-class MainFragment : BaseFragment() {
+class UpnpFragment : BaseFragment() {
 
-    private lateinit var viewModel: MainFragmentViewModel
+    private lateinit var viewModel: UpnpViewModel
 
     private lateinit var binding: MainFragmentBinding
 
@@ -76,7 +74,7 @@ class MainFragment : BaseFragment() {
             with(content) {
                 setHasFixedSize(true)
                 addItemDecoration(OffsetItemDecoration(requireContext(), OffsetItemDecoration.HORIZONTAL))
-                layoutManager = LinearLayoutManager(this@MainFragment.requireContext())
+                layoutManager = LinearLayoutManager(this@UpnpFragment.requireContext())
                 adapter = contentAdapter
             }
 
@@ -177,7 +175,7 @@ class MainFragment : BaseFragment() {
 
         private const val IS_EXPANDED = "is_expanded"
 
-        fun newInstance(): MainFragment = MainFragment().apply {
+        fun newInstance(): UpnpFragment = UpnpFragment().apply {
             arguments = Bundle()
         }
     }

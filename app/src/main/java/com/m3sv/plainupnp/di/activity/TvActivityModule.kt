@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.m3sv.plainupnp.di.ViewModelKey
 import com.m3sv.plainupnp.di.scope.ActivityScope
 import com.m3sv.plainupnp.presentation.main.MainActivityViewModel
-import com.m3sv.plainupnp.presentation.main.MainFragment
-import com.m3sv.plainupnp.presentation.main.MainFragmentViewModel
+import com.m3sv.plainupnp.presentation.upnp.UpnpFragment
+import com.m3sv.plainupnp.presentation.upnp.UpnpViewModel
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.presentation.tv.TvActivity
 import dagger.Binds
@@ -27,12 +27,12 @@ interface TvActivityModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(MainFragmentViewModel::class)
-    fun bindMainFragmentViewModel(mainFragmentViewModel: MainFragmentViewModel): ViewModel
+    @ViewModelKey(UpnpViewModel::class)
+    fun bindMainFragmentViewModel(upnpViewModel: UpnpViewModel): ViewModel
 
     @ActivityScope
     @ContributesAndroidInjector
-    fun contributeMainFragment(): MainFragment
+    fun contributeMainFragment(): UpnpFragment
 
     @ActivityScope
     @ContributesAndroidInjector

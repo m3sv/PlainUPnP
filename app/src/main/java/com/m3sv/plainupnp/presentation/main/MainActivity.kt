@@ -25,21 +25,11 @@ import timber.log.Timber
 
 
 private val RendererState.icon: Int
-    get() = when (state) {
-        UpnpRendererState.State.STOP ->
-            R.drawable.ic_play_arrow
-
-
-        UpnpRendererState.State.PLAY ->
-            R.drawable.ic_pause
-
-
-        UpnpRendererState.State.PAUSE ->
-            R.drawable.ic_play_arrow
-
-
-        UpnpRendererState.State.INITIALIZING ->
-            R.drawable.ic_play_arrow
+    inline get() = when (state) {
+        UpnpRendererState.State.STOP -> R.drawable.ic_play_arrow
+        UpnpRendererState.State.PLAY -> R.drawable.ic_pause
+        UpnpRendererState.State.PAUSE -> R.drawable.ic_play_arrow
+        UpnpRendererState.State.INITIALIZING -> R.drawable.ic_play_arrow
     }
 
 class MainActivity : BaseActivity<MainActivityBinding>() {
@@ -66,40 +56,12 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
 
     private fun handleRendererState(rendererState: RendererState) {
         with(binding.controlsSheet) {
-            // TODO create a progress model
             with(progress) {
                 isEnabled = rendererState.state != UpnpRendererState.State.STOP
                 progress = rendererState.progress
             }
 
             play.setImageResource(rendererState.icon)
-// TODO implement play button in upnp manager
-
-//            when (rendererState.state) {
-//                UpnpRendererState.State.STOP -> {
-//                    play.setImageResource(R.drawable.ic_play_arrow)
-//                    RxView.clicks(play)
-//                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
-//                }
-//
-//                UpnpRendererState.State.PLAY -> {
-//                    play.setImageResource(R.drawable.ic_pause)
-//                    RxView.clicks(play)
-//                            .subscribeBy(onNext = { viewModel.pausePlayback() }, onError = Timber::e)
-//                }
-//
-//                UpnpRendererState.State.PAUSE -> {
-//                    play.setImageResource(R.drawable.ic_play_arrow)
-//                    RxView.clicks(play)
-//                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
-//                }
-//
-//                UpnpRendererState.State.INITIALIZING -> {
-//                    play.setImageResource(R.drawable.ic_play_arrow)
-//                    RxView.clicks(play)
-//                            .subscribeBy(onNext = { viewModel.resumePlayback() }, onError = Timber::e)
-//                }
-//            }.disposeBy(disposables)
         }
     }
 
@@ -231,19 +193,5 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
 
     override fun onBackPressed() {
         viewModel.execute(MainCommand.Navigate(Route.Back))
-//        findNavController(R.id.nav_host_container).graph.startDestination == findNavController(R.id.nav_host_container).currentDestination?.id
-//
-//        with(supportFragmentManager) {
-//            if (backStackEntryCount > 0) {
-//                popBackStack()
-//                binding.bottomNav.selectedItemId = R.id.nav_home
-//
-//                return
-//            }
-//        }
-//
-//        if (!viewModel.browsePrevious()) {
-//            doubleTapExit()
-//        }
     }
 }

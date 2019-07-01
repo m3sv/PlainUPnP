@@ -1,19 +1,17 @@
-package com.m3sv.plainupnp.presentation.main
+package com.m3sv.plainupnp.presentation.upnp
 
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
-import com.m3sv.plainupnp.presentation.main.data.ContentType
-import com.m3sv.plainupnp.presentation.main.data.Item
 import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.UpnpManager
 import com.m3sv.plainupnp.upnp.didl.*
 import javax.inject.Inject
 
 
-class MainFragmentViewModel @Inject constructor(private val manager: UpnpManager) :
+class UpnpViewModel @Inject constructor(private val manager: UpnpManager) :
         BaseViewModel<MainFragmentCommand, MainFragmentState>() {
 
     init {

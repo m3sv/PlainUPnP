@@ -21,9 +21,6 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
-/**
- * First is uri to a file, second is a title and third is an artist
- */
 class DefaultUpnpManager @Inject constructor(
         private val controller: UpnpServiceController,
         private val factory: Factory,
@@ -42,8 +39,7 @@ class DefaultUpnpManager @Inject constructor(
 
     override val renderedItem: Observable<RenderedItem> = renderedItemSubject
 
-    var contentState: ContentState? = null
-        private set
+    private var contentState: ContentState? = null
 
     override val content: Observable<ContentState> = upnpNavigator.state.doOnNext {
         contentState = it
@@ -58,7 +54,7 @@ class DefaultUpnpManager @Inject constructor(
 
     private val selectedDirectory = PublishSubject.create<Directory>()
 
-    override val selectedDirectoryObservable: Observable<Directory> = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    override val selectedContentDirectory: Observable<Directory> = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private var upnpRendererStateObservable: UpnpRendererStateObservable? = null
 
@@ -132,25 +128,14 @@ class DefaultUpnpManager @Inject constructor(
 
         upnpRendererStateObservable = factory.createRendererState()
 
-        rendererStateDisposable = upnpRendererStateObservable?.map {
-            val newRendererState = RendererState(
-                    it.remainingDuration,
-                    it.elapsedDuration,
-                    it.progress,
-                    it.title,
-                    it.artist,
-                    it.state
-            )
-
-            Timber.i("New renderer state: $newRendererState")
-            newRendererState
-        }?.subscribeBy(onNext = {
-            rendererStateSubject.onNext(it)
-
-            if (it.state == UpnpRendererState.State.STOP) {
-                rendererCommand?.pause()
-            }
-        }, onError = Timber::e)
+        rendererStateDisposable = upnpRendererStateObservable
+                ?.map(this::mapState)
+                ?.doOnNext(rendererStateSubject::onNext)
+                ?.subscribeBy(onNext = {
+                    if (it.state == UpnpRendererState.State.STOP) {
+                        rendererCommand?.pause()
+                    }
+                }, onError = Timber::e)
 
         rendererCommand = factory.createRendererCommand(upnpRendererStateObservable)
                 ?.apply {
@@ -158,8 +143,23 @@ class DefaultUpnpManager @Inject constructor(
                         resume()
                     else
                         rendererStateSubject.onNext(RendererState(progress = 0, state = UpnpRendererState.State.STOP))
+
                     launchItem(item.item)
                 }
+    }
+
+    private fun mapState(it: UpnpRendererStateModel): RendererState {
+        val newRendererState = RendererState(
+                it.remainingDuration,
+                it.elapsedDuration,
+                it.progress,
+                it.title,
+                it.artist,
+                it.state
+        )
+
+        Timber.i("New renderer state: $newRendererState")
+        return newRendererState
     }
 
     private fun launchItemLocally(item: RenderItem) {

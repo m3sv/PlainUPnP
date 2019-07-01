@@ -45,6 +45,7 @@ abstract class BaseActivity<Binding : ViewDataBinding> : DaggerAppCompatActivity
         } else {
             setTheme(R.style.MainActivityThemeLight)
         }
+
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, activityConfig.layoutId)
     }
