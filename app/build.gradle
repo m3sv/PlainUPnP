@@ -119,8 +119,6 @@ dependencies {
     implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: versions.jetty
     implementation 'org.slf4j:slf4j-jdk14:1.7.14'
 
-    playstoreImplementation deps.instantApps
-
     implementation project(':common')
     implementation project(':upnp')
 }

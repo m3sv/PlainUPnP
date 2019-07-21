@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.m3sv.plainupnp.common.isInstantApp
 import com.m3sv.plainupnp.common.utils.*
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
@@ -95,12 +94,6 @@ class UpnpFragment : BaseFragment() {
                     with(binding) {
                         folderName.text = state.directoryName
                         contentAdapter.setWithDiff(state.items)
-
-                        if (isInstantApp(requireContext()) && state.items.isEmpty()) {
-                            instantAppNotice.show()
-                        } else {
-                            instantAppNotice.disappear()
-                        }
                     }
                     hideProgress()
                 }
