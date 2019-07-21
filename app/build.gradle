@@ -66,10 +66,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
-
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-
     implementation deps.kotlin
     implementation deps.coroutines
 
@@ -101,11 +98,12 @@ dependencies {
     implementation deps.timber
     implementation deps.rx.kotlin
     implementation deps.rx.android
-    implementation deps.okHttp.loggingInterceptor
     implementation(deps.glide.core) {
         exclude group: "com.android.support"
     }
+
     kapt deps.glide.compiler
+
     implementation deps.dagger.core
     compileOnly deps.dagger.annotation
     kapt deps.dagger.compiler
@@ -122,8 +120,6 @@ dependencies {
     implementation 'org.slf4j:slf4j-jdk14:1.7.14'
 
     playstoreImplementation deps.instantApps
-    playstoreImplementation deps.firebase.core
-    playstoreImplementation deps.crashlytics
 
     implementation project(':common')
     implementation project(':upnp')
@@ -131,24 +127,6 @@ dependencies {
 
 kapt {
     generateStubs = true
-}
-
-File propFile = file('signing.properties')
-if (propFile.exists()) {
-    Properties props = new Properties()
-    props.load(new FileInputStream(propFile))
-
-    if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
-            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
-        android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
-        android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
-        android.signingConfigs.release.keyAlias = props['KEY_ALIAS']
-        android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
-    } else {
-        android.buildTypes.release.signingConfig = null
-    }
-} else {
-    android.buildTypes.release.signingConfig = null
 }
 
 apply plugin: 'com.google.gms.google-services'

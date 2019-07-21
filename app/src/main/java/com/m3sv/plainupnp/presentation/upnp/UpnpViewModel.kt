@@ -8,21 +8,25 @@ import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.UpnpManager
 import com.m3sv.plainupnp.upnp.didl.*
+import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 
 class UpnpViewModel @Inject constructor(private val manager: UpnpManager) :
-        BaseViewModel<MainFragmentCommand, MainFragmentState>() {
+        BaseViewModel<MainFragmentIntention, MainFragmentState>() {
 
     init {
-        manager
-                .content
+        manager.content
                 .map { state ->
                     when (state) {
                         is ContentState.Loading -> MainFragmentState.Loading
-                        is ContentState.Success -> MainFragmentState.Success(state.directoryName, mapItems(state.content))
+                        is ContentState.Success -> MainFragmentState.Success(
+                                state.directoryName,
+                                mapItems(state.content)
+                        )
                     }
                 }
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::updateState)
                 .disposeBy(disposables)
     }
@@ -69,10 +73,10 @@ class UpnpViewModel @Inject constructor(private val manager: UpnpManager) :
         }
     }
 
-    override fun execute(command: MainFragmentCommand) {
-        when (command) {
-            is MainFragmentCommand.ItemClick -> {
-                manager.itemClicked(command.position)
+    override fun execute(intention: MainFragmentIntention) {
+        when (intention) {
+            is MainFragmentIntention.ItemClick -> {
+                manager.itemClicked(intention.position)
             }
         }.enforce
     }

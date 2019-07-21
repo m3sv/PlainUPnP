@@ -2,7 +2,10 @@ package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
-import kotlinx.coroutines.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -19,32 +22,29 @@ import org.fourthline.cling.support.renderingcontrol.callback.GetVolume
 import org.fourthline.cling.support.renderingcontrol.callback.SetMute
 import org.fourthline.cling.support.renderingcontrol.callback.SetVolume
 import timber.log.Timber
-import java.util.concurrent.Executors
-import kotlin.coroutines.CoroutineContext
 
 
 class RendererCommand(
         private val controller: UpnpServiceController,
         private val controlPoint: ControlPoint,
         private val rendererStateObservable: UpnpRendererStateObservable
-) : CoroutineScope {
+) {
 
-    private var job: Job = Job()
+    private var job: Job? = null
 
-    override val coroutineContext: CoroutineContext = Executors.newFixedThreadPool(16).asCoroutineDispatcher() + job
+    private var innerStopCounter = 0
 
     fun pause() {
         Timber.v("Pause renderer")
-        job.cancel()
+        job?.cancel()
     }
 
     fun resume() {
         Timber.v("Resume renderer")
-        job.cancel()
+        job?.cancel()
 
-        job = Job()
-        launch {
-            delay(500)
+        job = GlobalScope.launch {
+            Timber.d("Launch update state!")
             updateInfo()
         }
     }
@@ -103,15 +103,6 @@ class RendererCommand(
             })
         }
     }
-//
-//    fun commandToggle() {
-//        val state = upnpRendererState.state
-//        if (state == com.m3sv.plainupnp.data.upnp.UpnpRendererState.State.PLAY) {
-//            commandPause()
-//        } else {
-//            commandPlay()
-//        }
-//    }
 
     fun commandSeek(relativeTimeTarget: String) {
         getAVTransportService()?.let {
@@ -141,6 +132,40 @@ class RendererCommand(
 
                 override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
                     Timber.w("Fail to set volume ! $arg2")
+                }
+            })
+        }
+    }
+
+    fun raiseVolume() {
+        getRenderingControlService()?.let {
+            controlPoint.execute(object : GetVolume(it) {
+                override fun received(arg0: ActionInvocation<*>, arg1: Int) {
+                    Timber.d("Raise volume: $arg1 + 1")
+                    if (arg1 in 0..100) {
+                        setVolume(arg1 + 1)
+                    }
+                }
+
+                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                    Timber.w("Fail to get volume ! $arg2")
+                }
+            })
+        }
+    }
+
+    fun lowerVolume() {
+        getRenderingControlService()?.let {
+            controlPoint.execute(object : GetVolume(it) {
+                override fun received(arg0: ActionInvocation<*>, arg1: Int) {
+                    Timber.d("Lower volume: $arg1 - 1")
+                    if (arg1 in 0..100) {
+                        setVolume(arg1 - 1)
+                    }
+                }
+
+                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                    Timber.w("Fail to get volume ! $arg2")
                 }
             })
         }
@@ -240,7 +265,6 @@ class RendererCommand(
         getAVTransportService()?.let {
             controlPoint.execute(object : GetMediaInfo(it) {
                 override fun received(arg0: ActionInvocation<*>, arg1: MediaInfo) {
-                    Timber.d("Receive media info ! $arg1")
                     rendererStateObservable.setMediaInfo(arg1)
                 }
 
@@ -255,7 +279,6 @@ class RendererCommand(
         getAVTransportService()?.let {
             controlPoint.execute(object : GetPositionInfo(it) {
                 override fun received(arg0: ActionInvocation<*>, arg1: PositionInfo) {
-                    Timber.d("Update position info: $arg1")
                     rendererStateObservable.setPositionInfo(arg1)
                 }
 
@@ -266,25 +289,36 @@ class RendererCommand(
         }
     }
 
-    private var previousTransportState = TransportState.STOPPED
 
     private fun updateTransportInfo() {
         getAVTransportService()?.let {
             controlPoint.execute(object : GetTransportInfo(it) {
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to get position info ! $arg2")
+                override fun received(arg0: ActionInvocation<*>, arg1: TransportInfo) {
+                    rendererStateObservable.setTransportInfo(arg1)
+
+                    innerStopCounter = when (arg1.currentTransportState) {
+                        TransportState.STOPPED -> ++innerStopCounter
+                        else -> 0
+                    }
+
+                    checkStopStateThreshold()
                 }
 
-                override fun received(arg0: ActionInvocation<*>, arg1: TransportInfo) {
-                    Timber.d("Transport info: $arg1")
-                    rendererStateObservable.setTransportInfo(arg1)
-                    previousTransportState = arg1.currentTransportState
+                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                    Timber.w("Fail to get position info ! $arg2")
                 }
             })
         }
     }
 
-    fun updateVolume() {
+    private fun checkStopStateThreshold() {
+        if (innerStopCounter == 3) {
+            Timber.v("Reached stop threshold, disposing command")
+            pause()
+        }
+    }
+
+    private fun updateVolume() {
         getRenderingControlService()?.let {
             controlPoint.execute(object : GetVolume(it) {
                 override fun received(arg0: ActionInvocation<*>, arg1: Int) {
@@ -324,6 +358,7 @@ class RendererCommand(
 
     private suspend fun updateInfo() {
         var counter = 0
+
         while (true) {
             Timber.d("Update state!")
 
@@ -339,8 +374,8 @@ class RendererCommand(
             updatePositionInfo()
             updateTransportInfo()
 
-            counter++
             delay(1000)
+            counter++
         }
     }
 }

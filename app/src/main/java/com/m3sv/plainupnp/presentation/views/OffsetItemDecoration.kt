@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.m3sv.plainupnp.common.utils.dp
+import kotlin.math.roundToInt
 
 class OffsetItemDecoration(context: Context, orientation: Int) : RecyclerView.ItemDecoration() {
 
@@ -49,7 +50,7 @@ class OffsetItemDecoration(context: Context, orientation: Int) : RecyclerView.It
         for (i in 0 until childCount) {
             val child = parent.getChildAt(i)
             parent.layoutManager!!.getDecoratedBoundsWithMargins(child, bounds)
-            val right = bounds.right + Math.round(child.translationX)
+            val right = bounds.right + child.translationX.roundToInt()
             val left = right - (divider?.intrinsicWidth ?: 0)
             divider?.setBounds(left, top, right, bottom)
             divider?.draw(canvas)
@@ -59,9 +60,10 @@ class OffsetItemDecoration(context: Context, orientation: Int) : RecyclerView.It
 
     private fun drawVertical(canvas: Canvas, parent: RecyclerView) {
         canvas.save()
+
         val left: Int
         val right: Int
-        //noinspection AndroidLintNewApi - NewApi lint fails to handle overrides.
+
         if (parent.clipToPadding) {
             left = parent.paddingLeft
             right = parent.width - parent.paddingRight
@@ -72,14 +74,16 @@ class OffsetItemDecoration(context: Context, orientation: Int) : RecyclerView.It
             right = parent.width
         }
 
-        val childCount = parent.childCount
-        for (i in 0 until childCount) {
+        for (i in 0 until parent.childCount) {
             val child = parent.getChildAt(i)
             parent.getDecoratedBoundsWithMargins(child, bounds)
-            val bottom = bounds.bottom + Math.round(child.translationY)
-            val top = bottom - (divider?.intrinsicHeight ?:0)
-            divider?.setBounds(left, top, right, bottom)
-            divider?.draw(canvas)
+            val bottom = bounds.bottom + child.translationY.roundToInt()
+            val top = bottom - (divider?.intrinsicHeight ?: 0)
+
+            divider?.let {
+                it.setBounds(left, top, right, bottom)
+                it.draw(canvas)
+            }
         }
         canvas.restore()
     }

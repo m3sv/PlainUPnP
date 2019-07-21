@@ -8,13 +8,6 @@ enum class Method {
 
     companion object {
         @JvmStatic
-        fun lookup(method: String): Method? {
-            for (m in values()) {
-                if (m.toString().equals(method, ignoreCase = true)) {
-                    return m
-                }
-            }
-            return null
-        }
+        fun lookup(method: String): Method? = values().find { it.toString().equals(method, ignoreCase = true) }
     }
 }

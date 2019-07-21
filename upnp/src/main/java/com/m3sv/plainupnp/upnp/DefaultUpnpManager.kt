@@ -12,8 +12,6 @@ import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
-import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
 import timber.log.Timber
@@ -37,7 +35,7 @@ class DefaultUpnpManager @Inject constructor(
 
     private val renderedItemSubject = PublishSubject.create<RenderedItem>()
 
-    override val renderedItem: Observable<RenderedItem> = renderedItemSubject
+    override val renderedItem: Observable<RenderedItem> = renderedItemSubject.hide()
 
     private var contentState: ContentState? = null
 
@@ -50,15 +48,15 @@ class DefaultUpnpManager @Inject constructor(
 
     private val launchLocallySubject: PublishSubject<LocalModel> = PublishSubject.create()
 
-    override val launchLocally: Observable<LocalModel> = launchLocallySubject.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    override val launchLocally: Observable<LocalModel> =
+            launchLocallySubject.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private val selectedDirectory = PublishSubject.create<Directory>()
 
-    override val selectedContentDirectory: Observable<Directory> = selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    override val selectedContentDirectory: Observable<Directory> =
+            selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
 
     private var upnpRendererStateObservable: UpnpRendererStateObservable? = null
-
-    private var rendererStateDisposable: Disposable? = null
 
     private var rendererCommand: RendererCommand? = null
 
@@ -73,7 +71,8 @@ class DefaultUpnpManager @Inject constructor(
     init {
         renderItem
                 .throttleFirst(250, TimeUnit.MILLISECONDS)
-                .subscribe(::render, Timber::e).disposeBy(disposables)
+                .subscribe(::render, Timber::e)
+                .disposeBy(disposables)
     }
 
     override fun selectContentDirectory(position: Int) {
@@ -109,12 +108,12 @@ class DefaultUpnpManager @Inject constructor(
     }
 
     private fun render(item: RenderItem) {
+        Timber.d("Render item: ${item.item.uri}")
+
         rendererCommand?.run {
             commandStop()
             pause()
         }
-
-        rendererStateDisposable?.dispose()
 
         updateUi(item)
 
@@ -128,21 +127,21 @@ class DefaultUpnpManager @Inject constructor(
 
         upnpRendererStateObservable = factory.createRendererState()
 
-        rendererStateDisposable = upnpRendererStateObservable
+        upnpRendererStateObservable
                 ?.map(this::mapState)
-                ?.doOnNext(rendererStateSubject::onNext)
-                ?.subscribeBy(onNext = {
-                    if (it.state == UpnpRendererState.State.STOP) {
-                        rendererCommand?.pause()
-                    }
-                }, onError = Timber::e)
+                ?.subscribe(rendererStateSubject)
 
         rendererCommand = factory.createRendererCommand(upnpRendererStateObservable)
                 ?.apply {
                     if (item.item !is ClingImageItem)
                         resume()
                     else
-                        rendererStateSubject.onNext(RendererState(progress = 0, state = UpnpRendererState.State.STOP))
+                        rendererStateSubject.onNext(
+                                RendererState(
+                                        progress = 0,
+                                        state = UpnpRendererState.State.STOP,
+                                        isControlEnabled = false)
+                        )
 
                     launchItem(item.item)
                 }
@@ -155,8 +154,12 @@ class DefaultUpnpManager @Inject constructor(
                 it.progress,
                 it.title,
                 it.artist,
-                it.state
+                it.state,
+                it.state != UpnpRendererState.State.STOP
         )
+
+        if (it.state == UpnpRendererState.State.FINISHED)
+            rendererCommand?.pause()
 
         Timber.i("New renderer state: $newRendererState")
         return newRendererState
@@ -181,12 +184,18 @@ class DefaultUpnpManager @Inject constructor(
      * Updates control sheet with latest launched item
      */
     private fun updateUi(toRender: RenderItem) {
+        Timber.d("Update UI")
         val requestOptions = when (toRender.item) {
             is ClingAudioItem -> RequestOptions().placeholder(R.drawable.ic_music_note)
             else -> RequestOptions()
         }
 
-        renderedItemSubject.onNext(RenderedItem(toRender.item.uri, toRender.item.title, requestOptions))
+        renderedItemSubject.onNext(
+                RenderedItem(
+                        toRender.item.uri,
+                        toRender.item.title,
+                        requestOptions)
+        )
     }
 
     override fun playNext() {
@@ -210,10 +219,12 @@ class DefaultUpnpManager @Inject constructor(
     }
 
     override fun resumeRendererUpdate() {
+        Timber.v("Resume renderer update")
         rendererCommand?.resume()
     }
 
     override fun pauseRendererUpdate() {
+        Timber.v("Pause renderer update")
         rendererCommand?.pause()
     }
 
@@ -281,5 +292,13 @@ class DefaultUpnpManager @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun raiseVolume() {
+        rendererCommand?.raiseVolume()
+    }
+
+    override fun lowerVolume() {
+        rendererCommand?.lowerVolume()
     }
 }

@@ -73,8 +73,6 @@ public class TrackMetadata {
     }
 
     public void parseTrackMetadata(String xml) {
-        Timber.d("XML: %s", xml);
-
         if (xml == null || xml.equals("NOT_IMPLEMENTED") || xmlreader == null)
             return;
 

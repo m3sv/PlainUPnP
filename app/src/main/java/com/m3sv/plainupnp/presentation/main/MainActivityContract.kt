@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.presentation.main
 
+import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.RendererState
 import com.m3sv.plainupnp.upnp.LocalModel
@@ -10,20 +11,22 @@ sealed class Route {
     data class To(val path: String) : Route()
 }
 
-sealed class MainCommand {
-    object ResumeUpnp : MainCommand()
-    object PauseUpnp : MainCommand()
-    object PlayClicked : MainCommand()
-    object PreviousClicked : MainCommand()
-    object NextClicked : MainCommand()
-    data class Navigate(val route: Route) : MainCommand()
-    data class SelectRenderer(val position: Int) : MainCommand()
-    data class SelectContentDirectory(val position: Int) : MainCommand()
-    data class MoveTo(val progress: Int) : MainCommand()
+sealed class MainIntention {
+    object ResumeUpnp : MainIntention()
+    object PauseUpnp : MainIntention()
+    object PlayClick : MainIntention()
+    object PreviousClick : MainIntention()
+    object NextClick : MainIntention()
+    object RaiseVolume: MainIntention()
+    object LowerVolume: MainIntention()
+    data class Navigate(val route: Route) : MainIntention()
+    data class SelectRenderer(val position: Int) : MainIntention()
+    data class SelectContentDirectory(val position: Int) : MainIntention()
+    data class MoveTo(val progress: Int) : MainIntention()
 }
 
 sealed class MainState {
-    data class LaunchLocally(val model: LocalModel) : MainState()
+    data class LaunchLocally(val model: Consumable<LocalModel?>) : MainState()
     data class RenderersDiscovered(val devices: List<DeviceDisplay>) : MainState()
     data class ContentDirectoriesDiscovered(val devices: List<DeviceDisplay>) : MainState()
     data class UpdateRendererState(val rendererState: RendererState) : MainState()

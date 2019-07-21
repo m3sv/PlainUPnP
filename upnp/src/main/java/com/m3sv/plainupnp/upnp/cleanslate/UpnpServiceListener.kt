@@ -24,15 +24,14 @@ class UpnpServiceListener @Inject constructor(private val context: Context) : Co
 
     private val job = Job()
 
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO + job
+    override val coroutineContext: CoroutineContext = Dispatchers.IO + job
 
     // getLocalIpAddress(context)
     private var mediaServer: MediaServer = MediaServer(context)
 
     private val waitingListener: MutableList<RegistryListener> = mutableListOf()
 
-    val serviceConnection = object : ServiceConnection {
+    private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mediaServer.start()
             upnpService = (service as AndroidUpnpService).also {

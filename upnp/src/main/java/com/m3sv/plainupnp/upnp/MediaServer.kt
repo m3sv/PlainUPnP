@@ -1,21 +1,12 @@
 package com.m3sv.plainupnp.upnp
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Build
-import android.preference.PreferenceManager
 import android.provider.MediaStore
 import com.m3sv.plainupnp.nanohttpd.Method
 import com.m3sv.plainupnp.nanohttpd.SimpleWebServer
-import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
-import org.fourthline.cling.model.DefaultServiceManager
-import org.fourthline.cling.model.meta.*
-import org.fourthline.cling.model.types.UDADeviceType
-import org.fourthline.cling.model.types.UDN
 import timber.log.Timber
 import java.io.File
-import java.net.InetAddress
-import java.util.*
 
 
 class MediaServer(private val context: Context) :

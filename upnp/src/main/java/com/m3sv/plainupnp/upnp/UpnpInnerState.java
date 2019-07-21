@@ -1,15 +1,18 @@
 package com.m3sv.plainupnp.upnp;
 
+import com.m3sv.plainupnp.data.upnp.UpnpRendererState;
+
 import org.fourthline.cling.support.model.MediaInfo;
 import org.fourthline.cling.support.model.PositionInfo;
 import org.fourthline.cling.support.model.TransportInfo;
 import org.fourthline.cling.support.model.TransportState;
+import org.jetbrains.annotations.NotNull;
 
 import io.reactivex.Observer;
 import io.reactivex.android.MainThreadDisposable;
 import timber.log.Timber;
 
-class UpnpInnerState extends MainThreadDisposable implements com.m3sv.plainupnp.data.upnp.UpnpRendererState {
+class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
     private final Observer<? super UpnpRendererStateModel> observer;
 
     // / Player info
@@ -34,20 +37,24 @@ class UpnpInnerState extends MainThreadDisposable implements com.m3sv.plainupnp.
         updateState();
     }
 
+    private UpnpRendererStateModel currentState;
+
     private void updateState() {
         Timber.d("Update renderer state");
-        if (!isDisposed())
-            observer.onNext(new UpnpRendererStateModel(state,
-                    getRemainingDuration(),
-                    getPosition(),
-                    getElapsedPercent(),
-                    getTitle(),
-                    getArtist(),
-                    volume,
-                    mute,
-                    positionInfo,
-                    mediaInfo,
-                    transportInfo));
+
+        UpnpRendererStateModel temp = new UpnpRendererStateModel(state,
+                getRemainingDuration(),
+                getPosition(),
+                getElapsedPercent(),
+                getTitle(),
+                getArtist(),
+                volume,
+                mute);
+
+        if (!isDisposed() && temp != currentState) {
+            currentState = temp;
+            observer.onNext(currentState);
+        }
     }
 
     @Override
@@ -61,16 +68,14 @@ class UpnpInnerState extends MainThreadDisposable implements com.m3sv.plainupnp.
     }
 
     @Override
-    public void setState(State state) {
+    public void setState(@NotNull State state) {
+        Timber.v("New state: %s", state);
+
         if (this.state == state)
             return;
 
-        if (state == State.STOP && (this.state == State.PLAY || this.state == State.PAUSE)) {
-            // Stop !
-            resetTrackInfo();
-        }
-
         this.state = state;
+
         updateState();
     }
 
@@ -85,6 +90,7 @@ class UpnpInnerState extends MainThreadDisposable implements com.m3sv.plainupnp.
             return;
 
         this.volume = volume;
+
         updateState();
     }
 
@@ -111,9 +117,7 @@ class UpnpInnerState extends MainThreadDisposable implements com.m3sv.plainupnp.
             this.positionInfo = positionInfo;
             updateState();
         } catch (Exception e) {
-            Timber.e((e.getMessage() == null) ? "Exception !" : e.getMessage());
-            for (StackTraceElement m : e.getStackTrace())
-                Timber.e(m.toString());
+            Timber.e(e);
         }
 
     }
@@ -143,7 +147,6 @@ class UpnpInnerState extends MainThreadDisposable implements com.m3sv.plainupnp.
         else if (transportInfo.getCurrentTransportState() == TransportState.PLAYING)
             setState(State.PLAY);
         else
-            // if(transportInfo.getCurrentTransportState() == TransportState.STOPPED)
             setState(State.STOP);
     }
 

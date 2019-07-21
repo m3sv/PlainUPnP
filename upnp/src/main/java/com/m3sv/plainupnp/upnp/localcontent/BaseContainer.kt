@@ -24,23 +24,22 @@ package com.m3sv.plainupnp.upnp.localcontent
 
 
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
-import org.fourthline.cling.support.model.DIDLObject
 import org.fourthline.cling.support.model.WriteStatus
 import org.fourthline.cling.support.model.container.Container
 
 open class BaseContainer(
-    id: String,
-    parentID: String?,
-    title: String?,
-    creator: String?,
-    val baseURL: String
+        id: String,
+        parentID: String?,
+        title: String?,
+        creator: String?,
+        val baseURL: String
 ) : Container(
-    if (ContentDirectoryService.isRoot(parentID)) id else parentID + ContentDirectoryService.SEPARATOR + id,
-    parentID,
-    title,
-    creator,
-    DIDLObject.Class("object.container"),
-    0
+        if (ContentDirectoryService.isRoot(parentID)) id else parentID + ContentDirectoryService.SEPARATOR + id,
+        parentID,
+        title,
+        creator,
+        Class("object.container"),
+        0
 ) {
     init {
         setWriteStatus(WriteStatus.NOT_WRITABLE)

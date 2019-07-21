@@ -112,15 +112,4 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     private fun Int.toPx(): Int =
             (this * this@SettingsFragment.resources.displayMetrics.density).toInt()
-
-    companion object {
-        val TAG: String = SettingsFragment::class.java.simpleName
-
-        fun newInstance(): SettingsFragment {
-            val fragment = SettingsFragment()
-            val arguments = Bundle()
-            fragment.arguments = arguments
-            return fragment
-        }
-    }
 }

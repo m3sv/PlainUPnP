@@ -3,7 +3,7 @@
 
     <!-- General -->
     <string name="app_name" translatable="false">PlainUPnP</string>
-    <string name="version" translatable="false">Version</string>
+    <string name="version">Version</string>
 
     <string name="settings">Settings</string>
     <string name="home">Home</string>

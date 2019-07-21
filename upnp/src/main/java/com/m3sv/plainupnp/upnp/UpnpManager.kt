@@ -57,6 +57,10 @@ interface UpnpManager {
 
     fun moveTo(progress: Int, max: Int = 100)
 
+    fun raiseVolume()
+
+    fun lowerVolume()
+
     fun dispose()
 }
 

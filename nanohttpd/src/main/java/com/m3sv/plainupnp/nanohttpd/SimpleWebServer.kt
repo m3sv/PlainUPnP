@@ -91,7 +91,7 @@ open class SimpleWebServer(
                 newUri += "/"
                 res = Response(
                         Response.Status.REDIRECT,
-                        NanoHTTPD.MIME_HTML,
+                        MIME_HTML,
                         "<html><body>Redirected: <a href=\"" + newUri + "\">" + newUri
                                 + "</a></body></html>"
                 )

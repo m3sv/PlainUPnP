@@ -2,7 +2,9 @@ package com.m3sv.plainupnp.upnp
 
 import javax.inject.Inject
 
-class UpnpFactory @Inject constructor(override val upnpServiceController: UpnpServiceController) : Factory {
+class UpnpFactory @Inject constructor(
+        override val upnpServiceController: UpnpServiceController)
+    : Factory {
     override fun createRendererCommand(rendererStateObservable: UpnpRendererStateObservable?): RendererCommand? = upnpServiceController.serviceListener
             .upnpService
             ?.controlPoint
@@ -15,6 +17,5 @@ class UpnpFactory @Inject constructor(override val upnpServiceController: UpnpSe
             ?.controlPoint
             ?.let { ContentDirectoryCommand(it, upnpServiceController) }
 
-    override fun createRendererState(): UpnpRendererStateObservable =
-            UpnpRendererStateObservable()
+    override fun createRendererState(): UpnpRendererStateObservable = UpnpRendererStateObservable()
 }

@@ -9,8 +9,7 @@ import java.util.*
 class LocalUpnpDevice(private val serviceResourceProvider: LocalServiceResourceProvider,
                       private val localService: LocalService) {
 
-    operator fun invoke(): LocalDevice {
-        val details = DeviceDetails(
+    operator fun invoke(): LocalDevice { val details = DeviceDetails(
                 serviceResourceProvider.settingContentDirectoryName,
                 ManufacturerDetails(
                         serviceResourceProvider.appName,

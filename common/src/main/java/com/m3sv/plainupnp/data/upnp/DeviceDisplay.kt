@@ -6,11 +6,7 @@ enum class DeviceType {
 }
 
 data class DeviceDisplay(
-    val device: UpnpDevice,
-    val extendedInformation: Boolean = false,
-    val type: DeviceType = DeviceType.UNDEFINED
-) {
-    override fun toString(): String {
-        return device.friendlyName
-    }
-}
+        val device: UpnpDevice,
+        val extendedInformation: Boolean = false,
+        val type: DeviceType = DeviceType.UNDEFINED
+)

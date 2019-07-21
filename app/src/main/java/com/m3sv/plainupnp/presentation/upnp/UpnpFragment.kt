@@ -8,12 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.m3sv.plainupnp.common.NavigationHost
 import com.m3sv.plainupnp.common.isInstantApp
 import com.m3sv.plainupnp.common.utils.*
 import com.m3sv.plainupnp.databinding.MainFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
-import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
 
 
@@ -67,7 +65,7 @@ class UpnpFragment : BaseFragment() {
         }
 
         contentAdapter = GalleryContentAdapter(Glide.with(this)) {
-            viewModel.execute(MainFragmentCommand.ItemClick(it))
+            viewModel.execute(MainFragmentIntention.ItemClick(it))
         }
 
         with(binding) {
@@ -78,17 +76,12 @@ class UpnpFragment : BaseFragment() {
                 adapter = contentAdapter
             }
 
-            with(fabMenu) {
+            with(search) {
                 setOnSearchClickListener {
                     if (!expanded)
                         showSearch()
                     else
                         hideSearch()
-                }
-
-                if (requireContext().isRunningOnTv()) {
-                    // use navigator
-                    setOnSettingsClickListener { (activity as NavigationHost).navigateTo(SettingsFragment(), SettingsFragment.TAG, true) }
                 }
             }
 
@@ -171,12 +164,6 @@ class UpnpFragment : BaseFragment() {
     }
 
     companion object {
-        const val TAG = "main_fragment"
-
         private const val IS_EXPANDED = "is_expanded"
-
-        fun newInstance(): UpnpFragment = UpnpFragment().apply {
-            arguments = Bundle()
-        }
     }
 }

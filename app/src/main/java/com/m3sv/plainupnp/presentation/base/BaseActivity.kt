@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import android.widget.Toast
 import androidx.annotation.LayoutRes
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -76,19 +75,7 @@ abstract class BaseActivity<Binding : ViewDataBinding> : DaggerAppCompatActivity
 
         transaction.commit()
     }
-
-    private var lastBackClick = System.currentTimeMillis()
-
-    protected fun doubleTapExit() {
-        val currentTime = System.currentTimeMillis()
-
-        if (currentTime - lastBackClick < 500)
-            finishAndRemoveTask()
-
-        lastBackClick = currentTime
-        Toast.makeText(this, R.string.to_exit, Toast.LENGTH_SHORT).show()
-    }
-
+    
     protected inline fun <reified T : ViewModel> getViewModel(): T =
             ViewModelProviders.of(this, viewModelFactory).get(T::class.java)
 

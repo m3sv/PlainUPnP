@@ -10,13 +10,14 @@ import org.fourthline.cling.model.meta.LocalService
 import java.net.InetAddress
 
 
-class LocalService(private val context: Context, private val localAddress: InetAddress) {
+class LocalService(private val context: Context,
+                   private val localAddress: InetAddress) {
 
     operator fun invoke(): LocalService<ContentDirectoryService> {
         return (AnnotationLocalServiceBinder()
                 .read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>)
                 .apply {
-                    manager = DefaultServiceManager<ContentDirectoryService>(
+                    manager = DefaultServiceManager(
                             this,
                             ContentDirectoryService::class.java
                     ).apply {

@@ -42,5 +42,4 @@ This is a rewrite of trishika's [DroidUPnP](https://github.com/trishika/DroidUPn
 * Glide 
 * Dagger 2 for dependency injection
 * Cling for UPnP functionality
-* Firebase Crashlytics
 * CircleCI for CI/CD

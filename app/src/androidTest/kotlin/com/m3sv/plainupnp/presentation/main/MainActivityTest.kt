@@ -1,9 +1,7 @@
 package com.m3sv.plainupnp.presentation.main
 
 
-import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withSpinnerText
@@ -13,7 +11,7 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.RecyclerViewItemCountAssertion
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.containsString
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith

@@ -3,15 +3,11 @@ package com.m3sv.plainupnp.data.upnp
 
 data class DIDLObjectDisplay(val didlObject: DIDLObject) {
 
-    val title: String
-        get() = didlObject.title
+    val title: String = didlObject.title
 
-    val description: String
-        get() = didlObject.description
+    val description: String = didlObject.description
 
-    val count: String
-        get() = didlObject.count
+    val count: String = didlObject.count
 
-    val icon: Int
-        get() = didlObject.icon
+    val icon: Int = didlObject.icon
 }

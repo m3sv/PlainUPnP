@@ -7,5 +7,6 @@ data class RendererState(
         val progress: Int,
         val title: String? = null,
         val artist: String? = null,
-        val state: UpnpRendererState.State
+        val state: UpnpRendererState.State,
+        val isControlEnabled: Boolean
 )
