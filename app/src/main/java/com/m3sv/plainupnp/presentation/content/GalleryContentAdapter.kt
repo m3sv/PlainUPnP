@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.presentation.upnp
+package com.m3sv.plainupnp.presentation.content
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,8 +7,8 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ItemsDiffCallback
-import com.m3sv.plainupnp.databinding.GalleryContentFolderItemBinding
-import com.m3sv.plainupnp.databinding.MobileItemGalleryContentBinding
+import com.m3sv.plainupnp.databinding.FolderItemBinding
+import com.m3sv.plainupnp.databinding.MediaItemBinding
 import com.m3sv.plainupnp.presentation.base.BaseAdapter
 import com.m3sv.plainupnp.presentation.base.ItemViewHolder
 
@@ -16,7 +16,7 @@ import com.m3sv.plainupnp.presentation.base.ItemViewHolder
 typealias OnItemClickListener = (Int) -> Unit
 
 class GalleryContentAdapter(private val glide: RequestManager,
-                            private val onItemClickListener: OnItemClickListener) : BaseAdapter<Item>(diffCallback) {
+                            private val onItemClickListener: OnItemClickListener) : BaseAdapter<ContentItem>(diffCallback) {
 
     // TODO update using OnSharePreferencesChangedListener
     var loadThumbnails = true
@@ -30,7 +30,7 @@ class GalleryContentAdapter(private val glide: RequestManager,
             viewType: Int
     ): ItemViewHolder<ViewDataBinding> = when (ContentType.values()[viewType]) {
         ContentType.DIRECTORY -> ItemViewHolder(
-                GalleryContentFolderItemBinding.inflate(
+                FolderItemBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
@@ -38,7 +38,7 @@ class GalleryContentAdapter(private val glide: RequestManager,
         )
 
         else -> ItemViewHolder(
-                MobileItemGalleryContentBinding.inflate(
+                MediaItemBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false
@@ -61,33 +61,34 @@ class GalleryContentAdapter(private val glide: RequestManager,
 
     private fun loadData(
             holder: ItemViewHolder<ViewDataBinding>,
-            item: Item,
+            contentItem: ContentItem,
             requestOptions: RequestOptions = emptyRequestOptions
     ) {
 
-        with(holder.extractBinding<MobileItemGalleryContentBinding>()) {
+        with(holder.extractBinding<MediaItemBinding>()) {
             if (loadThumbnails)
-                when (item.type) {
-                    ContentType.IMAGE, ContentType.VIDEO -> glide.load(item.uri)
+                when (contentItem.type) {
+                    ContentType.IMAGE,
+                    ContentType.VIDEO -> glide.load(contentItem.thumbnailUri)
                             .thumbnail(0.1f)
                             .apply(requestOptions)
                             .into(thumbnail)
-                    else -> thumbnail.setImageResource(item.icon)
+                    else -> thumbnail.setImageResource(contentItem.icon)
                 }
             else
-                thumbnail.setImageResource(item.icon)
+                thumbnail.setImageResource(contentItem.icon)
 
-            title.text = item.name
-            contentType.setImageResource(item.icon)
+            title.text = contentItem.name
+            contentType.setImageResource(contentItem.icon)
         }
     }
 
     private fun loadDirectory(
             holder: ItemViewHolder<*>,
-            item: Item
+            contentItem: ContentItem
     ) {
-        with(holder.extractBinding<GalleryContentFolderItemBinding>()) {
-            title.text = item.name
+        with(holder.extractBinding<FolderItemBinding>()) {
+            title.text = contentItem.name
             thumbnail.setImageResource(R.drawable.ic_folder)
         }
     }
@@ -102,10 +103,11 @@ class GalleryContentAdapter(private val glide: RequestManager,
     }
 
     class DiffCallback(
-            oldItems: List<Item>,
-            newItems: List<Item>
-    ) : ItemsDiffCallback<Item>(oldItems, newItems) {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) = oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
+            oldContentItems: List<ContentItem>,
+            newContentItems: List<ContentItem>
+    ) : ItemsDiffCallback<ContentItem>(oldContentItems, newContentItems) {
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
     }
 
     companion object {

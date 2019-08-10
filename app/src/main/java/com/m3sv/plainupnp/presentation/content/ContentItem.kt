@@ -1,9 +1,10 @@
-package com.m3sv.plainupnp.presentation.upnp
+package com.m3sv.plainupnp.presentation.content
 
 import androidx.annotation.DrawableRes
 
-data class Item(
+data class ContentItem(
         val uri: String?,
+        val thumbnailUri: String?,
         val name: String,
         val type: ContentType,
         @DrawableRes val icon: Int

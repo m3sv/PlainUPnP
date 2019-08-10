@@ -2,13 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-        <variable
-            name="vm"
-            type="com.m3sv.plainupnp.presentation.upnp.UpnpViewModel" />
-    </data>
-
     <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
@@ -18,17 +11,18 @@
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
             android:background="?attr/backgroundColor"
-            android:elevation="4dp"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp">
+            android:elevation="4dp">
 
             <TextView
                 android:id="@+id/folder_name"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="top|start"
+                android:layout_marginStart="16dp"
+                android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
                 android:gravity="center"
+                android:maxLines="1"
                 android:textSize="18sp"
                 tools:text="Sample text" />
 
@@ -36,6 +30,7 @@
                 android:id="@+id/filter"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
                 android:backgroundTint="@color/transparent"
                 android:hint="@string/search"
                 android:imeOptions="flagNoExtractUi"
@@ -49,6 +44,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="top|end"
+                android:layout_marginEnd="16dp"
                 android:elevation="4dp"
                 android:gravity="end"
                 android:nextFocusLeft="@id/content" />

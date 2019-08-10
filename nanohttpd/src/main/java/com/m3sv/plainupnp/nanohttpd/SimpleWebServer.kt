@@ -353,6 +353,7 @@ open class SimpleWebServer(
                 "m3u" to "audio/mpeg-url",
                 "mp4" to "video/mp4",
                 "ogv" to "video/ogg",
+                "flac" to "audio/flac",
                 "flv" to "video/x-flv",
                 "mov" to "video/quicktime",
                 "swf" to "application/x-shockwave-flash",

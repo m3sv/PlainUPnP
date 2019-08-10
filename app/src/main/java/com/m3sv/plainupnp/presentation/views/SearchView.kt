@@ -27,7 +27,6 @@ class SearchView : LinearLayout {
     private lateinit var searchButton: ImageView
 
     private fun initializeMobileLayout(context: Context) {
-
         gravity = Gravity.CENTER
 
         searchButton = ImageView(context).apply {

@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp
 
 
-import com.bumptech.glide.request.RequestOptions
+import com.m3sv.plainupnp.ContentCache
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.common.utils.formatTime
 import com.m3sv.plainupnp.data.upnp.*
@@ -20,12 +20,12 @@ import javax.inject.Inject
 
 
 class DefaultUpnpManager @Inject constructor(
+        override val renderers: RendererDiscoveryObservable,
+        override val contentDirectories: ContentDirectoryDiscoveryObservable,
         private val controller: UpnpServiceController,
         private val factory: Factory,
         private val upnpNavigator: UpnpNavigator,
-        override val renderers: RendererDiscoveryObservable,
-        override val contentDirectories: ContentDirectoryDiscoveryObservable
-) : UpnpManager, UpnpNavigator by upnpNavigator {
+        private val contentCache: ContentCache) : UpnpManager, UpnpNavigator by upnpNavigator {
 
     private val disposables = CompositeDisposable()
 
@@ -175,7 +175,12 @@ class DefaultUpnpManager @Inject constructor(
             }
 
             contentType?.let {
-                launchLocallySubject.onNext(LocalModel(uri, it))
+                launchLocallySubject.onNext(
+                        LocalModel(
+                                contentCache.get(item.item.id) ?: uri,
+                                contentType
+                        )
+                )
             }
         }
     }
@@ -185,16 +190,13 @@ class DefaultUpnpManager @Inject constructor(
      */
     private fun updateUi(toRender: RenderItem) {
         Timber.d("Update UI")
-        val requestOptions = when (toRender.item) {
-            is ClingAudioItem -> RequestOptions().placeholder(R.drawable.ic_music_note)
-            else -> RequestOptions()
-        }
 
         renderedItemSubject.onNext(
                 RenderedItem(
-                        toRender.item.uri,
+                        toRender.item.id,
+                        contentCache.get(toRender.item.id) ?: toRender.item.uri,
                         toRender.item.title,
-                        requestOptions)
+                        toRender.item)
         )
     }
 

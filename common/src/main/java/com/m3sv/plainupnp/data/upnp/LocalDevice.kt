@@ -17,6 +17,7 @@ class LocalDevice(override val displayString: String = "",
                   override val uid: String = "",
                   override val isFullyHydrated: Boolean = false,
                   override val isLocal: Boolean = true) : UpnpDevice {
+
     override fun equals(otherDevice: UpnpDevice?): Boolean = otherDevice is LocalDevice
 
     override fun asService(service: String): Boolean = false

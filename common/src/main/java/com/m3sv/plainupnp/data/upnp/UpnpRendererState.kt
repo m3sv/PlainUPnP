@@ -23,6 +23,10 @@ interface UpnpRendererState {
     val artist: String
 
     enum class State {
-        PLAY, PAUSE, STOP, INITIALIZING, FINISHED
+        PLAY,
+        PAUSE,
+        STOP,
+        INITIALIZING,
+        FINISHED
     }
 }

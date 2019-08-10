@@ -9,7 +9,6 @@ import java.net.InetAddress
 import java.net.NetworkInterface
 import java.net.UnknownHostException
 
-
 const val CONTENT_DIRECTORY_SERVICE = "pref_contentDirectoryService"
 const val CONTENT_DIRECTORY_VIDEO = "pref_contentDirectoryService_video"
 const val CONTENT_DIRECTORY_AUDIO = "pref_contentDirectoryService_audio"

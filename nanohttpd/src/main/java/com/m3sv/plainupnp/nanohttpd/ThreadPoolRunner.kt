@@ -5,7 +5,7 @@ import java.util.concurrent.Executors
 
 class ThreadPoolRunner : NanoHTTPD.AsyncRunner {
 
-    private val executor = Executors.newFixedThreadPool(32)
+    private val executor = Executors.newFixedThreadPool(64)
 
     override fun exec(runnable: Runnable) {
         executor.execute(runnable)

@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import com.m3sv.plainupnp.di.ViewModelKey
 import com.m3sv.plainupnp.di.scope.ActivityScope
 import com.m3sv.plainupnp.presentation.main.MainActivityViewModel
-import com.m3sv.plainupnp.presentation.upnp.UpnpFragment
-import com.m3sv.plainupnp.presentation.upnp.UpnpViewModel
+import com.m3sv.plainupnp.presentation.content.ContentFragment
+import com.m3sv.plainupnp.presentation.content.ContentViewModel
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import dagger.Binds
 import dagger.Module
@@ -23,12 +23,12 @@ interface MainActivityModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(UpnpViewModel::class)
-    fun bindMainFragmentViewModel(upnpViewModel: UpnpViewModel): ViewModel
+    @ViewModelKey(ContentViewModel::class)
+    fun bindMainFragmentViewModel(contentViewModel: ContentViewModel): ViewModel
 
     @ActivityScope
     @ContributesAndroidInjector
-    fun contributeMainFragment(): UpnpFragment
+    fun contributeMainFragment(): ContentFragment
 
     @ActivityScope
     @ContributesAndroidInjector

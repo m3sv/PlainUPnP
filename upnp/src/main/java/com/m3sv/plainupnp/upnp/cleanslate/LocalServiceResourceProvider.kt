@@ -5,8 +5,10 @@ import android.content.pm.PackageManager
 import com.m3sv.plainupnp.upnp.R
 import com.m3sv.plainupnp.upnp.getSettingContentDirectoryName
 import timber.log.Timber
+import javax.inject.Inject
 
-class LocalServiceResourceProvider(private val context: Context) {
+
+class LocalServiceResourceProvider @Inject constructor(private val context: Context) {
     val appName = context.getString(R.string.app_name)
     val appUrl = context.getString(R.string.app_url)
     val settingContentDirectoryName = getSettingContentDirectoryName(context)

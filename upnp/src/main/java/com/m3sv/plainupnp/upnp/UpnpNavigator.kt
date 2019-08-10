@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.upnp
 
 import io.reactivex.Observable
 
-
 interface UpnpNavigator {
     val state: Observable<ContentState>
 

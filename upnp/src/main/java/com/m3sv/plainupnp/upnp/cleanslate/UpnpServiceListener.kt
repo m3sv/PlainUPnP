@@ -5,38 +5,37 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import com.m3sv.plainupnp.ContentCache
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import org.fourthline.cling.android.AndroidUpnpService
 import org.fourthline.cling.model.message.header.STAllHeader
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
-class UpnpServiceListener @Inject constructor(private val context: Context) : CoroutineScope {
+class UpnpServiceListener @Inject constructor(private val context: Context,
+                                              private val mediaServer: MediaServer,
+                                              private val contentCache: ContentCache) {
 
     var upnpService: AndroidUpnpService? = null
         private set
-
-    private val job = Job()
-
-    override val coroutineContext: CoroutineContext = Dispatchers.IO + job
-
-    // getLocalIpAddress(context)
-    private var mediaServer: MediaServer = MediaServer(context)
 
     private val waitingListener: MutableList<RegistryListener> = mutableListOf()
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             mediaServer.start()
-            upnpService = (service as AndroidUpnpService).also {
-                it.controlPoint.search()
-                it.registry.addDevice(LocalUpnpDevice(LocalServiceResourceProvider(context), LocalService(context, getLocalIpAddress(context)))())
+            upnpService = (service as AndroidUpnpService).also { upnpService ->
+                upnpService.controlPoint.search()
+                upnpService.registry
+                        .addDevice(
+                                LocalUpnpDevice(
+                                        LocalServiceResourceProvider(context),
+                                        LocalService(
+                                                context,
+                                                getLocalIpAddress(context),
+                                                contentCache))())
             }
             waitingListener.map { addListenerSafe(it) }
         }

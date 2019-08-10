@@ -1,8 +1,5 @@
 package com.m3sv.plainupnp.presentation.main
 
-import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
-import android.net.Uri
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -10,7 +7,6 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.common.utils.onItemSelectedListener
 import com.m3sv.plainupnp.common.utils.onSeekBarChangeListener
@@ -19,8 +15,9 @@ import com.m3sv.plainupnp.data.upnp.RendererState
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.*
-import com.m3sv.plainupnp.upnp.LocalModel
 import com.m3sv.plainupnp.upnp.RenderedItem
+import com.m3sv.plainupnp.upnp.didl.ClingImageItem
+import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import timber.log.Timber
 
 
@@ -70,31 +67,26 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
 
     private fun handleRenderedItem(item: RenderedItem) {
         Timber.v("Handle rendered item: ${item.uri}")
-        with(item) {
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
 
-            Glide.with(this@MainActivity)
-                    .load(uri)
-                    .apply(requestOptions)
-                    .into(binding.controlsSheet.art)
-
-            binding.controlsSheet.title.text = title
+        val uri = when (item.item) {
+            is ClingVideoItem, is ClingImageItem -> item.uri
+            else -> R.drawable.ic_music
         }
+
+        Glide.with(this)
+                .load(uri)
+                .into(binding.controlsSheet.art)
+
+        binding.controlsSheet.title.text = item.title
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Timber.d("onCreate!")
         navigator = MainActivityRouter(this)
         viewModel = getViewModel()
 
-        with(binding) {
-            vm = viewModel
-            lifecycleOwner = this@MainActivity
-        }
-
         rendererAdapter = SimpleArrayAdapter.init(this)
-
         contentDirectoryAdapter = SimpleArrayAdapter.init(this)
 
         savedInstanceState?.let {
@@ -139,9 +131,13 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
             }
         }
 
+        observeState()
+        requestReadStoragePermission()
+    }
+
+    private fun observeState() {
         viewModel.state.nonNullObserve { state ->
             when (state) {
-                is MainState.LaunchLocally -> launchLocally(state.model)
                 is MainState.ContentDirectoriesDiscovered -> handleContentDirectories(state.devices)
                 is MainState.RenderersDiscovered -> handleRenderers(state.devices)
                 is MainState.RenderItem -> handleRenderedItem(state.item)
@@ -151,8 +147,6 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
                 }
             }.enforce
         }
-
-        requestReadStoragePermission()
     }
 
     override fun onStart() {
@@ -205,21 +199,6 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
                     else -> false
                 }
             else false
-        }
-    }
-
-    private fun launchLocally(item: Consumable<LocalModel?>) {
-        item.consume()?.let {
-            try {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.uri)).apply {
-                    flags = FLAG_ACTIVITY_NEW_TASK
-                    setDataAndType(Uri.parse(it.uri), it.contentType)
-                }
-
-                startActivity(intent)
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
         }
     }
 

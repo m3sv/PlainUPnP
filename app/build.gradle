@@ -3,7 +3,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'io.fabric'
 
-
 android {
     compileSdkVersion versions.compileSdk
     buildToolsVersion versions.buildTools
@@ -126,5 +125,12 @@ dependencies {
 kapt {
     generateStubs = true
 }
+
+detekt {
+    toolVersion = "1.0.0"
+    input = files("src/main/java")
+    filters = ".*/resources/.*,.*/build/.*"
+}
+
 
 apply plugin: 'com.google.gms.google-services'

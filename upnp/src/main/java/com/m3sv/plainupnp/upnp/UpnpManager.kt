@@ -1,12 +1,15 @@
 package com.m3sv.plainupnp.upnp
 
-import com.bumptech.glide.request.RequestOptions
 import com.m3sv.plainupnp.data.upnp.*
 import io.reactivex.Observable
 
-data class RenderItem(val item: DIDLItem, val position: Int)
+data class RenderItem(val item: DIDLItem,
+                      val position: Int)
 
-data class RenderedItem(val uri: String?, val title: String, val requestOptions: RequestOptions)
+data class RenderedItem(val id: String,
+                        val uri: String?,
+                        val title: String,
+                        val item: DIDLItem)
 
 interface UpnpManager {
     val renderers: Observable<List<DeviceDisplay>>

@@ -1,9 +1,7 @@
 package com.m3sv.plainupnp.presentation.main
 
-import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.RendererState
-import com.m3sv.plainupnp.upnp.LocalModel
 import com.m3sv.plainupnp.upnp.RenderedItem
 
 sealed class Route {
@@ -17,8 +15,8 @@ sealed class MainIntention {
     object PlayClick : MainIntention()
     object PreviousClick : MainIntention()
     object NextClick : MainIntention()
-    object RaiseVolume: MainIntention()
-    object LowerVolume: MainIntention()
+    object RaiseVolume : MainIntention()
+    object LowerVolume : MainIntention()
     data class Navigate(val route: Route) : MainIntention()
     data class SelectRenderer(val position: Int) : MainIntention()
     data class SelectContentDirectory(val position: Int) : MainIntention()
@@ -26,7 +24,6 @@ sealed class MainIntention {
 }
 
 sealed class MainState {
-    data class LaunchLocally(val model: Consumable<LocalModel?>) : MainState()
     data class RenderersDiscovered(val devices: List<DeviceDisplay>) : MainState()
     data class ContentDirectoriesDiscovered(val devices: List<DeviceDisplay>) : MainState()
     data class UpdateRendererState(val rendererState: RendererState) : MainState()

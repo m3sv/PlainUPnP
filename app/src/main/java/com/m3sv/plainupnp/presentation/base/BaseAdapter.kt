@@ -47,7 +47,7 @@ abstract class BaseAdapter<T>(private val diffCallback: ItemsDiffCallback<T>) :
     }
 
     /**
-     * Removes item at the specified position and returns modified items list
+     * Removes item at the specified position and returns modified contentItems list
      */
     fun removeAt(position: Int) = items.toMutableList().apply { removeAt(position) }
 }

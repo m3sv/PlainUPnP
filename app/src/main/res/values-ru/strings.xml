@@ -54,4 +54,5 @@
     <string name="open_privacy_policy">Открыть политику конфиденциальности</string>
     <string name="cant_launch_locally">Невозможно воспроизвести локально</string>
     <string name="enable_thumbnails">Показывать превью</string>
+    <string name="play_with">Воспроизвести с помощью</string>
 </resources>

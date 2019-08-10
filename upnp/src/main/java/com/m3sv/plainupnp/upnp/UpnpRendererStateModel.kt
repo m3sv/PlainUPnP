@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 
-
 data class UpnpRendererStateModel(
         val state: UpnpRendererState.State,
         val remainingDuration: String?,

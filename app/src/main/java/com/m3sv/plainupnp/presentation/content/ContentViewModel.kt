@@ -1,5 +1,6 @@
-package com.m3sv.plainupnp.presentation.upnp
+package com.m3sv.plainupnp.presentation.content
 
+import com.m3sv.plainupnp.ContentCache
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.common.utils.enforce
@@ -12,7 +13,8 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 
-class UpnpViewModel @Inject constructor(private val manager: UpnpManager) :
+class ContentViewModel @Inject constructor(private val manager: UpnpManager,
+                                           private val cache: ContentCache) :
         BaseViewModel<MainFragmentIntention, MainFragmentState>() {
 
     init {
@@ -32,38 +34,43 @@ class UpnpViewModel @Inject constructor(private val manager: UpnpManager) :
     }
 
 
-    private fun mapItems(items: List<DIDLObjectDisplay>): List<Item> = items.map {
-        when (it.didlObject) {
+    private fun mapItems(items: List<DIDLObjectDisplay>): List<ContentItem> = items.map { item ->
+        when (item.didlObject) {
             is ClingDIDLContainer -> {
-                Item(
-                        it.didlObject.id,
-                        it.title,
+                ContentItem(
+                        item.didlObject.id,
+                        item.didlObject.id,
+                        item.title,
                         ContentType.DIRECTORY,
                         icon = R.drawable.ic_folder
                 )
             }
 
             is ClingImageItem -> {
-                Item(
-                        (it.didlObject as ClingDIDLItem).uri,
-                        it.title,
+                ContentItem(
+                        (item.didlObject as ClingDIDLItem).uri,
+                        checkCacheForExistence(item),
+                        item.title,
                         ContentType.IMAGE,
                         icon = R.drawable.ic_image
                 )
             }
 
             is ClingVideoItem -> {
-                Item(
-                        (it.didlObject as ClingDIDLItem).uri,
-                        it.title,
+                ContentItem(
+                        (item.didlObject as ClingDIDLItem).uri,
+                        checkCacheForExistence(item),
+                        item.title,
                         ContentType.VIDEO,
                         icon = R.drawable.ic_video
                 )
             }
 
             is ClingAudioItem -> {
-                Item((it.didlObject as ClingDIDLItem).uri,
-                        it.title,
+                ContentItem(
+                        (item.didlObject as ClingDIDLItem).uri,
+                        checkCacheForExistence(item),
+                        item.title,
                         ContentType.AUDIO,
                         icon = R.drawable.ic_music
                 )
@@ -72,6 +79,10 @@ class UpnpViewModel @Inject constructor(private val manager: UpnpManager) :
             else -> throw IllegalStateException("Unknown DIDLObject")
         }
     }
+
+    private fun checkCacheForExistence(item: DIDLObjectDisplay): String? =
+            cache.get(item.didlObject.id) ?: (item.didlObject as ClingDIDLItem).uri
+
 
     override fun execute(intention: MainFragmentIntention) {
         when (intention) {
