@@ -11,9 +11,11 @@ class UpnpRendererStateObservable : Observable<UpnpRendererStateModel>() {
 
     private var innerState: UpnpInnerState? = null
 
-    val isMute: Boolean = innerState?.isMute ?: false
+    val isMute: Boolean
+        get() = innerState?.isMute ?: false
 
-    val durationSeconds: Long = innerState?.durationSeconds ?: 0L
+    val durationSeconds: Long
+        get() = innerState?.durationSeconds ?: 0L
 
     override fun subscribeActual(observer: Observer<in UpnpRendererStateModel>) {
         innerState = UpnpInnerState(observer).also { observer.onSubscribe(it) }

@@ -36,11 +36,14 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(private val contro
             is UpnpDeviceEvent.Removed -> {
                 Timber.d("Content directory removed: ${event.upnpDevice.friendlyName}")
 
-                contentDirectories -= DeviceDisplay(
+                val device = DeviceDisplay(
                         event.upnpDevice,
                         false,
                         DeviceType.CONTENT_DIRECTORY
                 )
+
+                if (contentDirectories.contains(device))
+                    contentDirectories -= device
             }
         }
 

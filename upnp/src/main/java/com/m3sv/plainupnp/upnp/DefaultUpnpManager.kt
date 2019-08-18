@@ -161,7 +161,6 @@ class DefaultUpnpManager @Inject constructor(
         if (it.state == UpnpRendererState.State.FINISHED)
             rendererCommand?.pause()
 
-        Timber.i("New renderer state: $newRendererState")
         return newRendererState
     }
 
@@ -254,7 +253,6 @@ class DefaultUpnpManager @Inject constructor(
         upnpRendererStateObservable?.run {
             rendererCommand?.run {
                 formatTime(max, progress, durationSeconds)?.let {
-                    Timber.d("Seek to $it")
                     commandSeek(it)
                 }
             }
@@ -281,9 +279,7 @@ class DefaultUpnpManager @Inject constructor(
                         val item = state.content[position]
 
                         when (item.didlObject) {
-                            is ClingDIDLContainer -> {
-                                navigateTo(BrowseToModel(item.didlObject.id, item.title))
-                            }
+                            is ClingDIDLContainer -> navigateTo(BrowseToModel(item.didlObject.id, item.title))
 
                             else -> renderItem(RenderItem(state.content[position].didlObject as DIDLItem, position))
                         }

@@ -80,8 +80,6 @@ dependencies {
     testImplementation deps.test.mockito.core
     testImplementation deps.test.coreTesting
 
-    implementation deps.androidx.leanback
-
     implementation deps.androidx.navigation.fragment
     implementation deps.androidx.navigation.ui
 
@@ -92,11 +90,14 @@ dependencies {
     implementation deps.support.cardView
     implementation deps.support.constraintLayout
     implementation deps.support.preferences
+
     implementation deps.architectureComponents.lifecycle
     implementation deps.architectureComponents.lifecycleReactiveStreams
     implementation deps.timber
+
     implementation deps.rx.kotlin
     implementation deps.rx.android
+
     implementation(deps.glide.core) {
         exclude group: "com.android.support"
     }

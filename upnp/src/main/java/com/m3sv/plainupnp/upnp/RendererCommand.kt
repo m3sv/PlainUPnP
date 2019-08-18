@@ -6,6 +6,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.fourthline.cling.controlpoint.ActionCallback
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -34,20 +35,289 @@ class RendererCommand(
 
     private var innerStopCounter = 0
 
+    private var paused: Boolean = true
+
     fun pause() {
         Timber.v("Pause renderer")
         job?.cancel()
+        paused = true
     }
 
     fun resume() {
         Timber.v("Resume renderer")
         job?.cancel()
 
-        job = GlobalScope.launch {
-            Timber.d("Launch update state!")
-            updateInfo()
+        job = GlobalScope.launch { updateInfo() }
+        paused = false
+    }
+
+    fun commandPlay() = executeAVAction {
+        object : Play(it) {
+            override fun success(invocation: ActionInvocation<*>?) {
+                Timber.v("Success playing")
+                // TODO update player state
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Failed to play $arg2")
+            }
         }
     }
+
+    fun commandStop() = executeAVAction {
+        object : Stop(it) {
+            override fun success(invocation: ActionInvocation<*>?) {
+                Timber.v("Success stopping ! ")
+                // TODO update player state
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to stop ! $arg2")
+            }
+        }
+    }
+
+    fun commandPause() = executeAVAction {
+        object : Pause(it) {
+            override fun success(invocation: ActionInvocation<*>?) {
+                Timber.v("Success pausing ! ")
+                // TODO update player state
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to pause ! $arg2")
+            }
+        }
+    }
+
+    fun commandSeek(relativeTimeTarget: String) = executeAVAction {
+        Timber.v("Seek to $relativeTimeTarget")
+        pause()
+        object : Seek(it, relativeTimeTarget) {
+            // TODO fix it, what is relativeTimeTarget ? :)
+
+            override fun success(invocation: ActionInvocation<*>?) {
+                Timber.v("Success seeking!")
+
+                GlobalScope.launch {
+                    delay(1000)
+                    updatePositionInfo(true)
+                    resume()
+                }
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to seek ! $arg2")
+            }
+        }
+    }
+
+    fun setVolume(volume: Int) = executeRenderingAction {
+        object : SetVolume(it, volume.toLong()) {
+            override fun success(invocation: ActionInvocation<*>?) {
+                super.success(invocation)
+                Timber.v("Success to set volume")
+                rendererStateObservable.setVolume(volume)
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to set volume ! $arg2")
+            }
+        }
+    }
+
+    fun raiseVolume() = executeRenderingAction {
+        object : GetVolume(it) {
+            override fun received(arg0: ActionInvocation<*>, arg1: Int) {
+                Timber.d("Raise volume: $arg1 + 1")
+                if (arg1 in 0..100) {
+                    setVolume(arg1 + 1)
+                }
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to get volume ! $arg2")
+            }
+        }
+    }
+
+    fun lowerVolume() = executeRenderingAction {
+        object : GetVolume(it) {
+            override fun received(arg0: ActionInvocation<*>, arg1: Int) {
+                Timber.d("Lower volume: $arg1 - 1")
+                if (arg1 in 0..100) {
+                    setVolume(arg1 - 1)
+                }
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to get volume ! $arg2")
+            }
+        }
+    }
+
+    fun setMute(mute: Boolean) = executeRenderingAction {
+        object : SetMute(it, mute) {
+            override fun success(invocation: ActionInvocation<*>?) {
+                Timber.v("Success setting mute status ! ")
+                rendererStateObservable.setMuted(mute)
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to set mute status ! $arg2")
+            }
+        }
+    }
+
+    fun toggleMute() {
+        setMute(!rendererStateObservable.isMute)
+    }
+
+    fun setURI(uri: String?, trackMetadata: TrackMetadata) = executeAVAction {
+        Timber.i("Set uri to $uri")
+
+        object : SetAVTransportURI(it, uri, trackMetadata.xml) {
+
+            override fun success(invocation: ActionInvocation<*>?) {
+                super.success(invocation)
+                Timber.i("URI successfully set !")
+                commandPlay()
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to set URI ! $arg2")
+            }
+        }
+    }
+
+    fun launchItem(item: DIDLItem) = executeAVAction {
+        val obj = (item as ClingDIDLItem).didlObject as? Item ?: return
+
+        var type = ""
+        when (obj) {
+            is AudioItem -> type = "audioItem"
+            is VideoItem -> type = "videoItem"
+            is ImageItem -> type = "imageItem"
+            is PlaylistItem -> type = "playlistItem"
+            is TextItem -> type = "textItem"
+
+            // TODO genre && artURI
+
+            // Stop playback before setting URI
+        }
+
+        // TODO genre && artURI
+        val trackMetadata = obj.run {
+            TrackMetadata(
+                    id,
+                    title,
+                    creator,
+                    "",
+                    "",
+                    firstResource.value,
+                    "object.item.$type"
+            )
+        }
+
+        Timber.i("TrackMetadata : $trackMetadata")
+
+        // Stop playback before setting URI
+
+        object : Stop(it) {
+            override fun success(invocation: ActionInvocation<*>?) {
+                Timber.v("Success stopping ! ")
+                callback()
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to stop ! $arg2")
+                callback()
+            }
+
+            fun callback() {
+                setURI(item.uri, trackMetadata)
+            }
+        }
+
+    }
+
+    private fun updateMediaInfo() = executeAVAction {
+        object : GetMediaInfo(it) {
+            override fun received(arg0: ActionInvocation<*>, arg1: MediaInfo) {
+                rendererStateObservable.setMediaInfo(arg1)
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to get media info ! $arg2")
+            }
+        }
+    }
+
+    private fun updatePositionInfo(ignorePaused: Boolean = false) = executeAVAction {
+        object : GetPositionInfo(it) {
+            override fun received(arg0: ActionInvocation<*>, arg1: PositionInfo) {
+                if (!paused || ignorePaused)
+                    rendererStateObservable.setPositionInfo(arg1)
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to get position info ! $arg2")
+            }
+        }
+    }
+
+    private fun updateTransportInfo() = executeAVAction {
+        object : GetTransportInfo(it) {
+            override fun received(arg0: ActionInvocation<*>, arg1: TransportInfo) {
+                rendererStateObservable.setTransportInfo(arg1)
+
+                innerStopCounter = when (arg1.currentTransportState) {
+                    TransportState.STOPPED -> ++innerStopCounter
+                    else -> 0
+                }
+
+                checkStopStateThreshold()
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to get position info ! $arg2")
+            }
+        }
+    }
+
+    private fun checkStopStateThreshold() {
+        if (innerStopCounter == 3) {
+            Timber.v("Reached stop threshold, disposing command")
+            pause()
+        }
+    }
+
+    private fun updateVolume() = executeRenderingAction {
+        object : GetVolume(it) {
+            override fun received(arg0: ActionInvocation<*>, arg1: Int) {
+                Timber.d("Receive volume ! $arg1")
+                rendererStateObservable.setVolume(arg1)
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to get volume ! $arg2")
+            }
+        }
+    }
+
+    private fun updateMute() = executeRenderingAction {
+        object : GetMute(it) {
+            override fun received(arg0: ActionInvocation<*>, arg1: Boolean) {
+                Timber.d("Receive mute status ! $arg1")
+                rendererStateObservable.setMuted(arg1)
+            }
+
+            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
+                Timber.w("Fail to get mute status ! $arg2")
+            }
+        }
+    }
+
 
     private fun getRenderingControlService(): Service<*, *>? =
             controller.selectedRenderer?.let {
@@ -59,294 +329,18 @@ class RendererCommand(
                 (it as CDevice).device?.findService(UDAServiceType("AVTransport"))
             }
 
-    fun commandPlay() {
-        getAVTransportService()?.let {
-            controlPoint.execute(object : Play(it) {
-                override fun success(invocation: ActionInvocation<*>?) {
-                    Timber.v("Success playing")
-                    // TODO update player state
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Failed to play $arg2")
-                }
-            })
+    private inline fun executeRenderingAction(callback: (Service<*, *>) -> ActionCallback) {
+        getRenderingControlService()?.let { service ->
+            controlPoint.execute(callback.invoke(service))
         }
     }
 
-    fun commandStop() {
-        getAVTransportService()?.let {
-            controlPoint.execute(object : Stop(it) {
-                override fun success(invocation: ActionInvocation<*>?) {
-                    Timber.v("Success stopping ! ")
-                    // TODO update player state
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to stop ! $arg2")
-                }
-            })
+    private inline fun executeAVAction(callback: (Service<*, *>) -> ActionCallback) {
+        getAVTransportService()?.let { service ->
+            controlPoint.execute(callback.invoke(service))
         }
     }
 
-    fun commandPause() {
-        getAVTransportService()?.let {
-            controlPoint.execute(object : Pause(it) {
-                override fun success(invocation: ActionInvocation<*>?) {
-                    Timber.v("Success pausing ! ")
-                    // TODO update player state
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to pause ! $arg2")
-                }
-            })
-        }
-    }
-
-    fun commandSeek(relativeTimeTarget: String) {
-        getAVTransportService()?.let {
-            controlPoint.execute(object : Seek(it, relativeTimeTarget) {
-                // TODO fix it, what is relativeTimeTarget ? :)
-
-                override fun success(invocation: ActionInvocation<*>?) {
-                    Timber.v("Success seeking !")
-                    // TODO update player state
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to seek ! $arg2")
-                }
-            })
-        }
-    }
-
-    fun setVolume(volume: Int) {
-        getRenderingControlService()?.let {
-            controlPoint.execute(object : SetVolume(it, volume.toLong()) {
-                override fun success(invocation: ActionInvocation<*>?) {
-                    super.success(invocation)
-                    Timber.v("Success to set volume")
-                    rendererStateObservable.setVolume(volume)
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to set volume ! $arg2")
-                }
-            })
-        }
-    }
-
-    fun raiseVolume() {
-        getRenderingControlService()?.let {
-            controlPoint.execute(object : GetVolume(it) {
-                override fun received(arg0: ActionInvocation<*>, arg1: Int) {
-                    Timber.d("Raise volume: $arg1 + 1")
-                    if (arg1 in 0..100) {
-                        setVolume(arg1 + 1)
-                    }
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to get volume ! $arg2")
-                }
-            })
-        }
-    }
-
-    fun lowerVolume() {
-        getRenderingControlService()?.let {
-            controlPoint.execute(object : GetVolume(it) {
-                override fun received(arg0: ActionInvocation<*>, arg1: Int) {
-                    Timber.d("Lower volume: $arg1 - 1")
-                    if (arg1 in 0..100) {
-                        setVolume(arg1 - 1)
-                    }
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to get volume ! $arg2")
-                }
-            })
-        }
-    }
-
-    fun setMute(mute: Boolean) {
-        getRenderingControlService()?.let {
-            controlPoint.execute(object : SetMute(it, mute) {
-                override fun success(invocation: ActionInvocation<*>?) {
-                    Timber.v("Success setting mute status ! ")
-                    rendererStateObservable.setMuted(mute)
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to set mute status ! $arg2")
-                }
-            })
-        }
-    }
-
-    fun toggleMute() {
-        setMute(!rendererStateObservable.isMute)
-    }
-
-    fun setURI(uri: String?, trackMetadata: TrackMetadata) {
-        Timber.i("Set uri to $uri")
-
-        getAVTransportService()?.let {
-            controlPoint.execute(object :
-                    SetAVTransportURI(it, uri, trackMetadata.xml) {
-
-                override fun success(invocation: ActionInvocation<*>?) {
-                    super.success(invocation)
-                    Timber.i("URI successfully set !")
-                    commandPlay()
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to set URI ! $arg2")
-                }
-            })
-        }
-    }
-
-    fun launchItem(item: DIDLItem) {
-        getAVTransportService()?.let {
-            val obj = (item as ClingDIDLItem).didlObject as? Item ?: return
-
-            var type = ""
-            when (obj) {
-                is AudioItem -> type = "audioItem"
-                is VideoItem -> type = "videoItem"
-                is ImageItem -> type = "imageItem"
-                is PlaylistItem -> type = "playlistItem"
-                is TextItem -> type = "textItem"
-
-                // TODO genre && artURI
-
-                // Stop playback before setting URI
-            }
-
-            // TODO genre && artURI
-            val trackMetadata = obj.run {
-                TrackMetadata(
-                        id,
-                        title,
-                        creator,
-                        "",
-                        "",
-                        firstResource.value,
-                        "object.item.$type"
-                )
-            }
-
-            Timber.i("TrackMetadata : $trackMetadata")
-
-            // Stop playback before setting URI
-            controlPoint.execute(object : Stop(it) {
-                override fun success(invocation: ActionInvocation<*>?) {
-                    Timber.v("Success stopping ! ")
-                    callback()
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to stop ! $arg2")
-                    callback()
-                }
-
-                fun callback() {
-                    setURI(item.uri, trackMetadata)
-                }
-            })
-        }
-    }
-
-    private fun updateMediaInfo() {
-        getAVTransportService()?.let {
-            controlPoint.execute(object : GetMediaInfo(it) {
-                override fun received(arg0: ActionInvocation<*>, arg1: MediaInfo) {
-                    rendererStateObservable.setMediaInfo(arg1)
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to get media info ! $arg2")
-                }
-            })
-        }
-    }
-
-    private fun updatePositionInfo() {
-        getAVTransportService()?.let {
-            controlPoint.execute(object : GetPositionInfo(it) {
-                override fun received(arg0: ActionInvocation<*>, arg1: PositionInfo) {
-                    rendererStateObservable.setPositionInfo(arg1)
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to get position info ! $arg2")
-                }
-            })
-        }
-    }
-
-
-    private fun updateTransportInfo() {
-        getAVTransportService()?.let {
-            controlPoint.execute(object : GetTransportInfo(it) {
-                override fun received(arg0: ActionInvocation<*>, arg1: TransportInfo) {
-                    rendererStateObservable.setTransportInfo(arg1)
-
-                    innerStopCounter = when (arg1.currentTransportState) {
-                        TransportState.STOPPED -> ++innerStopCounter
-                        else -> 0
-                    }
-
-                    checkStopStateThreshold()
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to get position info ! $arg2")
-                }
-            })
-        }
-    }
-
-    private fun checkStopStateThreshold() {
-        if (innerStopCounter == 3) {
-            Timber.v("Reached stop threshold, disposing command")
-            pause()
-        }
-    }
-
-    private fun updateVolume() {
-        getRenderingControlService()?.let {
-            controlPoint.execute(object : GetVolume(it) {
-                override fun received(arg0: ActionInvocation<*>, arg1: Int) {
-                    Timber.d("Receive volume ! $arg1")
-                    rendererStateObservable.setVolume(arg1)
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to get volume ! $arg2")
-                }
-            })
-        }
-    }
-
-    private fun updateMute() {
-        getRenderingControlService()?.let {
-            controlPoint.execute(object : GetMute(it) {
-                override fun received(arg0: ActionInvocation<*>, arg1: Boolean) {
-                    Timber.d("Receive mute status ! $arg1")
-                    rendererStateObservable.setMuted(arg1)
-                }
-
-                override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                    Timber.w("Fail to get mute status ! $arg2")
-                }
-            })
-        }
-    }
 
     fun updateFull() {
         updateMediaInfo()
@@ -360,13 +354,6 @@ class RendererCommand(
         var counter = 0
 
         while (true) {
-            Timber.d("Update state!")
-
-//            if (counter % 3 == 0) {
-//                updateVolume()
-//                updateMute()
-//            }
-
             if (counter % 6 == 0) {
                 updateMediaInfo()
             }

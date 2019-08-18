@@ -40,8 +40,6 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
     private UpnpRendererStateModel currentState;
 
     private void updateState() {
-        Timber.d("Update renderer state");
-
         UpnpRendererStateModel temp = new UpnpRendererStateModel(state,
                 getRemainingDuration(),
                 getPosition(),
@@ -69,8 +67,6 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
 
     @Override
     public void setState(@NotNull State state) {
-        Timber.v("New state: %s", state);
-
         if (this.state == state)
             return;
 
