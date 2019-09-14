@@ -26,11 +26,10 @@ import timber.log.Timber
 
 
 class RendererCommand(
-        private val controller: UpnpServiceController,
-        private val controlPoint: ControlPoint,
-        private val rendererStateObservable: UpnpRendererStateObservable
+    private val controller: UpnpServiceController,
+    private val controlPoint: ControlPoint,
+    private val rendererStateObservable: UpnpRendererStateObservable
 ) {
-
     private var job: Job? = null
 
     private var innerStopCounter = 0
@@ -209,13 +208,13 @@ class RendererCommand(
         // TODO genre && artURI
         val trackMetadata = obj.run {
             TrackMetadata(
-                    id,
-                    title,
-                    creator,
-                    "",
-                    "",
-                    firstResource.value,
-                    "object.item.$type"
+                id,
+                title,
+                creator,
+                "",
+                "",
+                firstResource.value,
+                "object.item.$type"
             )
         }
 
@@ -320,14 +319,14 @@ class RendererCommand(
 
 
     private fun getRenderingControlService(): Service<*, *>? =
-            controller.selectedRenderer?.let {
-                (it as CDevice).device?.findService(UDAServiceType("RenderingControl"))
-            }
+        controller.selectedRenderer?.let {
+            (it as CDevice).device?.findService(UDAServiceType("RenderingControl"))
+        }
 
     private fun getAVTransportService(): Service<*, *>? =
-            controller.selectedRenderer?.let {
-                (it as CDevice).device?.findService(UDAServiceType("AVTransport"))
-            }
+        controller.selectedRenderer?.let {
+            (it as CDevice).device?.findService(UDAServiceType("AVTransport"))
+        }
 
     private inline fun executeRenderingAction(callback: (Service<*, *>) -> ActionCallback) {
         getRenderingControlService()?.let { service ->

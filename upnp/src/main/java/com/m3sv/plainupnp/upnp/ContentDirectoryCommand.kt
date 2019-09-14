@@ -36,7 +36,7 @@ class ContentDirectoryCommand(
 
     private fun buildContentList(
             parent: String?,
-            didl: DIDLContent?
+            didl: DIDLContent
     ): List<DIDLObjectDisplay> {
         val result = mutableListOf<DIDLObjectDisplay>()
 
@@ -44,27 +44,25 @@ class ContentDirectoryCommand(
             result.add(DIDLObjectDisplay(ClingDIDLParentContainer(it)))
         }
 
-        didl?.let {
-            for (item in it.containers) {
-                result.add(DIDLObjectDisplay(ClingDIDLContainer(item)))
-                Timber.v("Add container: %s", item.title)
+        for (item in didl.containers) {
+            result.add(DIDLObjectDisplay(ClingDIDLContainer(item)))
+            Timber.v("Add container: %s", item.title)
+        }
+
+        for (item in didl.items) {
+            val clingItem: ClingDIDLItem = when (item) {
+                is VideoItem -> ClingVideoItem(item)
+                is AudioItem -> ClingAudioItem(item)
+                is ImageItem -> ClingImageItem(item)
+                else -> ClingDIDLItem(item)
             }
 
-            for (item in it.items) {
-                val clingItem: ClingDIDLItem = when (item) {
-                    is VideoItem -> ClingVideoItem(item)
-                    is AudioItem -> ClingAudioItem(item)
-                    is ImageItem -> ClingImageItem(item)
-                    else -> ClingDIDLItem(item)
-                }
+            result.add(DIDLObjectDisplay(clingItem))
 
-                result.add(DIDLObjectDisplay(clingItem))
+            Timber.v("Add item: %s", item.title)
 
-                Timber.v("Add item: %s", item.title)
-
-                for (p in item.properties)
-                    Timber.v("%s%s", p.descriptorName + " ", p.toString())
-            }
+            for (p in item.properties)
+                Timber.v("%s%s", p.descriptorName + " ", p.toString())
         }
 
         return result
@@ -88,7 +86,7 @@ class ContentDirectoryCommand(
             }
 
             override fun updateStatus(status: Status) {
-                Timber.v("Update browse status! ")
+                Timber.v("Update browse status!")
             }
 
             override fun failure(

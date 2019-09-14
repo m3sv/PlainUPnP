@@ -9,8 +9,8 @@ import javax.inject.Inject
 
 
 class LocalServiceResourceProvider @Inject constructor(private val context: Context) {
-    val appName = context.getString(R.string.app_name)
-    val appUrl = context.getString(R.string.app_url)
+    val appName: String = context.getString(R.string.app_name)
+    val appUrl: String = context.getString(R.string.app_url)
     val settingContentDirectoryName = getSettingContentDirectoryName(context)
     val appVersion: String
         get() {

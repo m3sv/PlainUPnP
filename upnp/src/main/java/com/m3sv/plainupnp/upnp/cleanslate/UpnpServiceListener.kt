@@ -49,7 +49,7 @@ class UpnpServiceListener @Inject constructor(private val context: Context,
     fun bindService() {
         context.bindService(Intent(
                 context,
-                com.m3sv.plainupnp.upnp.AndroidUpnpService::class.java),
+                PlainUpnpAndroidService::class.java),
                 serviceConnection,
                 Context.BIND_AUTO_CREATE
         )
@@ -84,8 +84,6 @@ class UpnpServiceListener @Inject constructor(private val context: Context,
     }
 
     private fun addListenerSafe(registryListener: RegistryListener) {
-        assert(upnpService != null)
-
         upnpService?.registry?.run {
             // Get ready for future device advertisements
             addListener(CRegistryListener(registryListener))

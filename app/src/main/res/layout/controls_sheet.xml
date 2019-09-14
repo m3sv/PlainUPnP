@@ -26,12 +26,77 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_launcher_no_shadow" />
 
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/top_guide"
+        <ImageView
+            android:id="@+id/play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="54dp" />
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/next"
+            app:layout_constraintEnd_toStartOf="@+id/next"
+            app:layout_constraintTop_toTopOf="@+id/next"
+            app:srcCompat="@drawable/ic_play_arrow" />
+
+        <ImageView
+            android:id="@+id/previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/play"
+            app:layout_constraintEnd_toStartOf="@+id/play"
+            app:layout_constraintTop_toTopOf="@+id/play"
+            app:srcCompat="@drawable/ic_skip_previous" />
+
+        <ImageView
+            android:id="@+id/next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:padding="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/art"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/art"
+            app:srcCompat="@drawable/ic_skip_next" />
+
+        <ImageView
+            android:id="@+id/content_directory_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/main_content_device_picker"
+            app:layout_constraintEnd_toStartOf="@+id/main_content_device_picker"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="@+id/art"
+            app:layout_constraintTop_toTopOf="@+id/main_content_device_picker"
+            app:srcCompat="@drawable/ic_content_directory" />
+
+        <ImageView
+            android:id="@+id/renderer_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/main_content_device_picker"
+            app:layout_constraintEnd_toStartOf="@+id/main_renderer_device_picker"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/main_content_device_picker"
+            app:layout_constraintTop_toTopOf="@+id/main_content_device_picker"
+            app:srcCompat="@drawable/ic_renderer" />
+
+        <SeekBar
+            android:id="@+id/progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:enabled="false"
+            android:progressBackgroundTint="@color/whiteHalfTransparent"
+            android:progressTint="@color/colorPrimaryLight"
+            android:thumbTint="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="@+id/art"
+            app:layout_constraintEnd_toStartOf="@+id/previous"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/art"
+            app:layout_constraintTop_toBottomOf="@+id/title" />
 
         <Spinner
             android:id="@+id/main_content_device_picker"
@@ -66,37 +131,6 @@
             app:layout_constraintVertical_bias="0.0"
             tools:listitem="@android:layout/simple_spinner_item" />
 
-        <ImageView
-            android:id="@+id/play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/next"
-            app:layout_constraintEnd_toStartOf="@+id/next"
-            app:layout_constraintTop_toTopOf="@+id/next"
-            app:srcCompat="@drawable/ic_play_arrow" />
-
-        <ImageView
-            android:id="@+id/previous"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/play"
-            app:layout_constraintEnd_toStartOf="@+id/play"
-            app:layout_constraintTop_toTopOf="@+id/play"
-            app:srcCompat="@drawable/ic_skip_previous" />
-
-        <ImageView
-            android:id="@+id/next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:padding="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/art"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/art"
-            app:srcCompat="@drawable/ic_skip_next" />
-
         <TextView
             android:id="@+id/title"
             android:layout_width="0dp"
@@ -113,46 +147,12 @@
             app:layout_constraintStart_toStartOf="@+id/progress"
             app:layout_constraintTop_toTopOf="@+id/art" />
 
-        <SeekBar
-            android:id="@+id/progress"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:enabled="false"
-            android:progressBackgroundTint="@color/whiteHalfTransparent"
-            android:progressTint="@color/colorPrimaryLight"
-            android:thumbTint="@color/colorPrimary"
-            app:layout_constraintBottom_toBottomOf="@+id/art"
-            app:layout_constraintEnd_toStartOf="@+id/previous"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/art"
-            app:layout_constraintTop_toBottomOf="@+id/title" />
-
-        <ImageView
-            android:id="@+id/content_directory_icon"
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/top_guide"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toBottomOf="@+id/main_content_device_picker"
-            app:layout_constraintEnd_toStartOf="@+id/main_content_device_picker"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="spread_inside"
-            app:layout_constraintStart_toStartOf="@+id/art"
-            app:layout_constraintTop_toTopOf="@+id/main_content_device_picker"
-            app:srcCompat="@drawable/ic_content_directory" />
-
-        <ImageView
-            android:id="@+id/renderer_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/main_content_device_picker"
-            app:layout_constraintEnd_toStartOf="@+id/main_renderer_device_picker"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/main_content_device_picker"
-            app:layout_constraintTop_toTopOf="@+id/main_content_device_picker"
-            app:srcCompat="@drawable/ic_renderer" />
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="54dp" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/bottom_guide"

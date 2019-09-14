@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.upnp;
 
+import com.m3sv.plainupnp.data.upnp.UpnpItemType;
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState;
 
 import org.fourthline.cling.support.model.MediaInfo;
@@ -7,28 +8,41 @@ import org.fourthline.cling.support.model.PositionInfo;
 import org.fourthline.cling.support.model.TransportInfo;
 import org.fourthline.cling.support.model.TransportState;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import io.reactivex.Observer;
 import io.reactivex.android.MainThreadDisposable;
 import timber.log.Timber;
 
 class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
-    private final Observer<? super UpnpRendererStateModel> observer;
+    private final Observer<? super UpnpRendererState> observer;
 
-    // / Player info
+    // Player info
     private State state;
     private int volume;
     private boolean mute;
     private int repeatMode; // TODO enum with different mode
     private int randomMode; // TODO enum with different mode
 
-    // / Track info
+    // Track info
     private PositionInfo positionInfo;
     private MediaInfo mediaInfo;
     private TransportInfo transportInfo;
 
-    public UpnpInnerState(Observer<? super UpnpRendererStateModel> observer) {
+    private final String itemId;
+    private final String itemUri;
+    private final UpnpItemType itemType;
+
+    public UpnpInnerState(Observer<? super UpnpRendererState> observer,
+                          String itemId,
+                          String itemUri,
+                          UpnpItemType itemType) {
         super();
+        this.itemId = itemId;
+        this.itemUri = itemUri;
+        this.itemType = itemType;
+
+        Timber.d("Initial state!");
         this.observer = observer;
         state = State.INITIALIZING;
         volume = -1;
@@ -37,21 +51,9 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
         updateState();
     }
 
-    private UpnpRendererStateModel currentState;
-
     private void updateState() {
-        UpnpRendererStateModel temp = new UpnpRendererStateModel(state,
-                getRemainingDuration(),
-                getPosition(),
-                getElapsedPercent(),
-                getTitle(),
-                getArtist(),
-                volume,
-                mute);
-
-        if (!isDisposed() && temp != currentState) {
-            currentState = temp;
-            observer.onNext(currentState);
+        if (!isDisposed()) {
+            observer.onNext(this);
         }
     }
 
@@ -193,12 +195,6 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
     }
 
     @Override
-    public String toString() {
-        return "UpnpRendererState [state=" + state + ", volume=" + volume + ", repeatMode=" + repeatMode + ", randomMode="
-                + randomMode + ", positionInfo=" + positionInfo + ", mediaInfo=" + mediaInfo + "]";
-    }
-
-    @Override
     public int getElapsedPercent() {
         return positionInfo.getElapsedPercent();
     }
@@ -211,5 +207,23 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
     @Override
     public String getArtist() {
         return getTrackMetadata().getArtist();
+    }
+
+    @NotNull
+    @Override
+    public String getId() {
+        return itemId;
+    }
+
+    @Nullable
+    @Override
+    public String getUri() {
+        return itemUri;
+    }
+
+    @NotNull
+    @Override
+    public UpnpItemType getType() {
+        return itemType;
     }
 }

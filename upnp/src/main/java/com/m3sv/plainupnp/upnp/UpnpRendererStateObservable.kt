@@ -1,13 +1,19 @@
 package com.m3sv.plainupnp.upnp
 
 
+import com.m3sv.plainupnp.data.upnp.UpnpItemType
+import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import io.reactivex.Observable
 import io.reactivex.Observer
 import org.fourthline.cling.support.model.MediaInfo
 import org.fourthline.cling.support.model.PositionInfo
 import org.fourthline.cling.support.model.TransportInfo
 
-class UpnpRendererStateObservable : Observable<UpnpRendererStateModel>() {
+class UpnpRendererStateObservable(
+    private val itemId: String,
+    private val itemUri: String?,
+    private val itemType: UpnpItemType
+) : Observable<UpnpRendererState>() {
 
     private var innerState: UpnpInnerState? = null
 
@@ -17,8 +23,14 @@ class UpnpRendererStateObservable : Observable<UpnpRendererStateModel>() {
     val durationSeconds: Long
         get() = innerState?.durationSeconds ?: 0L
 
-    override fun subscribeActual(observer: Observer<in UpnpRendererStateModel>) {
-        innerState = UpnpInnerState(observer).also { observer.onSubscribe(it) }
+    override fun subscribeActual(observer: Observer<in UpnpRendererState>) {
+        innerState =
+            UpnpInnerState(
+                observer,
+                itemId,
+                itemUri,
+                itemType
+            ).also { observer.onSubscribe(it) }
     }
 
     fun setVolume(volume: Int) {

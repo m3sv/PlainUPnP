@@ -1,7 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply plugin: 'io.fabric'
 
 android {
     compileSdkVersion versions.compileSdk
@@ -37,18 +36,6 @@ android {
         }
     }
 
-    flavorDimensions "store"
-
-    productFlavors {
-        playstore {
-            dimension "store"
-        }
-
-        fdroid {
-            dimension "store"
-        }
-    }
-
     compileOptions {
         targetCompatibility 1.8
         sourceCompatibility 1.8
@@ -62,12 +49,17 @@ android {
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation deps.kotlin
-    implementation deps.coroutines
+    implementation deps.coroutines.core
+    implementation deps.coroutines.rxJava2
 
     androidTestImplementation deps.test.core
     androidTestImplementation deps.test.rules
@@ -101,14 +93,13 @@ dependencies {
     implementation(deps.glide.core) {
         exclude group: "com.android.support"
     }
-
     kapt deps.glide.compiler
 
     implementation deps.dagger.core
     compileOnly deps.dagger.annotation
-    kapt deps.dagger.compiler
     implementation deps.dagger.android
     implementation deps.dagger.androidSupport
+    kapt deps.dagger.compiler
     kapt deps.dagger.androidProcessor
 
     // Cling
@@ -132,6 +123,3 @@ detekt {
     input = files("src/main/java")
     filters = ".*/resources/.*,.*/build/.*"
 }
-
-
-apply plugin: 'com.google.gms.google-services'

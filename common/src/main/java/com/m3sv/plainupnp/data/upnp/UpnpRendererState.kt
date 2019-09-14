@@ -2,6 +2,12 @@ package com.m3sv.plainupnp.data.upnp
 
 interface UpnpRendererState {
 
+    val id: String
+
+    val uri: String?
+
+    val type: UpnpItemType
+
     var state: State
 
     var volume: Int

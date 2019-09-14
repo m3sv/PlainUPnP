@@ -1,60 +1,44 @@
 package com.m3sv.plainupnp.upnp
 
 
-import com.m3sv.plainupnp.ContentCache
-import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.common.utils.formatTime
+import com.m3sv.plainupnp.common.utils.throttle
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
-import io.reactivex.BackpressureStrategy
+import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 
 class DefaultUpnpManager @Inject constructor(
-        override val renderers: RendererDiscoveryObservable,
-        override val contentDirectories: ContentDirectoryDiscoveryObservable,
-        private val controller: UpnpServiceController,
-        private val factory: Factory,
-        private val upnpNavigator: UpnpNavigator,
-        private val contentCache: ContentCache) : UpnpManager, UpnpNavigator by upnpNavigator {
+    override val renderers: RendererDiscoveryObservable,
+    override val contentDirectories: ContentDirectoryDiscoveryObservable,
+    private val controller: UpnpServiceController,
+    private val factory: UpnpFactory,
+    private val upnpNavigator: UpnpNavigator,
+    private val launchLocallyUseCase: LaunchLocallyUseCase,
+    private val upnpStateStore: UpnpStateStore
+) : UpnpManager, CoroutineScope, UpnpNavigator by upnpNavigator {
 
-    private val disposables = CompositeDisposable()
-
-    private val rendererStateSubject = PublishSubject.create<RendererState>()
-
-    override val upnpRendererState: Observable<RendererState> = rendererStateSubject
-
-    private val renderedItemSubject = PublishSubject.create<RenderedItem>()
-
-    override val renderedItem: Observable<RenderedItem> = renderedItemSubject.hide()
-
-    private var contentState: ContentState? = null
-
-    override val content: Observable<ContentState> = upnpNavigator.state.doOnNext {
-        contentState = it
+    init {
+        controller.resume()
     }
 
-    override val currentContentDirectory: UpnpDevice?
-        get() = controller.selectedContentDirectory
+    override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
 
-    private val launchLocallySubject: PublishSubject<LocalModel> = PublishSubject.create()
+    private val rendererStateSubject = PublishSubject.create<UpnpRendererState>()
 
-    override val launchLocally: Observable<LocalModel> =
-            launchLocallySubject.toFlowable(BackpressureStrategy.LATEST).toObservable()
-
-    private val selectedDirectory = PublishSubject.create<Directory>()
-
-    override val selectedContentDirectory: Observable<Directory> =
-            selectedDirectory.toFlowable(BackpressureStrategy.LATEST).toObservable()
+    override val upnpRendererState: Observable<UpnpRendererState> =
+        rendererStateSubject.startWith(EmptyUpnpRendererState)
 
     private var upnpRendererStateObservable: UpnpRendererStateObservable? = null
 
@@ -66,17 +50,19 @@ class DefaultUpnpManager @Inject constructor(
 
     private var previous: Int = -1
 
-    private val renderItem: Subject<RenderItem> = PublishSubject.create()
+    private val renderItem: Channel<RenderItem> = Channel()
 
     init {
-        renderItem
-                .throttleFirst(250, TimeUnit.MILLISECONDS)
-                .subscribe(::render, Timber::e)
-                .disposeBy(disposables)
+        launch {
+            renderItem.throttle(scope = this).collect {
+                render(it)
+            }
+        }
     }
 
     override fun selectContentDirectory(position: Int) {
-        if (position !in 0 until contentDirectories.currentContentDirectories().size) {
+        if (position !in contentDirectories.currentContentDirectories().indices) {
+            navigateTo(Destination.Home)
             return
         }
 
@@ -84,12 +70,12 @@ class DefaultUpnpManager @Inject constructor(
 
         if (controller.selectedContentDirectory != contentDirectory) {
             controller.selectedContentDirectory = contentDirectory
-            navigateHome()
+            navigateTo(Destination.Home)
         }
     }
 
     override fun selectRenderer(position: Int) {
-        if (position !in 0 until renderers.currentRenderers().size) {
+        if (position !in renderers.currentRenderers().indices) {
             return
         }
 
@@ -103,117 +89,70 @@ class DefaultUpnpManager @Inject constructor(
         }
     }
 
-    override fun renderItem(item: RenderItem) {
-        renderItem.onNext(item)
+    private fun renderItem(item: RenderItem) {
+        launch {
+            renderItem.send(item)
+        }
     }
 
     private fun render(item: RenderItem) {
         Timber.d("Render item: ${item.item.uri}")
 
         rendererCommand?.run {
-            commandStop()
             pause()
+            commandStop()
         }
 
-        updateUi(item)
-
         if (isLocal) {
-            launchItemLocally(item)
+            launchLocallyUseCase.execute(item)
             return
         }
 
         next = item.position + 1
         previous = item.position - 1
 
-        upnpRendererStateObservable = factory.createRendererState()
+        with(item.item) {
+            val type = when (this) {
+                is ClingAudioItem -> UpnpItemType.AUDIO
+                is ClingImageItem -> UpnpItemType.IMAGE
+                is ClingVideoItem -> UpnpItemType.VIDEO
+                else -> UpnpItemType.UKNOWN
+            }
 
-        upnpRendererStateObservable
-                ?.map(this::mapState)
-                ?.subscribe(rendererStateSubject)
+            upnpRendererStateObservable = UpnpRendererStateObservable(id, uri, type)
+        }
+
+        upnpRendererStateObservable?.doOnNext {
+            if (it.state == UpnpRendererState.State.FINISHED)
+                rendererCommand?.pause()
+        }?.subscribe(rendererStateSubject)
 
         rendererCommand = factory.createRendererCommand(upnpRendererStateObservable)
-                ?.apply {
-                    if (item.item !is ClingImageItem)
-                        resume()
-                    else
-                        rendererStateSubject.onNext(
-                                RendererState(
-                                        progress = 0,
-                                        state = UpnpRendererState.State.STOP,
-                                        isControlEnabled = false)
-                        )
+            ?.apply {
+                if (item.item !is ClingImageItem)
+                    resume()
 
-                    launchItem(item.item)
-                }
-    }
-
-    private fun mapState(it: UpnpRendererStateModel): RendererState {
-        val newRendererState = RendererState(
-                it.remainingDuration,
-                it.elapsedDuration,
-                it.progress,
-                it.title,
-                it.artist,
-                it.state,
-                it.state != UpnpRendererState.State.STOP
-        )
-
-        if (it.state == UpnpRendererState.State.FINISHED)
-            rendererCommand?.pause()
-
-        return newRendererState
-    }
-
-    private fun launchItemLocally(item: RenderItem) {
-        item.item.uri?.let { uri ->
-            val contentType = when (item.item) {
-                is ClingAudioItem -> "audio/*"
-                is ClingImageItem -> "image/*"
-                is ClingVideoItem -> "video/*"
-                else -> null
+                launchItem(item.item)
             }
-
-            contentType?.let {
-                launchLocallySubject.onNext(
-                        LocalModel(
-                                contentCache.get(item.item.id) ?: uri,
-                                contentType
-                        )
-                )
-            }
-        }
-    }
-
-    /**
-     * Updates control sheet with latest launched item
-     */
-    private fun updateUi(toRender: RenderItem) {
-        Timber.d("Update UI")
-
-        renderedItemSubject.onNext(
-                RenderedItem(
-                        toRender.item.id,
-                        contentCache.get(toRender.item.id) ?: toRender.item.uri,
-                        toRender.item.title,
-                        toRender.item)
-        )
     }
 
     override fun playNext() {
-        contentState?.let {
+        upnpStateStore.peekState()?.let {
             if (it is ContentState.Success
-                    && next in 0 until it.content.size
-                    && it.content[next].didlObject is DIDLItem) {
+                && next in it.content.indices
+                && it.content[next].didlObject is DIDLItem
+            ) {
                 renderItem(RenderItem(it.content[next].didlObject as DIDLItem, next))
             }
         }
     }
 
     override fun playPrevious() {
-        contentState?.let {
+        upnpStateStore.peekState()?.let {
             if (it is ContentState.Success
-                    && previous in 0 until it.content.size
-                    && it.content[previous].didlObject is DIDLItem) {
+                && previous in it.content.indices
+                && it.content[previous].didlObject is DIDLItem
+            ) {
                 renderItem(RenderItem(it.content[previous].didlObject as DIDLItem, previous))
             }
         }
@@ -241,14 +180,6 @@ class DefaultUpnpManager @Inject constructor(
         rendererCommand?.commandPlay()
     }
 
-    override fun browseHome() {
-        navigateHome()
-    }
-
-    override fun browsePrevious() {
-        upnpNavigator.navigatePrevious()
-    }
-
     override fun moveTo(progress: Int, max: Int) {
         upnpRendererStateObservable?.run {
             rendererCommand?.run {
@@ -259,29 +190,31 @@ class DefaultUpnpManager @Inject constructor(
         }
     }
 
-    override fun resumeUpnpController() {
-        controller.resume()
-    }
-
-    override fun pauseUpnpController() {
-        controller.pause()
-    }
-
     override fun dispose() {
-        disposables.clear()
+        coroutineContext.cancel()
     }
 
-    override fun itemClicked(position: Int) {
-        contentState?.let { state ->
+    override fun itemClick(position: Int) {
+        upnpStateStore.peekState()?.let { state ->
             when (state) {
                 is ContentState.Success -> {
-                    if (position in 0 until state.content.size) {
+                    if (position in state.content.indices) {
                         val item = state.content[position]
 
                         when (item.didlObject) {
-                            is ClingDIDLContainer -> navigateTo(BrowseToModel(item.didlObject.id, item.title))
+                            is ClingDIDLContainer -> navigateTo(
+                                Destination.Path(
+                                    item.didlObject.id,
+                                    item.title
+                                )
+                            )
 
-                            else -> renderItem(RenderItem(state.content[position].didlObject as DIDLItem, position))
+                            else -> renderItem(
+                                RenderItem(
+                                    state.content[position].didlObject as DIDLItem,
+                                    position
+                                )
+                            )
                         }
                     }
                 }

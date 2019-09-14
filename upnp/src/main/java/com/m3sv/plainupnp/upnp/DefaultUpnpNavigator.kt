@@ -1,53 +1,71 @@
 package com.m3sv.plainupnp.upnp
 
-import com.m3sv.plainupnp.data.upnp.Directory
-import com.m3sv.plainupnp.data.upnp.UpnpDevice
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
-import io.reactivex.subjects.Subject
+import com.m3sv.plainupnp.common.utils.throttle
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 import java.util.concurrent.Future
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
-class DefaultUpnpNavigator @Inject constructor(private val factory: UpnpFactory,
-                                               private val controller: UpnpServiceController) : UpnpNavigator {
 
-    private val contentSubject = PublishSubject.create<ContentState>()
+class DefaultUpnpNavigator @Inject constructor(
+        private val factory: UpnpFactory,
+        private val upnpStateRepository: UpnpStateStore)
+    : UpnpNavigator, CoroutineScope {
 
-    override val state: Observable<ContentState> = contentSubject
+    override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
 
-    private val selectedDirectory = PublishSubject.create<Directory>()
-
-    private val browseTo: Subject<BrowseToModel> = PublishSubject.create()
+    private val browseTo: Channel<BrowseToModel> = Channel()
 
     private var directoriesStructure = Stack<ContentState>()
 
-    private val currentContentDirectory: UpnpDevice?
-        get() = controller.selectedContentDirectory
-
-    init {
-        browseTo.throttleFirst(250, TimeUnit.MILLISECONDS)
-                .doOnNext {
-                    browseFuture?.cancel(true)
-                    contentSubject.onNext(ContentState.Loading)
-                }.subscribe(::navigate, Timber::e)
-    }
-
-    override fun navigateHome() {
-        directoriesStructure.clear()
-        previousState = null
-        browseTo.onNext(BrowseToModel("0", currentContentDirectory?.friendlyName ?: "Home"))
-    }
-
     private var browseFuture: Future<*>? = null
 
-    override fun navigateTo(model: BrowseToModel) {
-        browseTo.onNext(model)
+    private var previousState: ContentState? = null
+
+    init {
+        launch {
+            browseTo.throttle(scope = this).collect { model ->
+                navigate(model)
+            }
+        }
     }
 
-    private var previousState: ContentState? = null
+    override fun navigateTo(destination: Destination) {
+        browseFuture?.cancel(true)
+
+        when (destination) {
+            is Destination.Home -> {
+                setState(ContentState.Loading)
+                directoriesStructure.clear()
+                previousState = null
+                browseTo.offer(BrowseToModel("0", "Home"))
+            }
+
+            is Destination.Path -> {
+                setState(ContentState.Loading)
+                browseTo.offer(BrowseToModel(destination.id, destination.directoryName))
+            }
+
+            is Destination.Back -> {
+                when {
+                    directoriesStructure.size == 1 -> {
+                        previousState = directoriesStructure.pop()
+                        previousState?.let(this::setState)
+                    }
+                    directoriesStructure.size > 1 -> {
+                        setState(directoriesStructure.pop())
+                    }
+                }
+            }
+        }
+    }
 
     private fun navigate(model: BrowseToModel) {
         Timber.d("Browse: ${model.id}")
@@ -56,35 +74,14 @@ class DefaultUpnpNavigator @Inject constructor(private val factory: UpnpFactory,
             previousState?.let(directoriesStructure::push)
             val successState = ContentState.Success(model.directoryName, it ?: listOf())
 
-            contentSubject.onNext(successState)
+            setState(successState)
             previousState = successState
-
-            when (model.id) {
-                "0" -> {
-                    selectedDirectory.onNext(Directory.Home)
-                }
-                else -> {
-                    val subDirectory = Directory.SubDirectory(model.id)
-                    selectedDirectory.onNext(subDirectory)
-                }
-            }
         }
     }
 
-    override fun navigatePrevious(): Boolean {
-        browseFuture?.cancel(true)
-
-        return when {
-            directoriesStructure.size == 1 -> {
-                previousState = directoriesStructure.pop()
-                previousState?.let(contentSubject::onNext)
-                true
-            }
-            directoriesStructure.size > 1 -> {
-                contentSubject.onNext(directoriesStructure.pop())
-                true
-            }
-            else -> false
+    private fun setState(state: ContentState) {
+        launch {
+            upnpStateRepository.setState(state)
         }
     }
 }

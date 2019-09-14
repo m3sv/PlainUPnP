@@ -34,7 +34,8 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation deps.kotlin
-    implementation deps.coroutines
+    implementation deps.coroutines.core
+    implementation deps.coroutines.rxJava2
 
 
     implementation project(":common")

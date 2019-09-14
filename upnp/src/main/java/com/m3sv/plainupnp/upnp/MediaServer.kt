@@ -31,7 +31,6 @@ class MediaServer(private val context: Context) :
                 addHeader("realTimeInfo.dlna.org", "DLNA.ORG_TLAG=*")
                 addHeader("contentFeatures.dlna.org", "")
                 addHeader("transferMode.dlna.org", "Streaming")
-                // TODO use real version number
                 addHeader("Server", "DLNADOC/1.50 UPnP/1.0 Cling/2.0 PlainUPnP/" + "0.0" + " Android/" + Build.VERSION.RELEASE)
             }
         } catch (e: InvalidIdentifierException) {
@@ -81,20 +80,19 @@ class MediaServer(private val context: Context) :
                 val where = MediaStore.MediaColumns._ID + "=?"
                 val whereVal = arrayOf("" + mediaId)
 
-                val cursor = context.contentResolver.query(contentUri, columns, where, whereVal, null)
 
-                cursor?.takeIf { it.moveToFirst() }?.run {
-                    val path = getString(getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))
-                    val mime = getString(getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
+                context.contentResolver.query(contentUri, columns, where, whereVal, null)?.use { cursor ->
+                    if (cursor.moveToFirst()) {
+                        val mime = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
 
-                    path?.let {
-                        val result = ServerObject(it, mime)
-                        objectMap[id] = result
-                        return result
+                        cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA))?.let { path ->
+                            val result = ServerObject(path, mime)
+                            objectMap[id] = result
+                            return result
+                        }
                     }
-
-                    close()
                 }
+
             }
 
         } catch (e: Exception) {

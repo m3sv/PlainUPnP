@@ -1,13 +1,13 @@
 package com.m3sv.plainupnp.upnp
 
-import io.reactivex.Observable
-
 interface UpnpNavigator {
-    val state: Observable<ContentState>
 
-    fun navigateHome()
+    fun navigateTo(destination: Destination)
 
-    fun navigateTo(model: BrowseToModel)
+}
 
-    fun navigatePrevious(): Boolean
+sealed class Destination {
+    object Home : Destination()
+    object Back : Destination()
+    data class Path(val id: String, val directoryName: String) : Destination()
 }

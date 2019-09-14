@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/main_fragment"
-        android:name="com.m3sv.plainupnp.presentation.content.ContentFragment"
+        android:name="com.m3sv.plainupnp.presentation.home.HomeFragment"
         android:label="MainFragment"
         tools:layout="@layout/content_fragment">
         <action
