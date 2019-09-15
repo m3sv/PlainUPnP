@@ -22,6 +22,7 @@ import java.net.SocketException;
 import java.net.URLDecoder;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -126,34 +127,40 @@ public abstract class NanoHTTPD {
         myServerSocket = new ServerSocket();
         myServerSocket.bind((hostname != null) ? new InetSocketAddress(hostname, myPort) : new InetSocketAddress(myPort));
 
-        myThread = new Thread(() -> {
-            do {
-                try {
-                    final Socket finalAccept = myServerSocket.accept();
-                    final InputStream inputStream = finalAccept.getInputStream();
-                    if (inputStream == null) {
-                        safeClose(finalAccept);
-                    } else {
-                        asyncRunner.exec(() -> {
-                            OutputStream outputStream = null;
-                            try {
-                                outputStream = finalAccept.getOutputStream();
-                                TempFileManager tempFileManager = tempFileManagerFactory.create();
-                                HTTPSession session = new HTTPSession(tempFileManager, inputStream, outputStream);
-                                session.execute();
-                            } catch (IOException e) {
-                                Timber.e(e, "Exception while executing request!");
-                            } finally {
-                                safeClose(outputStream);
-                                safeClose(inputStream);
-                                safeClose(finalAccept);
-                            }
-                        });
+        myThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                do {
+                    try {
+                        final Socket finalAccept = myServerSocket.accept();
+                        final InputStream inputStream = finalAccept.getInputStream();
+                        if (inputStream == null) {
+                            safeClose(finalAccept);
+                        } else {
+                            asyncRunner.exec(new Runnable() {
+                                @Override
+                                public void run() {
+                                    OutputStream outputStream = null;
+                                    try {
+                                        outputStream = finalAccept.getOutputStream();
+                                        TempFileManager tempFileManager = tempFileManagerFactory.create();
+                                        HTTPSession session = new HTTPSession(tempFileManager, inputStream, outputStream);
+                                        session.execute();
+                                    } catch (IOException e) {
+                                        Timber.e(e);
+                                    } finally {
+                                        safeClose(outputStream);
+                                        safeClose(inputStream);
+                                        safeClose(finalAccept);
+                                    }
+                                }
+                            });
+                        }
+                    } catch (IOException e) {
+                        Timber.e(e);
                     }
-                } catch (IOException e) {
-                    Timber.e(e);
-                }
-            } while (!myServerSocket.isClosed());
+                } while (!myServerSocket.isClosed());
+            }
         });
         myThread.setDaemon(true);
         myThread.setName("NanoHttpd Main Listener");
@@ -258,7 +265,7 @@ public abstract class NanoHTTPD {
                 int sep = e.indexOf('=');
                 String propertyName = (sep >= 0) ? decodePercent(e.substring(0, sep)).trim() : decodePercent(e).trim();
                 if (!parms.containsKey(propertyName)) {
-                    parms.put(propertyName, new ArrayList<>());
+                    parms.put(propertyName, new ArrayList<String>());
                 }
                 String propertyValue = (sep >= 0) ? decodePercent(e.substring(sep + 1)) : null;
                 if (propertyValue != null) {
@@ -479,11 +486,7 @@ public abstract class NanoHTTPD {
         public Response(Status status, String mimeType, String txt) {
             this.status = status;
             this.mimeType = mimeType;
-            try {
-                this.data = txt != null ? new ByteArrayInputStream(txt.getBytes("UTF-8")) : null;
-            } catch (java.io.UnsupportedEncodingException uee) {
-                Timber.e(uee, uee.getMessage());
-            }
+            this.data = txt != null ? new ByteArrayInputStream(txt.getBytes(StandardCharsets.UTF_8)) : null;
         }
 
         /**
@@ -830,7 +833,7 @@ public abstract class NanoHTTPD {
                     while (line != null && line.trim().length() > 0) {
                         int p = line.indexOf(':');
                         if (p >= 0)
-                            headers.put(line.substring(0, p).trim().toLowerCase(), line.substring(p + 1).trim());
+                            headers.put(line.substring(0, p).trim().toLowerCase(Locale.getDefault()), line.substring(p + 1).trim());
                         line = in.readLine();
                     }
                 }
@@ -860,7 +863,7 @@ public abstract class NanoHTTPD {
                     while (mpline != null && mpline.trim().length() > 0) {
                         int p = mpline.indexOf(':');
                         if (p != -1) {
-                            item.put(mpline.substring(0, p).trim().toLowerCase(), mpline.substring(p + 1).trim());
+                            item.put(mpline.substring(0, p).trim().toLowerCase(Locale.getDefault()), mpline.substring(p + 1).trim());
                         }
                         mpline = in.readLine();
                     }
@@ -875,7 +878,7 @@ public abstract class NanoHTTPD {
                             String token = st.nextToken();
                             int p = token.indexOf('=');
                             if (p != -1) {
-                                disposition.put(token.substring(0, p).trim().toLowerCase(), token.substring(p + 1).trim());
+                                disposition.put(token.substring(0, p).trim().toLowerCase(Locale.getDefault()), token.substring(p + 1).trim());
                             }
                         }
                         String pname = disposition.get("name");
@@ -975,7 +978,7 @@ public abstract class NanoHTTPD {
                     dest.write(src.slice());
                     path = tempFile.getName();
                 } catch (Exception e) { // Catch exception if any
-                    Timber.e(e, "Error: " + e.getMessage());
+                    Timber.e(e);
                 } finally {
                     safeClose(fileOutputStream);
                 }
@@ -988,7 +991,7 @@ public abstract class NanoHTTPD {
                 TempFile tempFile = tempFileManager.createTempFile();
                 return new RandomAccessFile(tempFile.getName(), "rw");
             } catch (Exception e) {
-                Timber.e(e, "Error: " + e.getMessage());
+                Timber.e(e);
             }
             return null;
         }

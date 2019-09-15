@@ -16,8 +16,8 @@ import javax.inject.Inject
 
 
 class SettingsFragment : PreferenceFragmentCompat(),
-        SharedPreferences.OnSharedPreferenceChangeListener,
-        Preference.OnPreferenceClickListener {
+    SharedPreferences.OnSharedPreferenceChangeListener,
+    Preference.OnPreferenceClickListener {
 
     @Inject
     lateinit var upnpManager: UpnpManager
@@ -26,13 +26,13 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     private val appVersion: String
         get() = activity
-                ?.packageManager
-                ?.getPackageInfo(activity?.packageName, 0)
-                ?.versionName
-                ?: "1.0"
+            ?.packageManager
+            ?.getPackageInfo(activity?.packageName, 0)
+            ?.versionName
+            ?: "1.0"
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (activity as? DaggerAppCompatActivity)?.supportFragmentInjector()?.inject(this)
+        (activity as? DaggerAppCompatActivity)?.androidInjector()?.inject(this)
         super.onViewCreated(view, savedInstanceState)
 
         findPreference("version").apply { summary = appVersion }
@@ -79,10 +79,18 @@ class SettingsFragment : PreferenceFragmentCompat(),
         "rate" -> {
             try {
                 startActivity(
-                        Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + this.activity?.packageName))
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("market://details?id=" + this.activity?.packageName)
+                    )
                 )
             } catch (e: Throwable) {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("http://play.google.com/store/apps/details?id=" + this.activity?.packageName)))
+                startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("http://play.google.com/store/apps/details?id=" + this.activity?.packageName)
+                    )
+                )
             }
 
             true
@@ -90,14 +98,17 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
         "github" -> {
             val browserIntent =
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/m3sv/PlainUPnP"))
+                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/m3sv/PlainUPnP"))
             startActivity(browserIntent)
             true
         }
 
         "privacy_policy" -> {
             val browserIntent =
-                    Intent(Intent.ACTION_VIEW, Uri.parse("https://www.freeprivacypolicy.com/privacy/view/bf0284b77ca1af94b405030efd47d254"))
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://www.freeprivacypolicy.com/privacy/view/bf0284b77ca1af94b405030efd47d254")
+                )
             startActivity(browserIntent)
             true
         }
@@ -106,5 +117,5 @@ class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     private fun Int.toPx(): Int =
-            (this * this@SettingsFragment.resources.displayMetrics.density).toInt()
+        (this * this@SettingsFragment.resources.displayMetrics.density).toInt()
 }

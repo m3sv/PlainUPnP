@@ -1,27 +1,10 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+apply from: "../scripts/android-application.gradle"
+apply from: "../scripts/cling.gradle"
 apply plugin: 'kotlin-kapt'
 
 android {
-    compileSdkVersion versions.compileSdk
-    buildToolsVersion versions.buildTools
-
-    defaultConfig {
-        applicationId "com.m3sv.plainupnp"
-        minSdkVersion versions.minSdk
-        targetSdkVersion versions.targetSdk
-
-        versionCode versions.versionCode
-        versionName versions.versionName
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
     packagingOptions {
         exclude 'META-INF/beans.xml'
-    }
-
-    lintOptions {
-        abortOnError false
     }
 
     buildTypes {
@@ -36,16 +19,12 @@ android {
         }
     }
 
-    compileOptions {
-        targetCompatibility 1.8
-        sourceCompatibility 1.8
-    }
-
     dataBinding {
         enabled = true
     }
 
     sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
@@ -102,20 +81,8 @@ dependencies {
     kapt deps.dagger.compiler
     kapt deps.dagger.androidProcessor
 
-    // Cling
-    implementation group: 'org.fourthline.cling', name: 'cling-core', version: versions.cling
-    implementation group: 'org.fourthline.cling', name: 'cling-support', version: versions.cling
-    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: versions.jetty
-    implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: versions.jetty
-    implementation group: 'org.eclipse.jetty', name: 'jetty-client', version: versions.jetty
-    implementation 'org.slf4j:slf4j-jdk14:1.7.14'
-
     implementation project(':common')
     implementation project(':upnp')
-}
-
-kapt {
-    generateStubs = true
 }
 
 detekt {

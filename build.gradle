@@ -1,42 +1,26 @@
 buildscript {
     ext.kotlinVersion = '1.3.50'
     ext.detekt = '1.0.0'
-    ext.versions = [
-            'versionCode'           : 45,
-            'versionName'           : '1.5.2',
-            'compileSdk'            : 28,
-            'buildTools'            : '28.0.3',
-            'minSdk'                : 21,
-            'targetSdk'             : 28,
-            'supportLibrary'        : '1.0.0',
-            'architectureComponents': '2.0.0',
-            'dagger'                : '2.21',
-            'glide'                 : '4.9.0',
-            'cling'                 : '2.1.2-SNAPSHOT',
-            'jetty'                 : '8.2.0.v20160908',
-            'okhttp'                : '3.9.1',
-            'navigation'            : '2.1.0-alpha02'
-    ]
 
     ext.deps = [
             'androidx'              : [
                     'navigation': [
-                            "fragment": "androidx.navigation:navigation-fragment-ktx:${versions.navigation}",
-                            "ui"      : "androidx.navigation:navigation-ui-ktx:${versions.navigation}"
+                            "fragment": "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}",
+                            "ui"      : "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
                     ]
             ],
             'support'               : [
-                    'appCompat'       : "androidx.appcompat:appcompat:${versions.supportLibrary}",
-                    'v4'              : "androidx.legacy:legacy-support-v4:${versions.supportLibrary}",
-                    'design'          : "com.google.android.material:material:${versions.supportLibrary}",
-                    'recyclerView'    : "androidx.recyclerview:recyclerview:${versions.supportLibrary}",
-                    'cardView'        : "androidx.cardview:cardview:${versions.supportLibrary}",
+                    'appCompat'       : "androidx.appcompat:appcompat:${Versions.supportLibrary}",
+                    'v4'              : "androidx.legacy:legacy-support-v4:${Versions.supportLibrary}",
+                    'design'          : "com.google.android.material:material:${Versions.supportLibrary}",
+                    'recyclerView'    : "androidx.recyclerview:recyclerview:${Versions.supportLibrary}",
+                    'cardView'        : "androidx.cardview:cardview:${Versions.supportLibrary}",
                     'constraintLayout': 'androidx.constraintlayout:constraintlayout:2.0.0-beta1',
-                    'preferences'     : "androidx.preference:preference:${versions.supportLibrary}"
+                    'preferences'     : "androidx.preference:preference:${Versions.supportLibrary}"
             ],
             'architectureComponents': [
-                    'lifecycle'               : "androidx.lifecycle:lifecycle-extensions:${versions.architectureComponents}",
-                    'lifecycleReactiveStreams': "androidx.lifecycle:lifecycle-reactivestreams:${versions.architectureComponents}",
+                    'lifecycle'               : "androidx.lifecycle:lifecycle-extensions:${Versions.architectureComponents}",
+                    'lifecycleReactiveStreams': "androidx.lifecycle:lifecycle-reactivestreams:${Versions.architectureComponents}",
             ],
             'rx'                    : [
                     'kotlin' : "com.github.ReactiveX:rxKotlin:2.3.0",
@@ -46,27 +30,22 @@ buildscript {
 
             ],
             'dagger'                : [
-                    'core'            : "com.google.dagger:dagger:${versions.dagger}",
-                    'compiler'        : "com.google.dagger:dagger-compiler:${versions.dagger}",
+                    'core'            : "com.google.dagger:dagger:${Versions.dagger}",
+                    'compiler'        : "com.google.dagger:dagger-compiler:${Versions.dagger}",
                     'annotation'      : "org.glassfish:javax.annotation:10.0-b28",
-                    'android'         : "com.google.dagger:dagger-android:${versions.dagger}",
-                    'androidSupport'  : "com.google.dagger:dagger-android-support:${versions.dagger}",
-                    'androidProcessor': "com.google.dagger:dagger-android-processor:${versions.dagger}"
+                    'android'         : "com.google.dagger:dagger-android:${Versions.dagger}",
+                    'androidSupport'  : "com.google.dagger:dagger-android-support:${Versions.dagger}",
+                    'androidProcessor': "com.google.dagger:dagger-android-processor:${Versions.dagger}"
             ],
-            'timber'                : "com.jakewharton.timber:timber:4.6.0",
+            'timber'                : "com.jakewharton.timber:timber:4.7.1",
             'kotlin'                : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion",
             'glide'                 : [
-                    'core'    : "com.github.bumptech.glide:glide:${versions.glide}",
-                    'compiler': "com.github.bumptech.glide:compiler:${versions.glide}"
+                    'core'    : "com.github.bumptech.glide:glide:${Versions.glide}",
+                    'compiler': "com.github.bumptech.glide:compiler:${Versions.glide}"
             ],
             'coroutines'            : [
                     'core'   : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0",
-                    "rxJava2": "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:1.3.0"
-            ],
-            'retrofit'              : [
-                    'core'          : "com.squareup.retrofit2:retrofit:${versions.retrofit}",
-                    'rxAdapter'     : "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}",
-                    'moshiConverter': "com.squareup.retrofit2:converter-moshi:${versions.retrofit}",
+                    "rxJava2": "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:1.3.0",
             ],
             'test'                  : [
                     'core'       : "androidx.test:core:1.0.0",

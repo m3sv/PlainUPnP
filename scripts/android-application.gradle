@@ -1,0 +1,23 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion Versions.compileSdk
+    buildToolsVersion Versions.buildTools
+
+    defaultConfig {
+        applicationId "com.m3sv.plainupnp"
+        minSdkVersion Versions.minSdk
+        targetSdkVersion Versions.targetSdk
+
+        versionCode Versions.versionCode
+        versionName Versions.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    // TODO investigate this
+    lintOptions {
+        warning 'InvalidPackage'
+    }
+}
