@@ -20,30 +20,34 @@
  * You should have received a copy of the GNU General Public License
  * along with DroidUPNP.  If not, see <http:></http:>//www.gnu.org/licenses/>.
  */
+package com.m3sv.plainupnp.upnp.mediacontainers
 
-package com.m3sv.plainupnp.upnp.localcontent
 
-import android.content.Context
-import android.net.Uri
+import com.m3sv.plainupnp.upnp.ContentDirectoryService
+import org.fourthline.cling.support.model.WriteStatus
 import org.fourthline.cling.support.model.container.Container
 
-abstract class DynamicContainer(
-    id: String,
-    parentID: String?,
-    title: String?,
-    creator: String?,
-    baseURL: String,
-    protected val ctx: Context,
-    protected val uri: Uri
-) : BaseContainer(id, parentID, title, creator, baseURL) {
+open class BaseContainer(
+        id: String,
+        parentID: String?,
+        title: String?,
+        creator: String?,
+        val baseURL: String
+) : Container(
+        if (ContentDirectoryService.isRoot(parentID))
+            id
+        else
+            parentID + ContentDirectoryService.SEPARATOR + id,
+        parentID,
+        title,
+        creator,
+        Class("object.container"),
+        0
+) {
+    init {
+        setWriteStatus(WriteStatus.NOT_WRITABLE)
 
-    protected var where: String? = null
-
-    protected var whereVal: Array<String> = emptyArray()
-
-    protected var orderBy: String? = null
-
-    abstract override fun getChildCount(): Int?
-
-    abstract override fun getContainers(): List<Container>
+        isRestricted = true
+        isSearchable = true
+    }
 }

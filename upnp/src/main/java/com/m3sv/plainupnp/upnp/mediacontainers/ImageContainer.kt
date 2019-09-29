@@ -21,7 +21,7 @@
  * along with DroidUPNP.  If not, see <http:></http:>//www.gnu.org/licenses/>.
  */
 
-package com.m3sv.plainupnp.upnp.localcontent
+package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.Context
 import android.net.Uri

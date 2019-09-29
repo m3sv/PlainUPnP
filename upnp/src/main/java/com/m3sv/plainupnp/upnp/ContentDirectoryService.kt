@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.text.TextUtils
 import com.m3sv.plainupnp.ContentCache
-import com.m3sv.plainupnp.upnp.localcontent.*
+import com.m3sv.plainupnp.upnp.mediacontainers.*
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException
