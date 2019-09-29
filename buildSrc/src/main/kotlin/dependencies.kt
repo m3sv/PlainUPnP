@@ -14,6 +14,7 @@ object Versions {
     const val jetty = "8.2.0.v20160908"
     const val okhttp = "3.9.1"
     const val navigation = "2.1.0"
+    const val test = "1.2.0"
 }
 
 object Dependencies {
@@ -57,5 +58,10 @@ object Dependencies {
     val glide = mapOf(
         "core" to "com.github.bumptech.glide:glide:${Versions.glide}",
         "compiler" to "com.github.bumptech.glide:compiler:${Versions.glide}"
+    )
+
+    val test = mapOf(
+        "junit" to "junit:junit:4.12",
+        "mockito" to "org.mockito:mockito-core:1.10.19"
     )
 }

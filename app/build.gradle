@@ -36,6 +36,10 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    testImplementation Dependencies.test.junit
+    testImplementation Dependencies.test.mockito
+
     implementation Dependencies.kotlin
     implementation Dependencies.coroutines.core
     implementation Dependencies.coroutines.rxJava2
@@ -71,6 +75,8 @@ dependencies {
 
     implementation project(':common')
     implementation project(':upnp')
+
+
 }
 
 detekt {
