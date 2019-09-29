@@ -1,1 +1,0 @@
-/Users/bryanfury/Projects/Android/PlainUPnP/buildSrc/build/classes/kotlin/main/Dependencies.class:/Users/bryanfury/Projects/Android/PlainUPnP/buildSrc/build/classes/kotlin/main/Versions.class
