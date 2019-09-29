@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.upnp;
 
 import com.m3sv.plainupnp.data.upnp.UpnpItemType;
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState;
+import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata;
 
 import org.fourthline.cling.support.model.MediaInfo;
 import org.fourthline.cling.support.model.PositionInfo;
@@ -63,6 +64,7 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
     }
 
     @Override
+    @NotNull
     public State getState() {
         return state;
     }
@@ -158,6 +160,7 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
     }
 
     @Override
+    @NotNull
     public String getRemainingDuration() {
         long t = positionInfo.getTrackRemainingSeconds();
         long h = t / 3600;
@@ -167,6 +170,7 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
     }
 
     @Override
+    @NotNull
     public String getDuration() {
         long t = positionInfo.getTrackDurationSeconds();
         long h = t / 3600;
@@ -176,6 +180,7 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
     }
 
     @Override
+    @NotNull
     public String getPosition() {
         long t = positionInfo.getTrackElapsedSeconds();
         long h = t / 3600;
@@ -189,7 +194,7 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
         return positionInfo.getTrackDurationSeconds();
     }
 
-    public void resetTrackInfo() {
+    private void resetTrackInfo() {
         positionInfo = new PositionInfo();
         mediaInfo = new MediaInfo();
     }
@@ -200,13 +205,23 @@ class UpnpInnerState extends MainThreadDisposable implements UpnpRendererState {
     }
 
     @Override
+    @NotNull
     public String getTitle() {
-        return getTrackMetadata().getTitle();
+        String title = getTrackMetadata().getTitle();
+        if (title == null)
+            return "";
+        else
+            return title;
     }
 
     @Override
+    @NotNull
     public String getArtist() {
-        return getTrackMetadata().getArtist();
+        String artist = getTrackMetadata().getArtist();
+        if (artist == null)
+            return "";
+        else
+            return artist;
     }
 
     @NotNull
