@@ -11,14 +11,7 @@ data class RenderItem(
     val position: Int
 )
 
-data class RenderedItem(
-    val id: String,
-    val uri: String?,
-    val title: String
-)
-
 interface UpnpManager {
-
     val renderers: Observable<List<DeviceDisplay>>
 
     val contentDirectories: Observable<List<DeviceDisplay>>
@@ -52,9 +45,7 @@ interface UpnpManager {
     fun lowerVolume()
 
     fun dispose()
-
 }
-
 
 data class LocalModel(
     val uri: String,

@@ -12,12 +12,12 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class RendererDiscoveryObservable @Inject constructor(
-        private val controller: UpnpServiceController
+    private val controller: UpnpServiceController,
+    private val upnpResourceProvider: UpnpResourceProvider
 ) : Observable<List<DeviceDisplay>>() {
 
     private val renderers = LinkedHashSet<DeviceDisplay>().apply {
-        // TODO use resource provider
-        add(DeviceDisplay(LocalDevice("play locally")))
+        add(DeviceDisplay(LocalDevice(upnpResourceProvider.playLocally)))
     }
 
     fun currentRenderers(): List<DeviceDisplay> = renderers.toList()
@@ -27,18 +27,18 @@ class RendererDiscoveryObservable @Inject constructor(
             is UpnpDeviceEvent.Added -> {
                 Timber.d("Renderer added: ${event.upnpDevice.displayString}")
                 renderers += DeviceDisplay(
-                        event.upnpDevice,
-                        false,
-                        DeviceType.RENDERER
+                    event.upnpDevice,
+                    false,
+                    DeviceType.RENDERER
                 )
             }
 
             is UpnpDeviceEvent.Removed -> {
                 Timber.d("Renderer added: ${event.upnpDevice.displayString}")
                 renderers -= DeviceDisplay(
-                        event.upnpDevice,
-                        false,
-                        DeviceType.RENDERER
+                    event.upnpDevice,
+                    false,
+                    DeviceType.RENDERER
                 )
             }
         }
@@ -52,8 +52,8 @@ class RendererDiscoveryObservable @Inject constructor(
     }
 
     private inner class RendererDeviceObserver(
-            private val rendererDiscovery: RendererDiscovery,
-            private val observer: Observer<in List<DeviceDisplay>>
+        private val rendererDiscovery: RendererDiscovery,
+        private val observer: Observer<in List<DeviceDisplay>>
     ) : MainThreadDisposable(), DeviceDiscoveryObserver {
 
         init {

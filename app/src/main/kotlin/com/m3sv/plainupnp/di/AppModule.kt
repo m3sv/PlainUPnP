@@ -35,10 +35,11 @@ internal object AppModule {
         upnpNavigator: UpnpNavigator,
         contentCache: ContentCache,
         launchLocallyUseCase: LaunchLocallyUseCase,
-        upnpStateStore: UpnpStateStore
+        upnpStateStore: UpnpStateStore,
+        upnpResourceProvider: UpnpResourceProvider
     ) =
         DefaultUpnpManager(
-            RendererDiscoveryObservable(factory.upnpServiceController),
+            RendererDiscoveryObservable(factory.upnpServiceController, upnpResourceProvider),
             ContentDirectoryDiscoveryObservable(factory.upnpServiceController),
             factory.upnpServiceController,
             factory,

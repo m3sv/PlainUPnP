@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.di
 
+import com.m3sv.plainupnp.common.UpnpResourceProviderImpl
 import com.m3sv.plainupnp.di.scope.ApplicationScope
 import com.m3sv.plainupnp.upnp.*
 import dagger.Binds
@@ -17,4 +18,7 @@ abstract class UPnPBinder {
 
     @Binds
     abstract fun bindUpnpManager(defaultUpnpManager: DefaultUpnpManager): UpnpManager
+
+    @Binds
+    abstract fun bindUpnpResourceProvider(context: UpnpResourceProviderImpl): UpnpResourceProvider
 }

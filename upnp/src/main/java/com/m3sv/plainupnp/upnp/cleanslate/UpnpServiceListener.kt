@@ -14,9 +14,11 @@ import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
-class UpnpServiceListener @Inject constructor(private val context: Context,
-                                              private val mediaServer: MediaServer,
-                                              private val contentCache: ContentCache) {
+class UpnpServiceListener @Inject constructor(
+    private val context: Context,
+    private val mediaServer: MediaServer,
+    private val contentCache: ContentCache
+) {
 
     var upnpService: AndroidUpnpService? = null
         private set
@@ -29,13 +31,16 @@ class UpnpServiceListener @Inject constructor(private val context: Context,
             upnpService = (service as AndroidUpnpService).also { upnpService ->
                 upnpService.controlPoint.search()
                 upnpService.registry
-                        .addDevice(
-                                LocalUpnpDevice(
-                                        LocalServiceResourceProvider(context),
-                                        LocalService(
-                                                context,
-                                                getLocalIpAddress(context),
-                                                contentCache))())
+                    .addDevice(
+                        LocalUpnpDevice(
+                            LocalServiceResourceProvider(context),
+                            LocalService(
+                                context,
+                                getLocalIpAddress(context),
+                                contentCache
+                            )
+                        )()
+                    )
             }
             waitingListener.map { addListenerSafe(it) }
         }
@@ -47,11 +52,13 @@ class UpnpServiceListener @Inject constructor(private val context: Context,
     }
 
     fun bindService() {
-        context.bindService(Intent(
+        context.bindService(
+            Intent(
                 context,
-                PlainUpnpAndroidService::class.java),
-                serviceConnection,
-                Context.BIND_AUTO_CREATE
+                PlainUpnpAndroidService::class.java
+            ),
+            serviceConnection,
+            Context.BIND_AUTO_CREATE
         )
     }
 
@@ -66,8 +73,7 @@ class UpnpServiceListener @Inject constructor(private val context: Context,
                 val device = CDevice(it)
                 filter.device = device
 
-                if (filter.call())
-                    deviceList.add(device)
+                if (filter.call()) deviceList.add(device)
             }
         } catch (e: Exception) {
             Timber.e(e)
