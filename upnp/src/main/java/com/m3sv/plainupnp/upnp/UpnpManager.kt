@@ -6,9 +6,27 @@ import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import io.reactivex.Observable
 
+sealed class ContentState {
+    object Loading : ContentState()
+    data class Success(
+        val directoryName: String,
+        val content: List<DIDLObjectDisplay>
+    ) : ContentState()
+}
+
 data class RenderItem(
     val item: DIDLItem,
     val position: Int
+)
+
+data class LocalModel(
+    val uri: String,
+    val contentType: String
+)
+
+data class BrowseToModel(
+    val id: String,
+    val directoryName: String
 )
 
 interface UpnpManager {
@@ -45,22 +63,4 @@ interface UpnpManager {
     fun lowerVolume()
 
     fun dispose()
-}
-
-data class LocalModel(
-    val uri: String,
-    val contentType: String
-)
-
-data class BrowseToModel(
-    val id: String,
-    val directoryName: String
-)
-
-sealed class ContentState {
-    object Loading : ContentState()
-    data class Success(
-        val directoryName: String,
-        val content: List<DIDLObjectDisplay>
-    ) : ContentState()
 }
