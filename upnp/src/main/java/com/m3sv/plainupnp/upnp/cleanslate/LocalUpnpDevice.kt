@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.upnp.cleanslate
 
+import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import org.fourthline.cling.model.meta.*
 import org.fourthline.cling.model.types.UDADeviceType
 import org.fourthline.cling.model.types.UDN
@@ -24,8 +25,8 @@ class LocalUpnpDevice(private val serviceResourceProvider: LocalServiceResourceP
         val validationErrors = details.validate()
 
         for (error in validationErrors) {
-            Timber.e("Validation pb for property " + error.propertyName)
-            Timber.e("Error is " + error.message)
+            Timber.e("Validation pb for property %s", error.propertyName)
+            Timber.e("Error is %s", error.message)
         }
 
         val type = UDADeviceType("MediaServer", 1)

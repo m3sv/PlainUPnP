@@ -6,6 +6,7 @@ import com.m3sv.plainupnp.ContentCache
 import com.m3sv.plainupnp.di.scope.ApplicationScope
 import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.cleanslate.UpnpServiceListener
+import com.m3sv.plainupnp.upnp.resourceproviders.UpnpResourceProvider
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import dagger.Module
 import dagger.Provides

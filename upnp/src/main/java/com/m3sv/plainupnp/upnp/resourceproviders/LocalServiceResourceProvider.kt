@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp.cleanslate
+package com.m3sv.plainupnp.upnp.resourceproviders
 
 import android.content.Context
 import android.content.pm.PackageManager
