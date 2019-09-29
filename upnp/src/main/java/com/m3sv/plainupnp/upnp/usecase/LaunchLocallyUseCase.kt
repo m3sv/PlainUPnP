@@ -12,8 +12,10 @@ import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import timber.log.Timber
 import javax.inject.Inject
 
-class LaunchLocallyUseCase @Inject constructor(private val context: Context,
-                                               private val contentCache: ContentCache) {
+class LaunchLocallyUseCase @Inject constructor(
+    private val context: Context,
+    private val contentCache: ContentCache
+) {
     fun execute(item: RenderItem) {
         item.item.uri?.let { uri ->
             val contentType = when (item.item) {
@@ -25,8 +27,8 @@ class LaunchLocallyUseCase @Inject constructor(private val context: Context,
 
             contentType?.let {
                 LocalModel(
-                        contentCache.get(item.item.id) ?: uri,
-                        contentType
+                    contentCache.get(item.item.id) ?: uri,
+                    contentType
                 )
             }?.let {
                 try {
@@ -35,7 +37,8 @@ class LaunchLocallyUseCase @Inject constructor(private val context: Context,
                     }
                     // TODO Add title
 //                    val title = context.getString(R.string.play_with)
-                    val chooser = Intent.createChooser(intent, "").apply { flags += Intent.FLAG_ACTIVITY_NEW_TASK }
+                    val chooser = Intent.createChooser(intent, "")
+                        .apply { flags += Intent.FLAG_ACTIVITY_NEW_TASK }
                     if (intent.resolveActivity(context.packageManager) != null) {
                         context.startActivity(chooser)
                     }

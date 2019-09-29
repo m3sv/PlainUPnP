@@ -59,9 +59,7 @@ class DefaultUpnpNavigator @Inject constructor(
                         previousState = directoriesStructure.pop()
                         previousState?.let(this::setState)
                     }
-                    directoriesStructure.size > 1 -> {
-                        setState(directoriesStructure.pop())
-                    }
+                    directoriesStructure.size > 1 -> setState(directoriesStructure.pop())
                 }
             }
         }
