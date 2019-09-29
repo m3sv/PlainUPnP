@@ -86,7 +86,6 @@ class MediaServer(private val context: Context) :
                 val where = MediaStore.MediaColumns._ID + "=?"
                 val whereVal = arrayOf("" + mediaId)
 
-
                 context.contentResolver.query(contentUri, columns, where, whereVal, null)
                     ?.use { cursor ->
                         if (cursor.moveToFirst()) {

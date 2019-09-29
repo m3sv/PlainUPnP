@@ -27,6 +27,7 @@ package com.m3sv.plainupnp.upnp
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
 import com.m3sv.plainupnp.upnp.cleanslate.UpnpServiceListener
+import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import timber.log.Timber
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -52,7 +53,7 @@ abstract class DeviceDiscovery(protected val controller: UpnpServiceController) 
     inner class BrowsingRegistryListener : RegistryListener {
 
         override fun deviceAdded(device: UpnpDevice) {
-            Timber.v("New device detected : " + device.displayString)
+            Timber.v("New device detected : %s", device.displayString)
 
             if (device.isFullyHydrated && filter(device)) {
                 if (isSelected(device)) {
@@ -65,7 +66,7 @@ abstract class DeviceDiscovery(protected val controller: UpnpServiceController) 
         }
 
         override fun deviceRemoved(device: UpnpDevice) {
-            Timber.v("Device removed : " + device.friendlyName)
+            Timber.v("Device removed : %s", device.friendlyName)
 
             if (filter(device)) {
                 if (isSelected(device)) {
@@ -85,9 +86,9 @@ abstract class DeviceDiscovery(protected val controller: UpnpServiceController) 
         observerList.add(o)
 
         controller
-                .serviceListener
-                .getFilteredDeviceList(callableFilter)
-                .forEach { o.addedDevice(UpnpDeviceEvent.Added(it)) }
+            .serviceListener
+            .getFilteredDeviceList(callableFilter)
+            .forEach { o.addedDevice(UpnpDeviceEvent.Added(it)) }
     }
 
     fun removeObserver(o: DeviceDiscoveryObserver) {

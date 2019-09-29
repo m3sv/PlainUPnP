@@ -8,6 +8,7 @@ import android.os.IBinder
 import com.m3sv.plainupnp.ContentCache
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.*
+import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import org.fourthline.cling.android.AndroidUpnpService
 import org.fourthline.cling.model.message.header.STAllHeader

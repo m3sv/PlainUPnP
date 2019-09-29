@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp
+package com.m3sv.plainupnp.upnp.filters
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 
