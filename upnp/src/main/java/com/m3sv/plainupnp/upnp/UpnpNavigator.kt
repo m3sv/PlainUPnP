@@ -1,9 +1,7 @@
 package com.m3sv.plainupnp.upnp
 
 interface UpnpNavigator {
-
     fun navigateTo(destination: Destination)
-
 }
 
 sealed class Destination {

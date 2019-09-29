@@ -42,14 +42,14 @@ class DefaultUpnpNavigator @Inject constructor(
 
         when (destination) {
             is Destination.Home -> {
-                setState(ContentState.Loading)
+                setContentState(ContentState.Loading)
                 directoriesStructure.clear()
                 previousState = null
                 browseTo.offer(BrowseToModel("0", "Home"))
             }
 
             is Destination.Path -> {
-                setState(ContentState.Loading)
+                setContentState(ContentState.Loading)
                 browseTo.offer(BrowseToModel(destination.id, destination.directoryName))
             }
 
@@ -57,9 +57,9 @@ class DefaultUpnpNavigator @Inject constructor(
                 when {
                     directoriesStructure.size == 1 -> {
                         previousState = directoriesStructure.pop()
-                        previousState?.let(this::setState)
+                        previousState?.let(this::setContentState)
                     }
-                    directoriesStructure.size > 1 -> setState(directoriesStructure.pop())
+                    directoriesStructure.size > 1 -> setContentState(directoriesStructure.pop())
                 }
             }
         }
@@ -72,12 +72,12 @@ class DefaultUpnpNavigator @Inject constructor(
             previousState?.let(directoriesStructure::push)
             val successState = ContentState.Success(model.directoryName, it ?: listOf())
 
-            setState(successState)
+            setContentState(successState)
             previousState = successState
         }
     }
 
-    private fun setState(state: ContentState) {
+    private fun setContentState(state: ContentState) {
         launch {
             upnpStateRepository.setState(state)
         }
