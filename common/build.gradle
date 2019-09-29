@@ -3,6 +3,6 @@ apply from: '../scripts/cling.gradle'
 apply plugin: 'kotlin-kapt'
 
 dependencies {
-    implementation deps.coroutines.core
-    implementation deps.coroutines.rxJava2
+    implementation Dependencies.coroutines.core
+    implementation Dependencies.coroutines.rxJava2
 }

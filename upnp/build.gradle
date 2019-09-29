@@ -7,12 +7,12 @@ dependencies {
     implementation project(":common")
     implementation project(":nanohttpd")
 
-    implementation deps.coroutines.core
-    implementation deps.coroutines.rxJava2
+    implementation Dependencies.coroutines.core
+    implementation Dependencies.coroutines.rxJava2
 
-    implementation deps.rx.kotlin
-    implementation deps.rx.android
+    implementation Dependencies.kotlin
+    implementation Dependencies.rx.android
 
-    compileOnly deps.dagger.annotation
-    implementation deps.timber
+    compileOnly Dependencies.dagger.annotation
+    implementation Dependencies.timber
 }

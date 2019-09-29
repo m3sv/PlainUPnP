@@ -1,70 +1,5 @@
 buildscript {
-    ext.kotlinVersion = '1.3.50'
     ext.detekt = '1.0.0'
-
-    ext.deps = [
-            'androidx'              : [
-                    'navigation': [
-                            "fragment": "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}",
-                            "ui"      : "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
-                    ]
-            ],
-            'support'               : [
-                    'appCompat'       : "androidx.appcompat:appcompat:${Versions.supportLibrary}",
-                    'v4'              : "androidx.legacy:legacy-support-v4:${Versions.supportLibrary}",
-                    'design'          : "com.google.android.material:material:${Versions.supportLibrary}",
-                    'recyclerView'    : "androidx.recyclerview:recyclerview:${Versions.supportLibrary}",
-                    'cardView'        : "androidx.cardview:cardview:${Versions.supportLibrary}",
-                    'constraintLayout': 'androidx.constraintlayout:constraintlayout:2.0.0-beta1',
-                    'preferences'     : "androidx.preference:preference:${Versions.supportLibrary}"
-            ],
-            'architectureComponents': [
-                    'lifecycle'               : "androidx.lifecycle:lifecycle-extensions:${Versions.architectureComponents}",
-                    'lifecycleReactiveStreams': "androidx.lifecycle:lifecycle-reactivestreams:${Versions.architectureComponents}",
-            ],
-            'rx'                    : [
-                    'kotlin' : "com.github.ReactiveX:rxKotlin:2.3.0",
-                    'android': "io.reactivex.rxjava2:rxandroid:2.0.1",
-                    'binding': "com.jakewharton.rxbinding2:rxbinding:2.0.0",
-                    'relay'  : "com.jakewharton.rxrelay2:rxrelay:2.1.0"
-
-            ],
-            'dagger'                : [
-                    'core'            : "com.google.dagger:dagger:${Versions.dagger}",
-                    'compiler'        : "com.google.dagger:dagger-compiler:${Versions.dagger}",
-                    'annotation'      : "javax.inject:javax.inject:1",
-                    'android'         : "com.google.dagger:dagger-android:${Versions.dagger}",
-                    'androidSupport'  : "com.google.dagger:dagger-android-support:${Versions.dagger}",
-                    'androidProcessor': "com.google.dagger:dagger-android-processor:${Versions.dagger}"
-            ],
-            'timber'                : "com.jakewharton.timber:timber:4.7.1",
-            'kotlin'                : "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion",
-            'glide'                 : [
-                    'core'    : "com.github.bumptech.glide:glide:${Versions.glide}",
-                    'compiler': "com.github.bumptech.glide:compiler:${Versions.glide}"
-            ],
-            'coroutines'            : [
-                    'core'   : "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0",
-                    "rxJava2": "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:1.3.0",
-            ],
-            'test'                  : [
-                    'core'       : "androidx.test:core:1.0.0",
-                    'coreTesting': 'androidx.arch.core:core-testing:2.0.0-beta01',
-                    'espresso'   : [
-                            'core': "androidx.test.espresso:espresso-core:3.1.1"
-                    ],
-                    'runner'     : "androidx.test:runner:1.1.0",
-                    'rules'      : "androidx.test:rules:1.1.0",
-                    'assertions' : [
-                            'junit'      : "androidx.test.ext:junit:1.0.0",
-                            'truth'      : "androidx.test.ext:truth:1.0.0",
-                            'googleTruth': "com.google.truth:truth:0.42"
-                    ],
-                    'mockito'    : [
-                            'core': "com.nhaarman.mockitokotlin2:mockito-kotlin:2.1.0"
-                    ]
-            ]
-    ]
 
     repositories {
         google()
@@ -74,7 +9,7 @@ buildscript {
 
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     }
 }
 

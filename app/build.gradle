@@ -36,40 +36,37 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation deps.kotlin
-    implementation deps.coroutines.core
-    implementation deps.coroutines.rxJava2
+    implementation Dependencies.kotlin
+    implementation Dependencies.coroutines.core
+    implementation Dependencies.coroutines.rxJava2
 
-    implementation deps.androidx.navigation.fragment
-    implementation deps.androidx.navigation.ui
+    implementation Dependencies.androidx.navigation.fragment
+    implementation Dependencies.androidx.navigation.ui
 
-    implementation deps.support.appCompat
-    implementation deps.support.v4
-    implementation deps.support.design
-    implementation deps.support.recyclerView
-    implementation deps.support.cardView
-    implementation deps.support.constraintLayout
-    implementation deps.support.preferences
+    implementation Dependencies.androidx.appCompat
+    implementation Dependencies.androidx.v4
+    implementation Dependencies.androidx.design
+    implementation Dependencies.androidx.recyclerView
+    implementation Dependencies.androidx.cardView
+    implementation Dependencies.androidx.constraintLayout
+    implementation Dependencies.androidx.preferences
 
-    implementation deps.architectureComponents.lifecycle
-    implementation deps.architectureComponents.lifecycleReactiveStreams
-    implementation deps.timber
+    implementation Dependencies.androidx.lifecycle
+    implementation Dependencies.timber
 
-    implementation deps.rx.kotlin
-    implementation deps.rx.android
+    implementation Dependencies.kotlin
+    implementation Dependencies.rx.android
 
-    implementation(deps.glide.core) {
-        exclude group: "com.android.support"
-    }
-    kapt deps.glide.compiler
+    implementation Dependencies.glide.core
+    kapt Dependencies.glide.compiler
 
-    implementation deps.dagger.core
-    compileOnly deps.dagger.annotation
-    implementation deps.dagger.android
-    implementation deps.dagger.androidSupport
+    implementation Dependencies.dagger.core
+    compileOnly Dependencies.dagger.annotation
+    implementation Dependencies.dagger.android
+    implementation Dependencies.dagger.androidSupport
 
-    kapt deps.dagger.compiler
-    kapt deps.dagger.androidProcessor
+    kapt Dependencies.dagger.compiler
+    kapt Dependencies.dagger.androidProcessor
 
     implementation project(':common')
     implementation project(':upnp')

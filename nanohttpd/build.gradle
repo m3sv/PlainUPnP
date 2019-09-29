@@ -3,9 +3,8 @@ apply from: '../scripts/android-library.gradle'
 dependencies {
     implementation project(":common")
 
-    implementation deps.kotlin
-    implementation deps.coroutines.core
-    implementation deps.coroutines.rxJava2
-
-    implementation deps.timber
+    implementation Dependencies.kotlin
+    implementation Dependencies.coroutines.core
+    implementation Dependencies.coroutines.rxJava2
+    implementation Dependencies.timber
 }
