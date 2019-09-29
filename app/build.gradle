@@ -40,17 +40,6 @@ dependencies {
     implementation deps.coroutines.core
     implementation deps.coroutines.rxJava2
 
-    androidTestImplementation deps.test.core
-    androidTestImplementation deps.test.rules
-    androidTestImplementation deps.test.espresso.core
-    androidTestImplementation deps.test.assertions.junit
-
-    testImplementation deps.test.core
-    testImplementation deps.test.rules
-    testImplementation deps.test.assertions.junit
-    testImplementation deps.test.mockito.core
-    testImplementation deps.test.coreTesting
-
     implementation deps.androidx.navigation.fragment
     implementation deps.androidx.navigation.ui
 
@@ -78,6 +67,7 @@ dependencies {
     compileOnly deps.dagger.annotation
     implementation deps.dagger.android
     implementation deps.dagger.androidSupport
+
     kapt deps.dagger.compiler
     kapt deps.dagger.androidProcessor
 

@@ -6,5 +6,6 @@ dependencies {
     implementation deps.kotlin
     implementation deps.coroutines.core
     implementation deps.coroutines.rxJava2
+
     implementation deps.timber
 }

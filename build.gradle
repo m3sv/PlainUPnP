@@ -32,7 +32,7 @@ buildscript {
             'dagger'                : [
                     'core'            : "com.google.dagger:dagger:${Versions.dagger}",
                     'compiler'        : "com.google.dagger:dagger-compiler:${Versions.dagger}",
-                    'annotation'      : "org.glassfish:javax.annotation:10.0-b28",
+                    'annotation'      : "javax.inject:javax.inject:1",
                     'android'         : "com.google.dagger:dagger-android:${Versions.dagger}",
                     'androidSupport'  : "com.google.dagger:dagger-android-support:${Versions.dagger}",
                     'androidProcessor': "com.google.dagger:dagger-android-processor:${Versions.dagger}"

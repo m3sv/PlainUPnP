@@ -11,17 +11,8 @@ dependencies {
     implementation deps.coroutines.rxJava2
 
     implementation deps.rx.kotlin
-    implementation deps.rx.binding
     implementation deps.rx.android
-    implementation deps.rx.relay
 
-    implementation(deps.glide.core) {
-        exclude group: "com.android.support"
-    }
-    kapt deps.glide.compiler
-
-    implementation deps.dagger.core
     compileOnly deps.dagger.annotation
-    kapt deps.dagger.compiler
     implementation deps.timber
 }
