@@ -55,6 +55,7 @@ dependencies {
     implementation Dependencies.timber
 
     implementation Dependencies.kotlin
+    implementation Dependencies.rx.kotlin
     implementation Dependencies.rx.android
 
     implementation Dependencies.glide.core
