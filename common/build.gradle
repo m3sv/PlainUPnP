@@ -1,6 +1,7 @@
 apply from: '../scripts/android-library.gradle'
 apply from: '../scripts/cling.gradle'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.github.dcendents.android-maven'
 
 dependencies {
     implementation Dependencies.coroutines.core
