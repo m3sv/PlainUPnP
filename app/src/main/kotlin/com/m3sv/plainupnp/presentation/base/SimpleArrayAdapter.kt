@@ -9,8 +9,8 @@ import com.m3sv.plainupnp.common.StatefulComponent
 
 
 class SimpleArrayAdapter<T : Parcelable> private constructor(
-        context: Context,
-        private val key: String
+    context: Context,
+    private val key: String
 ) : ArrayAdapter<T>(context, android.R.layout.simple_list_item_1), StatefulComponent {
 
     init {
@@ -33,12 +33,12 @@ class SimpleArrayAdapter<T : Parcelable> private constructor(
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        setNewItems(savedInstanceState.getParcelableArrayList(key))
+        setNewItems(savedInstanceState.getParcelableArrayList(key) ?: listOf())
     }
 
     companion object {
         internal inline fun <reified T : Parcelable> init(context: Context): SimpleArrayAdapter<T> =
-                SimpleArrayAdapter(context, T::class.java.simpleName)
+            SimpleArrayAdapter(context, T::class.java.simpleName)
     }
 }
 
@@ -47,15 +47,13 @@ class ContentDirectory(val name: String) : Parcelable {
 
     override fun toString(): String = name
 
-    constructor(parcel: Parcel) : this(parcel.readString())
+    constructor(parcel: Parcel) : this(parcel.readString() ?: "")
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
+    override fun describeContents(): Int = 0
 
     companion object CREATOR : Parcelable.Creator<ContentDirectory> {
         override fun createFromParcel(parcel: Parcel): ContentDirectory {
@@ -71,7 +69,7 @@ class ContentDirectory(val name: String) : Parcelable {
 class Renderer(val name: String) : Parcelable {
     override fun toString(): String = name
 
-    constructor(parcel: Parcel) : this(parcel.readString())
+    constructor(parcel: Parcel) : this(parcel.readString() ?: "")
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
