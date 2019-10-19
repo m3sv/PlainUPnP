@@ -3,7 +3,7 @@ package com.m3sv.plainupnp.data.upnp
 object EmptyUpnpRendererState : UpnpRendererState {
     override val id: String = ""
     override val uri: String? = null
-    override val type: UpnpItemType = UpnpItemType.UKNOWN
+    override val type: UpnpItemType = UpnpItemType.UNKNOWN
     override var state: UpnpRendererState.State = UpnpRendererState.State.STOP
     override var volume: Int = 0
     override var isMute: Boolean = false

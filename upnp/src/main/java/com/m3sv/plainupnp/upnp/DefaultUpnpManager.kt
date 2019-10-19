@@ -116,7 +116,7 @@ class DefaultUpnpManager @Inject constructor(
                 is ClingAudioItem -> UpnpItemType.AUDIO
                 is ClingImageItem -> UpnpItemType.IMAGE
                 is ClingVideoItem -> UpnpItemType.VIDEO
-                else -> UpnpItemType.UKNOWN
+                else -> UpnpItemType.UNKNOWN
             }
 
             upnpRendererStateObservable = UpnpRendererStateObservable(id, uri, type)
