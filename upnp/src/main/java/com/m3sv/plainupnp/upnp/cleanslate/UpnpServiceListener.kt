@@ -10,6 +10,8 @@ import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.fourthline.cling.android.AndroidUpnpService
 import org.fourthline.cling.model.message.header.STAllHeader
 import timber.log.Timber
@@ -29,29 +31,33 @@ class UpnpServiceListener @Inject constructor(
 
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            mediaServer.start()
-            upnpService = (service as AndroidUpnpService).also { upnpService ->
-                upnpService.controlPoint.search()
-                upnpService.registry
-                    .addDevice(
-                        LocalUpnpDevice(
-                            LocalServiceResourceProvider(
-                                context
-                            ),
-                            LocalService(
-                                context,
-                                getLocalIpAddress(context),
-                                contentCache
-                            )
-                        )()
-                    )
+            GlobalScope.launch {
+                mediaServer.start()
+                upnpService = (service as AndroidUpnpService).also { upnpService ->
+                    upnpService.controlPoint.search()
+                    upnpService.registry
+                        .addDevice(
+                            LocalUpnpDevice(
+                                LocalServiceResourceProvider(
+                                    context
+                                ),
+                                LocalService(
+                                    context,
+                                    getLocalIpAddress(context),
+                                    contentCache
+                                )
+                            )()
+                        )
+                }
+                waitingListener.map { addListenerSafe(it) }
             }
-            waitingListener.map { addListenerSafe(it) }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            upnpService = null
-            mediaServer.stop()
+            GlobalScope.launch {
+                upnpService = null
+                mediaServer.stop()
+            }
         }
     }
 

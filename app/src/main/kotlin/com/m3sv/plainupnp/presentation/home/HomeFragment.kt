@@ -18,17 +18,20 @@ class HomeFragment : BaseFragment() {
 
     private lateinit var viewModel: HomeViewModel
 
-    private lateinit var binding: ContentFragmentBinding
-
     private lateinit var contentAdapter: GalleryContentAdapter
 
     private lateinit var recyclerLayoutManager: LinearLayoutManager
+
+    private var binding: ContentFragmentBinding? = null
 
     private var expanded = false
 
     override fun onSaveInstanceState(outState: Bundle) {
         outState.putBoolean(IS_EXPANDED, expanded)
-        outState.putParcelable(RECYCLER_STATE, binding.content.layoutManager?.onSaveInstanceState())
+        outState.putParcelable(
+            RECYCLER_STATE,
+            binding?.content?.layoutManager?.onSaveInstanceState()
+        )
         super.onSaveInstanceState(outState)
     }
 
@@ -43,7 +46,7 @@ class HomeFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = ContentFragmentBinding.inflate(inflater, container, false)
-        return binding.root
+        return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -62,7 +65,7 @@ class HomeFragment : BaseFragment() {
             viewModel.execute(MainFragmentIntention.ItemClick(it))
         }
 
-        with(binding.content) {
+        binding?.content?.run {
             setHasFixedSize(true)
             addItemDecoration(
                 OffsetItemDecoration(
@@ -75,7 +78,7 @@ class HomeFragment : BaseFragment() {
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        with(binding.search) {
+        binding?.search?.run {
             setOnSearchClickListener {
                 if (!expanded)
                     showSearch()
@@ -84,7 +87,7 @@ class HomeFragment : BaseFragment() {
             }
         }
 
-        binding.filter.addTextChangedListener(onTextChangedListener(contentAdapter::filter))
+        binding?.filter?.addTextChangedListener(onTextChangedListener(contentAdapter::filter))
 
         observeState()
     }
@@ -92,10 +95,10 @@ class HomeFragment : BaseFragment() {
     private fun observeState() {
         viewModel.state.nonNullObserve { state ->
             when (state) {
-                is MainFragmentState.Loading -> binding.progress.show()
+                is MainFragmentState.Loading -> binding?.progress?.show()
                 is MainFragmentState.Success -> {
                     contentAdapter.setWithDiff(state.contentItems)
-                    with(binding) {
+                    binding?.run {
                         folderName.text = state.directoryName
                         progress.disappear()
                     }
@@ -105,39 +108,45 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun updateFilter() {
-        if (expanded) {
-            binding.folderName.hide()
+        binding?.let { binding ->
+            if (expanded) {
+                binding.folderName.hide()
 
-            with(binding.filter) {
-                show()
-                postDelayed(this::showSoftInput, 200)
+                with(binding.filter) {
+                    show()
+                    postDelayed(this::showSoftInput, 200)
+                }
             }
         }
     }
 
     private fun hideSearch() {
-        ObjectAnimator.ofFloat(binding.folderName, View.TRANSLATION_X, 0f).start()
+        binding?.let { binding ->
+            ObjectAnimator.ofFloat(binding.folderName, View.TRANSLATION_X, 0f).start()
 
-        with(binding.filter) {
-            hideSoftInput()
-            hide()
-            setText("")
+            with(binding.filter) {
+                hideSoftInput()
+                hide()
+                setText("")
+            }
+
+            expanded = false
         }
-
-        expanded = false
     }
 
     private fun showSearch() {
-        val filter = binding.filter
+        binding?.let { binding ->
+            val filter = binding.filter
 
-        ObjectAnimator.ofFloat(binding.folderName, View.TRANSLATION_X, filter.width.toFloat())
-            .start()
+            ObjectAnimator.ofFloat(binding.folderName, View.TRANSLATION_X, filter.width.toFloat())
+                .start()
 
-        with(filter) {
-            show()
-            requestFocus()
-            showSoftInput()
-            expanded = true
+            with(filter) {
+                show()
+                requestFocus()
+                showSoftInput()
+                expanded = true
+            }
         }
     }
 

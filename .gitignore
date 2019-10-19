@@ -13,6 +13,8 @@ local.properties
 DroidUPnP.iml
 projectFilesBackup
 captures/*
+
+/release
 app/app.iml
 
 .DS_Store

@@ -124,6 +124,13 @@ public abstract class NanoHTTPD {
      * @throws IOException if the socket is in use.
      */
     public void start() throws IOException {
+        try {
+            if (myServerSocket != null && !myServerSocket.isClosed())
+                myServerSocket.close();
+        } catch (IOException e) {
+            Timber.e(e);
+        }
+
         myServerSocket = new ServerSocket();
         myServerSocket.bind((hostname != null) ? new InetSocketAddress(hostname, myPort) : new InetSocketAddress(myPort));
 

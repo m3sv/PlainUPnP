@@ -1,7 +1,7 @@
 object Versions {
     const val kotlin = "1.3.50"
-    const val versionCode = 47
-    const val versionName = "1.5.2"
+    const val versionCode = 48
+    const val versionName = "1.5.3"
     const val compileSdk = 28
     const val buildTools = "28.0.3"
     const val minSdk = 21

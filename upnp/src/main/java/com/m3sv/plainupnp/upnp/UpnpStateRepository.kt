@@ -1,12 +1,11 @@
 package com.m3sv.plainupnp.upnp
 
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.channels.ReceiveChannel
 import javax.inject.Inject
 
 interface UpnpStateStore {
-    val state: Flow<ContentState>
+    val state: ReceiveChannel<ContentState>
 
     suspend fun setState(state: ContentState)
 
@@ -19,7 +18,7 @@ class UpnpStateRepository @Inject constructor() : UpnpStateStore {
 
     private var currentState: ContentState? = null
 
-    override val state: Flow<ContentState> = _contentChannel.consumeAsFlow()
+    override val state: ReceiveChannel<ContentState> = _contentChannel
 
     override suspend fun setState(state: ContentState) {
         currentState = state
