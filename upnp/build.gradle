@@ -3,16 +3,14 @@ apply from: '../scripts/cling.gradle'
 apply plugin: 'kotlin-kapt'
 
 dependencies {
-    implementation project(":common")
-    implementation project(":common")
-    implementation project(":nanohttpd")
+    compileOnly Dependencies.dagger.annotation
 
     implementation Dependencies.coroutines.core
     implementation Dependencies.coroutines.rxJava2
-
     implementation Dependencies.kotlin
     implementation Dependencies.rx.android
-
-    compileOnly Dependencies.dagger.annotation
     implementation Dependencies.timber
+
+    implementation project(":common")
+    implementation project(":nanohttpd")
 }

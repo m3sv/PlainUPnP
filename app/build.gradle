@@ -37,33 +37,18 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    testImplementation Dependencies.test.junit
-    testImplementation Dependencies.test.mockito
-
-    implementation Dependencies.kotlin
-    implementation Dependencies.coroutines.core
-    implementation Dependencies.coroutines.rxJava2
-
-    implementation Dependencies.androidx.navigation.fragment
-    implementation Dependencies.androidx.navigation.ui
-
     implementation Dependencies.androidx.appCompat
-    implementation Dependencies.androidx.v4
-    implementation Dependencies.androidx.design
+    implementation Dependencies.androidx.material
     implementation Dependencies.androidx.recyclerView
     implementation Dependencies.androidx.cardView
     implementation Dependencies.androidx.constraintLayout
-    implementation Dependencies.androidx.preferences
-
+    implementation Dependencies.androidx.preference
     implementation Dependencies.androidx.lifecycle
-    implementation Dependencies.timber
+    implementation Dependencies.androidx.navigation.fragment
+    implementation Dependencies.androidx.navigation.ui
 
-    implementation Dependencies.kotlin
-    implementation Dependencies.rx.kotlin
-    implementation Dependencies.rx.android
-
-    implementation Dependencies.glide.core
-    kapt Dependencies.glide.compiler
+    implementation Dependencies.coroutines.core
+    implementation Dependencies.coroutines.rxJava2
 
     implementation Dependencies.dagger.core
     compileOnly Dependencies.dagger.annotation
@@ -73,10 +58,20 @@ dependencies {
     kapt Dependencies.dagger.compiler
     kapt Dependencies.dagger.androidProcessor
 
+    implementation Dependencies.glide.core
+    kapt Dependencies.glide.compiler
+
+    implementation Dependencies.kotlin
+    implementation Dependencies.timber
+
+    implementation Dependencies.rx.kotlin
+    implementation Dependencies.rx.android
+
     implementation project(':common')
     implementation project(':upnp')
 
-
+    testImplementation Dependencies.test.junit
+    testImplementation Dependencies.test.mockito
 }
 
 detekt {

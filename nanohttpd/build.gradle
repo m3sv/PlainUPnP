@@ -1,10 +1,10 @@
 apply from: '../scripts/android-library.gradle'
 
 dependencies {
-    implementation project(":common")
-
-    implementation Dependencies.kotlin
     implementation Dependencies.coroutines.core
     implementation Dependencies.coroutines.rxJava2
+    implementation Dependencies.kotlin
     implementation Dependencies.timber
+
+    implementation project(":common")
 }
