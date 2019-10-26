@@ -14,7 +14,6 @@ import kotlin.coroutines.CoroutineContext
 
 abstract class BaseViewModel<Intention, State> : ViewModel(), CoroutineScope {
 
-
     private val job = Job()
 
     override val coroutineContext: CoroutineContext = Dispatchers.Main + job
