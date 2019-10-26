@@ -16,8 +16,7 @@ import javax.inject.Inject
 
 
 class SettingsFragment : PreferenceFragmentCompat(),
-    SharedPreferences.OnSharedPreferenceChangeListener,
-    Preference.OnPreferenceClickListener {
+    SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Inject
     lateinit var upnpManager: UpnpManager
@@ -25,20 +24,63 @@ class SettingsFragment : PreferenceFragmentCompat(),
     private val darkThemeKey by lazy(LazyThreadSafetyMode.NONE) { getString(R.string.dark_theme_key) }
 
     private val appVersion: String
-        get() = activity
-            ?.packageManager
-            ?.getPackageInfo(activity?.packageName, 0)
-            ?.versionName
-            ?: "1.0"
+        get() = requireActivity()
+            .packageManager
+            .getPackageInfo(requireActivity().packageName, 0)
+            .versionName
+
+    private val preferenceClickListener = Preference.OnPreferenceClickListener { preference ->
+        when (preference.key) {
+            "rate" -> {
+                try {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("market://details?id=" + this.activity?.packageName)
+                        )
+                    )
+                } catch (e: Throwable) {
+                    startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("http://play.google.com/store/apps/details?id=" + this.activity?.packageName)
+                        )
+                    )
+                }
+
+                true
+            }
+
+            "github" -> {
+                val browserIntent =
+                    Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/m3sv/PlainUPnP"))
+                startActivity(browserIntent)
+                true
+            }
+
+            "privacy_policy" -> {
+                val browserIntent =
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://www.freeprivacypolicy.com/privacy/view/bf0284b77ca1af94b405030efd47d254")
+                    )
+                startActivity(browserIntent)
+                true
+            }
+
+            else -> false
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         (activity as? DaggerAppCompatActivity)?.androidInjector()?.inject(this)
         super.onViewCreated(view, savedInstanceState)
 
-        findPreference("version").apply { summary = appVersion }
-        findPreference("rate").also { it.onPreferenceClickListener = this }
-        findPreference("github").also { it.onPreferenceClickListener = this }
-        findPreference("privacy_policy").also { it.onPreferenceClickListener = this }
+        findPreference<Preference>("version")?.summary = appVersion
+        findPreference<Preference>("rate")?.onPreferenceClickListener = preferenceClickListener
+        findPreference<Preference>("github")?.onPreferenceClickListener = preferenceClickListener
+        findPreference<Preference>("privacy_policy")?.onPreferenceClickListener =
+            preferenceClickListener
 
         listView.layoutParams = (listView.layoutParams as ViewGroup.MarginLayoutParams).apply {
             bottomMargin = 64.toPx()
@@ -75,46 +117,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
         }
     }
 
-    override fun onPreferenceClick(preference: Preference): Boolean = when (preference.key) {
-        "rate" -> {
-            try {
-                startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("market://details?id=" + this.activity?.packageName)
-                    )
-                )
-            } catch (e: Throwable) {
-                startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("http://play.google.com/store/apps/details?id=" + this.activity?.packageName)
-                    )
-                )
-            }
-
-            true
-        }
-
-        "github" -> {
-            val browserIntent =
-                Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/m3sv/PlainUPnP"))
-            startActivity(browserIntent)
-            true
-        }
-
-        "privacy_policy" -> {
-            val browserIntent =
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://www.freeprivacypolicy.com/privacy/view/bf0284b77ca1af94b405030efd47d254")
-                )
-            startActivity(browserIntent)
-            true
-        }
-
-        else -> false
-    }
 
     private fun Int.toPx(): Int =
         (this * this@SettingsFragment.resources.displayMetrics.density).toInt()

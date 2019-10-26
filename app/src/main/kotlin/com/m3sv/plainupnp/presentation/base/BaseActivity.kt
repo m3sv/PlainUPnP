@@ -6,6 +6,9 @@ import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
+import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -36,9 +39,9 @@ abstract class BaseActivity<Binding : ViewDataBinding> : DaggerAppCompatActivity
                 .getDefaultSharedPreferences(this)
                 .getBoolean(getString(R.string.dark_theme_key), false)
         ) {
-            setTheme(R.style.MainActivityThemeDark)
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
         } else {
-            setTheme(R.style.MainActivityThemeLight)
+            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
         }
 
         super.onCreate(savedInstanceState)

@@ -5,6 +5,6 @@
         android:topLeftRadius="@dimen/bottom_sheet_corner_radius"
         android:topRightRadius="@dimen/bottom_sheet_corner_radius" />
     <padding android:top="@dimen/bottom_sheet_top_padding" />
-    <solid android:color="?attr/backgroundColor" />
+    <solid android:color="?attr/colorSurface" />
     <stroke android:color="#15000000" android:width="1dp"/>
 </shape>

@@ -10,7 +10,6 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="?actionBarSize"
-            android:background="?attr/backgroundColor"
             android:elevation="4dp">
 
             <TextView

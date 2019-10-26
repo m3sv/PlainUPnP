@@ -18,47 +18,17 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="ActivityTheme.Primary.Base.Light" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="primaryTextColor">@color/colorPrimary</item>
         <item name="secondaryTextColor">@color/colorPrimary</item>
         <item name="dividerColor">@color/colorPrimaryLight</item>
-        <item name="iconPlaceholder">@drawable/ic_video</item>
-        <item name="preferenceTheme">@style/PrefsTheme</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="backgroundColor">@color/lightBackground</item>
-        <item name="searchViewColor">@color/colorPrimary</item>
-    </style>
-
-    <style name="ActivityTheme.Primary.Base.Dark" parent="Theme.AppCompat.NoActionBar">
-        <item name="primaryTextColor">@color/colorPrimary</item>
-        <item name="secondaryTextColor">@color/colorPrimary</item>
-        <item name="dividerColor">@color/colorPrimaryLight</item>
-        <item name="iconPlaceholder">@drawable/ic_video</item>
-        <item name="preferenceTheme">@style/PrefsTheme</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="backgroundColor">@color/darkBackground</item>
-        <item name="searchViewColor">@android:color/darker_gray</item>
-    </style>
-
-    <!-- Specific Feed activity theme -->
-    <style name="MainActivityThemeLight" parent="ActivityTheme.Primary.Base.Light">
-        <!--<item name="android:windowBackground">@color/lightBackground</item>-->
-    </style>
-
-    <style name="MainActivityThemeDark" parent="ActivityTheme.Primary.Base.Dark">
-        <!--<item name="android:windowBackground">@color/darkBackground</item>-->
-    </style>
-
-    <style name="PrefsTheme" parent="@style/PreferenceThemeOverlay.v14.Material">
         <item name="colorControlActivated">@color/colorPrimary</item>
-        <item name="android:colorAccent">?android:attr/textColorHint</item>
+        <item name="iconPlaceholder">@drawable/ic_video</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     </style>
 
-    <style name="AppTheme.Dark" parent="Theme.AppCompat.NoActionBar" />
-
-    <style name="SplashTheme" parent="ActivityTheme.Primary.Base.Dark">
+    <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 </resources>

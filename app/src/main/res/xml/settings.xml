@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory android:title="@string/general_category">
+
+    <com.m3sv.plainupnp.preference.AppPreferenceCategory android:title="@string/general_category">
         <SwitchPreference
             android:defaultValue="@bool/default_enable_dark_theme"
             android:icon="@drawable/ic_theme"
             android:key="@string/dark_theme_key"
             android:title="@string/enable_dark_theme" />
-    </PreferenceCategory>
+    </com.m3sv.plainupnp.preference.AppPreferenceCategory>
 
-    <PreferenceCategory android:title="@string/upnp_category">
+    <com.m3sv.plainupnp.preference.AppPreferenceCategory android:title="@string/upnp_category">
         <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"
             android:icon="@drawable/ic_image"
@@ -32,9 +33,9 @@
             android:icon="@drawable/ic_visibility_off"
             android:key="pref_enable_thumbnails"
             android:title="@string/enable_thumbnails" />
-    </PreferenceCategory>
+    </com.m3sv.plainupnp.preference.AppPreferenceCategory>
 
-    <PreferenceCategory android:title="@string/about">
+    <com.m3sv.plainupnp.preference.AppPreferenceCategory android:title="@string/about">
         <PreferenceScreen
             android:key="version"
             android:summary="1.0"
@@ -55,6 +56,6 @@
             android:summary="@string/open_privacy_policy"
             android:title="@string/privacy_policy" />
 
-    </PreferenceCategory>
+    </com.m3sv.plainupnp.preference.AppPreferenceCategory>
 
 </PreferenceScreen>

@@ -15,14 +15,14 @@ fun View.hideSoftInput() {
             .hideSoftInputFromWindow(windowToken, 0)
 }
 
-inline fun View.hide() {
+fun View.hide() {
     visibility = View.INVISIBLE
 }
 
-inline fun View.disappear() {
+fun View.disappear() {
     visibility = View.GONE
 }
 
-inline fun View.show() {
+fun View.show() {
     visibility = View.VISIBLE
 }
