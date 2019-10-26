@@ -8,18 +8,12 @@ out/*
 target/*
 build/*
 key/*
-app/app.iml
 local.properties
-DroidUPnP.iml
 projectFilesBackup
 captures/*
 
 /release
-app/app.iml
-
 .DS_Store
-
-PlainUPnP.iml
-network/network.iml
-
 playstore/
+
+*.iml
