@@ -8,24 +8,22 @@
     <string name="source_url" translatable="false">https://github.com/m3sv/PlainUPnP</string>
     <string name="dark_theme_key" translatable="false">dark_theme_enabled_key</string>
     <string name="empty_content" translatable="false">-</string>
+    <string name="udn" translatable="false">UDN</string>
+    <string name="desc_xml" translatable="false">Description XML</string>
+    <string name="manufacturer" translatable="false">Manufacturer</string>
+    <string name="manufacturer_url" translatable="false">Manufacturer URL</string>
+    <string name="model_name" translatable="false">Model name</string>
+    <string name="copyright" translatable="false">Copyright</string>
+    <string name="model_url" translatable="false">Model URL</string>
+    <string name="presention_url" translatable="false">Presentation URL</string>
+    <string name="model_number" translatable="false">Model number</string>
+    <string name="model_desc" translatable="false">Model description</string>
+    <string name="about_copyright" translatable="false">Copyright © 2019 Vadym Shavalda</string>
 
     <string name="version">Version</string>
     <string name="app_url">Placeholder</string>
     <string name="settings">Settings</string>
     <string name="home">Home</string>
-    <string name="manufacturer">Manufacturer</string>
-    <string name="manufacturer_url">Manufacturer URL</string>
-    <string name="model_name">Model name</string>
-    <string name="model_url">Model URL</string>
-    <string name="model_number">Model number</string>
-    <string name="model_desc">Model description</string>
-    <string name="presention_url">Presentation URL</string>
-    <string name="desc_xml">Description XML</string>
-    <string name="udn">UDN</string>
-    <string name="copyright">Copyright</string>
-    <string name="about_copyright">Copyright © 2018 Vadim Shavalda</string>
-    <string name="license">License</string>
-    <string name="source">Source Code</string>
     <string name="active_content_directory_description">Activate a local Content Directory server</string>
     <string name="content_directory_title">Content Directory</string>
     <string name="switch_theme">Switch theme</string>
@@ -39,7 +37,7 @@
     <string name="search">Filter…</string>
     <string name="play_locally">Play locally</string>
     <string name="about">About</string>
-    <string name="rate">Rate us</string>
+    <string name="rate">Rate PlainUPnP</string>
     <string name="open_play_store">Open Google Play</string>
     <string name="github_link_title">Source code on Github</string>
     <string name="all">All</string>
