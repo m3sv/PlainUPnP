@@ -1,6 +1,7 @@
 apply from: "../scripts/android-application.gradle"
 apply from: "../scripts/cling.gradle"
 apply plugin: 'kotlin-kapt'
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     packagingOptions {

@@ -1,20 +1,28 @@
 object Versions {
+    const val architectureComponents = "2.0.0"
+    const val buildTools = "29.0.0"
+    const val cling = "2.1.2-SNAPSHOT"
+    const val compileSdk = 29
+    const val dagger = "2.24"
+    const val detekt = "1.0.0"
+    const val glide = "4.9.0"
+    const val jetty = "8.2.0.v20160908"
     const val kotlin = "1.3.50"
+    const val minSdk = 21
+    const val navigation = "2.1.0"
+    const val okhttp = "3.9.1"
+    const val supportLibrary = "1.1.0"
+    const val targetSdk = 29
+    const val test = "1.2.0"
     const val versionCode = 48
     const val versionName = "1.5.3"
-    const val compileSdk = 29
-    const val buildTools = "29.0.0"
-    const val minSdk = 21
-    const val targetSdk = 29
-    const val supportLibrary = "1.1.0"
-    const val architectureComponents = "2.0.0"
-    const val dagger = "2.24"
-    const val glide = "4.9.0"
-    const val cling = "2.1.2-SNAPSHOT"
-    const val jetty = "8.2.0.v20160908"
-    const val okhttp = "3.9.1"
-    const val navigation = "2.1.0"
-    const val test = "1.2.0"
+}
+
+object ClasspathDependencies {
+    val androidTools = "com.android.tools.build:gradle:3.5.1"
+    val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+    val navigationSafeArgs =
+        "androidx.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
 }
 
 object Dependencies {

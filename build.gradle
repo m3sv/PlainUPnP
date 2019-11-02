@@ -1,6 +1,4 @@
 buildscript {
-    ext.detekt = '1.0.0'
-
     repositories {
         google()
         jcenter()
@@ -8,8 +6,9 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+        classpath ClasspathDependencies.androidTools
+        classpath ClasspathDependencies.kotlinGradle
+        classpath ClasspathDependencies.navigationSafeArgs
     }
 }
 
@@ -18,7 +17,7 @@ plugins {
 }
 
 detekt {
-    toolVersion = "1.0.0"
+    toolVersion = Versions.detekt
     input = files("src/main/kotlin")
     filters = ".*/resources/.*,.*/build/.*"
 }
@@ -28,9 +27,6 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven {
-            url 'https://maven.google.com/'
-        }
         maven {
             url 'http://4thline.org/m2'
         }
