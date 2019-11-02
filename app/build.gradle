@@ -63,6 +63,7 @@ dependencies {
     kapt Dependencies.glide.compiler
 
     implementation Dependencies.kotlin
+    implementation Dependencies.okHttp
     implementation Dependencies.timber
 
     implementation Dependencies.rx.kotlin

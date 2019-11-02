@@ -1,7 +1,7 @@
 object Versions {
     const val architectureComponents = "2.0.0"
     const val buildTools = "29.0.0"
-    const val cling = "2.1.2-SNAPSHOT"
+    const val cling = "2.1.1"
     const val compileSdk = 29
     const val dagger = "2.24"
     const val detekt = "1.0.0"
@@ -10,7 +10,7 @@ object Versions {
     const val kotlin = "1.3.50"
     const val minSdk = 21
     const val navigation = "2.1.0"
-    const val okhttp = "3.9.1"
+    const val okHttp = "3.9.1"
     const val supportLibrary = "1.1.0"
     const val targetSdk = 29
     const val test = "1.2.0"
@@ -28,6 +28,7 @@ object ClasspathDependencies {
 object Dependencies {
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
     const val timber = "com.jakewharton.timber:timber:4.7.1"
+    const val okHttp = "com.squareup.okhttp3:okhttp:4.2.2"
 
     val androidx = mapOf(
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",
