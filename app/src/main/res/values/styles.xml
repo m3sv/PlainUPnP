@@ -1,24 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  Copyright (C) 2013 Aurélien Chabot <aurelien@chabot.fr>
+<?xml version="1.0" encoding="utf-8"?>
 
-  This file is part of DroidUPNP.
-
-  DroidUPNP is free software: you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
-
-  DroidUPNP is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License
-  along with DroidUPNP.  If not, see <http://www.gnu.org/licenses/>.
--->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.Plain" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="primaryTextColor">@color/colorPrimary</item>
         <item name="secondaryTextColor">@color/colorPrimary</item>
         <item name="dividerColor">@color/colorPrimaryLight</item>
@@ -26,9 +10,15 @@
         <item name="iconPlaceholder">@drawable/ic_video</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <style name="SplashTheme" parent="AppTheme">
+    <style name="Widget.Plain.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="android:theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+    </style>
+
+    <style name="Theme.Plain.Splash">
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
+
 </resources>
