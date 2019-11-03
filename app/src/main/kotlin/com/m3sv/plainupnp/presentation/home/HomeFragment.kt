@@ -1,42 +1,44 @@
 package com.m3sv.plainupnp.presentation.home
 
-import android.animation.ObjectAnimator
+import android.animation.LayoutTransition
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.LinearLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.m3sv.plainupnp.common.utils.*
-import com.m3sv.plainupnp.databinding.ContentFragmentBinding
+import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.utils.disappear
+import com.m3sv.plainupnp.common.utils.show
+import com.m3sv.plainupnp.databinding.HomeFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
 
-
 class HomeFragment : BaseFragment() {
-
     private lateinit var viewModel: HomeViewModel
-
     private lateinit var contentAdapter: GalleryContentAdapter
-
     private lateinit var recyclerLayoutManager: LinearLayoutManager
 
-    private var binding: ContentFragmentBinding? = null
+    private lateinit var binding: HomeFragmentBinding
 
-    private var expanded = false
-
+    /**
+     * This can be triggered before [onCreateView] is finished,
+     * so we check if binding was initialized before trying to save it's state
+     */
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putBoolean(IS_EXPANDED, expanded)
-        outState.putParcelable(
-            RECYCLER_STATE,
-            binding?.content?.layoutManager?.onSaveInstanceState()
-        )
+        if (this::binding.isInitialized)
+            outState.putParcelable(
+                RECYCLER_STATE,
+                binding.content.layoutManager?.onSaveInstanceState()
+            )
         super.onSaveInstanceState(outState)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
         viewModel = getViewModel()
     }
 
@@ -45,8 +47,10 @@ class HomeFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = ContentFragmentBinding.inflate(inflater, container, false)
-        return binding?.root
+        binding = HomeFragmentBinding.inflate(inflater, container, false).apply {
+            (activity as AppCompatActivity).setSupportActionBar(homeToolbar)
+        }
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,17 +59,14 @@ class HomeFragment : BaseFragment() {
         recyclerLayoutManager = LinearLayoutManager(requireContext())
 
         savedInstanceState?.let {
-            expanded = it.getBoolean(IS_EXPANDED, false)
             recyclerLayoutManager.onRestoreInstanceState(it.getParcelable(RECYCLER_STATE))
         }
-
-        updateFilter()
 
         contentAdapter = GalleryContentAdapter(Glide.with(this)) {
             viewModel.execute(MainFragmentIntention.ItemClick(it))
         }
 
-        binding?.content?.run {
+        binding.content.run {
             setHasFixedSize(true)
             addItemDecoration(
                 OffsetItemDecoration(
@@ -78,28 +79,32 @@ class HomeFragment : BaseFragment() {
             (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
 
-        binding?.search?.run {
-            setOnSearchClickListener {
-                if (!expanded)
-                    showSearch()
-                else
-                    hideSearch()
+        observeState()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.home_toolbar_menu, menu)
+        menu.findItem(R.id.home_search).apply {
+            (actionView as SearchView).apply {
+                applySearchViewTransitionAnimation()
+                setSearchQueryListener()
+            }
+
+            setOnMenuItemClickListener {
+                it.expandActionView()
             }
         }
-
-        binding?.filter?.addTextChangedListener(onTextChangedListener(contentAdapter::filter))
-
-        observeState()
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     private fun observeState() {
         viewModel.state.nonNullObserve { state ->
             when (state) {
-                is MainFragmentState.Loading -> binding?.progress?.show()
+                is MainFragmentState.Loading -> binding.progress.show()
                 is MainFragmentState.Success -> {
                     contentAdapter.setWithDiff(state.contentItems)
-                    binding?.run {
-                        folderName.text = state.directoryName
+                    binding.run {
+                        homeToolbar.title = state.directoryName
                         progress.disappear()
                     }
                 }
@@ -107,51 +112,22 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    private fun updateFilter() {
-        binding?.let { binding ->
-            if (expanded) {
-                binding.folderName.hide()
+    private fun SearchView.setSearchQueryListener() {
+        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean = false
 
-                with(binding.filter) {
-                    show()
-                    postDelayed(this::showSoftInput, 200)
-                }
+            override fun onQueryTextChange(newText: String): Boolean {
+                contentAdapter.filter(newText)
+                return true
             }
-        }
+        })
     }
 
-    private fun hideSearch() {
-        binding?.let { binding ->
-            ObjectAnimator.ofFloat(binding.folderName, View.TRANSLATION_X, 0f).start()
-
-            with(binding.filter) {
-                hideSoftInput()
-                hide()
-                setText("")
-            }
-
-            expanded = false
-        }
-    }
-
-    private fun showSearch() {
-        binding?.let { binding ->
-            val filter = binding.filter
-
-            ObjectAnimator.ofFloat(binding.folderName, View.TRANSLATION_X, filter.width.toFloat())
-                .start()
-
-            with(filter) {
-                show()
-                requestFocus()
-                showSoftInput()
-                expanded = true
-            }
-        }
+    private fun SearchView.applySearchViewTransitionAnimation() {
+        findViewById<LinearLayout>(R.id.search_bar).layoutTransition = LayoutTransition()
     }
 
     companion object {
-        private const val IS_EXPANDED = "is_expanded"
         private const val RECYCLER_STATE = "recycler_state_key"
     }
 }

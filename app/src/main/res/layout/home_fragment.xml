@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!--        <FrameLayout-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="?actionBarSize"-->
+        <!--            android:elevation="4dp">-->
+
+        <!--            <TextView-->
+        <!--                android:id="@+id/folder_name"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:layout_gravity="top|start"-->
+        <!--                android:layout_marginStart="16dp"-->
+        <!--                android:ellipsize="end"-->
+        <!--                android:fontFamily="sans-serif-medium"-->
+        <!--                android:gravity="center"-->
+        <!--                android:maxLines="1"-->
+        <!--                android:textSize="18sp"-->
+        <!--                tools:text="Sample text" />-->
+
+        <!--            <EditText-->
+        <!--                android:id="@+id/filter"-->
+        <!--                android:layout_width="match_parent"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:layout_marginStart="16dp"-->
+        <!--                android:backgroundTint="@color/transparent"-->
+        <!--                android:hint="@string/search"-->
+        <!--                android:imeOptions="flagNoExtractUi"-->
+        <!--                android:inputType="text"-->
+        <!--                android:singleLine="true"-->
+        <!--                android:visibility="invisible"-->
+        <!--                tools:visibility="visible" />-->
+
+        <!--            <com.m3sv.plainupnp.presentation.views.SearchView-->
+        <!--                android:id="@+id/search"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="match_parent"-->
+        <!--                android:layout_gravity="top|end"-->
+        <!--                android:layout_marginEnd="16dp"-->
+        <!--                android:elevation="4dp"-->
+        <!--                android:gravity="end"-->
+        <!--                android:nextFocusLeft="@id/content" />-->
+        <!--        </FrameLayout>-->
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/home_toolbar"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_width="match_parent"
+                app:title="@string/app_name" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="?actionBarSize"
+            android:layout_marginBottom="64dp"
+            android:clipToPadding="false"
+            android:paddingTop="8dp" />
+
+        <ProgressBar
+            android:id="@+id/progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:indeterminateTint="@color/colorPrimary"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </FrameLayout>
+</layout>
