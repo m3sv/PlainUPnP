@@ -9,7 +9,7 @@ interface UpnpStateStore {
 
     suspend fun setState(state: ContentState)
 
-    fun peekState(): ContentState?
+    suspend fun peekState(): ContentState?
 }
 
 class UpnpStateRepository @Inject constructor() : UpnpStateStore {
@@ -25,5 +25,5 @@ class UpnpStateRepository @Inject constructor() : UpnpStateStore {
         _contentChannel.send(state)
     }
 
-    override fun peekState(): ContentState? = currentState
+    override suspend fun peekState(): ContentState? = currentState
 }

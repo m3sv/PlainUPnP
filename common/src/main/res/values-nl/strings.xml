@@ -31,4 +31,8 @@
     <string name="cant_launch_locally">Kan niet lokaal lanceren</string>
     <string name="enable_thumbnails">Miniaturen inschakelen</string>
     <string name="play_with">Speel met</string>
+    <string name="cancel">Annuleren</string>
+    <string name="exit">Uitgang</string>
+    <string name="dialog_exit_body">Weet u zeker dat u de toepassing wilt verlaten?</string>
+    <string name="dialog_exit_title">Uitgang?</string>
 </resources>

@@ -24,10 +24,10 @@ class DefaultUpnpManager @Inject constructor(
     override val contentDirectories: ContentDirectoryDiscoveryObservable,
     private val controller: UpnpServiceController,
     private val factory: UpnpFactory,
-    private val upnpNavigator: UpnpNavigator,
+    private val navigator: UpnpNavigator,
     private val launchLocallyUseCase: LaunchLocallyUseCase,
-    private val upnpStateStore: UpnpStateStore
-) : UpnpManager, CoroutineScope, UpnpNavigator by upnpNavigator {
+    private val stateStore: UpnpStateStore
+) : UpnpManager, CoroutineScope, UpnpNavigator by navigator {
 
     init {
         controller.resume()
@@ -137,23 +137,27 @@ class DefaultUpnpManager @Inject constructor(
     }
 
     override fun playNext() {
-        upnpStateStore.peekState()?.let {
-            if (it is ContentState.Success
-                && next in it.content.indices
-                && it.content[next].didlObject is DIDLItem
-            ) {
-                renderItem(RenderItem(it.content[next].didlObject as DIDLItem, next))
+        launch {
+            stateStore.peekState()?.let {
+                if (it is ContentState.Success
+                    && next in it.content.indices
+                    && it.content[next].didlObject is DIDLItem
+                ) {
+                    renderItem(RenderItem(it.content[next].didlObject as DIDLItem, next))
+                }
             }
         }
     }
 
     override fun playPrevious() {
-        upnpStateStore.peekState()?.let {
-            if (it is ContentState.Success
-                && previous in it.content.indices
-                && it.content[previous].didlObject is DIDLItem
-            ) {
-                renderItem(RenderItem(it.content[previous].didlObject as DIDLItem, previous))
+        launch {
+            stateStore.peekState()?.let { state ->
+                if (state is ContentState.Success
+                    && previous in state.content.indices
+                    && state.content[previous].didlObject is DIDLItem
+                ) {
+                    renderItem(RenderItem(state.content[previous].didlObject as DIDLItem, previous))
+                }
             }
         }
     }
@@ -195,32 +199,37 @@ class DefaultUpnpManager @Inject constructor(
     }
 
     override fun itemClick(position: Int) {
-        upnpStateStore.peekState()?.let { state ->
-            when (state) {
-                is ContentState.Success -> {
-                    if (position in state.content.indices) {
-                        val item = state.content[position]
-
-                        when (item.didlObject) {
-                            is ClingDIDLContainer -> navigateTo(
-                                Destination.Path(
-                                    item.didlObject.id,
-                                    item.title
-                                )
-                            )
-
-                            else -> renderItem(
-                                RenderItem(
-                                    state.content[position].didlObject as DIDLItem,
-                                    position
-                                )
-                            )
-                        }
+        launch {
+            stateStore.peekState()?.let { state ->
+                when (state) {
+                    is ContentState.Success -> handleClick(position, state.content)
+                    is ContentState.Exit -> handleClick(position, state.root.content)
+                    is ContentState.Loading -> {
+                        // no-op
                     }
                 }
-                is ContentState.Loading -> {
-                    // no-op
-                }
+            }
+        }
+    }
+
+    private fun handleClick(position: Int, content: List<DIDLObjectDisplay>) {
+        if (position in content.indices) {
+            val item = content[position]
+
+            when (item.didlObject) {
+                is ClingDIDLContainer -> navigateTo(
+                    Destination.Path(
+                        item.didlObject.id,
+                        item.title
+                    )
+                )
+
+                else -> renderItem(
+                    RenderItem(
+                        content[position].didlObject as DIDLItem,
+                        position
+                    )
+                )
             }
         }
     }

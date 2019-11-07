@@ -1,85 +1,74 @@
 package com.m3sv.plainupnp.upnp
 
-import com.m3sv.plainupnp.common.utils.throttle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.*
-import java.util.concurrent.Future
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
+interface UpnpNavigator {
+    fun navigateTo(destination: Destination)
+}
+
+sealed class Destination {
+    object Home : Destination()
+    object Back : Destination()
+    data class Path(val id: String, val directoryName: String) : Destination()
+}
 
 class DefaultUpnpNavigator @Inject constructor(
-        private val factory: UpnpFactory,
-        private val upnpStateRepository: UpnpStateStore)
-    : UpnpNavigator, CoroutineScope {
+    private val factory: UpnpFactory,
+    private val stateStore: UpnpStateStore
+) : UpnpNavigator, CoroutineScope {
 
     override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
 
-    private val browseTo: Channel<BrowseToModel> = Channel()
-
-    private var directoriesStructure = Stack<ContentState>()
-
-    private var browseFuture: Future<*>? = null
-
-    private var previousState: ContentState? = null
-
-    init {
-        launch {
-            browseTo.throttle(scope = this).collect { model ->
-                navigate(model)
-            }
-        }
-    }
+    private var directoriesStructure = Stack<ContentState.Success>()
 
     override fun navigateTo(destination: Destination) {
-        browseFuture?.cancel(true)
-
         when (destination) {
             is Destination.Home -> {
                 setContentState(ContentState.Loading)
-                directoriesStructure.clear()
-                previousState = null
-                browseTo.offer(BrowseToModel("0", "Home"))
+                browse(BrowseToModel("0", "Home"))
             }
 
             is Destination.Path -> {
                 setContentState(ContentState.Loading)
-                browseTo.offer(BrowseToModel(destination.id, destination.directoryName))
+                browse(BrowseToModel(destination.id, destination.directoryName))
             }
 
             is Destination.Back -> {
-                when {
-                    directoriesStructure.size == 1 -> {
-                        previousState = directoriesStructure.pop()
-                        previousState?.let(this::setContentState)
+                if (!directoriesStructure.empty()) {
+                    val directory = directoriesStructure.pop()
+
+                    val state = if (directoriesStructure.empty()) {
+                        directoriesStructure.push(directory)
+                        ContentState.Exit(directory)
+                    } else {
+                        directoriesStructure.peek()
                     }
-                    directoriesStructure.size > 1 -> setContentState(directoriesStructure.pop())
+
+                    setContentState(state)
                 }
             }
         }
     }
 
-    private fun navigate(model: BrowseToModel) {
-        Timber.d("Browse: ${model.id}")
-
-        browseFuture = factory.createContentDirectoryCommand()?.browse(model.id, null) {
-            previousState?.let(directoriesStructure::push)
+    private fun browse(model: BrowseToModel) {
+        factory.createContentDirectoryCommand()?.browse(model.id, null) {
             val successState = ContentState.Success(model.directoryName, it ?: listOf())
 
+            directoriesStructure.push(successState)
+
             setContentState(successState)
-            previousState = successState
         }
     }
 
     private fun setContentState(state: ContentState) {
         launch {
-            upnpStateRepository.setState(state)
+            stateStore.setState(state)
         }
     }
 }

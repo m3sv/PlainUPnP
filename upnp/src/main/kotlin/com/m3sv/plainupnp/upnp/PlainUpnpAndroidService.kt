@@ -14,4 +14,5 @@ class PlainUpnpAndroidService : AndroidUpnpServiceImpl() {
                 override fun getRegistryMaintenanceIntervalMillis(): Int = 7000
                 override fun getSyncProtocolExecutorService(): ExecutorService = executor
             }
+
 }

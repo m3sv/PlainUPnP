@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.presentation.home
 
+import com.m3sv.plainupnp.Consumable
 import com.m3sv.plainupnp.ContentCache
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.enforce
@@ -20,7 +21,7 @@ class HomeViewModel @Inject constructor(
     private val observeUpnpStateUseCase: ObserveUpnpStateUseCase,
     private val cache: ContentCache
 ) :
-    BaseViewModel<MainFragmentIntention, MainFragmentState>() {
+    BaseViewModel<HomeIntention, HomeState>() {
 
     init {
         launch {
@@ -28,12 +29,19 @@ class HomeViewModel @Inject constructor(
                 Timber.i("New home state: $state")
                 updateState(
                     when (state) {
-                        is ContentState.Loading -> MainFragmentState.Loading
+                        is ContentState.Loading -> HomeState.Loading
                         is ContentState.Success ->
-                            MainFragmentState.Success(
+                            HomeState.Success(
                                 state.directoryName,
                                 mapItems(state.content)
                             )
+
+                        is ContentState.Exit -> HomeState.Exit(
+                            HomeState.Success(
+                                state.root.directoryName,
+                                mapItems(state.root.content)
+                            ), Consumable(Unit)
+                        )
                     }
                 )
             }
@@ -89,11 +97,9 @@ class HomeViewModel @Inject constructor(
     private fun checkCacheForExistence(item: DIDLObjectDisplay): String? =
         cache.get(item.didlObject.id) ?: (item.didlObject as ClingDIDLItem).uri
 
-    override fun execute(intention: MainFragmentIntention) {
+    override fun execute(intention: HomeIntention) {
         when (intention) {
-            is MainFragmentIntention.ItemClick -> {
-                manager.itemClick(intention.position)
-            }
+            is HomeIntention.ItemClick -> manager.itemClick(intention.position)
         }.enforce
     }
 }

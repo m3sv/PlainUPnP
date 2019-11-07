@@ -7,6 +7,7 @@ import com.m3sv.plainupnp.R
 interface MainActivityNavigator {
     fun navigateToMain()
     fun navigateToSettings()
+    fun isRoot(): Boolean
 }
 
 class MainActivityRouter(private val activity: AppCompatActivity) : MainActivityNavigator {
@@ -16,5 +17,9 @@ class MainActivityRouter(private val activity: AppCompatActivity) : MainActivity
 
     override fun navigateToSettings() {
         activity.findNavController(R.id.nav_host_container).navigate(R.id.settings_fragment)
+    }
+
+    override fun isRoot(): Boolean = with(activity.findNavController(R.id.nav_host_container)) {
+        graph.startDestination == currentDestination?.id
     }
 }

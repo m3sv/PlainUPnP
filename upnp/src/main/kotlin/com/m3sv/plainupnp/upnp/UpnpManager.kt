@@ -12,6 +12,8 @@ sealed class ContentState {
         val directoryName: String,
         val content: List<DIDLObjectDisplay>
     ) : ContentState()
+
+    data class Exit(val root: Success) : ContentState()
 }
 
 data class RenderItem(

@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.os.Bundle
 import android.view.*
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -63,7 +64,7 @@ class HomeFragment : BaseFragment() {
         }
 
         contentAdapter = GalleryContentAdapter(Glide.with(this)) {
-            viewModel.execute(MainFragmentIntention.ItemClick(it))
+            viewModel.execute(HomeIntention.ItemClick(it))
         }
 
         binding.content.run {
@@ -100,16 +101,36 @@ class HomeFragment : BaseFragment() {
     private fun observeState() {
         viewModel.state.nonNullObserve { state ->
             when (state) {
-                is MainFragmentState.Loading -> binding.progress.show()
-                is MainFragmentState.Success -> {
+                is HomeState.Loading -> binding.progress.show()
+                is HomeState.Success -> {
                     contentAdapter.setWithDiff(state.contentItems)
                     binding.run {
                         homeToolbar.title = state.directoryName
                         progress.disappear()
                     }
                 }
+                is HomeState.Exit -> {
+                    contentAdapter.setWithDiff(state.root.contentItems)
+                    binding.run {
+                        homeToolbar.title = state.root.directoryName
+                        progress.disappear()
+                    }
+                    if (state.showExitDialog.consume() != null)
+                        showExitConfirmationDialog()
+                }
             }
         }
+    }
+
+    private fun showExitConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.dialog_exit_title))
+            .setMessage(getString(R.string.dialog_exit_body))
+            .setPositiveButton(getString(R.string.exit), { dialog, which ->
+                requireActivity().finish()
+            })
+            .setNegativeButton(getString(R.string.cancel), { dialog, which -> })
+            .show()
     }
 
     private fun SearchView.setSearchQueryListener() {

@@ -31,4 +31,8 @@
     <string name="cant_launch_locally">Невозможно воспроизвести локально</string>
     <string name="enable_thumbnails">Показывать превью</string>
     <string name="play_with">Воспроизвести с помощью</string>
+    <string name="cancel">Отменить</string>
+    <string name="exit">Завершить</string>
+    <string name="dialog_exit_body">Вы уверены, что хотите заверишть работу программы?</string>
+    <string name="dialog_exit_title">Выход</string>
 </resources>

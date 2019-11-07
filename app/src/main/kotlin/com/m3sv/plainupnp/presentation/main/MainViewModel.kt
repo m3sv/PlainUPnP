@@ -20,17 +20,24 @@ class MainViewModel @Inject constructor(
 
     init {
         with(manager) {
-            Observable.combineLatest<List<Renderer>, List<ContentDirectory>, UpnpRendererState, MainState>(
-                renderers.map { renderers -> renderers.map { Renderer(it.device.friendlyName) } },
-                contentDirectories.map { directories -> directories.map { ContentDirectory(it.device.friendlyName) } },
-                upnpRendererState,
-                Function3(MainState::Render)
-            )
+            Observable
+                .combineLatest<List<Renderer>, List<ContentDirectory>, UpnpRendererState, MainState>(
+                    observeRenderers(),
+                    observeContentDirectories(),
+                    upnpRendererState,
+                    Function3(MainState::Render)
+                )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this@MainViewModel::updateState)
                 .disposeBy(disposables)
         }
     }
+
+    private fun UpnpManager.observeContentDirectories() =
+        contentDirectories.map { directories -> directories.map { ContentDirectory(it.device.friendlyName) } }
+
+    private fun UpnpManager.observeRenderers() =
+        renderers.map { renderers -> renderers.map { Renderer(it.device.friendlyName) } }
 
     override fun execute(intention: MainIntention) = when (intention) {
         is MainIntention.ResumeUpnp -> manager.resumeRendererUpdate()
