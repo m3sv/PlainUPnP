@@ -39,7 +39,7 @@ internal object AppModule {
         upnpStateStore: UpnpStateStore,
         upnpResourceProvider: UpnpResourceProvider
     ) =
-        DefaultUpnpManager(
+        UpnpManagerImpl(
             RendererDiscoveryObservable(factory.upnpServiceController, upnpResourceProvider),
             ContentDirectoryDiscoveryObservable(factory.upnpServiceController),
             factory.upnpServiceController,

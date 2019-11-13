@@ -19,7 +19,7 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 
-class DefaultUpnpManager @Inject constructor(
+class UpnpManagerImpl @Inject constructor(
     override val renderers: RendererDiscoveryObservable,
     override val contentDirectories: ContentDirectoryDiscoveryObservable,
     private val controller: UpnpServiceController,

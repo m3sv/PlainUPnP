@@ -16,5 +16,5 @@ abstract class UPnPBinder {
     abstract fun bindUpnpStore(upnpStateRepository: UpnpStateRepository): UpnpStateStore
 
     @Binds
-    abstract fun bindUpnpManager(defaultUpnpManager: DefaultUpnpManager): UpnpManager
+    abstract fun bindUpnpManager(upnpManagerImpl: UpnpManagerImpl): UpnpManager
 }
