@@ -48,17 +48,17 @@ interface UpnpManager {
 
     fun pauseRendererUpdate()
 
+    fun resumePlayback()
+
     fun pausePlayback()
 
     fun stopPlayback()
-
-    fun resumePlayback()
 
     fun playNext()
 
     fun playPrevious()
 
-    fun moveTo(progress: Int, max: Int = 100)
+    fun moveTo(progress: Int)
 
     fun raiseVolume()
 

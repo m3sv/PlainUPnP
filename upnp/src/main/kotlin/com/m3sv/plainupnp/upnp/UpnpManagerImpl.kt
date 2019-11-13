@@ -184,10 +184,10 @@ class UpnpManagerImpl @Inject constructor(
         rendererCommand?.commandPlay()
     }
 
-    override fun moveTo(progress: Int, max: Int) {
+    override fun moveTo(progress: Int) {
         upnpRendererStateObservable?.run {
             rendererCommand?.run {
-                formatTime(max, progress, durationSeconds)?.let {
+                formatTime(MAX_VOLUME_PROGRESS, progress, durationSeconds)?.let {
                     commandSeek(it)
                 }
             }
@@ -240,5 +240,9 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun lowerVolume() {
         rendererCommand?.lowerVolume()
+    }
+
+    private companion object {
+        private const val MAX_VOLUME_PROGRESS = 100
     }
 }
