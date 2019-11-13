@@ -10,15 +10,15 @@ import java.util.*
 class LocalUpnpDevice(private val serviceResourceProvider: LocalServiceResourceProvider,
                       private val localService: LocalService) {
 
-    operator fun invoke(): LocalDevice {
+    fun getLocalDevice(): LocalDevice {
         val details = DeviceDetails(
-                serviceResourceProvider.settingContentDirectoryName,
-                ManufacturerDetails(
-                        serviceResourceProvider.appName,
-                        serviceResourceProvider.appUrl
-                ),
-                ModelDetails(serviceResourceProvider.appName, serviceResourceProvider.appUrl),
-                serviceResourceProvider.appName, serviceResourceProvider.appVersion
+            serviceResourceProvider.settingContentDirectoryName,
+            ManufacturerDetails(
+                serviceResourceProvider.appName,
+                serviceResourceProvider.appUrl
+            ),
+            ModelDetails(serviceResourceProvider.appName, serviceResourceProvider.appUrl),
+            serviceResourceProvider.appName, serviceResourceProvider.appVersion
         )
 
 
@@ -31,7 +31,7 @@ class LocalUpnpDevice(private val serviceResourceProvider: LocalServiceResourceP
 
         val type = UDADeviceType("MediaServer", 1)
 
-        return LocalDevice(DeviceIdentity(udn), type, details, localService())
+        return LocalDevice(DeviceIdentity(udn), type, details, localService.getLocalService())
     }
 
     private val udn: UDN by lazy(mode = LazyThreadSafetyMode.NONE) {

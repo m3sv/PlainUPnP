@@ -46,7 +46,7 @@ class UpnpServiceListener @Inject constructor(
                                     getLocalIpAddress(context),
                                     contentCache
                                 )
-                            )()
+                            ).getLocalDevice()
                         )
                 }
                 waitingListener.map { addListenerSafe(it) }

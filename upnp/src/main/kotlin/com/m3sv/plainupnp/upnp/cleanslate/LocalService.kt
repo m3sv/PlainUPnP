@@ -11,25 +11,25 @@ import org.fourthline.cling.model.meta.LocalService
 import java.net.InetAddress
 
 
-class LocalService(private val context: Context,
-                   private val localAddress: InetAddress,
-                   private val contentCache: ContentCache) {
-
-    operator fun invoke(): LocalService<ContentDirectoryService> {
-        return (AnnotationLocalServiceBinder()
-                .read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>)
-                .apply {
-                    manager = DefaultServiceManager(
-                            this,
-                            ContentDirectoryService::class.java
-                    ).apply {
-                        with(implementation as ContentDirectoryService) {
-                            context = this@LocalService.context
-                            baseURL = "${localAddress.hostAddress}:$PORT"
-                            sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-                            cache = contentCache
-                        }
-                    }
+class LocalService(
+    private val context: Context,
+    private val localAddress: InetAddress,
+    private val contentCache: ContentCache
+) {
+    fun getLocalService() = (AnnotationLocalServiceBinder()
+        .read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>)
+        .apply {
+            manager = DefaultServiceManager(
+                this,
+                ContentDirectoryService::class.java
+            ).apply {
+                with(implementation as ContentDirectoryService) {
+                    context = this@LocalService.context
+                    baseURL = "${localAddress.hostAddress}:$PORT"
+                    sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+                    cache = contentCache
                 }
-    }
+            }
+        }
+
 }
