@@ -34,7 +34,6 @@ internal object AppModule {
     fun provideUPnPManager(
         upnpServiceController: UpnpServiceController,
         upnpNavigator: UpnpNavigator,
-        contentCache: ContentCache,
         launchLocallyUseCase: LaunchLocallyUseCase,
         upnpStateStore: UpnpStateStore,
         upnpResourceProvider: UpnpResourceProvider
