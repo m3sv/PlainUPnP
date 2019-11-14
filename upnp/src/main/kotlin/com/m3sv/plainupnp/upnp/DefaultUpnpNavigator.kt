@@ -19,7 +19,7 @@ sealed class Destination {
 }
 
 class DefaultUpnpNavigator @Inject constructor(
-    private val factory: UpnpFactory,
+    private val serviceController: UpnpServiceController,
     private val stateStore: UpnpStateStore
 ) : UpnpNavigator, CoroutineScope {
 
@@ -57,7 +57,7 @@ class DefaultUpnpNavigator @Inject constructor(
     }
 
     private fun browse(model: BrowseToModel) {
-        factory.createContentDirectoryCommand()?.browse(model.id, null) {
+        serviceController.createContentDirectoryCommand()?.browse(model.id, null) {
             val successState = ContentState.Success(model.directoryName, it ?: listOf())
 
             directoriesStructure.push(successState)

@@ -19,9 +19,9 @@ internal object AppModule {
     @JvmStatic
     @ApplicationScope
     fun provideUpnpNavigator(
-        factory: UpnpFactory,
+        upnpServiceController: UpnpServiceController,
         upnpStateStore: UpnpStateStore
-    ): UpnpNavigator = DefaultUpnpNavigator(factory, upnpStateStore)
+    ): UpnpNavigator = DefaultUpnpNavigator(upnpServiceController, upnpStateStore)
 
     @Provides
     @JvmStatic
@@ -32,7 +32,7 @@ internal object AppModule {
     @JvmStatic
     @ApplicationScope
     fun provideUPnPManager(
-        factory: UpnpFactory,
+        upnpServiceController: UpnpServiceController,
         upnpNavigator: UpnpNavigator,
         contentCache: ContentCache,
         launchLocallyUseCase: LaunchLocallyUseCase,
@@ -40,10 +40,9 @@ internal object AppModule {
         upnpResourceProvider: UpnpResourceProvider
     ) =
         UpnpManagerImpl(
-            RendererDiscoveryObservable(factory.upnpServiceController, upnpResourceProvider),
-            ContentDirectoryDiscoveryObservable(factory.upnpServiceController),
-            factory.upnpServiceController,
-            factory,
+            RendererDiscoveryObservable(upnpServiceController, upnpResourceProvider),
+            ContentDirectoryDiscoveryObservable(upnpServiceController),
+            upnpServiceController,
             upnpNavigator,
             launchLocallyUseCase,
             upnpStateStore

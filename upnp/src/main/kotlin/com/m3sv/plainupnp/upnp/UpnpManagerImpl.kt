@@ -22,15 +22,14 @@ import kotlin.coroutines.CoroutineContext
 class UpnpManagerImpl @Inject constructor(
     override val renderers: RendererDiscoveryObservable,
     override val contentDirectories: ContentDirectoryDiscoveryObservable,
-    private val controller: UpnpServiceController,
-    private val factory: UpnpFactory,
+    private val serviceController: UpnpServiceController,
     private val navigator: UpnpNavigator,
     private val launchLocallyUseCase: LaunchLocallyUseCase,
     private val stateStore: UpnpStateStore
 ) : UpnpManager, CoroutineScope, UpnpNavigator by navigator {
 
     init {
-        controller.resume()
+        serviceController.resume()
     }
 
     override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
@@ -68,8 +67,8 @@ class UpnpManagerImpl @Inject constructor(
 
         val contentDirectory = contentDirectories.currentContentDirectories()[position].device
 
-        if (controller.selectedContentDirectory != contentDirectory) {
-            controller.selectedContentDirectory = contentDirectory
+        if (serviceController.selectedContentDirectory != contentDirectory) {
+            serviceController.selectedContentDirectory = contentDirectory
             navigateTo(Destination.Home)
         }
     }
@@ -85,7 +84,7 @@ class UpnpManagerImpl @Inject constructor(
             isLocal = true
         } else {
             isLocal = false
-            controller.selectedRenderer = renderer
+            serviceController.selectedRenderer = renderer
         }
     }
 
@@ -127,7 +126,7 @@ class UpnpManagerImpl @Inject constructor(
                 rendererCommand?.pause()
         }?.subscribe(rendererStateSubject)
 
-        rendererCommand = factory.createRendererCommand(upnpRendererStateObservable)
+        rendererCommand = serviceController.createRendererCommand(upnpRendererStateObservable)
             ?.apply {
                 if (item.item !is ClingImageItem)
                     resume()
