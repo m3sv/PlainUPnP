@@ -27,4 +27,9 @@ interface UpnpServiceController {
     fun addDevice(localDevice: LocalDevice)
 
     fun removeDevice(localDevice: LocalDevice)
+
+    fun createRendererCommand(rendererStateObservable: UpnpRendererStateObservable?): RendererCommand?
+
+    fun createContentDirectoryCommand(): ContentDirectoryCommand?
+
 }
