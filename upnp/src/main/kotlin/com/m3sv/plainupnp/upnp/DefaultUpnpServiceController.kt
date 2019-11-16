@@ -19,11 +19,10 @@ class DefaultUpnpServiceController @Inject constructor(override val serviceListe
     override var selectedContentDirectory: UpnpDevice? = null
 
     override fun setSelectedContentDirectory(contentDirectory: UpnpDevice, force: Boolean) {
-        if (!force && selectedContentDirectory != null && contentDirectory.equals(
-                selectedContentDirectory
-            )
-        )
-            return
+        if (!force
+            && selectedContentDirectory != null
+            && contentDirectory.equals(selectedContentDirectory)
+        ) return
 
         this.selectedContentDirectory = contentDirectory
     }
@@ -33,8 +32,10 @@ class DefaultUpnpServiceController @Inject constructor(override val serviceListe
 
     override fun setSelectedRenderer(renderer: UpnpDevice, force: Boolean) {
         // Skip if no change and no force
-        if (!force && selectedRenderer != null && renderer.equals(selectedRenderer))
-            return
+        if (!force
+            && selectedRenderer != null
+            && renderer.equals(selectedRenderer)
+        ) return
 
         this.selectedRenderer = renderer
     }
