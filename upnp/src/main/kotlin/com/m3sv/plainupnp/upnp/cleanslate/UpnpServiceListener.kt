@@ -15,7 +15,6 @@ import kotlinx.coroutines.launch
 import org.fourthline.cling.android.AndroidUpnpService
 import org.fourthline.cling.model.message.header.STAllHeader
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 class UpnpServiceListener @Inject constructor(
@@ -37,16 +36,11 @@ class UpnpServiceListener @Inject constructor(
                     upnpService.controlPoint.search()
                     upnpService.registry
                         .addDevice(
-                            LocalUpnpDevice(
-                                LocalServiceResourceProvider(
-                                    context
-                                ),
-                                LocalService(
-                                    context,
-                                    getLocalIpAddress(context),
-                                    contentCache
-                                )
-                            ).getLocalDevice()
+                            LocalUpnpDevice.getLocalDevice(
+                                LocalServiceResourceProvider(context),
+                                context,
+                                contentCache
+                            )
                         )
                 }
                 waitingListener.map { addListenerSafe(it) }
@@ -63,10 +57,7 @@ class UpnpServiceListener @Inject constructor(
 
     fun bindService() {
         context.bindService(
-            Intent(
-                context,
-                PlainUpnpAndroidService::class.java
-            ),
+            Intent(context, PlainUpnpAndroidService::class.java),
             serviceConnection,
             Context.BIND_AUTO_CREATE
         )
@@ -77,7 +68,8 @@ class UpnpServiceListener @Inject constructor(
     }
 
     fun getFilteredDeviceList(filter: CallableFilter): Collection<UpnpDevice> {
-        val deviceList = ArrayList<UpnpDevice>()
+        val deviceList = mutableListOf<UpnpDevice>()
+
         try {
             upnpService?.registry?.devices?.forEach {
                 val device = CDevice(it)
@@ -119,7 +111,6 @@ class UpnpServiceListener @Inject constructor(
     }
 
     private fun removeListenerSafe(registryListener: RegistryListener) {
-        assert(upnpService != null)
         upnpService?.registry?.removeListener(CRegistryListener(registryListener))
     }
 
