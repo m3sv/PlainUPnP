@@ -1,35 +1,8 @@
 package com.m3sv.plainupnp.upnp
 
-import com.m3sv.plainupnp.data.upnp.DIDLItem
-import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import io.reactivex.Observable
-
-sealed class ContentState {
-    object Loading : ContentState()
-    data class Success(
-        val directoryName: String,
-        val content: List<DIDLObjectDisplay>
-    ) : ContentState()
-
-    data class Exit(val root: Success) : ContentState()
-}
-
-data class RenderItem(
-    val item: DIDLItem,
-    val position: Int
-)
-
-data class LocalModel(
-    val uri: String,
-    val contentType: String
-)
-
-data class BrowseToModel(
-    val id: String,
-    val directoryName: String
-)
 
 interface UpnpManager {
     val renderers: Observable<List<DeviceDisplay>>
@@ -42,15 +15,15 @@ interface UpnpManager {
 
     fun stopUpnpService()
 
-    fun itemClick(position: Int)
+    fun resumeRendererUpdate()
+
+    fun pauseRendererUpdate()
 
     fun selectContentDirectory(position: Int)
 
     fun selectRenderer(position: Int)
 
-    fun resumeRendererUpdate()
-
-    fun pauseRendererUpdate()
+    fun itemClick(position: Int)
 
     fun resumePlayback()
 
