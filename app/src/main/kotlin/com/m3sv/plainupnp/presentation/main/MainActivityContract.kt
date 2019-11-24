@@ -19,7 +19,6 @@ enum class PlayerButton {
 
 sealed class MainIntention {
     data class PlayerButtonClick(val button: PlayerButton) : MainIntention()
-    data class Navigate(val route: Route) : MainIntention()
     data class SelectRenderer(val position: Int) : MainIntention()
     data class SelectContentDirectory(val position: Int) : MainIntention()
     data class MoveTo(val progress: Int) : MainIntention()

@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.os.Bundle
 import android.view.*
 import android.widget.LinearLayout
+import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -42,15 +43,34 @@ class HomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        recyclerLayoutManager = LinearLayoutManager(requireContext())
-
-        if (savedInstanceState != null)
-            restoreRecyclerState(savedInstanceState)
-
+        addBackPressedDispatcher()
         initContentAdapter()
         initRecyclerView()
         observeState()
+
+        if (savedInstanceState != null)
+            restoreRecyclerState(savedInstanceState)
+    }
+
+    private fun addBackPressedDispatcher() {
+        requireActivity().onBackPressedDispatcher.addCallback {
+            viewModel.execute(HomeIntention.BackPress)
+        }
+    }
+
+    private fun observeState() {
+        viewModel.state.nonNullObserve { state ->
+            when (state) {
+                is HomeState.Loading -> binding.progress.show()
+                is HomeState.Success -> {
+                    contentAdapter.setWithDiff(state.contentItems)
+                    binding.run {
+                        homeToolbar.title = state.directoryName
+                        progress.disappear()
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -82,21 +102,6 @@ class HomeFragment : BaseFragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    private fun observeState() {
-        viewModel.state.nonNullObserve { state ->
-            when (state) {
-                is HomeState.Loading -> binding.progress.show()
-                is HomeState.Success -> {
-                    contentAdapter.setWithDiff(state.contentItems)
-                    binding.run {
-                        homeToolbar.title = state.directoryName
-                        progress.disappear()
-                    }
-                }
-            }
-        }
-    }
-
     private fun SearchView.setSearchQueryListener() {
         setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean = false
@@ -113,6 +118,7 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun initRecyclerView() {
+        recyclerLayoutManager = LinearLayoutManager(requireContext())
         binding.content.run {
             setHasFixedSize(true)
             addItemDecoration(

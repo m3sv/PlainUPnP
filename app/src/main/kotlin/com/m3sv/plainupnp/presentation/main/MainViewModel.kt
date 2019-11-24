@@ -5,7 +5,6 @@ import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.presentation.base.ContentDirectory
 import com.m3sv.plainupnp.presentation.base.Renderer
-import com.m3sv.plainupnp.upnp.Destination
 import com.m3sv.plainupnp.upnp.UpnpManager
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -16,8 +15,7 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val manager: UpnpManager,
-    private val upnpPlayClickedUseCase: UpnpPlayClickedUseCase,
-    private val upnpNavigationUseCase: UpnpNavigationUseCase
+    private val upnpPlayClickedUseCase: UpnpPlayClickedUseCase
 ) : BaseViewModel<MainIntention, MainState>() {
 
     init {
@@ -59,12 +57,6 @@ class MainViewModel @Inject constructor(
                     PlayerButton.NEXT -> manager.playNext()
                     PlayerButton.RAISE_VOLUME -> manager.raiseVolume()
                     PlayerButton.LOWER_VOLUME -> manager.lowerVolume()
-                }
-            }
-            is MainIntention.Navigate -> when (intention.route) {
-                is Route.Back -> upnpNavigationUseCase.execute(Destination.Back)
-                is Route.To -> {
-                    // no-op
                 }
             }
             MainIntention.StartUpnpService -> manager.startUpnpService()

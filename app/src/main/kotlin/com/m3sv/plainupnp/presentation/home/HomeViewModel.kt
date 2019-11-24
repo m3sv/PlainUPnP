@@ -5,7 +5,9 @@ import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
+import com.m3sv.plainupnp.presentation.main.UpnpNavigationUseCase
 import com.m3sv.plainupnp.upnp.ContentState
+import com.m3sv.plainupnp.upnp.Destination
 import com.m3sv.plainupnp.upnp.UpnpManager
 import com.m3sv.plainupnp.upnp.didl.*
 import com.m3sv.plainupnp.upnp.usecase.ObserveUpnpStateUseCase
@@ -19,6 +21,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val manager: UpnpManager,
     private val observeUpnpStateUseCase: ObserveUpnpStateUseCase,
+    private val upnpNavigationUseCase: UpnpNavigationUseCase,
     private val cache: ContentCache
 ) : BaseViewModel<HomeIntention, HomeState>() {
 
@@ -92,6 +95,7 @@ class HomeViewModel @Inject constructor(
     override fun execute(intention: HomeIntention) {
         when (intention) {
             is HomeIntention.ItemClick -> manager.itemClick(intention.position)
+            is HomeIntention.BackPress -> upnpNavigationUseCase.execute(Destination.Back)
         }.enforce
     }
 }
