@@ -88,12 +88,4 @@ class ControlsSheetDelegate(
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         rendererAdapter.onRestoreInstanceState(savedInstanceState)
     }
-
-    fun collapseSheet() {
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-    }
-
-    fun expandSheet() {
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-    }
 }
