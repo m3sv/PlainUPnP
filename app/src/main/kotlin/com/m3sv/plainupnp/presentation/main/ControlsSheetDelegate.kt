@@ -54,9 +54,7 @@ class ControlsSheetDelegate(
                 onItemSelectedListener = onItemSelectedListener { position ->
                     Timber.d("Renderer click: $position")
                     selectedRendererPosition = position
-                    intentionHandler(
-                        MainIntention.SelectRenderer(position)
-                    )
+                    intentionHandler(MainIntention.SelectRenderer(position))
                 }
             }
 
@@ -65,9 +63,7 @@ class ControlsSheetDelegate(
                 onItemSelectedListener = onItemSelectedListener { position ->
                     Timber.d("Content directory click: $position")
                     selectedContentDirectoryPosition = position
-                    intentionHandler(
-                        MainIntention.SelectContentDirectory(position)
-                    )
+                    intentionHandler(MainIntention.SelectContentDirectory(position))
                 }
             }
         }
