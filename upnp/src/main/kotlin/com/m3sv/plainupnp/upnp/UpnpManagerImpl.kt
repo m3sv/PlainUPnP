@@ -247,3 +247,9 @@ class UpnpManagerImpl @Inject constructor(
         private const val MAX_VOLUME_PROGRESS = 100
     }
 }
+
+data class RenderItem(
+    val item: DIDLItem,
+    val position: Int
+)
+

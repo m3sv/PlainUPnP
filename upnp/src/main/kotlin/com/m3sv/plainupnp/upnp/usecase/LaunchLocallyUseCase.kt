@@ -12,6 +12,11 @@ import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import timber.log.Timber
 import javax.inject.Inject
 
+data class LocalModel(
+    val uri: String,
+    val contentType: String
+)
+
 class LaunchLocallyUseCase @Inject constructor(
     private val context: Context,
     private val contentCache: ContentCache

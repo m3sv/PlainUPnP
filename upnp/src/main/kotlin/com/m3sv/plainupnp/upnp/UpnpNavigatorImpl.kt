@@ -18,6 +18,11 @@ sealed class Destination {
     data class Path(val id: String, val directoryName: String) : Destination()
 }
 
+data class BrowseToModel(
+    val id: String,
+    val directoryName: String
+)
+
 class UpnpNavigatorImpl @Inject constructor(
     private val serviceController: UpnpServiceController,
     private val stateStore: UpnpStateStore
