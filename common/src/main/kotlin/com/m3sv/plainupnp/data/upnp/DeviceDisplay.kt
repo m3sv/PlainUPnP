@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.data.upnp
 
-
 enum class DeviceType {
     RENDERER,
     CONTENT_DIRECTORY,
@@ -9,7 +8,7 @@ enum class DeviceType {
 }
 
 data class DeviceDisplay(
-        val device: UpnpDevice,
-        val extendedInformation: Boolean = false,
-        val type: DeviceType = DeviceType.UNDEFINED
+    val device: UpnpDevice,
+    val extendedInformation: Boolean = false,
+    val type: DeviceType = DeviceType.UNDEFINED
 )
