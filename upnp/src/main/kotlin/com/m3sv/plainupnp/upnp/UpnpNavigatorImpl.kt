@@ -30,14 +30,16 @@ class UpnpNavigatorImpl @Inject constructor(
 
     override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
 
-    private var directoriesStructure = Stack<ContentState.Success>()
+    private var directories = Stack<ContentState.Success>()
+
+    private var currentState: ContentState.Success? = null
 
     override fun navigateTo(destination: Destination) {
         when (destination) {
             is Destination.Home -> {
                 setContentState(ContentState.Loading)
-                directoriesStructure.clear()
-                browse(BrowseToModel("0", "Home"))
+                clearBackStack()
+                browse(BrowseToModel(HOME_DIRECTORY_ID, HOME_DIRECTORY_NAME))
             }
 
             is Destination.Path -> {
@@ -46,28 +48,23 @@ class UpnpNavigatorImpl @Inject constructor(
             }
 
             is Destination.Back -> {
-                if (!directoriesStructure.empty()) {
-                    val directory = directoriesStructure.pop()
-
-                    val state = if (directoriesStructure.empty()) {
-                        directoriesStructure.push(directory)
-                        ContentState.Exit(directory)
-                    } else {
-                        directoriesStructure.peek()
-                    }
-
-                    setContentState(state)
+                if (directories.isNotEmpty()) {
+                    val directory = directories.pop()
+                    currentState = directory
+                    setContentState(directory)
                 }
             }
         }
     }
 
+
     private fun browse(model: BrowseToModel) {
         serviceController.createContentDirectoryCommand()?.browse(model.id, null) {
             val successState = ContentState.Success(model.directoryName, it ?: listOf())
 
-            directoriesStructure.push(successState)
+            addCurrentStateToBackStack()
 
+            currentState = successState
             setContentState(successState)
         }
     }
@@ -76,5 +73,19 @@ class UpnpNavigatorImpl @Inject constructor(
         launch {
             stateStore.setState(state)
         }
+    }
+
+    private fun addCurrentStateToBackStack() {
+        if (currentState != null) directories.push(currentState)
+    }
+
+    private fun clearBackStack() {
+        directories.clear()
+    }
+
+    private companion object {
+        private const val HOME_DIRECTORY_ID = "0"
+        private const val HOME_DIRECTORY_NAME = "Home"
+
     }
 }

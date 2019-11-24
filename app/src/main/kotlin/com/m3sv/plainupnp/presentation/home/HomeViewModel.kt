@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.presentation.home
 
-import com.m3sv.plainupnp.Consumable
 import com.m3sv.plainupnp.ContentCache
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.enforce
@@ -35,13 +34,6 @@ class HomeViewModel @Inject constructor(
                                 state.directoryName,
                                 mapItems(state.content)
                             )
-
-                        is ContentState.Exit -> HomeState.Exit(
-                            HomeState.Success(
-                                state.root.directoryName,
-                                mapItems(state.root.content)
-                            ), Consumable(Unit)
-                        )
                     }
                 )
             }

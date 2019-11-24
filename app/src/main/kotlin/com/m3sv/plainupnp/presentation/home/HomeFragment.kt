@@ -4,7 +4,6 @@ import android.animation.LayoutTransition
 import android.os.Bundle
 import android.view.*
 import android.widget.LinearLayout
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -85,6 +84,7 @@ class HomeFragment : BaseFragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.home_toolbar_menu, menu)
+
         menu.findItem(R.id.home_search).apply {
             (actionView as SearchView).apply {
                 applySearchViewTransitionAnimation()
@@ -109,29 +109,8 @@ class HomeFragment : BaseFragment() {
                         progress.disappear()
                     }
                 }
-                is HomeState.Exit -> {
-                    contentAdapter.setWithDiff(state.root.contentItems)
-                    binding.run {
-                        homeToolbar.title = state.root.directoryName
-                        progress.disappear()
-                    }
-                    if (state.showExitDialog.consume() != null)
-                        showExitConfirmationDialog()
-                }
             }
         }
-    }
-
-    private fun showExitConfirmationDialog() {
-        AlertDialog.Builder(requireContext())
-            .setTitle(getString(R.string.dialog_exit_title))
-            .setMessage(getString(R.string.dialog_exit_body))
-            .setPositiveButton(getString(R.string.exit)) { _, _ ->
-                // todo clear latest state when finish
-                requireActivity().finish()
-            }
-            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
-            .show()
     }
 
     private fun SearchView.setSearchQueryListener() {
