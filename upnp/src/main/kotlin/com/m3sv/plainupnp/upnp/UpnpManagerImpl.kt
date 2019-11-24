@@ -28,10 +28,6 @@ class UpnpManagerImpl @Inject constructor(
     private val stateStore: UpnpStateStore
 ) : UpnpManager, CoroutineScope, UpnpNavigator by navigator {
 
-    init {
-        serviceController.resume()
-    }
-
     override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
 
     private val rendererStateSubject = PublishSubject.create<UpnpRendererState>()
@@ -67,10 +63,8 @@ class UpnpManagerImpl @Inject constructor(
 
         val contentDirectory = contentDirectories.currentContentDirectories()[position].device
 
-        if (serviceController.selectedContentDirectory != contentDirectory) {
-            serviceController.selectedContentDirectory = contentDirectory
-            navigateTo(Destination.Home)
-        }
+        serviceController.selectedContentDirectory = contentDirectory
+        navigateTo(Destination.Home)
     }
 
     override fun selectRenderer(position: Int) {
@@ -239,6 +233,14 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun lowerVolume() {
         rendererCommand?.lowerVolume()
+    }
+
+    override fun startUpnpService() {
+        serviceController.start()
+    }
+
+    override fun stopUpnpService() {
+        serviceController.stop()
     }
 
     private companion object {

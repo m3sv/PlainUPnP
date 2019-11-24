@@ -21,7 +21,7 @@ internal object AppModule {
     fun provideUpnpNavigator(
         upnpServiceController: UpnpServiceController,
         upnpStateStore: UpnpStateStore
-    ): UpnpNavigator = DefaultUpnpNavigator(upnpServiceController, upnpStateStore)
+    ): UpnpNavigator = UpnpNavigatorImpl(upnpServiceController, upnpStateStore)
 
     @Provides
     @JvmStatic

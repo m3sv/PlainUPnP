@@ -18,7 +18,7 @@ sealed class Destination {
     data class Path(val id: String, val directoryName: String) : Destination()
 }
 
-class DefaultUpnpNavigator @Inject constructor(
+class UpnpNavigatorImpl @Inject constructor(
     private val serviceController: UpnpServiceController,
     private val stateStore: UpnpStateStore
 ) : UpnpNavigator, CoroutineScope {
@@ -31,6 +31,7 @@ class DefaultUpnpNavigator @Inject constructor(
         when (destination) {
             is Destination.Home -> {
                 setContentState(ContentState.Loading)
+                directoriesStructure.clear()
                 browse(BrowseToModel("0", "Home"))
             }
 

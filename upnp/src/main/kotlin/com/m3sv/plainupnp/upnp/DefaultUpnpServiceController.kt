@@ -40,13 +40,13 @@ class DefaultUpnpServiceController @Inject constructor(override val serviceListe
         this.selectedRenderer = renderer
     }
 
-    override fun resume() {
+    override fun start() {
         rendererDiscovery.resume(serviceListener)
         contentDirectoryDiscovery.resume(serviceListener)
         serviceListener.bindService()
     }
 
-    override fun pause() {
+    override fun stop() {
         rendererDiscovery.pause(serviceListener)
         contentDirectoryDiscovery.pause(serviceListener)
         serviceListener.unbindService()

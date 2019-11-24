@@ -61,7 +61,7 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
 
         savedInstanceState?.let { bundle ->
             controlsSheetDelegate.onRestoreInstanceState(bundle)
-        }
+        } ?: viewModel.execute(MainIntention.StartUpnpService)
     }
 
     private fun observeState() {
@@ -93,6 +93,11 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
     override fun onStop() {
         viewModel.execute(MainIntention.PauseUpnp)
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        if (isFinishing) viewModel.execute(MainIntention.StopUpnpService)
+        super.onDestroy()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
