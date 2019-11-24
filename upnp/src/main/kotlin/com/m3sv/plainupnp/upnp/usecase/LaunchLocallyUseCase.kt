@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.m3sv.plainupnp.ContentCache
-import com.m3sv.plainupnp.upnp.LocalModel
 import com.m3sv.plainupnp.upnp.RenderItem
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem

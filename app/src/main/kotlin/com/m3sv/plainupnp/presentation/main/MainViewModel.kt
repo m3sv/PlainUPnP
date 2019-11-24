@@ -64,7 +64,7 @@ class MainViewModel @Inject constructor(
             is MainIntention.Navigate -> when (intention.route) {
                 is Route.Back -> upnpNavigationUseCase.execute(Destination.Back)
                 is Route.To -> {
-                    // no-op}
+                    // no-op
                 }
             }
             MainIntention.StartUpnpService -> manager.startUpnpService()

@@ -196,7 +196,6 @@ class UpnpManagerImpl @Inject constructor(
             stateStore.peekState()?.let { state ->
                 when (state) {
                     is ContentState.Success -> handleClick(position, state.content)
-                    is ContentState.Exit -> handleClick(position, state.root.content)
                     is ContentState.Loading -> {
                         // no-op
                     }

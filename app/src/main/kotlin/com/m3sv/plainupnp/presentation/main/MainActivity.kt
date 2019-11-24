@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.presentation.main
 
 import android.os.Bundle
 import android.view.KeyEvent
+import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.enforce
@@ -33,12 +34,65 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        navigator = MainActivityRouter(this)
         viewModel = getViewModel()
-        controlsSheetDelegate = ControlsSheetDelegate(binding.controlsSheet, viewModel::execute)
 
+        initRouter()
+        initControlsSheetDelegate()
+        observeState()
+        setupBottomNavigationListener()
+        requestReadStoragePermission()
+
+        if (savedInstanceState != null) {
+            restoreControlsSheetState(savedInstanceState)
+        } else {
+            startUpnpService()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveControlsSheetState(outState)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        viewModel.execute(MainIntention.ResumeUpnp)
+    }
+
+    override fun onStop() {
+        viewModel.execute(MainIntention.PauseUpnp)
+        super.onStop()
+    }
+
+    override fun onDestroy() {
+        if (isFinishing) viewModel.execute(MainIntention.StopUpnpService)
+        super.onDestroy()
+    }
+
+    override fun onBackPressed() {
+        viewModel.execute(MainIntention.Navigate(Route.Back))
+    }
+
+    private fun initRouter() {
+        navigator = MainActivityRouter(this)
+    }
+
+    private fun initControlsSheetDelegate() {
+        controlsSheetDelegate = ControlsSheetDelegate(binding.controlsSheet, viewModel::execute)
+    }
+
+    private fun restoreControlsSheetState(bundle: Bundle) {
+        controlsSheetDelegate.onRestoreInstanceState(bundle)
+    }
+
+    private fun startUpnpService() {
+        viewModel.execute(MainIntention.StartUpnpService)
+    }
+
+    private fun setupBottomNavigationListener() {
         binding.bottomNav.setOnNavigationItemSelectedListener {
             controlsSheetDelegate.collapseSheet()
+
             if (it.itemId != binding.bottomNav.selectedItemId)
                 when (it.itemId) {
                     R.id.nav_home -> {
@@ -55,13 +109,6 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
                 }
             else false
         }
-
-        observeState()
-        requestReadStoragePermission()
-
-        savedInstanceState?.let { bundle ->
-            controlsSheetDelegate.onRestoreInstanceState(bundle)
-        } ?: viewModel.execute(MainIntention.StartUpnpService)
     }
 
     private fun observeState() {
@@ -78,26 +125,6 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
                 is MainState.Exit -> finishAndRemoveTask()
             }.enforce
         }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        controlsSheetDelegate.onSaveInstanceState(outState)
-    }
-
-    override fun onStart() {
-        super.onStart()
-        viewModel.execute(MainIntention.ResumeUpnp)
-    }
-
-    override fun onStop() {
-        viewModel.execute(MainIntention.PauseUpnp)
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-        if (isFinishing) viewModel.execute(MainIntention.StopUpnpService)
-        super.onDestroy()
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
@@ -138,7 +165,20 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
         binding.controlsSheet.title.text = rendererState.title
     }
 
-    override fun onBackPressed() {
-        viewModel.execute(MainIntention.Navigate(Route.Back))
+    private fun saveControlsSheetState(outState: Bundle) {
+        controlsSheetDelegate.onSaveInstanceState(outState)
     }
+
+    private fun showExitConfirmationDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.dialog_exit_title))
+            .setMessage(getString(R.string.dialog_exit_body))
+            .setPositiveButton(getString(R.string.exit)) { _, _ ->
+                // todo clear latest state when finish
+                finishAndRemoveTask()
+            }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+            .show()
+    }
+
 }
