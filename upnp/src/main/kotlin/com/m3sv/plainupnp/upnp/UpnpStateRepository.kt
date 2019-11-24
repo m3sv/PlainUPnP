@@ -5,6 +5,7 @@ import kotlinx.coroutines.channels.ReceiveChannel
 import javax.inject.Inject
 
 interface UpnpStateStore {
+
     val state: ReceiveChannel<ContentState>
 
     suspend fun setState(state: ContentState)

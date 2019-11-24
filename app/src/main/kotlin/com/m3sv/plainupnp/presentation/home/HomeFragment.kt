@@ -126,10 +126,11 @@ class HomeFragment : BaseFragment() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.dialog_exit_title))
             .setMessage(getString(R.string.dialog_exit_body))
-            .setPositiveButton(getString(R.string.exit), { dialog, which ->
+            .setPositiveButton(getString(R.string.exit)) { _, _ ->
+                // todo clear latest state when finish
                 requireActivity().finish()
-            })
-            .setNegativeButton(getString(R.string.cancel), { dialog, which -> })
+            }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             .show()
     }
 

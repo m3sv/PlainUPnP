@@ -38,6 +38,10 @@ interface UpnpManager {
 
     val upnpRendererState: Observable<UpnpRendererState>
 
+    fun startUpnpService()
+
+    fun stopUpnpService()
+
     fun itemClick(position: Int)
 
     fun selectContentDirectory(position: Int)

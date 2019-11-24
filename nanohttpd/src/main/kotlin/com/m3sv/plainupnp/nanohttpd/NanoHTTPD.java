@@ -178,6 +178,7 @@ public abstract class NanoHTTPD {
      * Stop the server.
      */
     public void stop() {
+        Timber.d("Stop the server");
         try {
             safeClose(myServerSocket);
             myThread.join();

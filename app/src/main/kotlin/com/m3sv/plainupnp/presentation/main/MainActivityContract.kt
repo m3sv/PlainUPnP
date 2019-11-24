@@ -10,17 +10,23 @@ sealed class Route {
 }
 
 enum class PlayerButton {
-    PLAY, PREVIOUS, NEXT, RAISE_VOLUME, LOWER_VOLUME
+    PLAY,
+    PREVIOUS,
+    NEXT,
+    RAISE_VOLUME,
+    LOWER_VOLUME
 }
 
 sealed class MainIntention {
     data class PlayerButtonClick(val button: PlayerButton) : MainIntention()
-    object ResumeUpnp : MainIntention()
-    object PauseUpnp : MainIntention()
     data class Navigate(val route: Route) : MainIntention()
     data class SelectRenderer(val position: Int) : MainIntention()
     data class SelectContentDirectory(val position: Int) : MainIntention()
     data class MoveTo(val progress: Int) : MainIntention()
+    object ResumeUpnp : MainIntention()
+    object PauseUpnp : MainIntention()
+    object StartUpnpService : MainIntention()
+    object StopUpnpService : MainIntention()
 }
 
 sealed class MainState {

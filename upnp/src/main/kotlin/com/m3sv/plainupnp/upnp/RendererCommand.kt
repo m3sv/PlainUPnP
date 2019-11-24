@@ -85,7 +85,7 @@ class RendererCommand(
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                Timber.w("Fail to pause ! $arg2")
+                Timber.w("Fail to stop ! $arg2")
             }
         }
     }

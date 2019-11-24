@@ -10,6 +10,7 @@ import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.UpnpManager
 import com.m3sv.plainupnp.upnp.didl.*
 import com.m3sv.plainupnp.upnp.usecase.ObserveUpnpStateUseCase
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -20,11 +21,10 @@ class HomeViewModel @Inject constructor(
     private val manager: UpnpManager,
     private val observeUpnpStateUseCase: ObserveUpnpStateUseCase,
     private val cache: ContentCache
-) :
-    BaseViewModel<HomeIntention, HomeState>() {
+) : BaseViewModel<HomeIntention, HomeState>() {
 
     init {
-        launch {
+        GlobalScope.launch {
             observeUpnpStateUseCase.execute().consumeEach { state ->
                 Timber.i("New home state: $state")
                 updateState(

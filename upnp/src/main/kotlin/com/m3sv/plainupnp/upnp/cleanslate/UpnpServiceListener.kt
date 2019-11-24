@@ -29,6 +29,10 @@ class UpnpServiceListener @Inject constructor(
     private val waitingListener: MutableList<RegistryListener> = mutableListOf()
 
     private val serviceConnection = object : ServiceConnection {
+        override fun onServiceDisconnected(name: ComponentName?) {
+            // no-op
+        }
+
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             GlobalScope.launch {
                 mediaServer.start()
@@ -46,13 +50,6 @@ class UpnpServiceListener @Inject constructor(
                 waitingListener.map { addListenerSafe(it) }
             }
         }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            GlobalScope.launch {
-                upnpService = null
-                mediaServer.stop()
-            }
-        }
     }
 
     fun bindService() {
@@ -64,6 +61,9 @@ class UpnpServiceListener @Inject constructor(
     }
 
     fun unbindService() {
+        Timber.d("Unbind!")
+        upnpService = null
+        mediaServer.stop()
         context.unbindService(serviceConnection)
     }
 
