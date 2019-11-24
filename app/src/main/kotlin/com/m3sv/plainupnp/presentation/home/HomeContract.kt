@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.presentation.home
 
 sealed class HomeIntention {
     data class ItemClick(val position: Int) : HomeIntention()
+    object BackPress : HomeIntention()
 }
 
 sealed class HomeState {

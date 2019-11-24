@@ -67,17 +67,6 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
         super.onDestroy()
     }
 
-    override fun onBackPressed() {
-        if (isRoot())
-            viewModel.execute(MainIntention.Navigate(Route.Back))
-        else
-            super.onBackPressed()
-    }
-
-    private fun isRoot(): Boolean = with(findNavController(R.id.nav_host_container)) {
-        graph.startDestination == currentDestination?.id
-    }
-
     private fun initControlsSheetDelegate() {
         controlsSheetDelegate = ControlsSheetDelegate(binding.controlsSheet, viewModel::execute)
     }
