@@ -2,7 +2,8 @@ package com.m3sv.plainupnp.presentation.main
 
 import android.os.Bundle
 import android.view.KeyEvent
-import androidx.appcompat.app.AlertDialog
+import androidx.navigation.findNavController
+import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.Glide
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.enforce
@@ -26,8 +27,6 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
 
     override val activityConfig: ActivityConfig = ActivityConfig(R.layout.main_activity)
 
-    private lateinit var navigator: MainActivityNavigator
-
     private lateinit var viewModel: MainViewModel
 
     private lateinit var controlsSheetDelegate: ControlsSheetDelegate
@@ -36,7 +35,6 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
 
-        initRouter()
         initControlsSheetDelegate()
         observeState()
         setupBottomNavigationListener()
@@ -70,11 +68,14 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
     }
 
     override fun onBackPressed() {
-        viewModel.execute(MainIntention.Navigate(Route.Back))
+        if (isRoot())
+            viewModel.execute(MainIntention.Navigate(Route.Back))
+        else
+            super.onBackPressed()
     }
 
-    private fun initRouter() {
-        navigator = MainActivityRouter(this)
+    private fun isRoot(): Boolean = with(findNavController(R.id.nav_host_container)) {
+        graph.startDestination == currentDestination?.id
     }
 
     private fun initControlsSheetDelegate() {
@@ -90,25 +91,10 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
     }
 
     private fun setupBottomNavigationListener() {
-        binding.bottomNav.setOnNavigationItemSelectedListener {
-            controlsSheetDelegate.collapseSheet()
-
-            if (it.itemId != binding.bottomNav.selectedItemId)
-                when (it.itemId) {
-                    R.id.nav_home -> {
-                        navigator.navigateToMain()
-                        true
-                    }
-
-                    R.id.nav_settings -> {
-                        navigator.navigateToSettings()
-                        true
-                    }
-
-                    else -> false
-                }
-            else false
-        }
+        NavigationUI.setupWithNavController(
+            binding.bottomNav,
+            findNavController(R.id.nav_host_container)
+        )
     }
 
     private fun observeState() {
@@ -169,17 +155,4 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
     private fun saveControlsSheetState(outState: Bundle) {
         controlsSheetDelegate.onSaveInstanceState(outState)
     }
-
-    private fun showExitConfirmationDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.dialog_exit_title))
-            .setMessage(getString(R.string.dialog_exit_body))
-            .setPositiveButton(getString(R.string.exit)) { _, _ ->
-                // todo clear latest state when finish
-                finishAndRemoveTask()
-            }
-            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
-            .show()
-    }
-
 }
