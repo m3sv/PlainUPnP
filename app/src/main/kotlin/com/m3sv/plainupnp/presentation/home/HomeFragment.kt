@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.os.Bundle
 import android.view.*
 import android.widget.LinearLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -20,7 +21,6 @@ class HomeFragment : BaseFragment() {
     private lateinit var viewModel: HomeViewModel
     private lateinit var contentAdapter: GalleryContentAdapter
     private lateinit var recyclerLayoutManager: LinearLayoutManager
-
     private lateinit var binding: HomeFragmentBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -135,6 +135,18 @@ class HomeFragment : BaseFragment() {
 
     private fun restoreRecyclerState(bundle: Bundle) {
         recyclerLayoutManager.onRestoreInstanceState(bundle.getParcelable(RECYCLER_STATE))
+    }
+
+    private fun showExitConfirmationDialog() {
+        AlertDialog.Builder(requireActivity())
+            .setTitle(getString(R.string.dialog_exit_title))
+            .setMessage(getString(R.string.dialog_exit_body))
+            .setPositiveButton(getString(R.string.exit)) { _, _ ->
+                // todo clear latest state when finish
+                requireActivity().finishAndRemoveTask()
+            }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+            .show()
     }
 
     companion object {
