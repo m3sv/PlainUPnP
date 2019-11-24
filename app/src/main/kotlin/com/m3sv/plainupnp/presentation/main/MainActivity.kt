@@ -142,6 +142,7 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
 
     private fun handleRendererState(rendererState: UpnpRendererState?) {
         if (rendererState == null) return
+
         with(binding.controlsSheet) {
             with(progress) {
                 isEnabled = rendererState.state == UpnpRendererState.State.PLAY

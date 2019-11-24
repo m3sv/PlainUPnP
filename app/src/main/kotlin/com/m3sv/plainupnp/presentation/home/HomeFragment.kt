@@ -23,19 +23,6 @@ class HomeFragment : BaseFragment() {
 
     private lateinit var binding: HomeFragmentBinding
 
-    /**
-     * This can be triggered before [onCreateView] is finished,
-     * so we check if binding was initialized before trying to save it's state
-     */
-    override fun onSaveInstanceState(outState: Bundle) {
-        if (this::binding.isInitialized)
-            outState.putParcelable(
-                RECYCLER_STATE,
-                binding.content.layoutManager?.onSaveInstanceState()
-            )
-        super.onSaveInstanceState(outState)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -58,28 +45,25 @@ class HomeFragment : BaseFragment() {
 
         recyclerLayoutManager = LinearLayoutManager(requireContext())
 
-        savedInstanceState?.let {
-            recyclerLayoutManager.onRestoreInstanceState(it.getParcelable(RECYCLER_STATE))
-        }
+        if (savedInstanceState != null)
+            restoreRecyclerState(savedInstanceState)
 
-        contentAdapter = GalleryContentAdapter(Glide.with(this)) {
-            viewModel.execute(HomeIntention.ItemClick(it))
-        }
-
-        binding.content.run {
-            setHasFixedSize(true)
-            addItemDecoration(
-                OffsetItemDecoration(
-                    requireContext(),
-                    OffsetItemDecoration.HORIZONTAL
-                )
-            )
-            layoutManager = recyclerLayoutManager
-            adapter = contentAdapter
-            (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
-        }
-
+        initContentAdapter()
+        initRecyclerView()
         observeState()
+    }
+
+    /**
+     * This can be triggered before [onCreateView] is finished,
+     * so we check if binding was initialized before trying to save it's state
+     */
+    override fun onSaveInstanceState(outState: Bundle) {
+        if (this::binding.isInitialized)
+            outState.putParcelable(
+                RECYCLER_STATE,
+                binding.content.layoutManager?.onSaveInstanceState()
+            )
+        super.onSaveInstanceState(outState)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -91,8 +75,8 @@ class HomeFragment : BaseFragment() {
                 setSearchQueryListener()
             }
 
-            setOnMenuItemClickListener {
-                it.expandActionView()
+            setOnMenuItemClickListener { item ->
+                item.expandActionView()
             }
         }
         super.onCreateOptionsMenu(menu, inflater)
@@ -126,6 +110,31 @@ class HomeFragment : BaseFragment() {
 
     private fun SearchView.applySearchViewTransitionAnimation() {
         findViewById<LinearLayout>(R.id.search_bar).layoutTransition = LayoutTransition()
+    }
+
+    private fun initRecyclerView() {
+        binding.content.run {
+            setHasFixedSize(true)
+            addItemDecoration(
+                OffsetItemDecoration(
+                    requireContext(),
+                    OffsetItemDecoration.HORIZONTAL
+                )
+            )
+            layoutManager = recyclerLayoutManager
+            adapter = contentAdapter
+            (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
+        }
+    }
+
+    private fun initContentAdapter() {
+        contentAdapter = GalleryContentAdapter(Glide.with(this)) {
+            viewModel.execute(HomeIntention.ItemClick(it))
+        }
+    }
+
+    private fun restoreRecyclerState(bundle: Bundle) {
+        recyclerLayoutManager.onRestoreInstanceState(bundle.getParcelable(RECYCLER_STATE))
     }
 
     companion object {
