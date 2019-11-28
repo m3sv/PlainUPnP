@@ -7,7 +7,7 @@ object Versions {
     const val detekt = "1.0.0"
     const val glide = "4.9.0"
     const val jetty = "8.2.0.v20160908"
-    const val kotlin = "1.3.50"
+    const val kotlin = "1.3.61"
     const val minSdk = 21
     const val navigation = "2.1.0"
     const val okHttp = "3.9.1"
@@ -19,9 +19,9 @@ object Versions {
 }
 
 object ClasspathDependencies {
-    val androidTools = "com.android.tools.build:gradle:3.5.1"
-    val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
-    val navigationSafeArgs =
+    const val androidTools = "com.android.tools.build:gradle:3.5.1"
+    const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+    const val navigationSafeArgs =
         "androidx.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
 }
 
