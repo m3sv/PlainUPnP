@@ -9,6 +9,7 @@ sealed class HomeState {
     object Loading : HomeState()
     data class Success(
         val directoryName: String,
-        val contentItems: List<ContentItem>
+        val contentItems: List<ContentItem>,
+        val isRoot: Boolean
     ) : HomeState()
 }

@@ -6,9 +6,8 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.m3sv.plainupnp.common.StatefulComponent
 import com.m3sv.plainupnp.common.utils.onItemSelectedListener
 import com.m3sv.plainupnp.databinding.ControlsSheetBinding
-import com.m3sv.plainupnp.presentation.base.ContentDirectory
-import com.m3sv.plainupnp.presentation.base.Renderer
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
+import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import timber.log.Timber
 
 class ControlsSheetDelegate(
@@ -18,10 +17,10 @@ class ControlsSheetDelegate(
 
     private var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
 
-    private var rendererAdapter: SimpleArrayAdapter<Renderer> =
+    private var rendererAdapter: SimpleArrayAdapter<SpinnerItem> =
         SimpleArrayAdapter.init(controlsSheetBinding.container.context)
 
-    private var contentDirectoryAdapter: SimpleArrayAdapter<ContentDirectory> =
+    private var spinnerItemAdapter: SimpleArrayAdapter<SpinnerItem> =
         SimpleArrayAdapter.init(controlsSheetBinding.container.context)
 
     private var selectedRendererPosition: Int = 0
@@ -54,28 +53,31 @@ class ControlsSheetDelegate(
                 onItemSelectedListener = onItemSelectedListener { position ->
                     Timber.d("Renderer click: $position")
                     selectedRendererPosition = position
-                    intentionHandler(MainIntention.SelectRenderer(position))
+                    intentionHandler(MainIntention.SelectRenderer(position - 1))
                 }
             }
 
             with(mainContentDevicePicker) {
-                adapter = contentDirectoryAdapter
+                adapter = spinnerItemAdapter
                 onItemSelectedListener = onItemSelectedListener { position ->
                     Timber.d("Content directory click: $position")
                     selectedContentDirectoryPosition = position
-                    intentionHandler(MainIntention.SelectContentDirectory(position))
+                    intentionHandler(MainIntention.SelectContentDirectory(position - 1))
                 }
             }
         }
     }
 
-    fun updateContentDirectories(contentDirectories: List<ContentDirectory>) {
-        contentDirectoryAdapter.setNewItems(contentDirectories)
+    fun updateContentDirectories(spinnerItems: List<SpinnerItem>) {
+        spinnerItemAdapter.setNewItems(spinnerItems.addEmptyItem())
     }
 
-    fun updateRenderers(renderers: List<Renderer>) {
-        rendererAdapter.setNewItems(renderers)
+    fun updateRenderers(renderers: List<SpinnerItem>) {
+        rendererAdapter.setNewItems(renderers.addEmptyItem())
     }
+
+    private fun List<SpinnerItem>.addEmptyItem() =
+        this.toMutableList().apply { add(0, SpinnerItem("Empty item")) }.toList()
 
     override fun onSaveInstanceState(outState: Bundle) {
         rendererAdapter.onSaveInstanceState(outState)

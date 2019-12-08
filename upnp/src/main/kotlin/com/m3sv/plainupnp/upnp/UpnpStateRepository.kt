@@ -1,13 +1,13 @@
 package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.ReceiveChannel
+import io.reactivex.Observable
+import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 interface UpnpStateStore {
 
-    val state: ReceiveChannel<ContentState>
+    val state: Observable<ContentState>
 
     suspend fun setState(state: ContentState)
 
@@ -18,21 +18,22 @@ sealed class ContentState {
     object Loading : ContentState()
     data class Success(
         val directoryName: String,
-        val content: List<DIDLObjectDisplay>
+        val content: List<DIDLObjectDisplay>,
+        val isRoot: Boolean
     ) : ContentState()
 }
 
 class UpnpStateRepository @Inject constructor() : UpnpStateStore {
 
-    private val _contentChannel = Channel<ContentState>()
+    private val contentSubject = PublishSubject.create<ContentState>()
 
     private var currentState: ContentState? = null
 
-    override val state: ReceiveChannel<ContentState> = _contentChannel
+    override val state: Observable<ContentState> = contentSubject
 
     override suspend fun setState(state: ContentState) {
         currentState = state
-        _contentChannel.send(state)
+        contentSubject.onNext(state)
     }
 
     override suspend fun peekState(): ContentState? = currentState

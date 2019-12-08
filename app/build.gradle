@@ -44,7 +44,9 @@ dependencies {
     implementation Dependencies.androidx.cardView
     implementation Dependencies.androidx.constraintLayout
     implementation Dependencies.androidx.preference
-    implementation Dependencies.androidx.lifecycle
+    implementation Dependencies.androidx.lifecycle.extensions
+    implementation Dependencies.androidx.lifecycle.liveDataKtx
+    implementation Dependencies.androidx.lifecycle.viewModelKtx
     implementation Dependencies.androidx.navigation.fragment
     implementation Dependencies.androidx.navigation.ui
 

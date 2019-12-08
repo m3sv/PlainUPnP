@@ -1,5 +1,5 @@
 object Versions {
-    const val architectureComponents = "2.0.0"
+    const val architectureComponents = "2.1.0"
     const val buildTools = "29.0.0"
     const val cling = "2.1.1"
     const val compileSdk = 29
@@ -35,7 +35,11 @@ object Dependencies {
         "cardView" to "androidx.cardview:cardview:1.0.0",
         "constraintLayout" to "androidx.constraintlayout:constraintlayout:2.0.0-beta3",
         "material" to "com.google.android.material:material:1.2.0-alpha01",
-        "lifecycle" to "androidx.lifecycle:lifecycle-extensions:${Versions.architectureComponents}",
+        "lifecycle" to mapOf(
+            "extensions" to "androidx.lifecycle:lifecycle-extensions:${Versions.architectureComponents}",
+            "liveDataKtx" to "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.architectureComponents}",
+            "viewModelKtx" to "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.architectureComponents}"
+        ),
         "navigation" to mapOf(
             "fragment" to "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}",
             "ui" to "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
@@ -45,8 +49,8 @@ object Dependencies {
     )
 
     val coroutines = mapOf(
-        "core" to "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.0",
-        "rxJava2" to "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:1.3.0"
+        "core" to "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2",
+        "rxJava2" to "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:1.3.2"
     )
 
     val dagger = mapOf(

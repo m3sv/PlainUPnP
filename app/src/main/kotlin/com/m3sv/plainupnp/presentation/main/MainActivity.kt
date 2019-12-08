@@ -91,7 +91,7 @@ class MainActivity : BaseActivity<MainActivityBinding>() {
             when (state) {
                 is MainState.Render -> {
                     with(controlsSheetDelegate) {
-                        updateContentDirectories(state.contentDirectories)
+                        updateContentDirectories(state.spinnerItems)
                         updateRenderers(state.renderers)
                     }
 

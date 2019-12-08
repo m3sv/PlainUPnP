@@ -3,8 +3,7 @@ package com.m3sv.plainupnp.presentation.main
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
-import com.m3sv.plainupnp.presentation.base.ContentDirectory
-import com.m3sv.plainupnp.presentation.base.Renderer
+import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import com.m3sv.plainupnp.upnp.UpnpManager
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -22,7 +21,7 @@ class MainViewModel @Inject constructor(
 
         with(manager) {
             Observable
-                .combineLatest<List<Renderer>, List<ContentDirectory>, UpnpRendererState, MainState>(
+                .combineLatest<List<SpinnerItem>, List<SpinnerItem>, UpnpRendererState, MainState>(
                     observeRenderers(),
                     observeContentDirectories(),
                     upnpRendererState,
@@ -37,10 +36,10 @@ class MainViewModel @Inject constructor(
     }
 
     private fun UpnpManager.observeContentDirectories() =
-        contentDirectories.map { directories -> directories.map { ContentDirectory(it.device.friendlyName) } }
+        contentDirectories.map { directories -> directories.map { SpinnerItem(it.device.friendlyName) } }
 
     private fun UpnpManager.observeRenderers() =
-        renderers.map { renderers -> renderers.map { Renderer(it.device.friendlyName) } }
+        renderers.map { renderers -> renderers.map { SpinnerItem(it.device.friendlyName) } }
 
     override fun execute(intention: MainIntention) {
         Timber.d("Execute: $intention")
