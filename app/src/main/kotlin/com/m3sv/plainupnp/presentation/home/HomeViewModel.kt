@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.presentation.home
 
 import com.m3sv.plainupnp.ContentCache
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
@@ -11,36 +12,30 @@ import com.m3sv.plainupnp.upnp.Destination
 import com.m3sv.plainupnp.upnp.UpnpManager
 import com.m3sv.plainupnp.upnp.didl.*
 import com.m3sv.plainupnp.upnp.usecase.ObserveUpnpStateUseCase
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.channels.consumeEach
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 
 class HomeViewModel @Inject constructor(
     private val manager: UpnpManager,
-    private val observeUpnpStateUseCase: ObserveUpnpStateUseCase,
     private val upnpNavigationUseCase: UpnpNavigationUseCase,
-    private val cache: ContentCache
+    private val cache: ContentCache,
+    observeUpnpStateUseCase: ObserveUpnpStateUseCase
 ) : BaseViewModel<HomeIntention, HomeState>() {
 
     init {
-        GlobalScope.launch {
-            observeUpnpStateUseCase.execute().consumeEach { state ->
-                Timber.i("New home state: $state")
-                updateState(
-                    when (state) {
-                        is ContentState.Loading -> HomeState.Loading
-                        is ContentState.Success ->
-                            HomeState.Success(
-                                state.directoryName,
-                                mapItems(state.content)
-                            )
-                    }
-                )
-            }
-        }
+        observeUpnpStateUseCase.execute().subscribe { state ->
+            updateState(
+                when (state) {
+                    is ContentState.Loading -> HomeState.Loading
+                    is ContentState.Success ->
+                        HomeState.Success(
+                            state.directoryName,
+                            mapItems(state.content),
+                            state.isRoot
+                        )
+                }
+            )
+        }.disposeBy(disposables)
     }
 
     private fun mapItems(items: List<DIDLObjectDisplay>): List<ContentItem> = items.map { item ->

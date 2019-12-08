@@ -1,13 +1,7 @@
 package com.m3sv.plainupnp.presentation.main
 
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
-import com.m3sv.plainupnp.presentation.base.ContentDirectory
-import com.m3sv.plainupnp.presentation.base.Renderer
-
-sealed class Route {
-    object Back : Route()
-    data class To(val path: String) : Route()
-}
+import com.m3sv.plainupnp.presentation.base.SpinnerItem
 
 enum class PlayerButton {
     PLAY,
@@ -30,8 +24,8 @@ sealed class MainIntention {
 
 sealed class MainState {
     data class Render(
-        val renderers: List<Renderer> = listOf(),
-        val contentDirectories: List<ContentDirectory> = listOf(),
+        val renderers: List<SpinnerItem> = listOf(),
+        val spinnerItems: List<SpinnerItem> = listOf(),
         val rendererState: UpnpRendererState? = null
     ) : MainState()
 

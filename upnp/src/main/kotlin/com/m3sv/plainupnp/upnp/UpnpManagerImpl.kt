@@ -55,20 +55,26 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
+
     override fun selectContentDirectory(position: Int) {
         if (position !in contentDirectories.currentContentDirectories().indices) {
-            navigateTo(Destination.Home)
+            Timber.d("Content directory position is outside of bounds, ignore")
+            serviceController.selectedContentDirectory = null
             return
         }
 
         val contentDirectory = contentDirectories.currentContentDirectories()[position].device
 
-        serviceController.selectedContentDirectory = contentDirectory
-        navigateTo(Destination.Home)
+        if (contentDirectory != serviceController.selectedContentDirectory) {
+            serviceController.selectedContentDirectory = contentDirectory
+            navigateTo(Destination.Home)
+        }
     }
+
 
     override fun selectRenderer(position: Int) {
         if (position !in renderers.currentRenderers().indices) {
+            Timber.d("Renderer position is outside of bounds, ignore")
             return
         }
 

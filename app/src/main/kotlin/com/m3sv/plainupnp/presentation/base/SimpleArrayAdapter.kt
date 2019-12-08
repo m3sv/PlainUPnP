@@ -42,12 +42,11 @@ class SimpleArrayAdapter<T : Parcelable> private constructor(
     }
 }
 
-
-class ContentDirectory(val name: String) : Parcelable {
+class SpinnerItem(private val name: String) : Parcelable {
 
     override fun toString(): String = name
 
-    constructor(parcel: Parcel) : this(parcel.readString() ?: "")
+    constructor(parcel: Parcel) : this(requireNotNull(parcel.readString()))
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
@@ -55,36 +54,12 @@ class ContentDirectory(val name: String) : Parcelable {
 
     override fun describeContents(): Int = 0
 
-    companion object CREATOR : Parcelable.Creator<ContentDirectory> {
-        override fun createFromParcel(parcel: Parcel): ContentDirectory {
-            return ContentDirectory(parcel)
+    companion object CREATOR : Parcelable.Creator<SpinnerItem> {
+        override fun createFromParcel(parcel: Parcel): SpinnerItem {
+            return SpinnerItem(parcel)
         }
 
-        override fun newArray(size: Int): Array<ContentDirectory?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
-
-class Renderer(val name: String) : Parcelable {
-    override fun toString(): String = name
-
-    constructor(parcel: Parcel) : this(parcel.readString() ?: "")
-
-    override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeString(name)
-    }
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    companion object CREATOR : Parcelable.Creator<Renderer> {
-        override fun createFromParcel(parcel: Parcel): Renderer {
-            return Renderer(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Renderer?> {
+        override fun newArray(size: Int): Array<SpinnerItem?> {
             return arrayOfNulls(size)
         }
     }

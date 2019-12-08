@@ -38,8 +38,7 @@ class UpnpNavigatorImpl @Inject constructor(
         when (destination) {
             is Destination.Home -> {
                 setContentState(ContentState.Loading)
-                clearBackStack()
-                browse(BrowseToModel(HOME_DIRECTORY_ID, HOME_DIRECTORY_NAME))
+                browse(BrowseToModel(HOME_DIRECTORY_ID, HOME_DIRECTORY_NAME), clearBackStack = true)
             }
 
             is Destination.Path -> {
@@ -58,11 +57,18 @@ class UpnpNavigatorImpl @Inject constructor(
     }
 
 
-    private fun browse(model: BrowseToModel) {
+    private fun browse(model: BrowseToModel, clearBackStack: Boolean = false) {
         serviceController.createContentDirectoryCommand()?.browse(model.id, null) {
-            val successState = ContentState.Success(model.directoryName, it ?: listOf())
+            val successState = ContentState.Success(
+                model.directoryName,
+                it ?: listOf(),
+                model.id == HOME_DIRECTORY_ID
+            )
 
-            addCurrentStateToBackStack()
+            if (clearBackStack)
+                clearBackStack()
+            else
+                addCurrentStateToBackStack()
 
             currentState = successState
             setContentState(successState)
@@ -80,6 +86,7 @@ class UpnpNavigatorImpl @Inject constructor(
     }
 
     private fun clearBackStack() {
+        currentState = null
         directories.clear()
     }
 

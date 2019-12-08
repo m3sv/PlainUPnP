@@ -8,6 +8,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -26,8 +27,8 @@ class HomeFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
         viewModel = getViewModel()
+        setHasOptionsMenu(true)
     }
 
     override fun onCreateView(
@@ -35,18 +36,18 @@ class HomeFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = HomeFragmentBinding.inflate(inflater, container, false).apply {
-            (activity as AppCompatActivity).setSupportActionBar(homeToolbar)
-        }
+        binding = HomeFragmentBinding
+            .inflate(inflater, container, false)
+            .apply { setupToolbar() }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observeState()
         addBackPressedDispatcher()
         initContentAdapter()
         initRecyclerView()
-        observeState()
 
         if (savedInstanceState != null)
             restoreRecyclerState(savedInstanceState)
@@ -54,12 +55,12 @@ class HomeFragment : BaseFragment() {
 
     private fun addBackPressedDispatcher() {
         requireActivity().onBackPressedDispatcher.addCallback {
-            viewModel.execute(HomeIntention.BackPress)
+            backPressDelegate()
         }
     }
 
     private fun observeState() {
-        viewModel.state.nonNullObserve { state ->
+        viewModel.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is HomeState.Loading -> binding.progress.show()
                 is HomeState.Success -> {
@@ -67,6 +68,12 @@ class HomeFragment : BaseFragment() {
                     binding.run {
                         homeToolbar.title = state.directoryName
                         progress.disappear()
+                    }
+
+                    backPressDelegate = if (state.isRoot) {
+                        showExitConfirmationDialogDelegate
+                    } else {
+                        navigateBackDelegate
                     }
                 }
             }
@@ -153,6 +160,21 @@ class HomeFragment : BaseFragment() {
             }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             .show()
+    }
+
+
+    private val showExitConfirmationDialogDelegate = {
+        showExitConfirmationDialog()
+    }
+
+    private val navigateBackDelegate = {
+        viewModel.execute(HomeIntention.BackPress)
+    }
+
+    private var backPressDelegate = navigateBackDelegate
+
+    private fun HomeFragmentBinding.setupToolbar() {
+        (requireActivity() as AppCompatActivity).setSupportActionBar(homeToolbar)
     }
 
     companion object {
