@@ -4,7 +4,6 @@ import android.animation.LayoutTransition
 import android.os.Bundle
 import android.view.*
 import android.widget.LinearLayout
-import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -39,24 +38,16 @@ class HomeFragment : BaseFragment() {
         binding = HomeFragmentBinding
             .inflate(inflater, container, false)
             .apply { setupToolbar() }
+
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeState()
-        addBackPressedDispatcher()
         initContentAdapter()
         initRecyclerView()
-
-        if (savedInstanceState != null)
-            restoreRecyclerState(savedInstanceState)
-    }
-
-    private fun addBackPressedDispatcher() {
-        requireActivity().onBackPressedDispatcher.addCallback {
-            backPressDelegate()
-        }
+        restoreRecyclerState(savedInstanceState)
     }
 
     private fun observeState() {
@@ -146,8 +137,9 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    private fun restoreRecyclerState(bundle: Bundle) {
-        recyclerLayoutManager.onRestoreInstanceState(bundle.getParcelable(RECYCLER_STATE))
+    private fun restoreRecyclerState(bundle: Bundle?) {
+        if (bundle != null)
+            recyclerLayoutManager.onRestoreInstanceState(bundle.getParcelable(RECYCLER_STATE))
     }
 
     private fun showExitConfirmationDialog() {

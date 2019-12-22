@@ -10,8 +10,8 @@
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
-            style="@style/Widget.Plain.Toolbar"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:theme="@style/ThemeOverlay.Plain.ActionBar">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/home_toolbar"
@@ -21,13 +21,12 @@
                 app:title="@string/app_name" />
         </com.google.android.material.appbar.AppBarLayout>
 
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="?actionBarSize"
-            android:layout_marginBottom="64dp"
+            android:layout_marginBottom="?actionBarSize"
             android:clipToPadding="false"
             android:paddingTop="8dp" />
 

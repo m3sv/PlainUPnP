@@ -2,7 +2,6 @@
 <resources>
     <string name="version">Versie</string>
     <string name="app_url">Plaatshouder</string>
-    <string name="settings">Instellingen</string>
     <string name="home">Home</string>
     <string name="active_content_directory_description">Een lokale Content Directory-server activeren</string>
     <string name="content_directory_title">Inhoud Directory</string>
@@ -35,4 +34,6 @@
     <string name="exit">Uitgang</string>
     <string name="dialog_exit_body">Weet u zeker dat u de toepassing wilt verlaten?</string>
     <string name="dialog_exit_title">Uitgang?</string>
+    <string name="menu_item_search">Zoeken</string>
+    <string name="menu_item_settings">Instellingen</string>
 </resources>
