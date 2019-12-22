@@ -5,7 +5,6 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
@@ -62,8 +61,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
         findPreference<Preference>(GITHUB)?.onPreferenceClickListener = preferenceClickListener
         findPreference<Preference>(PRIVACY_POLICY)?.onPreferenceClickListener =
             preferenceClickListener
-
-        applyBottomMargin()
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -131,15 +128,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
             openPlayMarketFallBack()
         }
     }
-
-    private fun applyBottomMargin() {
-        listView.layoutParams = (listView.layoutParams as ViewGroup.MarginLayoutParams).apply {
-            bottomMargin = 64.toPx()
-        }
-    }
-
-    private fun Int.toPx(): Int =
-        (this * this@SettingsFragment.resources.displayMetrics.density).toInt()
 
     private companion object {
         private const val VERSION = "version"

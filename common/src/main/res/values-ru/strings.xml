@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="version">Версия</string>
-    <string name="settings">Настройки</string>
     <string name="home">Главная</string>
     <string name="active_content_directory_description">Activate a local Content Directory server</string>
     <string name="content_directory_title">Content Directory</string>
@@ -35,4 +34,6 @@
     <string name="exit">Завершить</string>
     <string name="dialog_exit_body">Вы уверены, что хотите заверишть работу программы?</string>
     <string name="dialog_exit_title">Выход</string>
+    <string name="menu_item_search">Поиск</string>
+    <string name="menu_item_settings">Настройки</string>
 </resources>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.Plain" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="primaryTextColor">@color/colorPrimary</item>
+        <item name="secondaryTextColor">@color/colorPrimary</item>
+        <item name="dividerColor">@color/colorPrimaryLight</item>
+        <item name="colorControlActivated">@color/colorPrimary</item>
+        <item name="iconPlaceholder">@drawable/ic_video</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="Theme.Plain.Splash">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
+
+    <style name="ThemeOverlay.Plain.ActionBar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+
+</resources>
