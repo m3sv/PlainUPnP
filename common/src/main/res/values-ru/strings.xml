@@ -36,4 +36,5 @@
     <string name="dialog_exit_title">Выход</string>
     <string name="menu_item_search">Поиск</string>
     <string name="menu_item_settings">Настройки</string>
+    <string name="navigation_controls">Управление</string>
 </resources>

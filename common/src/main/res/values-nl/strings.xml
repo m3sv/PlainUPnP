@@ -36,4 +36,5 @@
     <string name="dialog_exit_title">Uitgang?</string>
     <string name="menu_item_search">Zoeken</string>
     <string name="menu_item_settings">Instellingen</string>
+    <string name="navigation_controls">Controls</string>
 </resources>

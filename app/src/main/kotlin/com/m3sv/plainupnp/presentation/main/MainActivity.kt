@@ -10,6 +10,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.HalfClockwiseRotateSlideAction
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
@@ -29,16 +30,15 @@ private val UpnpRendererState.icon: Int
     }
 
 class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClickListener,
-    NavController.OnDestinationChangedListener {
+    NavController.OnDestinationChangedListener, ControlsActionCallback {
 
     override val activityConfig: ActivityConfig = ActivityConfig(R.layout.main_activity)
 
     private lateinit var viewModel: MainViewModel
 
-//    private lateinit var controlsSheetDelegate: ControlsSheetDelegate
-
     private val bottomNavDrawer: ControlsFragment by lazy(NONE) {
-        supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment
+        (supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment)
+            .apply { setControlsActionCallback(this@MainActivity) }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,24 +47,15 @@ class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClic
 
         findNavController(R.id.nav_host_container).addOnDestinationChangedListener(this)
 
-//        initControlsSheetDelegate()
         observeState()
         setupBottomNavigation()
         setupBottomNavigationListener()
         requestReadStoragePermission()
 
-        if (savedInstanceState != null) {
-//            restoreControlsSheetState(savedInstanceState)
-        } else {
-            startUpnpService()
-        }
+        if (savedInstanceState == null) startUpnpService()
 
-
-//        bottomNavDrawer.addOnStateChangedAction(ChangeSettingsMenuStateAction { showSettings ->
-//            if (showSettings)
-//        })
-
-        binding.bottomSheetToggle.setOnClickListener {
+        bottomNavDrawer.addOnSlideAction(HalfClockwiseRotateSlideAction(binding.bottomAppBarChevron))
+        binding.bottomAppBarTitle.setOnClickListener {
             bottomNavDrawer.toggle()
         }
     }
@@ -107,15 +98,6 @@ class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClic
         return true
     }
 
-    //
-//    private fun initControlsSheetDelegate() {
-//        controlsSheetDelegate = ControlsSheetDelegate(binding.controlsSheet, viewModel::execute)
-//    }
-//
-//    private fun restoreControlsSheetState(bundle: Bundle) {
-//        controlsSheetDelegate.onRestoreInstanceState(bundle)
-//    }
-
     private fun startUpnpService() {
         viewModel.execute(MainIntention.StartUpnpService)
     }
@@ -131,10 +113,10 @@ class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClic
         viewModel.state.nonNullObserve { state ->
             when (state) {
                 is MainState.Render -> {
-//                    with(controlsSheetDelegate) {
-//                        updateContentDirectories(state.spinnerItems)
-//                        updateRenderers(state.renderers)
-//                    }
+                    with(bottomNavDrawer) {
+                        setRenderers(state.renderers)
+                        setContentDirectories(state.contentDirectories)
+                    }
 
                     handleRendererState(state.rendererState)
                 }
@@ -159,15 +141,15 @@ class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClic
     private fun handleRendererState(rendererState: UpnpRendererState?) {
         if (rendererState == null) return
 
+        bottomNavDrawer.setProgress(
+            rendererState.elapsedPercent,
+            rendererState.state == UpnpRendererState.State.PLAY
+        )
+
 //        with(binding.controlsSheet) {
-//            with(progress) {
-//                isEnabled = rendererState.state == UpnpRendererState.State.PLAY
-//                progress = rendererState.elapsedPercent
-//            }
-//
 //            play.setImageResource(rendererState.icon)
 //        }
-//
+
 //        with(binding.controlsSheet.art) {
 //            var thumb: Any? = when (rendererState.type) {
 //                UpnpItemType.AUDIO -> R.drawable.ic_music
@@ -178,7 +160,7 @@ class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClic
 //
 //            Glide.with(this).load(thumb).into(this)
 //        }
-//
+
 //        binding.controlsSheet.title.text = rendererState.title
     }
 
@@ -220,7 +202,16 @@ class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClic
         }
     }
 
-//    private fun saveControlsSheetState(outState: Bundle) {
-//        controlsSheetDelegate.onSaveInstanceState(outState)
-//    }
+    override fun onAction(action: ControlsAction) {
+        val intention = when (action) {
+            is ControlsAction.NextClick -> MainIntention.PlayerButtonClick(PlayerButton.NEXT)
+            is ControlsAction.PreviousClick -> MainIntention.PlayerButtonClick(PlayerButton.PREVIOUS)
+            is ControlsAction.PlayClick -> MainIntention.PlayerButtonClick(PlayerButton.PLAY)
+            is ControlsAction.ProgressChange -> MainIntention.MoveTo(action.progress)
+            is ControlsAction.SelectRenderer -> MainIntention.SelectRenderer(action.position)
+            is ControlsAction.SelectContentDirectory -> MainIntention.SelectContentDirectory(action.position)
+        }
+
+        viewModel.execute(intention)
+    }
 }
