@@ -27,11 +27,20 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom">
 
-            <Button
-                android:id="@+id/bottom_sheet_toggle"
+            <ImageView
+                android:id="@+id/bottom_app_bar_chevron"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="toggle" />
+                android:layout_gravity="center_vertical"
+                app:srcCompat="@drawable/ic_arrow_drop_up" />
+
+            <TextView
+                android:id="@+id/bottom_app_bar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:padding="8dp"
+                android:text="@string/navigation_controls" />
         </com.google.android.material.bottomappbar.BottomAppBar>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

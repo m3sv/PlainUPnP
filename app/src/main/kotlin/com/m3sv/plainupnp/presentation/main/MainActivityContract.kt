@@ -25,7 +25,7 @@ sealed class MainIntention {
 sealed class MainState {
     data class Render(
         val renderers: List<SpinnerItem> = listOf(),
-        val spinnerItems: List<SpinnerItem> = listOf(),
+        val contentDirectories: List<SpinnerItem> = listOf(),
         val rendererState: UpnpRendererState? = null
     ) : MainState()
 
