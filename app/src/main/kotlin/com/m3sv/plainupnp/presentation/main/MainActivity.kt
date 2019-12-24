@@ -16,9 +16,11 @@ import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.ActivityConfig
 import com.m3sv.plainupnp.presentation.base.BaseActivity
+import com.m3sv.plainupnp.presentation.controls.ControlsAction
+import com.m3sv.plainupnp.presentation.controls.ControlsActionCallback
 import com.m3sv.plainupnp.presentation.controls.ControlsFragment
+import com.m3sv.plainupnp.presentation.home.HomeFragment
 import kotlin.LazyThreadSafetyMode.NONE
-
 
 private val UpnpRendererState.icon: Int
     inline get() = when (state) {
@@ -56,7 +58,17 @@ class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClic
 
         bottomNavDrawer.addOnSlideAction(HalfClockwiseRotateSlideAction(binding.bottomAppBarChevron))
         binding.bottomAppBarTitle.setOnClickListener {
-            bottomNavDrawer.toggle()
+            val fragment =
+                supportFragmentManager.primaryNavigationFragment?.childFragmentManager?.fragments?.first()
+
+            val isOpen = bottomNavDrawer.toggle()
+
+            if (fragment is HomeFragment) {
+                if (isOpen) {
+                    fragment.disableCallback()
+                } else
+                    fragment.enableCallback()
+            }
         }
     }
 
