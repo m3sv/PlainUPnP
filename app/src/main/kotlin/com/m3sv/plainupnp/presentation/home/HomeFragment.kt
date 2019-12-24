@@ -1,13 +1,11 @@
 package com.m3sv.plainupnp.presentation.home
 
-import android.animation.LayoutTransition
 import android.os.Bundle
-import android.view.*
-import android.widget.LinearLayout
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,13 +15,24 @@ import com.m3sv.plainupnp.common.utils.disappear
 import com.m3sv.plainupnp.common.utils.show
 import com.m3sv.plainupnp.databinding.HomeFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
+import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
+import com.m3sv.plainupnp.presentation.base.ControlsSheetState
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
+import kotlin.LazyThreadSafetyMode.NONE
 
 class HomeFragment : BaseFragment() {
     private lateinit var viewModel: HomeViewModel
     private lateinit var contentAdapter: GalleryContentAdapter
     private lateinit var recyclerLayoutManager: LinearLayoutManager
     private lateinit var binding: HomeFragmentBinding
+
+    private val controlsSheetDelegate by lazy(NONE) { ControlsSheetDelegate.get(requireActivity()) }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            backPressDelegate()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,10 +45,7 @@ class HomeFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = HomeFragmentBinding
-            .inflate(inflater, container, false)
-            .apply { setupToolbar() }
-
+        binding = HomeFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -50,13 +56,18 @@ class HomeFragment : BaseFragment() {
         initContentAdapter()
         initRecyclerView()
         restoreRecyclerState(savedInstanceState)
-    }
-
-    private val onBackPressedCallback = object : OnBackPressedCallback(false) {
-        override fun handleOnBackPressed() {
-            backPressDelegate()
+        controlsSheetDelegate.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                ControlsSheetState.OPEN -> {
+                    onBackPressedCallback.isEnabled = false
+                }
+                ControlsSheetState.CLOSED -> {
+                    onBackPressedCallback.isEnabled = true
+                }
+            }
         }
     }
+
 
     private fun addBackPressedDispatcher() {
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -69,11 +80,9 @@ class HomeFragment : BaseFragment() {
                 is HomeState.Success -> {
                     contentAdapter.setWithDiff(state.contentItems)
                     binding.run {
-                        homeToolbar.title = state.directoryName
+                        //                        homeToolbar.title = state.directoryName
                         progress.disappear()
                     }
-
-                    onBackPressedCallback.isEnabled = true
 
                     backPressDelegate = if (state.isRoot) {
                         showExitConfirmationDialogDelegate
@@ -98,36 +107,36 @@ class HomeFragment : BaseFragment() {
         super.onSaveInstanceState(outState)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.home_toolbar_menu, menu)
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.home_toolbar_menu, menu)
+//
+//        menu.findItem(R.id.home_search).apply {
+//            (actionView as SearchView).apply {
+//                applySearchViewTransitionAnimation()
+//                setSearchQueryListener()
+//            }
+//
+//            setOnMenuItemClickListener { item ->
+//                item.expandActionView()
+//            }
+//        }
+//        super.onCreateOptionsMenu(menu, inflater)
+//    }
 
-        menu.findItem(R.id.home_search).apply {
-            (actionView as SearchView).apply {
-                applySearchViewTransitionAnimation()
-                setSearchQueryListener()
-            }
-
-            setOnMenuItemClickListener { item ->
-                item.expandActionView()
-            }
-        }
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    private fun SearchView.setSearchQueryListener() {
-        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean = false
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                contentAdapter.filter(newText)
-                return true
-            }
-        })
-    }
-
-    private fun SearchView.applySearchViewTransitionAnimation() {
-        findViewById<LinearLayout>(R.id.search_bar).layoutTransition = LayoutTransition()
-    }
+//    private fun SearchView.setSearchQueryListener() {
+//        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+//            override fun onQueryTextSubmit(query: String): Boolean = false
+//
+//            override fun onQueryTextChange(newText: String): Boolean {
+//                contentAdapter.filter(newText)
+//                return true
+//            }
+//        })
+//    }
+//
+//    private fun SearchView.applySearchViewTransitionAnimation() {
+//        findViewById<LinearLayout>(R.id.search_bar).layoutTransition = LayoutTransition()
+//    }
 
     private fun initRecyclerView() {
         recyclerLayoutManager = LinearLayoutManager(requireContext())
@@ -178,18 +187,6 @@ class HomeFragment : BaseFragment() {
     }
 
     private var backPressDelegate = navigateBackDelegate
-
-    private fun HomeFragmentBinding.setupToolbar() {
-        (requireActivity() as AppCompatActivity).setSupportActionBar(homeToolbar)
-    }
-
-    fun disableCallback() {
-        onBackPressedCallback.isEnabled = false
-    }
-
-    fun enableCallback() {
-        onBackPressedCallback.isEnabled = true
-    }
 
     companion object {
         private const val RECYCLER_STATE = "recycler_state_key"

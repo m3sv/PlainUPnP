@@ -14,6 +14,7 @@ import com.m3sv.plainupnp.common.OnStateChangedAction
 import com.m3sv.plainupnp.common.utils.onItemSelectedListener
 import com.m3sv.plainupnp.common.utils.onSeekBarChangeListener
 import com.m3sv.plainupnp.databinding.ControlsFragmentBinding
+import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import timber.log.Timber
@@ -36,18 +37,15 @@ interface ControlsActionCallback {
 
 class ControlsFragment : Fragment() {
 
-    interface ShowDismissListener {
-        fun onShow()
-        fun onDismiss()
-    }
-
     var actionCallback: ControlsActionCallback? = null
 
     private lateinit var binding: ControlsFragmentBinding
 
-    private val bottomSheetCallback: BottomSheetCallback = BottomSheetCallback()
+    private lateinit var rendererAdapter: SimpleArrayAdapter<SpinnerItem>
 
-    private val showDismissListeners: MutableList<ShowDismissListener> = mutableListOf()
+    private lateinit var contentDirectoriesAdapter: SimpleArrayAdapter<SpinnerItem>
+
+    private val bottomSheetCallback: BottomSheetCallback = BottomSheetCallback()
 
     private val behavior: BottomSheetBehavior<ConstraintLayout> by lazy(NONE) {
         BottomSheetBehavior.from(binding.backgroundContainer)
@@ -57,9 +55,7 @@ class ControlsFragment : Fragment() {
         override fun handleOnBackPressed() = close()
     }
 
-    private lateinit var rendererAdapter: SimpleArrayAdapter<SpinnerItem>
-
-    private lateinit var contentDirectoriesAdapter: SimpleArrayAdapter<SpinnerItem>
+    private val controlsSheetDelegate by lazy(NONE) { ControlsSheetDelegate.get(requireActivity()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,6 +80,8 @@ class ControlsFragment : Fragment() {
         if (savedInstanceState != null) {
             rendererAdapter.onRestoreInstanceState(savedInstanceState)
             contentDirectoriesAdapter.onRestoreInstanceState(savedInstanceState)
+            onBackPressedCallback.isEnabled =
+                savedInstanceState.getBoolean(IS_CALLBACK_ENABLED_KEY, false)
         }
 
         behavior.addBottomSheetCallback(bottomSheetCallback)
@@ -135,29 +133,24 @@ class ControlsFragment : Fragment() {
         }
     }
 
-    fun toggle(): Boolean = when (behavior.state) {
-        BottomSheetBehavior.STATE_HIDDEN -> {
-            open()
-            true
-        }
+    fun toggle() {
+        when (behavior.state) {
+            BottomSheetBehavior.STATE_HIDDEN -> open()
 
-        BottomSheetBehavior.STATE_HALF_EXPANDED,
-        BottomSheetBehavior.STATE_EXPANDED,
-        BottomSheetBehavior.STATE_COLLAPSED -> {
-            close()
-            false
+            BottomSheetBehavior.STATE_HALF_EXPANDED,
+            BottomSheetBehavior.STATE_EXPANDED,
+            BottomSheetBehavior.STATE_COLLAPSED -> close()
         }
-        else -> false
     }
 
     fun open() {
         behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
-        showDismissListeners.forEach { listener -> listener.onShow() }
+        controlsSheetDelegate.onShow()
     }
 
     fun close() {
         behavior.state = BottomSheetBehavior.STATE_HIDDEN
-        showDismissListeners.forEach { listener -> listener.onDismiss() }
+        controlsSheetDelegate.onDismiss()
     }
 
     fun addOnStateChangedAction(action: OnStateChangedAction) {
@@ -184,15 +177,16 @@ class ControlsFragment : Fragment() {
         this.actionCallback = actionCallback
     }
 
-    fun addShowDismissListener(listener: ShowDismissListener) {
-        showDismissListeners.add(listener)
-    }
-
     private fun List<SpinnerItem>.addEmptyItem() =
         this.toMutableList().apply { add(0, SpinnerItem("Empty item")) }.toList()
 
     override fun onSaveInstanceState(outState: Bundle) {
         rendererAdapter.onSaveInstanceState(outState)
         contentDirectoriesAdapter.onSaveInstanceState(outState)
+        outState.putBoolean(IS_CALLBACK_ENABLED_KEY, onBackPressedCallback.isEnabled)
+    }
+
+    companion object {
+        private const val IS_CALLBACK_ENABLED_KEY = "controls_sheet_expanded_state"
     }
 }
