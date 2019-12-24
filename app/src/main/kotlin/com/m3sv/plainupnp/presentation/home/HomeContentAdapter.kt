@@ -60,9 +60,6 @@ class GalleryContentAdapter(
         }
     }
 
-    private inline fun <T : ViewDataBinding> ItemViewHolder<*>.extractBinding(): T =
-        (this as ItemViewHolder<T>).binding
-
     private fun loadData(
         holder: ItemViewHolder<ViewDataBinding>,
         contentItem: ContentItem,
@@ -113,6 +110,9 @@ class GalleryContentAdapter(
         override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
             oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
     }
+
+    private fun <T : ViewDataBinding> ItemViewHolder<*>.extractBinding(): T =
+        (this as ItemViewHolder<T>).binding
 
     companion object {
         val diffCallback = DiffCallback(listOf(), listOf())

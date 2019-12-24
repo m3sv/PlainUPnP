@@ -18,7 +18,6 @@ class MainViewModel @Inject constructor(
 ) : BaseViewModel<MainIntention, MainState>() {
 
     init {
-
         with(manager) {
             Observable
                 .combineLatest<List<SpinnerItem>, List<SpinnerItem>, UpnpRendererState, MainState>(

@@ -5,12 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.disappear
 import com.m3sv.plainupnp.common.utils.show
 import com.m3sv.plainupnp.databinding.HomeFragmentBinding
@@ -30,7 +28,7 @@ class HomeFragment : BaseFragment() {
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            backPressDelegate()
+            viewModel.execute(HomeIntention.BackPress)
         }
     }
 
@@ -56,18 +54,17 @@ class HomeFragment : BaseFragment() {
         initContentAdapter()
         initRecyclerView()
         restoreRecyclerState(savedInstanceState)
+        observeControlsSheetState()
+    }
+
+    private fun observeControlsSheetState() {
         controlsSheetDelegate.state.observe(viewLifecycleOwner) { state ->
             when (state) {
-                ControlsSheetState.OPEN -> {
-                    onBackPressedCallback.isEnabled = false
-                }
-                ControlsSheetState.CLOSED -> {
-                    onBackPressedCallback.isEnabled = true
-                }
+                ControlsSheetState.OPEN -> disableBackPressedCallback()
+                ControlsSheetState.CLOSED -> enableBackPressedCallback()
             }
         }
     }
-
 
     private fun addBackPressedDispatcher() {
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
@@ -79,16 +76,7 @@ class HomeFragment : BaseFragment() {
                 is HomeState.Loading -> binding.progress.show()
                 is HomeState.Success -> {
                     contentAdapter.setWithDiff(state.contentItems)
-                    binding.run {
-                        //                        homeToolbar.title = state.directoryName
-                        progress.disappear()
-                    }
-
-                    backPressDelegate = if (state.isRoot) {
-                        showExitConfirmationDialogDelegate
-                    } else {
-                        navigateBackDelegate
-                    }
+                    binding.progress.disappear()
                 }
             }
         }
@@ -165,28 +153,13 @@ class HomeFragment : BaseFragment() {
             recyclerLayoutManager.onRestoreInstanceState(bundle.getParcelable(RECYCLER_STATE))
     }
 
-    private fun showExitConfirmationDialog() {
-        AlertDialog.Builder(requireActivity())
-            .setTitle(getString(R.string.dialog_exit_title))
-            .setMessage(getString(R.string.dialog_exit_body))
-            .setPositiveButton(getString(R.string.exit)) { _, _ ->
-                // todo clear latest state when finish
-                requireActivity().finishAndRemoveTask()
-            }
-            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
-            .show()
+    private fun enableBackPressedCallback() {
+        onBackPressedCallback.isEnabled = true
     }
 
-
-    private val showExitConfirmationDialogDelegate = {
-        showExitConfirmationDialog()
+    private fun disableBackPressedCallback() {
+        onBackPressedCallback.isEnabled = false
     }
-
-    private val navigateBackDelegate = {
-        viewModel.execute(HomeIntention.BackPress)
-    }
-
-    private var backPressDelegate = navigateBackDelegate
 
     companion object {
         private const val RECYCLER_STATE = "recycler_state_key"
