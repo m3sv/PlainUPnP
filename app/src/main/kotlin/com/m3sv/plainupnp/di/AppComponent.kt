@@ -11,11 +11,12 @@ import dagger.android.support.AndroidSupportInjectionModule
 
 @ApplicationScope
 @Component(
-        modules = [AndroidSupportInjectionModule::class,
-            MainActivityBuilder::class,
-            AppModule::class,
-            UPnPBinder::class
-        ]
+    modules = [
+        AndroidSupportInjectionModule::class,
+        MainActivityBuilder::class,
+        AppModule::class,
+        UPnPBinder::class
+    ]
 )
 interface AppComponent : AndroidInjector<App> {
     @Component.Builder

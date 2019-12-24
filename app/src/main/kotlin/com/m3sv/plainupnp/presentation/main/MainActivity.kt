@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -30,8 +31,10 @@ private val UpnpRendererState.icon: Int
         UpnpRendererState.State.FINISHED -> R.drawable.ic_play_arrow
     }
 
-class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClickListener,
-    NavController.OnDestinationChangedListener, ControlsActionCallback {
+class MainActivity : BaseActivity<MainActivityBinding>(),
+    Toolbar.OnMenuItemClickListener,
+    NavController.OnDestinationChangedListener,
+    ControlsActionCallback {
 
     override val activityConfig: ActivityConfig = ActivityConfig(R.layout.main_activity)
 
@@ -56,9 +59,7 @@ class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClic
         if (savedInstanceState == null) startUpnpService()
 
         bottomNavDrawer.addOnSlideAction(HalfClockwiseRotateSlideAction(binding.bottomAppBarChevron))
-        binding.bottomAppBarTitle.setOnClickListener {
-            bottomNavDrawer.toggle()
-        }
+        binding.bottomAppBarTitle.setOnClickListener { bottomNavDrawer.toggle() }
     }
 
     private fun setupBottomNavigation() {
@@ -66,12 +67,6 @@ class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClic
             replaceMenu(R.menu.bottom_app_bar_settings_menu)
             setOnMenuItemClickListener(this@MainActivity)
         }
-    }
-
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-//        saveControlsSheetState(outState)
     }
 
     override fun onStart() {
@@ -201,6 +196,17 @@ class MainActivity : BaseActivity<MainActivityBinding>(), Toolbar.OnMenuItemClic
             performHide()
             visibility = View.GONE
         }
+    }
+
+    private fun showExitConfirmationDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(getString(R.string.dialog_exit_title))
+            .setMessage(getString(R.string.dialog_exit_body))
+            .setPositiveButton(getString(R.string.exit)) { _, _ ->
+                finishAndRemoveTask()
+            }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+            .show()
     }
 
     override fun onAction(action: ControlsAction) {
