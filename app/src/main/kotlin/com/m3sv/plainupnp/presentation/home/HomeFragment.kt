@@ -4,6 +4,7 @@ import android.animation.LayoutTransition
 import android.os.Bundle
 import android.view.*
 import android.widget.LinearLayout
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -45,9 +46,20 @@ class HomeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeState()
+        addBackPressedDispatcher()
         initContentAdapter()
         initRecyclerView()
         restoreRecyclerState(savedInstanceState)
+    }
+
+    private val onBackPressedCallback = object : OnBackPressedCallback(false) {
+        override fun handleOnBackPressed() {
+            backPressDelegate()
+        }
+    }
+
+    private fun addBackPressedDispatcher() {
+        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
 
     private fun observeState() {
@@ -60,6 +72,8 @@ class HomeFragment : BaseFragment() {
                         homeToolbar.title = state.directoryName
                         progress.disappear()
                     }
+
+                    onBackPressedCallback.isEnabled = true
 
                     backPressDelegate = if (state.isRoot) {
                         showExitConfirmationDialogDelegate
@@ -167,6 +181,14 @@ class HomeFragment : BaseFragment() {
 
     private fun HomeFragmentBinding.setupToolbar() {
         (requireActivity() as AppCompatActivity).setSupportActionBar(homeToolbar)
+    }
+
+    fun disableCallback() {
+        onBackPressedCallback.isEnabled = false
+    }
+
+    fun enableCallback() {
+        onBackPressedCallback.isEnabled = true
     }
 
     companion object {

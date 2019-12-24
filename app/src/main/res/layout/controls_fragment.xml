@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:background="?colorSurface"
             android:layout_height="match_parent"
-            app:behavior_halfExpandedRatio="0.3"
+            app:behavior_halfExpandedRatio="0.6"
             app:behavior_hideable="true"
             app:behavior_skipCollapsed="true"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -105,7 +105,7 @@
             <Spinner
                 android:id="@+id/main_content_device_picker"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
@@ -122,7 +122,7 @@
             <Spinner
                 android:id="@+id/main_renderer_device_picker"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="14dp"
                 android:layout_marginBottom="8dp"
