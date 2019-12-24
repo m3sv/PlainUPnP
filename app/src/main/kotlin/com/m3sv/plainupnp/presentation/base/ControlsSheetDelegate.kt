@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 
 interface ShowDismissListener {
-    fun onShow() {}
-    fun onDismiss() {}
+    fun onShow()
+    fun onDismiss()
 }
 
 enum class ControlsSheetState {
