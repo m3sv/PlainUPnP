@@ -80,8 +80,15 @@ class ControlsFragment : Fragment() {
         if (savedInstanceState != null) {
             rendererAdapter.onRestoreInstanceState(savedInstanceState)
             contentDirectoriesAdapter.onRestoreInstanceState(savedInstanceState)
-            onBackPressedCallback.isEnabled =
+            val backPressedCallbackEnabled =
                 savedInstanceState.getBoolean(IS_CALLBACK_ENABLED_KEY, false)
+            onBackPressedCallback.isEnabled = backPressedCallbackEnabled
+
+            if (backPressedCallbackEnabled) {
+                controlsSheetDelegate.onShow()
+            } else {
+                controlsSheetDelegate.onDismiss()
+            }
         }
 
         behavior.addBottomSheetCallback(bottomSheetCallback)
