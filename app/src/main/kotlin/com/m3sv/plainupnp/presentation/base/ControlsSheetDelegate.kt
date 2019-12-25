@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
+import javax.inject.Inject
 
 interface ShowDismissListener {
     fun onShow()
@@ -15,7 +16,7 @@ enum class ControlsSheetState {
     OPEN, CLOSED
 }
 
-class ControlsSheetDelegate : ViewModel(), ShowDismissListener {
+class ControlsSheetDelegate @Inject constructor() : ViewModel(), ShowDismissListener {
 
     private val _state = MutableLiveData<ControlsSheetState>()
 
