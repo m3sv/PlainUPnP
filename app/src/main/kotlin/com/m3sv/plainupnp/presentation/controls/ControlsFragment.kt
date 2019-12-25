@@ -19,6 +19,7 @@ import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import com.m3sv.plainupnp.presentation.main.MainActivity
 import timber.log.Timber
+import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
 
 
@@ -38,6 +39,9 @@ interface ControlsActionCallback {
 
 class ControlsFragment : BaseFragment() {
 
+    @Inject
+    lateinit var controlsSheetDelegate: ControlsSheetDelegate
+
     var actionCallback: ControlsActionCallback? = null
 
     private lateinit var binding: ControlsFragmentBinding
@@ -55,8 +59,6 @@ class ControlsFragment : BaseFragment() {
     private val onBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() = close()
     }
-
-    private val controlsSheetDelegate by lazy(NONE) { ControlsSheetDelegate.get(requireActivity()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         (requireActivity() as MainActivity).mainActivitySubComponent.inject(this)

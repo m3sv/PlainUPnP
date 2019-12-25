@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.di.activity
 
 import androidx.lifecycle.ViewModel
 import com.m3sv.plainupnp.di.ViewModelKey
-import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.home.HomeViewModel
 import com.m3sv.plainupnp.presentation.main.MainViewModel
 import dagger.Binds
@@ -22,9 +21,4 @@ interface MainActivityModule {
     @IntoMap
     @ViewModelKey(HomeViewModel::class)
     fun bindMainFragmentViewModel(homeViewModel: HomeViewModel): ViewModel
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(ControlsSheetDelegate::class)
-    fun bindControlsFragmentDelegate(controlsFragmentDelegate: ControlsSheetDelegate): ViewModel
 }
