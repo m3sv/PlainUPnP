@@ -9,8 +9,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.upnp.UpnpManager
-import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
 
@@ -53,7 +53,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (activity as? DaggerAppCompatActivity)?.androidInjector()?.inject(this)
+        (activity as MainActivity).mainActivitySubComponent.inject(this)
         super.onViewCreated(view, savedInstanceState)
 
         findPreference<Preference>(VERSION)?.summary = appVersion

@@ -1,5 +1,8 @@
 package com.m3sv.plainupnp
 
 import android.util.LruCache
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ContentCache : LruCache<String, String>(10 * 1024 * 1024)
+@Singleton
+class ContentCache @Inject constructor() : LruCache<String, String>(10 * 1024 * 1024)

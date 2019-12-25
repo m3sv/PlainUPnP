@@ -1,18 +1,18 @@
 package com.m3sv.plainupnp.di
 
-import com.m3sv.plainupnp.di.scope.ApplicationScope
 import com.m3sv.plainupnp.upnp.*
 import dagger.Binds
 import dagger.Module
+import javax.inject.Singleton
 
 @Module
 abstract class UPnPBinder {
     @Binds
-    @ApplicationScope
+    @Singleton
     abstract fun bindController(controller: DefaultUpnpServiceController): UpnpServiceController
 
     @Binds
-    @ApplicationScope
+    @Singleton
     abstract fun bindUpnpStore(upnpStateRepository: UpnpStateRepository): UpnpStateStore
 
     @Binds

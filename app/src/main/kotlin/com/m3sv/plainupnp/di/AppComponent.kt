@@ -1,31 +1,19 @@
 package com.m3sv.plainupnp.di
 
-import android.app.Application
-import com.m3sv.plainupnp.App
-import com.m3sv.plainupnp.di.activity.MainActivityBuilder
-import com.m3sv.plainupnp.di.scope.ApplicationScope
-import dagger.BindsInstance
+import com.m3sv.plainupnp.di.activity.MainActivitySubComponent
 import dagger.Component
-import dagger.android.AndroidInjector
-import dagger.android.support.AndroidSupportInjectionModule
+import javax.inject.Singleton
 
-@ApplicationScope
+
+@Singleton
 @Component(
     modules = [
-        AndroidSupportInjectionModule::class,
-        MainActivityBuilder::class,
+        SubComponentsModule::class,
         AppModule::class,
-        UPnPBinder::class
+        UPnPBinder::class,
+        ApplicationProviderModule::class
     ]
 )
-interface AppComponent : AndroidInjector<App> {
-    @Component.Builder
-    interface Builder {
-        @BindsInstance
-        fun application(application: Application): Builder
-
-        fun build(): AppComponent
-    }
-
-    override fun inject(instance: App)
+interface AppComponent {
+    fun mainActivitySubComponent(): MainActivitySubComponent.Factory
 }

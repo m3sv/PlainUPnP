@@ -55,11 +55,7 @@ dependencies {
 
     implementation Dependencies.dagger.core
     compileOnly Dependencies.dagger.annotation
-    implementation Dependencies.dagger.android
-    implementation Dependencies.dagger.androidSupport
-
     kapt Dependencies.dagger.compiler
-    kapt Dependencies.dagger.androidProcessor
 
     implementation Dependencies.glide.core
     kapt Dependencies.glide.compiler

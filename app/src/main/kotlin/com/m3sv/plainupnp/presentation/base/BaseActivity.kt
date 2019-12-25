@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import androidx.annotation.LayoutRes
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
@@ -19,12 +20,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.di.ViewModelFactory
-import dagger.android.support.DaggerAppCompatActivity
 import javax.inject.Inject
 
 data class ActivityConfig(@LayoutRes val layoutId: Int)
 
-abstract class BaseActivity<Binding : ViewDataBinding> : DaggerAppCompatActivity() {
+abstract class BaseActivity<Binding : ViewDataBinding> : AppCompatActivity() {
 
     protected abstract val activityConfig: ActivityConfig
 

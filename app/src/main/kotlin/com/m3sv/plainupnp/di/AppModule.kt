@@ -3,21 +3,21 @@ package com.m3sv.plainupnp.di
 import android.app.Application
 import android.content.Context
 import com.m3sv.plainupnp.ContentCache
-import com.m3sv.plainupnp.di.scope.ApplicationScope
 import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.cleanslate.UpnpServiceListener
 import com.m3sv.plainupnp.upnp.resourceproviders.UpnpResourceProvider
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import dagger.Module
 import dagger.Provides
+import javax.inject.Singleton
 
 
 @Module
-internal object AppModule {
+object AppModule {
 
     @Provides
     @JvmStatic
-    @ApplicationScope
+    @Singleton
     fun provideUpnpNavigator(
         upnpServiceController: UpnpServiceController,
         upnpStateStore: UpnpStateStore
@@ -25,12 +25,12 @@ internal object AppModule {
 
     @Provides
     @JvmStatic
-    @ApplicationScope
+    @Singleton
     fun provideContext(app: Application): Context = app.applicationContext
 
     @Provides
     @JvmStatic
-    @ApplicationScope
+    @Singleton
     fun provideUPnPManager(
         upnpServiceController: UpnpServiceController,
         upnpNavigator: UpnpNavigator,
@@ -49,19 +49,15 @@ internal object AppModule {
 
     @Provides
     @JvmStatic
-    @ApplicationScope
+    @Singleton
     fun provideServiceListener(
         context: Context,
+        mediaServer: MediaServer,
         contentCache: ContentCache
     ) =
         UpnpServiceListener(
             context,
-            MediaServer(context),
+            mediaServer,
             contentCache
         )
-
-    @Provides
-    @JvmStatic
-    @ApplicationScope
-    fun provideCache(): ContentCache = ContentCache()
 }
