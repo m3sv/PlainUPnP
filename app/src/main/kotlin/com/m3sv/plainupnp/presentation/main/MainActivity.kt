@@ -10,11 +10,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.HalfClockwiseRotateSlideAction
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
+import com.m3sv.plainupnp.di.activity.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.base.ActivityConfig
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.controls.ControlsAction
@@ -45,7 +47,12 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
             .apply { setControlsActionCallback(this@MainActivity) }
     }
 
+    lateinit var mainActivitySubComponent: MainActivitySubComponent
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        mainActivitySubComponent =
+            (applicationContext as App).appComponent.mainActivitySubComponent().create()
+        mainActivitySubComponent.inject(this)
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
 

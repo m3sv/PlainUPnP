@@ -54,10 +54,7 @@ object Dependencies {
     )
 
     val dagger = mapOf(
-        "android" to "com.google.dagger:dagger-android:${Versions.dagger}",
-        "androidSupport" to "com.google.dagger:dagger-android-support:${Versions.dagger}",
         "annotation" to "javax.inject:javax.inject:1",
-        "androidProcessor" to "com.google.dagger:dagger-android-processor:${Versions.dagger}",
         "compiler" to "com.google.dagger:dagger-compiler:${Versions.dagger}",
         "core" to "com.google.dagger:dagger:${Versions.dagger}"
     )

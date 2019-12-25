@@ -15,6 +15,7 @@ import com.m3sv.plainupnp.databinding.HomeFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.ControlsSheetState
+import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
 import kotlin.LazyThreadSafetyMode.NONE
 
@@ -33,6 +34,7 @@ class HomeFragment : BaseFragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (activity as MainActivity).mainActivitySubComponent.inject(this)
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
         setHasOptionsMenu(true)

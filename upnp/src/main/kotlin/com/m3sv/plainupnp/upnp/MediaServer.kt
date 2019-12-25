@@ -7,9 +7,10 @@ import com.m3sv.plainupnp.nanohttpd.Method
 import com.m3sv.plainupnp.nanohttpd.SimpleWebServer
 import timber.log.Timber
 import java.io.File
+import javax.inject.Inject
 
 
-class MediaServer(private val context: Context) :
+class MediaServer @Inject constructor(private val context: Context) :
     SimpleWebServer(null, PORT, null, true) {
 
     private val objectMap: MutableMap<String, ServerObject> = mutableMapOf()

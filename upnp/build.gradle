@@ -12,5 +12,5 @@ dependencies {
     implementation Dependencies.timber
 
     implementation project(":common")
-    implementation project(":nanohttpd")
+    api project(":nanohttpd")
 }
