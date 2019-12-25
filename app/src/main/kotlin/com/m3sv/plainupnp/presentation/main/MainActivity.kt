@@ -44,7 +44,7 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
 
     private val bottomNavDrawer: ControlsFragment by lazy(NONE) {
         (supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment)
-            .apply { setControlsActionCallback(this@MainActivity) }
+            .apply { actionCallback = this@MainActivity }
     }
 
     lateinit var mainActivitySubComponent: MainActivitySubComponent

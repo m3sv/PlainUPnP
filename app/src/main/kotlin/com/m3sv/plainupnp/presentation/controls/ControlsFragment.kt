@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.m3sv.plainupnp.common.BottomSheetCallback
 import com.m3sv.plainupnp.common.OnSlideAction
@@ -14,9 +13,11 @@ import com.m3sv.plainupnp.common.OnStateChangedAction
 import com.m3sv.plainupnp.common.utils.onItemSelectedListener
 import com.m3sv.plainupnp.common.utils.onSeekBarChangeListener
 import com.m3sv.plainupnp.databinding.ControlsFragmentBinding
+import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
+import com.m3sv.plainupnp.presentation.main.MainActivity
 import timber.log.Timber
 import kotlin.LazyThreadSafetyMode.NONE
 
@@ -35,7 +36,7 @@ interface ControlsActionCallback {
     fun onAction(action: ControlsAction)
 }
 
-class ControlsFragment : Fragment() {
+class ControlsFragment : BaseFragment() {
 
     var actionCallback: ControlsActionCallback? = null
 
@@ -58,6 +59,7 @@ class ControlsFragment : Fragment() {
     private val controlsSheetDelegate by lazy(NONE) { ControlsSheetDelegate.get(requireActivity()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        (requireActivity() as MainActivity).mainActivitySubComponent.inject(this)
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
     }
@@ -178,10 +180,6 @@ class ControlsFragment : Fragment() {
 
     fun setContentDirectories(items: List<SpinnerItem>) {
         contentDirectoriesAdapter.setNewItems(items.addEmptyItem())
-    }
-
-    fun setControlsActionCallback(actionCallback: ControlsActionCallback) {
-        this.actionCallback = actionCallback
     }
 
     private fun List<SpinnerItem>.addEmptyItem() =

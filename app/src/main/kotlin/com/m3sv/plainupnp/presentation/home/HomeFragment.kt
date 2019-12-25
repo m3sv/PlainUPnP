@@ -17,15 +17,12 @@ import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.ControlsSheetState
 import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
-import kotlin.LazyThreadSafetyMode.NONE
 
 class HomeFragment : BaseFragment() {
     private lateinit var viewModel: HomeViewModel
     private lateinit var contentAdapter: GalleryContentAdapter
     private lateinit var recyclerLayoutManager: LinearLayoutManager
     private lateinit var binding: HomeFragmentBinding
-
-    private val controlsSheetDelegate by lazy(NONE) { ControlsSheetDelegate.get(requireActivity()) }
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
@@ -60,7 +57,7 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun observeControlsSheetState() {
-        controlsSheetDelegate.state.observe(viewLifecycleOwner) { state ->
+        getViewModel<ControlsSheetDelegate>().state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 ControlsSheetState.OPEN -> disableBackPressedCallback()
                 ControlsSheetState.CLOSED -> enableBackPressedCallback()
