@@ -17,11 +17,19 @@ import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.ControlsSheetState
 import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
+import javax.inject.Inject
 
 class HomeFragment : BaseFragment() {
+
+    @Inject
+    lateinit var controlsSheetDelegate: ControlsSheetDelegate
+
     private lateinit var viewModel: HomeViewModel
+
     private lateinit var contentAdapter: GalleryContentAdapter
+
     private lateinit var recyclerLayoutManager: LinearLayoutManager
+
     private lateinit var binding: HomeFragmentBinding
 
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -57,7 +65,7 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun observeControlsSheetState() {
-        getViewModel<ControlsSheetDelegate>().state.observe(viewLifecycleOwner) { state ->
+        controlsSheetDelegate.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 ControlsSheetState.OPEN -> disableBackPressedCallback()
                 ControlsSheetState.CLOSED -> enableBackPressedCallback()

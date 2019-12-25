@@ -1,11 +1,9 @@
 package com.m3sv.plainupnp.presentation.base
 
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
 import javax.inject.Inject
+import javax.inject.Singleton
 
 interface ShowDismissListener {
     fun onShow()
@@ -16,7 +14,8 @@ enum class ControlsSheetState {
     OPEN, CLOSED
 }
 
-class ControlsSheetDelegate @Inject constructor() : ViewModel(), ShowDismissListener {
+@Singleton
+class ControlsSheetDelegate @Inject constructor() : ShowDismissListener {
 
     private val _state = MutableLiveData<ControlsSheetState>()
 
@@ -28,10 +27,5 @@ class ControlsSheetDelegate @Inject constructor() : ViewModel(), ShowDismissList
 
     override fun onDismiss() {
         _state.postValue(ControlsSheetState.CLOSED)
-    }
-
-    companion object {
-        fun get(activity: FragmentActivity): ControlsSheetDelegate =
-            ViewModelProviders.of(activity)[ControlsSheetDelegate::class.java]
     }
 }
