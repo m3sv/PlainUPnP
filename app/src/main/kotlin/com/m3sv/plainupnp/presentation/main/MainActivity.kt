@@ -95,7 +95,8 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
         when (item.itemId) {
             R.id.menu_settings -> {
                 bottomNavDrawer.close()
-                findNavController(R.id.nav_host_container).navigate(R.id.settings_fragment)
+
+                findNavController(R.id.nav_host_container).navigate(R.id.action_mainFragment_to_settingsFragment)
             }
         }
         return true
