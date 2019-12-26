@@ -76,12 +76,14 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
         with(bottomNavDrawer) {
             addOnSlideAction(HalfClockwiseRotateSlideAction(binding.bottomAppBarChevron))
             addOnStateChangedAction(ChangeSettingsMenuStateAction { showSettings ->
-                if (showSettings) {
+                val menu = if (showSettings) {
                     hideKeyboard()
-                    binding.bottomBar.replaceMenu(R.menu.bottom_app_bar_settings_menu)
+                    R.menu.bottom_app_bar_settings_menu
                 } else {
-                    binding.bottomBar.replaceMenu(R.menu.bottom_app_bar_home_menu)
+                    R.menu.bottom_app_bar_home_menu
                 }
+
+                binding.bottomBar.replaceMenu(menu)
             })
         }
 
