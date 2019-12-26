@@ -21,6 +21,7 @@ import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
 import com.m3sv.plainupnp.common.HalfClockwiseRotateSlideAction
 import com.m3sv.plainupnp.common.utils.enforce
+import com.m3sv.plainupnp.common.utils.hideKeyboard
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.di.activity.MainActivitySubComponent
@@ -47,6 +48,8 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
     NavController.OnDestinationChangedListener,
     ControlsActionCallback {
 
+    lateinit var mainActivitySubComponent: MainActivitySubComponent
+
     override val activityConfig: ActivityConfig = ActivityConfig(R.layout.main_activity)
 
     private lateinit var viewModel: MainViewModel
@@ -56,12 +59,8 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
             .apply { actionCallback = this@MainActivity }
     }
 
-    lateinit var mainActivitySubComponent: MainActivitySubComponent
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        mainActivitySubComponent =
-            (applicationContext as App).appComponent.mainActivitySubComponent().create()
-        mainActivitySubComponent.inject(this)
+        inject()
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
 
@@ -74,14 +73,18 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
 
         if (savedInstanceState == null) startUpnpService()
 
-        bottomNavDrawer.addOnSlideAction(HalfClockwiseRotateSlideAction(binding.bottomAppBarChevron))
-        bottomNavDrawer.addOnStateChangedAction(ChangeSettingsMenuStateAction { showSettings ->
-            if (showSettings)
-                binding.bottomBar.replaceMenu(R.menu.bottom_app_bar_settings_menu)
-            else
-                binding.bottomBar.replaceMenu(R.menu.bottom_app_bar_home_menu)
+        with(bottomNavDrawer) {
+            addOnSlideAction(HalfClockwiseRotateSlideAction(binding.bottomAppBarChevron))
+            addOnStateChangedAction(ChangeSettingsMenuStateAction { showSettings ->
+                if (showSettings) {
+                    hideKeyboard()
+                    binding.bottomBar.replaceMenu(R.menu.bottom_app_bar_settings_menu)
+                } else {
+                    binding.bottomBar.replaceMenu(R.menu.bottom_app_bar_home_menu)
+                }
+            })
+        }
 
-        })
         binding.bottomAppBarTitle.setOnClickListener { bottomNavDrawer.toggle() }
         setSupportActionBar(binding.bottomBar)
     }
@@ -254,6 +257,17 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
         return super.onPrepareOptionsMenu(menu)
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_settings -> {
+                bottomNavDrawer.close()
+
+                findNavController(R.id.nav_host_container).navigate(R.id.action_mainFragment_to_settingsFragment)
+            }
+        }
+        return true
+    }
+
     private fun SearchView.disableSearchViewFullScreenEditing() {
         imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI or EditorInfo.IME_ACTION_SEARCH
     }
@@ -277,6 +291,12 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
 
     private fun SearchView.applySearchViewTransitionAnimation() {
         findViewById<LinearLayout>(R.id.search_bar).layoutTransition = LayoutTransition()
+    }
+
+    private fun inject() {
+        mainActivitySubComponent =
+            (applicationContext as App).appComponent.mainActivitySubComponent().create()
+        mainActivitySubComponent.inject(this)
     }
 
     override fun onAction(action: ControlsAction) {
