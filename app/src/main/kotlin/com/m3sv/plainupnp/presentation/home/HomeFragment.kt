@@ -39,10 +39,14 @@ class HomeFragment : BaseFragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (activity as MainActivity).mainActivitySubComponent.inject(this)
+        inject()
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
         setHasOptionsMenu(true)
+    }
+
+    private fun inject() {
+        (activity as MainActivity).mainActivitySubComponent.inject(this)
     }
 
     override fun onCreateView(

@@ -31,13 +31,17 @@ class SettingsFragment : PreferenceFragmentCompat(),
     lateinit var upnpManager: UpnpManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        (activity as MainActivity).mainActivitySubComponent.inject(this)
+        inject()
         super.onViewCreated(view, savedInstanceState)
 
         findPreference<Preference>(VERSION)?.summary = appVersion
         findPreference<Preference>(RATE)?.onPreferenceClickListener = this
         findPreference<Preference>(GITHUB)?.onPreferenceClickListener = this
         findPreference<Preference>(PRIVACY_POLICY)?.onPreferenceClickListener = this
+    }
+
+    private fun inject() {
+        (activity as MainActivity).mainActivitySubComponent.inject(this)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

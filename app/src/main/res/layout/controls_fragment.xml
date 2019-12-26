@@ -11,8 +11,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/background_container"
             android:layout_width="match_parent"
-            android:background="?colorSurface"
             android:layout_height="match_parent"
+            android:background="?colorSurface"
             app:behavior_halfExpandedRatio="0.6"
             app:behavior_hideable="true"
             app:behavior_skipCollapsed="true"
