@@ -1,10 +1,16 @@
 package com.m3sv.plainupnp.presentation.main
 
+import android.animation.LayoutTransition
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AnimationUtils
+import android.view.inputmethod.EditorInfo
+import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -12,6 +18,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
 import com.m3sv.plainupnp.common.HalfClockwiseRotateSlideAction
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
@@ -22,7 +29,9 @@ import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.controls.ControlsAction
 import com.m3sv.plainupnp.presentation.controls.ControlsActionCallback
 import com.m3sv.plainupnp.presentation.controls.ControlsFragment
+import timber.log.Timber
 import kotlin.LazyThreadSafetyMode.NONE
+
 
 private val UpnpRendererState.icon: Int
     inline get() = when (state) {
@@ -66,12 +75,19 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
         if (savedInstanceState == null) startUpnpService()
 
         bottomNavDrawer.addOnSlideAction(HalfClockwiseRotateSlideAction(binding.bottomAppBarChevron))
+        bottomNavDrawer.addOnStateChangedAction(ChangeSettingsMenuStateAction { showSettings ->
+            if (showSettings)
+                binding.bottomBar.replaceMenu(R.menu.bottom_app_bar_settings_menu)
+            else
+                binding.bottomBar.replaceMenu(R.menu.bottom_app_bar_home_menu)
+
+        })
         binding.bottomAppBarTitle.setOnClickListener { bottomNavDrawer.toggle() }
+        setSupportActionBar(binding.bottomBar)
     }
 
     private fun setupBottomNavigation() {
         with(binding.bottomBar) {
-            replaceMenu(R.menu.bottom_app_bar_settings_menu)
             setOnMenuItemClickListener(this@MainActivity)
         }
     }
@@ -215,6 +231,52 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
             }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             .show()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.bottom_app_bar_home_menu, menu)
+        return true
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
+        menu.findItem(R.id.menu_search)?.apply {
+            (actionView as SearchView).apply {
+                applySearchViewTransitionAnimation()
+                setSearchQueryListener()
+                disableSearchViewFullScreenEditing()
+                animateAppear()
+            }
+
+            setOnMenuItemClickListener { item ->
+                item.expandActionView()
+            }
+        }
+        return super.onPrepareOptionsMenu(menu)
+    }
+
+    private fun SearchView.disableSearchViewFullScreenEditing() {
+        imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI or EditorInfo.IME_ACTION_SEARCH
+    }
+
+    private fun SearchView.animateAppear() {
+        val anim = AnimationUtils.loadAnimation(this@MainActivity, R.anim.slide_up)
+        startAnimation(anim)
+    }
+
+    private fun SearchView.setSearchQueryListener() {
+        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean = false
+
+            override fun onQueryTextChange(newText: String): Boolean {
+//                contentAdapter.filter(newText)
+                Timber.d("New text")
+                return true
+            }
+        })
+    }
+
+    private fun SearchView.applySearchViewTransitionAnimation() {
+        findViewById<LinearLayout>(R.id.search_bar).layoutTransition = LayoutTransition()
     }
 
     override fun onAction(action: ControlsAction) {
