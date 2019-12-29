@@ -1,11 +1,13 @@
 package com.m3sv.plainupnp.presentation.main
 
 import android.animation.LayoutTransition
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.View.ROTATION
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
@@ -19,7 +21,7 @@ import androidx.navigation.ui.NavigationUI
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
-import com.m3sv.plainupnp.common.HalfClockwiseRotateSlideAction
+import com.m3sv.plainupnp.common.TriggerOnceStateAction
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.common.utils.hideKeyboard
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
@@ -73,8 +75,36 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
 
         if (savedInstanceState == null) startUpnpService()
 
+        animateBottomDrawChanges()
+
+        binding.bottomAppBarTitle.setOnClickListener { bottomNavDrawer.toggle() }
+        setSupportActionBar(binding.bottomBar)
+    }
+
+    private fun animateBottomDrawChanges() {
+        val arrowUpAnimator by lazy {
+            ObjectAnimator.ofFloat(binding.bottomAppBarChevron, ROTATION, 0f)
+                .apply {
+                    duration = 200
+                }
+        }
+
+        val arrowDownAnimator by lazy {
+            ObjectAnimator.ofFloat(binding.bottomAppBarChevron, ROTATION, 180f)
+                .apply {
+                    duration = 200
+                }
+        }
+
         with(bottomNavDrawer) {
-            addOnSlideAction(HalfClockwiseRotateSlideAction(binding.bottomAppBarChevron))
+            addOnStateChangedAction(TriggerOnceStateAction { isHidden ->
+                if (isHidden) {
+                    arrowUpAnimator.start()
+                } else {
+                    arrowDownAnimator.start()
+                }
+            })
+
             addOnStateChangedAction(ChangeSettingsMenuStateAction { showSettings ->
                 val menu = if (showSettings) {
                     hideKeyboard()
@@ -86,9 +116,6 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
                 binding.bottomBar.replaceMenu(menu)
             })
         }
-
-        binding.bottomAppBarTitle.setOnClickListener { bottomNavDrawer.toggle() }
-        setSupportActionBar(binding.bottomBar)
     }
 
     private fun setupBottomNavigation() {
