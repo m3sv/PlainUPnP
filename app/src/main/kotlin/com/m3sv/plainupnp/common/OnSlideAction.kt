@@ -40,3 +40,11 @@ class HalfClockwiseRotateSlideAction(
         )
     }
 }
+
+class AlphaSlideAction(
+    private val view: View
+) : OnSlideAction {
+    override fun onSlide(sheet: View, slideOffset: Float) {
+        view.alpha = 1f - (1f - slideOffset) / 2f
+    }
+}

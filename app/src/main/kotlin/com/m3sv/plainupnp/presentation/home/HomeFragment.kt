@@ -32,7 +32,7 @@ class HomeFragment : BaseFragment() {
 
     private lateinit var binding: HomeFragmentBinding
 
-    private val onBackPressedCallback = object : OnBackPressedCallback(true) {
+    private val onBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
             viewModel.execute(HomeIntention.BackPress)
         }

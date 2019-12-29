@@ -8,11 +8,20 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <View
+            android:id="@+id/scrim_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            android:background="@color/darkBackground" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/background_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?colorSurface"
+            android:clickable="true"
+            android:focusable="true"
             app:behavior_halfExpandedRatio="0.6"
             app:behavior_hideable="true"
             app:behavior_skipCollapsed="true"

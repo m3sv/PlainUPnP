@@ -1,8 +1,11 @@
 package com.m3sv.plainupnp.presentation.controls
 
+import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.ALPHA
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -10,8 +13,11 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.m3sv.plainupnp.common.BottomSheetCallback
 import com.m3sv.plainupnp.common.OnSlideAction
 import com.m3sv.plainupnp.common.OnStateChangedAction
+import com.m3sv.plainupnp.common.TriggerOnceStateAction
+import com.m3sv.plainupnp.common.utils.hide
 import com.m3sv.plainupnp.common.utils.onItemSelectedListener
 import com.m3sv.plainupnp.common.utils.onSeekBarChangeListener
+import com.m3sv.plainupnp.common.utils.show
 import com.m3sv.plainupnp.databinding.ControlsFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
@@ -75,6 +81,46 @@ class ControlsFragment : BaseFragment() {
         return binding.root
     }
 
+    private val alphaAnimator: ObjectAnimator by lazy {
+        ObjectAnimator.ofFloat(binding.scrimView, ALPHA, .5f).apply {
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                    alphaHideAnimator.cancel()
+                    binding.scrimView.show()
+                }
+            })
+        }
+    }
+
+    private val alphaHideAnimator: ObjectAnimator by lazy {
+        ObjectAnimator.ofFloat(binding.scrimView, ALPHA, 0f).apply {
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    binding.scrimView.hide()
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                    alphaAnimator.cancel()
+                }
+            })
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -84,8 +130,10 @@ class ControlsFragment : BaseFragment() {
         if (savedInstanceState != null) {
             rendererAdapter.onRestoreInstanceState(savedInstanceState)
             contentDirectoriesAdapter.onRestoreInstanceState(savedInstanceState)
+
             val backPressedCallbackEnabled =
                 savedInstanceState.getBoolean(IS_CALLBACK_ENABLED_KEY, false)
+
             onBackPressedCallback.isEnabled = backPressedCallbackEnabled
 
             if (backPressedCallbackEnabled) {
@@ -93,13 +141,18 @@ class ControlsFragment : BaseFragment() {
             } else {
                 controlsSheetDelegate.onDismiss()
             }
+
+            binding.scrimView.alpha = savedInstanceState.getFloat(SCRIM_VIEW_ALPHA_KEY, 0f)
         }
 
         behavior.addBottomSheetCallback(bottomSheetCallback)
 
-        addOnStateChangedAction(object : OnStateChangedAction {
-            override fun onStateChanged(sheet: View, newState: Int) {
-                onBackPressedCallback.isEnabled = newState != BottomSheetBehavior.STATE_HIDDEN
+        addOnStateChangedAction(TriggerOnceStateAction { isHidden ->
+            onBackPressedCallback.isEnabled = !isHidden
+
+            if (isHidden) {
+                controlsSheetDelegate.onDismiss()
+                alphaHideAnimator.start()
             }
         })
 
@@ -123,6 +176,8 @@ class ControlsFragment : BaseFragment() {
             progress.setOnSeekBarChangeListener(onSeekBarChangeListener { progress ->
                 actionCallback?.onAction(ControlsAction.ProgressChange(progress))
             })
+
+            scrimView.setOnClickListener { close() }
 
             with(mainRendererDevicePicker) {
                 adapter = rendererAdapter
@@ -157,11 +212,12 @@ class ControlsFragment : BaseFragment() {
     fun open() {
         behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         controlsSheetDelegate.onShow()
+        alphaAnimator.start()
     }
 
     fun close() {
         behavior.state = BottomSheetBehavior.STATE_HIDDEN
-        controlsSheetDelegate.onDismiss()
+        alphaHideAnimator.start()
     }
 
     fun addOnStateChangedAction(action: OnStateChangedAction) {
@@ -191,9 +247,14 @@ class ControlsFragment : BaseFragment() {
         rendererAdapter.onSaveInstanceState(outState)
         contentDirectoriesAdapter.onSaveInstanceState(outState)
         outState.putBoolean(IS_CALLBACK_ENABLED_KEY, onBackPressedCallback.isEnabled)
+
+        // careful with lateinit in onSaveInstanceState
+        if (this::binding.isInitialized)
+            outState.putFloat(SCRIM_VIEW_ALPHA_KEY, binding.scrimView.alpha)
     }
 
     companion object {
         private const val IS_CALLBACK_ENABLED_KEY = "controls_sheet_expanded_state"
+        private const val SCRIM_VIEW_ALPHA_KEY = "scrim_view_alpha_key"
     }
 }
