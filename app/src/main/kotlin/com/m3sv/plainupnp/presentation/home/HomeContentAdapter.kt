@@ -70,7 +70,7 @@ class GalleryContentAdapter(
             if (loadThumbnails)
                 when (contentItem.type) {
                     ContentType.IMAGE,
-                    ContentType.VIDEO -> glide.load(contentItem.thumbnailUri)
+                    ContentType.VIDEO -> glide.load(contentItem.uri)
                         .thumbnail(0.1f)
                         .apply(requestOptions)
                         .into(thumbnail)
