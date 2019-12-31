@@ -1,10 +1,7 @@
 package com.m3sv.plainupnp.nanohttpd
 
 import timber.log.Timber
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.UnsupportedEncodingException
+import java.io.*
 import java.net.URLEncoder
 import java.util.*
 
@@ -128,7 +125,7 @@ open class SimpleWebServer(
                 if (mime == null) {
                     mime = MIME_DEFAULT_BINARY
                 }
-                res = serveFile(f, mime, header)
+//                res = serveFile(f, mime, header)
             }
         } catch (ioe: IOException) {
             res = FORBIDDEN_READING_FAILED
@@ -138,6 +135,7 @@ open class SimpleWebServer(
     }
 
     protected fun serveFile(
+        inputStream: InputStream,
         f: File,
         mime: String,
         header: Map<String, String>
@@ -208,7 +206,7 @@ open class SimpleWebServer(
                 res = if (eTag == header["if-none-match"])
                     Response(Response.Status.NOT_MODIFIED, mime, "")
                 else {
-                    Response(Response.Status.OK, mime, FileInputStream(f))
+                    Response(Response.Status.OK, mime, inputStream)
                         .also {
                             it.addHeader("Content-Length", "" + fileLen)
                             it.addHeader("ETag", eTag)
