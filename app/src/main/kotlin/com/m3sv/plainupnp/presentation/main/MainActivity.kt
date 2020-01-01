@@ -53,6 +53,8 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
 
     private lateinit var viewModel: MainViewModel
 
+    private var bottomBarMenu = R.menu.bottom_app_bar_home_menu
+
     private val bottomNavDrawer: ControlsFragment by lazy(NONE) { getControlsFragment() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,7 +71,8 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
         if (savedInstanceState == null) {
             startUpnpService()
         } else {
-            restoreChevronState(savedInstanceState)
+            savedInstanceState.restoreChevronState()
+            savedInstanceState.restoreMenu()
         }
 
         animateBottomDrawChanges()
@@ -127,7 +130,7 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.bottom_app_bar_home_menu, menu)
+        menuInflater.inflate(bottomBarMenu, menu)
         return true
     }
 
@@ -163,6 +166,7 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
         super.onSaveInstanceState(outState)
 
         outState.putFloat(CHEVRON_ROTATION_ANGLE_KEY, binding.bottomAppBarChevron.rotation)
+        outState.putInt(OPTIONS_MENU_KEY, bottomBarMenu)
     }
 
     override fun onAction(action: ControlsAction) {
@@ -225,7 +229,7 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
     }
 
     private fun replaceAppBarMenu(showSettings: Boolean) {
-        val newMenu = if (showSettings) {
+        bottomBarMenu = if (showSettings) {
             hideKeyboard()
             R.menu.bottom_app_bar_settings_menu
         } else {
@@ -233,7 +237,7 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
         }
 
         with(binding.bottomBar) {
-            replaceMenu(newMenu)
+            replaceMenu(bottomBarMenu)
             menu.findItem(R.id.menu_search)?.let(::setupSearchMenuItem)
         }
     }
@@ -330,13 +334,17 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
             .show()
     }
 
-    private fun restoreChevronState(savedInstanceState: Bundle) {
-        binding.bottomAppBarChevron.rotation =
-            savedInstanceState.getFloat(CHEVRON_ROTATION_ANGLE_KEY, 0f)
+    private fun Bundle.restoreChevronState() {
+        binding.bottomAppBarChevron.rotation = getFloat(CHEVRON_ROTATION_ANGLE_KEY, 0f)
+    }
+
+    private fun Bundle.restoreMenu() {
+        bottomBarMenu = getInt(OPTIONS_MENU_KEY, R.menu.bottom_app_bar_home_menu)
     }
 
     private companion object {
         private const val CHEVRON_ROTATION_ANGLE_KEY = "chevron_rotation_angle_key"
+        private const val OPTIONS_MENU_KEY = "options_menu_key"
     }
 }
 
