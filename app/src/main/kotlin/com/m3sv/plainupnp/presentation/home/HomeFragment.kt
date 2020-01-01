@@ -34,7 +34,7 @@ class HomeFragment : BaseFragment() {
 
     private val onBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
-            viewModel.execute(HomeIntention.BackPress)
+            viewModel.intention(HomeIntention.BackPress)
         }
     }
 
@@ -87,6 +87,7 @@ class HomeFragment : BaseFragment() {
                 is HomeState.Loading -> binding.progress.show()
                 is HomeState.Success -> {
                     contentAdapter.setWithDiff(state.contentItems)
+                    contentAdapter.filter(state.filterText)
                     binding.progress.disappear()
                 }
             }
@@ -155,7 +156,7 @@ class HomeFragment : BaseFragment() {
 
     private fun initContentAdapter() {
         contentAdapter = GalleryContentAdapter(Glide.with(this)) {
-            viewModel.execute(HomeIntention.ItemClick(it))
+            viewModel.intention(HomeIntention.ItemClick(it))
         }
     }
 

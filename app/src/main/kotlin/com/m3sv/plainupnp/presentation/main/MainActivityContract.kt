@@ -16,6 +16,7 @@ sealed class MainIntention {
     data class SelectRenderer(val position: Int) : MainIntention()
     data class SelectContentDirectory(val position: Int) : MainIntention()
     data class MoveTo(val progress: Int) : MainIntention()
+    data class Filter(val text: String) : MainIntention()
     object ResumeUpnp : MainIntention()
     object PauseUpnp : MainIntention()
     object StartUpnpService : MainIntention()
@@ -23,6 +24,7 @@ sealed class MainIntention {
 }
 
 sealed class MainState {
+    object Initial : MainState()
     data class Render(
         val renderers: List<SpinnerItem> = listOf(),
         val contentDirectories: List<SpinnerItem> = listOf(),

@@ -14,8 +14,9 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val manager: UpnpManager,
-    private val upnpPlayClickedUseCase: UpnpPlayClickedUseCase
-) : BaseViewModel<MainIntention, MainState>() {
+    private val upnpPlayClickedUseCase: UpnpPlayClickedUseCase,
+    private val filterDelegate: FilterDelegate
+) : BaseViewModel<MainIntention, MainState>(MainState.Initial) {
 
     init {
         with(manager) {
@@ -27,8 +28,8 @@ class MainViewModel @Inject constructor(
                     Function3(MainState::Render)
                 )
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe {
-                    launch { updateState(it) }
+                .subscribe { newState ->
+                    launch { updateState { newState } }
                 }
                 .disposeBy(disposables)
         }
@@ -40,7 +41,7 @@ class MainViewModel @Inject constructor(
     private fun UpnpManager.observeRenderers() =
         renderers.map { renderers -> renderers.map { SpinnerItem(it.device.friendlyName) } }
 
-    override fun execute(intention: MainIntention) {
+    override fun intention(intention: MainIntention) {
         Timber.d("Execute: $intention")
         return when (intention) {
             is MainIntention.ResumeUpnp -> manager.resumeRendererUpdate()
@@ -57,8 +58,13 @@ class MainViewModel @Inject constructor(
                     PlayerButton.LOWER_VOLUME -> manager.lowerVolume()
                 }
             }
-            MainIntention.StartUpnpService -> manager.startUpnpService()
-            MainIntention.StopUpnpService -> manager.stopUpnpService()
+            is MainIntention.StartUpnpService -> manager.startUpnpService()
+            is MainIntention.StopUpnpService -> manager.stopUpnpService()
+            is MainIntention.Filter -> filterText(intention.text)
         }
+    }
+
+    private fun filterText(text: String) {
+        launch { filterDelegate.filter(text) }
     }
 }

@@ -6,10 +6,12 @@ sealed class HomeIntention {
 }
 
 sealed class HomeState {
+    object Initial : HomeState()
     object Loading : HomeState()
     data class Success(
         val directoryName: String,
         val contentItems: List<ContentItem>,
-        val isRoot: Boolean
+        val isRoot: Boolean,
+        val filterText: String
     ) : HomeState()
 }

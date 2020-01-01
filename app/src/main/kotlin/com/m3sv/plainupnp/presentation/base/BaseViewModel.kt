@@ -11,7 +11,8 @@ import kotlinx.coroutines.Job
 import kotlin.coroutines.CoroutineContext
 
 
-abstract class BaseViewModel<Intention, State> : ViewModel(), CoroutineScope {
+abstract class BaseViewModel<Intention, State>(initialState: State) : ViewModel(),
+    CoroutineScope {
 
     private val job = Job()
 
@@ -19,16 +20,24 @@ abstract class BaseViewModel<Intention, State> : ViewModel(), CoroutineScope {
 
     protected val disposables: CompositeDisposable = CompositeDisposable()
 
-    @MainThread
-    protected fun updateState(state: State) {
-        _state.postValue(state)
-    }
-
     private val _state: MutableLiveData<State> by lazy(LazyThreadSafetyMode.NONE) { MutableLiveData<State>() }
 
     val state: LiveData<State> = _state
 
-    abstract fun execute(intention: Intention)
+    private var previousState: State = initialState
+
+    init {
+        _state.postValue(initialState)
+    }
+
+    @MainThread
+    protected fun updateState(state: (previousState: State) -> State) {
+        val newState = state(previousState)
+        previousState = newState
+        _state.postValue(newState)
+    }
+
+    abstract fun intention(intention: Intention)
 
     override fun onCleared() {
         disposables.clear()
