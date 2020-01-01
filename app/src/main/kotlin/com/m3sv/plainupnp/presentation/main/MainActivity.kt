@@ -146,7 +146,6 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
             disableSearchViewFullScreenEditing()
             animateAppear()
         }
-
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -236,10 +235,8 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
             R.menu.bottom_app_bar_home_menu
         }
 
-        with(binding.bottomBar) {
-            replaceMenu(bottomBarMenu)
-            menu.findItem(R.id.menu_search)?.let(::setupSearchMenuItem)
-        }
+        binding.bottomBar.replaceMenu(bottomBarMenu)
+
     }
 
     private val arrowUpAnimator by lazy {
@@ -352,7 +349,7 @@ private fun SearchView.disableSearchViewFullScreenEditing() {
     imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI or EditorInfo.IME_ACTION_SEARCH
 }
 
-private fun SearchView.animateAppear() {
+private fun View.animateAppear() {
     val anim = AnimationUtils.loadAnimation(context, R.anim.slide_up)
     startAnimation(anim)
 }
