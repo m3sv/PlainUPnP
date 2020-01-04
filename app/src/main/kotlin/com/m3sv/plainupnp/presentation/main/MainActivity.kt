@@ -156,9 +156,7 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
                 bottomNavDrawer.close()
                 findNavController(R.id.nav_host_container).navigate(R.id.action_mainFragment_to_settingsFragment)
             }
-            R.id.menu_search -> {
-                item.expandActionView()
-            }
+            R.id.menu_search -> item.expandActionView()
         }
         return true
     }
