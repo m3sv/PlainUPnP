@@ -1,5 +1,7 @@
 package com.m3sv.plainupnp.presentation.home
 
+import com.m3sv.plainupnp.Consumable
+
 sealed class HomeIntention {
     data class ItemClick(val position: Int) : HomeIntention()
     object BackPress : HomeIntention()
@@ -12,6 +14,6 @@ sealed class HomeState {
         val directoryName: String,
         val contentItems: List<ContentItem>,
         val isRoot: Boolean,
-        val filterText: String
+        val filterText: Consumable<String>
     ) : HomeState()
 }

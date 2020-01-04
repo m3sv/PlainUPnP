@@ -87,7 +87,7 @@ class HomeFragment : BaseFragment() {
                 is HomeState.Loading -> binding.progress.show()
                 is HomeState.Success -> {
                     contentAdapter.setWithDiff(state.contentItems)
-                    contentAdapter.filter(state.filterText)
+                    state.filterText.consume()?.let(contentAdapter::filter)
                     binding.progress.disappear()
                 }
             }
