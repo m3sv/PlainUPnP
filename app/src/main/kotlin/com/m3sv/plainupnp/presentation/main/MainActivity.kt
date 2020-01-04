@@ -135,16 +135,18 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
     }
 
     override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        menu.findItem(R.id.menu_search)?.let(::setupSearchMenuItem)
+        setupSearchMenuItem(menu, true)
         return true
     }
 
-    private fun setupSearchMenuItem(menuItem: MenuItem) {
-        (menuItem.actionView as SearchView).apply {
-            applySearchViewTransitionAnimation()
-            setSearchQueryListener()
-            disableSearchViewFullScreenEditing()
-            animateAppear()
+    private fun setupSearchMenuItem(menu: Menu, animate: Boolean) {
+        menu.findItem(R.id.menu_search)?.let { item ->
+            (item.actionView as SearchView).apply {
+                applySearchViewTransitionAnimation()
+                setSearchQueryListener()
+                disableSearchViewFullScreenEditing()
+                if (animate) animateAppear()
+            }
         }
     }
 
@@ -235,8 +237,10 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
             R.menu.bottom_app_bar_home_menu
         }
 
-        binding.bottomBar.replaceMenu(bottomBarMenu)
-
+        with(binding.bottomBar) {
+            replaceMenu(bottomBarMenu)
+            setupSearchMenuItem(menu, false)
+        }
     }
 
     private val arrowUpAnimator by lazy {
@@ -275,21 +279,6 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
 
     private fun startUpnpService() {
         viewModel.intention(MainIntention.StartUpnpService)
-    }
-
-    private fun SearchView.setSearchQueryListener() {
-        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean = false
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                viewModel.intention(MainIntention.Filter(newText))
-                return true
-            }
-        })
-    }
-
-    private fun SearchView.applySearchViewTransitionAnimation() {
-        findViewById<LinearLayout>(R.id.search_bar).layoutTransition = LayoutTransition()
     }
 
     private fun inject() {
@@ -337,6 +326,21 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
 
     private fun Bundle.restoreMenu() {
         bottomBarMenu = getInt(OPTIONS_MENU_KEY, R.menu.bottom_app_bar_home_menu)
+    }
+
+    private fun SearchView.setSearchQueryListener() {
+        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean = false
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                viewModel.intention(MainIntention.Filter(newText))
+                return true
+            }
+        })
+    }
+
+    private fun SearchView.applySearchViewTransitionAnimation() {
+        findViewById<LinearLayout>(R.id.search_bar).layoutTransition = LayoutTransition()
     }
 
     private companion object {
