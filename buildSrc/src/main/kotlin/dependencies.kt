@@ -9,7 +9,7 @@ object Versions {
     const val jetty = "8.2.0.v20160908"
     const val kotlin = "1.3.61"
     const val minSdk = 21
-    const val navigation = "2.1.0"
+    const val navigation = "2.2.0-rc04"
     const val okHttp = "3.9.1"
     const val supportLibrary = "1.1.0"
     const val targetSdk = 29
