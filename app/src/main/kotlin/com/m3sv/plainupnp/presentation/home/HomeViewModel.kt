@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.presentation.home
 
+import com.m3sv.plainupnp.Consumable
 import com.m3sv.plainupnp.ContentCache
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.disposeBy
@@ -37,7 +38,7 @@ class HomeViewModel @Inject constructor(
                             upnpState.directoryName,
                             mapItems(upnpState.content),
                             upnpState.isRoot,
-                            ""
+                            Consumable("")
                         )
                 }
 
@@ -48,7 +49,7 @@ class HomeViewModel @Inject constructor(
             filterDelegate.state.consumeEach { text ->
                 updateState { previousState ->
                     when (previousState) {
-                        is HomeState.Success -> previousState.copy(filterText = text)
+                        is HomeState.Success -> previousState.copy(filterText = Consumable(text))
                         else -> previousState
                     }
                 }
