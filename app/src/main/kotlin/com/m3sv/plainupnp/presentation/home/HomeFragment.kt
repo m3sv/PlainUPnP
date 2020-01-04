@@ -89,6 +89,7 @@ class HomeFragment : BaseFragment() {
                     contentAdapter.setWithDiff(state.contentItems)
                     state.filterText.consume()?.let(contentAdapter::filter)
                     binding.progress.disappear()
+                    binding.name.text = state.directoryName
                 }
             }
         }
