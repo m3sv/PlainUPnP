@@ -164,15 +164,15 @@ class ControlsFragment : BaseFragment() {
         with(binding) {
             progress.isEnabled = false
 
-            next.setOnClickListener {
+            controlsContainer.next.setOnClickListener {
                 actionCallback?.onAction(ControlsAction.NextClick)
             }
 
-            previous.setOnClickListener {
+            controlsContainer.previous.setOnClickListener {
                 actionCallback?.onAction(ControlsAction.PreviousClick)
             }
 
-            play.setOnClickListener {
+            controlsContainer.play.setOnClickListener {
                 actionCallback?.onAction(ControlsAction.PlayClick)
             }
 
@@ -250,7 +250,7 @@ class ControlsFragment : BaseFragment() {
     }
 
     fun setPlayIcon(@DrawableRes icon: Int) {
-        binding.play.setImageResource(icon)
+        binding.controlsContainer.play.setImageResource(icon)
     }
 
     fun setTitle(text: String) {
