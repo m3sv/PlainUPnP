@@ -6,7 +6,7 @@
     <LinearLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="72dp"
+        android:layout_height="56dp"
         android:background="@drawable/item_background"
         android:descendantFocusability="blocksDescendants"
         android:focusable="true"
@@ -17,7 +17,6 @@
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
             android:scaleType="centerCrop"
             tools:src="@drawable/ic_folder" />
 
