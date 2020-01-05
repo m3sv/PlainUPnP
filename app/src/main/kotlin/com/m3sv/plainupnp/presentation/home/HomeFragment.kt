@@ -6,9 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.observe
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.MarginDecoration
 import com.m3sv.plainupnp.common.utils.disappear
 import com.m3sv.plainupnp.common.utils.show
 import com.m3sv.plainupnp.databinding.HomeFragmentBinding
@@ -108,56 +109,21 @@ class HomeFragment : BaseFragment() {
         super.onSaveInstanceState(outState)
     }
 
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.home_toolbar_menu, menu)
-//
-//        menu.findItem(R.id.home_search).apply {
-//            (actionView as SearchView).apply {
-//                applySearchViewTransitionAnimation()
-//                setSearchQueryListener()
-//            }
-//
-//            setOnMenuItemClickListener { item ->
-//                item.expandActionView()
-//            }
-//        }
-//        super.onCreateOptionsMenu(menu, inflater)
-//    }
-
-//    private fun SearchView.setSearchQueryListener() {
-//        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-//            override fun onQueryTextSubmit(query: String): Boolean = false
-//
-//            override fun onQueryTextChange(newText: String): Boolean {
-//                contentAdapter.filter(newText)
-//                return true
-//            }
-//        })
-//    }
-//
-//    private fun SearchView.applySearchViewTransitionAnimation() {
-//        findViewById<LinearLayout>(R.id.search_bar).layoutTransition = LayoutTransition()
-//    }
-
     private fun initRecyclerView() {
         recyclerLayoutManager = LinearLayoutManager(requireContext())
         binding.content.run {
             setHasFixedSize(true)
-            addItemDecoration(
-                OffsetItemDecoration(
-                    requireContext(),
-                    OffsetItemDecoration.HORIZONTAL
-                )
-            )
+            addItemDecoration(MarginDecoration(resources.getDimension(R.dimen.media_item_margin).toInt()))
+            addItemDecoration(OffsetItemDecoration(requireContext()))
+
             layoutManager = recyclerLayoutManager
             adapter = contentAdapter
-            (itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
         }
     }
 
     private fun initContentAdapter() {
-        contentAdapter = GalleryContentAdapter(Glide.with(this)) {
-            viewModel.intention(HomeIntention.ItemClick(it))
+        contentAdapter = GalleryContentAdapter(Glide.with(this)) { position ->
+            viewModel.intention(HomeIntention.ItemClick(position))
         }
     }
 
