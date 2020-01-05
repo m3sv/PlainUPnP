@@ -209,7 +209,6 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
         when (rendererState.type) {
             UpnpItemType.AUDIO -> bottomNavDrawer.setThumbnail(R.drawable.ic_music)
             else -> rendererState.uri?.let(bottomNavDrawer::setThumbnail)
-                ?: bottomNavDrawer.setThumbnail(R.drawable.ic_launcher_no_shadow)
         }
     }
 
