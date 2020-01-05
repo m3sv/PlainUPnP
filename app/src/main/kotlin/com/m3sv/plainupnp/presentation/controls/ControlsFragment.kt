@@ -2,13 +2,16 @@ package com.m3sv.plainupnp.presentation.controls
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.ALPHA
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.m3sv.plainupnp.common.BottomSheetCallback
 import com.m3sv.plainupnp.common.OnSlideAction
@@ -229,7 +232,13 @@ class ControlsFragment : BaseFragment() {
     }
 
     fun setProgress(progress: Int, isEnabled: Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            binding.progress.setProgress(progress, true)
+        } else {
+            binding.progress.progress = progress
+        }
 
+        binding.progress.isEnabled = isEnabled
     }
 
     fun setRenderers(items: List<SpinnerItem>) {
@@ -240,8 +249,21 @@ class ControlsFragment : BaseFragment() {
         contentDirectoriesAdapter.setNewItems(items.addEmptyItem())
     }
 
-    private fun List<SpinnerItem>.addEmptyItem() =
-        this.toMutableList().apply { add(0, SpinnerItem("Empty item")) }.toList()
+    fun setPlayIcon(@DrawableRes icon: Int) {
+        binding.play.setImageResource(icon)
+    }
+
+    fun setTitle(text: String) {
+        binding.title.text = text
+    }
+
+    fun setThumbnail(url: String) {
+        Glide.with(this).load(url).into(binding.art)
+    }
+
+    fun setThumbnail(@DrawableRes resource: Int) {
+        Glide.with(this).load(resource).into(binding.art)
+    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         rendererAdapter.onSaveInstanceState(outState)
@@ -252,6 +274,9 @@ class ControlsFragment : BaseFragment() {
         if (this::binding.isInitialized)
             outState.putFloat(SCRIM_VIEW_ALPHA_KEY, binding.scrimView.alpha)
     }
+
+    private fun List<SpinnerItem>.addEmptyItem() =
+        this.toMutableList().apply { add(0, SpinnerItem("Empty item")) }.toList()
 
     companion object {
         private const val IS_CALLBACK_ENABLED_KEY = "controls_sheet_expanded_state"
