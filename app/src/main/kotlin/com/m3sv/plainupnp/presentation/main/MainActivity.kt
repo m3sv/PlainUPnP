@@ -23,6 +23,7 @@ import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.common.utils.hideKeyboard
+import com.m3sv.plainupnp.data.upnp.UpnpItemType
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.di.activity.MainActivitySubComponent
@@ -202,22 +203,14 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
             rendererState.state == UpnpRendererState.State.PLAY
         )
 
-//        with(binding.controlsSheet) {
-//            play.setImageResource(rendererState.icon)
-//        }
+        bottomNavDrawer.setPlayIcon(rendererState.icon)
+        bottomNavDrawer.setTitle(rendererState.title)
 
-//        with(binding.controlsSheet.art) {
-//            var thumb: Any? = when (rendererState.type) {
-//                UpnpItemType.AUDIO -> R.drawable.ic_music
-//                else -> rendererState.uri
-//            }
-//
-//            thumb = thumb ?: R.drawable.ic_launcher_no_shadow
-//
-//            Glide.with(this).load(thumb).into(this)
-//        }
-
-//        binding.controlsSheet.title.text = rendererState.title
+        when (rendererState.type) {
+            UpnpItemType.AUDIO -> bottomNavDrawer.setThumbnail(R.drawable.ic_music)
+            else -> rendererState.uri?.let(bottomNavDrawer::setThumbnail)
+                ?: bottomNavDrawer.setThumbnail(R.drawable.ic_launcher_no_shadow)
+        }
     }
 
     private fun animateBottomDrawChanges() {
