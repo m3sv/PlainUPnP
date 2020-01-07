@@ -27,20 +27,32 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom">
 
-            <ImageView
-                android:id="@+id/bottom_app_bar_chevron"
+            <LinearLayout
+                android:id="@+id/controls_container"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                app:srcCompat="@drawable/ic_arrow_drop_up" />
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
 
-            <TextView
-                android:id="@+id/bottom_app_bar_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="?attr/selectableItemBackground"
-                android:padding="8dp"
-                android:text="@string/navigation_controls" />
+                <ImageView
+                    android:id="@+id/bottom_app_bar_chevron"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    app:srcCompat="@drawable/ic_arrow_drop_up" />
+
+                <TextView
+                    android:id="@+id/bottom_app_bar_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:padding="8dp"
+                    android:text="@string/navigation_controls" />
+            </LinearLayout>
+
+
         </com.google.android.material.bottomappbar.BottomAppBar>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
