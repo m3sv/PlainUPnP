@@ -72,13 +72,14 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
         if (savedInstanceState == null) {
             startUpnpService()
         } else {
-            savedInstanceState.restoreChevronState()
-            savedInstanceState.restoreMenu()
+            with(savedInstanceState) {
+                restoreChevronState()
+                restoreMenu()
+            }
         }
 
         animateBottomDrawChanges()
-
-        binding.bottomAppBarTitle.setOnClickListener { bottomNavDrawer.toggle() }
+        binding.controlsContainer.setOnClickListener { bottomNavDrawer.toggle() }
         setSupportActionBar(binding.bottomBar)
     }
 
