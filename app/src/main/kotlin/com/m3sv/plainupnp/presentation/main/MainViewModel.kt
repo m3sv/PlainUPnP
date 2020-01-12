@@ -28,9 +28,7 @@ class MainViewModel @Inject constructor(
                     Function3(MainState::Render)
                 )
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { newState ->
-                    launch { updateState { newState } }
-                }
+                .subscribe { newState -> launch { updateState { newState } } }
                 .disposeBy(disposables)
         }
     }
