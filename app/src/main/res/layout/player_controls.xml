@@ -12,8 +12,9 @@
 
         <ImageView
             android:id="@+id/previous"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="?selectableItemBackgroundBorderless"
             android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/play"
             app:layout_constraintEnd_toStartOf="@+id/play"
@@ -22,8 +23,9 @@
 
         <ImageView
             android:id="@+id/play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="?selectableItemBackgroundBorderless"
             android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/next"
             app:layout_constraintEnd_toStartOf="@+id/next"
@@ -32,8 +34,9 @@
 
         <ImageView
             android:id="@+id/next"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="?selectableItemBackgroundBorderless"
             android:padding="8dp"
             app:layout_constraintBottom_toBottomOf="@+id/art"
             app:layout_constraintEnd_toEndOf="parent"
