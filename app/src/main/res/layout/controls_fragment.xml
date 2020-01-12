@@ -20,13 +20,23 @@
             android:id="@+id/background_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?colorSurface"
+            android:background="@drawable/bottom_sheet_cornered_background"
             android:clickable="true"
             android:focusable="true"
             app:behavior_halfExpandedRatio="@dimen/half_expanded_ratio"
             app:behavior_hideable="true"
             app:behavior_skipCollapsed="true"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+            <ImageView
+                android:id="@+id/handle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/bottom_sheet_handle"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
                 android:id="@+id/art"
@@ -95,7 +105,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/renderer_icon"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/content_directory_icon"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/handle"
                 app:layout_constraintVertical_bias="0.0"
                 tools:listitem="@android:layout/simple_spinner_item" />
 
@@ -110,7 +120,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/renderer_icon"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/handle"
                 app:layout_constraintVertical_bias="0.0"
                 tools:listitem="@android:layout/simple_spinner_item" />
 
