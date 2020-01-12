@@ -12,7 +12,7 @@ import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.collect
 import timber.log.Timber
 import javax.inject.Inject
@@ -45,16 +45,15 @@ class UpnpManagerImpl @Inject constructor(
 
     private var previous: Int = -1
 
-    private val renderItem: Channel<RenderItem> = Channel()
+    private val renderItem: BroadcastChannel<RenderItem> = BroadcastChannel(1)
 
     init {
         launch {
-            renderItem.throttle(scope = this).collect {
+            renderItem.openSubscription().throttle(scope = this).collect {
                 render(it)
             }
         }
     }
-
 
     override fun selectContentDirectory(position: Int) {
         if (position !in contentDirectories.currentContentDirectories().indices) {
@@ -102,13 +101,13 @@ class UpnpManagerImpl @Inject constructor(
             commandStop()
         }
 
+        next = item.position + 1
+        previous = item.position - 1
+
         if (isLocal) {
             launchLocallyUseCase.execute(item)
             return
         }
-
-        next = item.position + 1
-        previous = item.position - 1
 
         with(item.item) {
             val type = when (this) {
@@ -121,15 +120,12 @@ class UpnpManagerImpl @Inject constructor(
             upnpRendererStateObservable = UpnpRendererStateObservable(id, uri, type)
         }
 
-        upnpRendererStateObservable?.doOnNext {
-            if (it.state == UpnpRendererState.State.FINISHED)
-                rendererCommand?.pause()
-        }?.subscribe(rendererStateSubject)
+        upnpRendererStateObservable?.doOnNext { if (it.state == UpnpRendererState.State.FINISHED) rendererCommand?.pause() }
+            ?.subscribe(rendererStateSubject)
 
         rendererCommand = serviceController.createRendererCommand(upnpRendererStateObservable)
             ?.apply {
-                if (item.item !is ClingImageItem)
-                    resume()
+                if (item.item !is ClingImageItem) resume()
 
                 launchItem(item.item)
             }
