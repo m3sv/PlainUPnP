@@ -23,7 +23,7 @@
             android:background="?colorSurface"
             android:clickable="true"
             android:focusable="true"
-            app:behavior_halfExpandedRatio="0.6"
+            app:behavior_halfExpandedRatio="@dimen/half_expanded_ratio"
             app:behavior_hideable="true"
             app:behavior_skipCollapsed="true"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
