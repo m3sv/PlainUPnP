@@ -13,6 +13,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -99,7 +100,7 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
     }
 
     private fun observeState() {
-        viewModel.state.nonNullObserve { state ->
+        viewModel.state.observe(this) { state ->
             when (state) {
                 is MainState.Render -> {
                     with(bottomNavDrawer) {
@@ -110,7 +111,9 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
                     handleRendererState(state.rendererState)
                 }
                 is MainState.Exit -> finishAndRemoveTask()
-                is MainState.Initial -> return@nonNullObserve
+                is MainState.Initial -> {
+                    // ignore
+                }
             }.enforce
         }
     }

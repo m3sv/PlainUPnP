@@ -14,8 +14,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.m3sv.plainupnp.R
@@ -66,12 +64,6 @@ abstract class BaseActivity<Binding : ViewDataBinding> : AppCompatActivity() {
 
     protected inline fun <reified T : ViewModel> getViewModel(): T =
         ViewModelProviders.of(this, viewModelFactory).get(T::class.java)
-
-    protected inline fun <T> LiveData<T>.nonNullObserve(crossinline observer: (t: T) -> Unit) {
-        this.observe(this@BaseActivity, Observer {
-            it?.let(observer)
-        })
-    }
 
     companion object {
         protected const val REQUEST_READ_EXTERNAL_STORAGE = 12345

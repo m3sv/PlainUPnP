@@ -220,7 +220,6 @@ class ControlsFragment : BaseFragment() {
 
     fun close() {
         behavior.state = BottomSheetBehavior.STATE_HIDDEN
-        alphaHideAnimator.start()
     }
 
     fun addOnStateChangedAction(action: OnStateChangedAction) {

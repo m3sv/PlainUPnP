@@ -46,7 +46,6 @@ class RendererCommand(
     fun resume() {
         Timber.v("Resume renderer")
         job?.cancel()
-
         job = GlobalScope.launch { updateInfo() }
         paused = false
     }
