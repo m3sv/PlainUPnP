@@ -3,10 +3,13 @@ package com.m3sv.plainupnp.presentation.home
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.ViewDataBinding
+import com.bumptech.glide.ListPreloader
+import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.RequestManager
-import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.util.FixedPreloadSizeProvider
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ItemsDiffCallback
+import com.m3sv.plainupnp.common.utils.dp
 import com.m3sv.plainupnp.databinding.FolderItemBinding
 import com.m3sv.plainupnp.databinding.MediaItemBinding
 import com.m3sv.plainupnp.presentation.base.BaseAdapter
@@ -23,8 +26,6 @@ class GalleryContentAdapter(
 
     // TODO update using OnSharePreferencesChangedListener
     var loadThumbnails = true
-
-    private val emptyRequestOptions = RequestOptions()
 
     override fun getItemViewType(position: Int): Int = items[position].type.ordinal
 
@@ -60,20 +61,25 @@ class GalleryContentAdapter(
         }
     }
 
+    fun filter(text: CharSequence) {
+        if (text.isEmpty()) {
+            resetItems()
+            return
+        }
+
+        filterWithDiff { it.name.toLowerCase(Locale.getDefault()).contains(text) }
+    }
+
     private fun loadData(
         holder: ItemViewHolder<ViewDataBinding>,
-        contentItem: ContentItem,
-        requestOptions: RequestOptions = emptyRequestOptions
+        contentItem: ContentItem
     ) {
 
         with(holder.extractBinding<MediaItemBinding>()) {
             if (loadThumbnails)
                 when (contentItem.type) {
                     ContentType.IMAGE,
-                    ContentType.VIDEO -> glide.load(contentItem.uri)
-                        .thumbnail(0.1f)
-                        .apply(requestOptions)
-                        .into(thumbnail)
+                    ContentType.VIDEO -> loadImage(contentItem.uri).into(thumbnail)
                     else -> thumbnail.setImageResource(contentItem.icon)
                 }
             else
@@ -83,6 +89,11 @@ class GalleryContentAdapter(
             contentType.setImageResource(contentItem.icon)
         }
     }
+
+    private fun loadImage(uri: String?): RequestBuilder<*> = glide
+        .load(uri)
+        .override(IMAGE_WIDTH, IMAGE_HEIGHT)
+        .thumbnail(0.1f)
 
     private fun loadDirectory(
         holder: ItemViewHolder<*>,
@@ -94,14 +105,20 @@ class GalleryContentAdapter(
         }
     }
 
-    fun filter(text: CharSequence) {
-        if (text.isEmpty()) {
-            resetItems()
-            return
-        }
+    inner class PreloadModelProvider : ListPreloader.PreloadModelProvider<ContentItem> {
+        override fun getPreloadItems(position: Int): MutableList<ContentItem> = items
+            .subList(
+                (position - PRELOAD_OFFSET).coerceAtLeast(0),
+                (position + PRELOAD_OFFSET).coerceAtMost(items.size - 1)
+            )
+            .toMutableList()
 
-        filterWithDiff { it.name.toLowerCase(Locale.getDefault()).contains(text) }
+        override fun getPreloadRequestBuilder(item: ContentItem): RequestBuilder<*>? =
+            loadImage(item.uri)
     }
+
+    inner class PreloadSizeProvider :
+        FixedPreloadSizeProvider<ContentItem>(IMAGE_WIDTH, IMAGE_HEIGHT)
 
     class DiffCallback(
         oldContentItems: List<ContentItem>,
@@ -116,5 +133,9 @@ class GalleryContentAdapter(
 
     companion object {
         val diffCallback = DiffCallback(listOf(), listOf())
+
+        private const val PRELOAD_OFFSET = 5
+        private val IMAGE_WIDTH = 64.dp
+        private val IMAGE_HEIGHT = 64.dp
     }
 }
