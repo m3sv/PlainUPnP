@@ -4,7 +4,6 @@ import androidx.annotation.DrawableRes
 
 data class ContentItem(
         val uri: String?,
-        val thumbnailUri: String?,
         val name: String,
         val type: ContentType,
         @DrawableRes val icon: Int

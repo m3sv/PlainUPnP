@@ -62,7 +62,6 @@ class HomeViewModel @Inject constructor(
             is ClingDIDLContainer -> {
                 ContentItem(
                     item.didlObject.id,
-                    item.didlObject.id,
                     item.title,
                     ContentType.DIRECTORY,
                     icon = R.drawable.ic_folder
@@ -72,7 +71,6 @@ class HomeViewModel @Inject constructor(
             is ClingImageItem -> {
                 ContentItem(
                     (item.didlObject as ClingDIDLItem).uri,
-                    checkCacheForExistence(item),
                     item.title,
                     ContentType.IMAGE,
                     icon = R.drawable.ic_image
@@ -82,7 +80,6 @@ class HomeViewModel @Inject constructor(
             is ClingVideoItem -> {
                 ContentItem(
                     (item.didlObject as ClingDIDLItem).uri,
-                    checkCacheForExistence(item),
                     item.title,
                     ContentType.VIDEO,
                     icon = R.drawable.ic_video
@@ -92,7 +89,6 @@ class HomeViewModel @Inject constructor(
             is ClingAudioItem -> {
                 ContentItem(
                     (item.didlObject as ClingDIDLItem).uri,
-                    checkCacheForExistence(item),
                     item.title,
                     ContentType.AUDIO,
                     icon = R.drawable.ic_music
@@ -102,9 +98,6 @@ class HomeViewModel @Inject constructor(
             else -> throw IllegalStateException("Unknown DIDLObject")
         }
     }
-
-    private fun checkCacheForExistence(item: DIDLObjectDisplay): String? =
-        cache.get(item.didlObject.id) ?: (item.didlObject as ClingDIDLItem).uri
 
     override fun intention(intention: HomeIntention) {
         when (intention) {

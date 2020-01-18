@@ -8,6 +8,8 @@ import androidx.activity.OnBackPressedCallback
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.MarginDecoration
 import com.m3sv.plainupnp.common.utils.disappear
@@ -32,6 +34,8 @@ class HomeFragment : BaseFragment() {
     private lateinit var recyclerLayoutManager: LinearLayoutManager
 
     private lateinit var binding: HomeFragmentBinding
+
+    private lateinit var glide: RequestManager
 
     private val onBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -61,9 +65,9 @@ class HomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        glide = Glide.with(this)
         observeState()
         addBackPressedDispatcher()
-        initContentAdapter()
         initRecyclerView()
         restoreRecyclerState(savedInstanceState)
         observeControlsSheetState()
@@ -110,6 +114,16 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun initRecyclerView() {
+        contentAdapter = GalleryContentAdapter(glide) { position ->
+            viewModel.intention(HomeIntention.ItemClick(position))
+        }
+
+        val preloadSizeProvider = contentAdapter.PreloadSizeProvider()
+        val modelProvider = contentAdapter.PreloadModelProvider()
+        val preloader =
+            RecyclerViewPreloader<ContentItem>(glide, modelProvider, preloadSizeProvider, 10)
+        binding.content.addOnScrollListener(preloader)
+
         recyclerLayoutManager = LinearLayoutManager(requireContext())
         binding.content.run {
             setHasFixedSize(true)
@@ -121,11 +135,6 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    private fun initContentAdapter() {
-        contentAdapter = GalleryContentAdapter(Glide.with(this)) { position ->
-            viewModel.intention(HomeIntention.ItemClick(position))
-        }
-    }
 
     private fun restoreRecyclerState(bundle: Bundle?) {
         if (bundle != null)
