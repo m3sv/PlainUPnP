@@ -14,7 +14,7 @@ import com.m3sv.plainupnp.upnp.Destination
 import com.m3sv.plainupnp.upnp.UpnpManager
 import com.m3sv.plainupnp.upnp.didl.*
 import com.m3sv.plainupnp.upnp.usecase.ObserveUpnpStateUseCase
-import kotlinx.coroutines.channels.consumeEach
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -46,7 +46,7 @@ class HomeViewModel @Inject constructor(
             }.disposeBy(disposables)
 
         launch {
-            filterDelegate.state.consumeEach { text ->
+            filterDelegate.state.collect { text ->
                 updateState { previousState ->
                     when (previousState) {
                         is HomeState.Success -> previousState.copy(filterText = Consumable(text))
