@@ -5,7 +5,7 @@ object Versions {
     const val compileSdk = 29
     const val dagger = "2.24"
     const val detekt = "1.0.0"
-    const val glide = "4.9.0"
+    const val glide = "4.11.0"
     const val jetty = "8.2.0.v20160908"
     const val kotlin = "1.3.61"
     const val minSdk = 21
@@ -61,7 +61,8 @@ object Dependencies {
 
     val glide = mapOf(
         "compiler" to "com.github.bumptech.glide:compiler:${Versions.glide}",
-        "core" to "com.github.bumptech.glide:glide:${Versions.glide}"
+        "core" to "com.github.bumptech.glide:glide:${Versions.glide}",
+        "recyclerView" to "com.github.bumptech.glide:recyclerview-integration:${Versions.glide}"
     )
 
     val rx = mapOf(
