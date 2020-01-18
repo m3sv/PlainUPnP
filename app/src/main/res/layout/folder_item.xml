@@ -8,7 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@drawable/item_background"
-        android:descendantFocusability="beforeDescendants"
         android:focusable="true"
         android:gravity="center"
         android:orientation="horizontal">

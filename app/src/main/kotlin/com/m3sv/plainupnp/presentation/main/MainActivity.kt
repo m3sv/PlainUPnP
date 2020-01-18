@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.presentation.main
 
-import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.KeyEvent
@@ -10,7 +9,6 @@ import android.view.View
 import android.view.View.ROTATION
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
-import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.observe
@@ -147,7 +145,6 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
     private fun setupSearchMenuItem(menu: Menu, animate: Boolean) {
         menu.findItem(R.id.menu_search)?.let { item ->
             (item.actionView as SearchView).apply {
-                applySearchViewTransitionAnimation()
                 setSearchQueryListener()
                 disableSearchViewFullScreenEditing()
                 if (animate) animateAppear()
@@ -331,10 +328,6 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
                 return true
             }
         })
-    }
-
-    private fun SearchView.applySearchViewTransitionAnimation() {
-        findViewById<LinearLayout>(R.id.search_bar).layoutTransition = LayoutTransition()
     }
 
     private companion object {
