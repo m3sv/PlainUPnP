@@ -120,7 +120,6 @@ class GalleryContentAdapter(
     inner class PreloadSizeProvider :
         FixedPreloadSizeProvider<ContentItem>(IMAGE_WIDTH, IMAGE_HEIGHT)
 
-
     private fun <T : ViewDataBinding> ItemViewHolder<*>.extractBinding(): T =
         (this as ItemViewHolder<T>).binding
 

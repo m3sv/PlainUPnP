@@ -134,15 +134,16 @@ class ControlsFragment : BaseFragment() {
             rendererAdapter.onRestoreInstanceState(savedInstanceState)
             contentDirectoriesAdapter.onRestoreInstanceState(savedInstanceState)
 
-            val backPressedCallbackEnabled =
-                savedInstanceState.getBoolean(IS_CALLBACK_ENABLED_KEY, false)
+            val isExpanded = savedInstanceState.getBoolean(IS_EXPANDED, false)
 
-            onBackPressedCallback.isEnabled = backPressedCallbackEnabled
+            onBackPressedCallback.isEnabled = isExpanded
 
-            if (backPressedCallbackEnabled) {
+            if (isExpanded) {
                 controlsSheetDelegate.onShow()
+                binding.scrimView.show()
             } else {
                 controlsSheetDelegate.onDismiss()
+                binding.scrimView.hide()
             }
 
             binding.scrimView.alpha = savedInstanceState.getFloat(SCRIM_VIEW_ALPHA_KEY, 0f)
@@ -267,18 +268,21 @@ class ControlsFragment : BaseFragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         rendererAdapter.onSaveInstanceState(outState)
         contentDirectoriesAdapter.onSaveInstanceState(outState)
-        outState.putBoolean(IS_CALLBACK_ENABLED_KEY, onBackPressedCallback.isEnabled)
+
+        outState.putBoolean(IS_EXPANDED, onBackPressedCallback.isEnabled)
 
         // careful with lateinit in onSaveInstanceState
-        if (this::binding.isInitialized)
-            outState.putFloat(SCRIM_VIEW_ALPHA_KEY, binding.scrimView.alpha)
+        if (this::binding.isInitialized) outState.putFloat(
+            SCRIM_VIEW_ALPHA_KEY,
+            binding.scrimView.alpha
+        )
     }
 
     private fun List<SpinnerItem>.addEmptyItem() =
         this.toMutableList().apply { add(0, SpinnerItem("Empty item")) }.toList()
 
     companion object {
-        private const val IS_CALLBACK_ENABLED_KEY = "controls_sheet_expanded_state"
+        private const val IS_EXPANDED = "controls_sheet_expanded_state"
         private const val SCRIM_VIEW_ALPHA_KEY = "scrim_view_alpha_key"
     }
 }
