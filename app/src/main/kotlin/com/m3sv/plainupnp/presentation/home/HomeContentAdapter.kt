@@ -120,22 +120,23 @@ class GalleryContentAdapter(
     inner class PreloadSizeProvider :
         FixedPreloadSizeProvider<ContentItem>(IMAGE_WIDTH, IMAGE_HEIGHT)
 
-    class DiffCallback(
-        oldContentItems: List<ContentItem>,
-        newContentItems: List<ContentItem>
-    ) : ItemsDiffCallback<ContentItem>(oldContentItems, newContentItems) {
-        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-            oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
-    }
 
     private fun <T : ViewDataBinding> ItemViewHolder<*>.extractBinding(): T =
         (this as ItemViewHolder<T>).binding
 
     companion object {
-        val diffCallback = DiffCallback(listOf(), listOf())
+        private val diffCallback = DiffCallback(listOf(), listOf())
 
         private const val PRELOAD_OFFSET = 5
         private val IMAGE_WIDTH = 64.dp
         private val IMAGE_HEIGHT = 64.dp
     }
+}
+
+private class DiffCallback(
+    oldContentItems: List<ContentItem>,
+    newContentItems: List<ContentItem>
+) : ItemsDiffCallback<ContentItem>(oldContentItems, newContentItems) {
+    override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+        oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
 }
