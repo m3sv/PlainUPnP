@@ -14,13 +14,21 @@ interface UpnpStateStore {
     suspend fun peekState(): ContentState?
 }
 
+sealed class UpnpDirectory(val content: List<DIDLObjectDisplay>) {
+    class Root(
+        val name: String,
+        content: List<DIDLObjectDisplay>
+    ) : UpnpDirectory(content)
+
+    class SubUpnpDirectory(
+        val parentName: String,
+        content: List<DIDLObjectDisplay>
+    ) : UpnpDirectory(content)
+}
+
 sealed class ContentState {
     object Loading : ContentState()
-    data class Success(
-        val directoryName: String,
-        val content: List<DIDLObjectDisplay>,
-        val isRoot: Boolean
-    ) : ContentState()
+    data class Success(val upnpDirectory: UpnpDirectory) : ContentState()
 }
 
 class UpnpStateRepository @Inject constructor() : UpnpStateStore {

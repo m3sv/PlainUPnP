@@ -56,23 +56,26 @@ class UpnpNavigatorImpl @Inject constructor(
         }
     }
 
-
     private fun browse(model: BrowseToModel, clearBackStack: Boolean = false) {
-        serviceController.createContentDirectoryCommand()?.browse(model.id, null) {
-            val successState = ContentState.Success(
-                model.directoryName,
-                it ?: listOf(),
-                model.id == HOME_DIRECTORY_ID
-            )
+        serviceController
+            .createContentDirectoryCommand()
+            ?.browse(model.id, null) { directories ->
+                val directory = if (model.id == HOME_DIRECTORY_ID) {
+                    UpnpDirectory.Root(HOME_DIRECTORY_NAME, directories ?: listOf())
+                } else {
+                    UpnpDirectory.SubUpnpDirectory(model.directoryName, directories ?: listOf())
+                }
 
-            if (clearBackStack)
-                clearBackStack()
-            else
-                addCurrentStateToBackStack()
+                val state = ContentState.Success(directory)
 
-            currentState = successState
-            setContentState(successState)
-        }
+                if (clearBackStack)
+                    clearBackStack()
+                else
+                    addCurrentStateToBackStack()
+
+                currentState = state
+                setContentState(state)
+            }
     }
 
     private fun setContentState(state: ContentState) {

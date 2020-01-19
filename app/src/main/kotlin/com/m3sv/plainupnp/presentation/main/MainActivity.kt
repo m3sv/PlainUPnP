@@ -9,7 +9,6 @@ import android.view.View
 import android.view.View.ROTATION
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.observe
 import androidx.navigation.NavController
@@ -298,17 +297,6 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
             performHide()
             visibility = View.GONE
         }
-    }
-
-    private fun showExitConfirmationDialog() {
-        AlertDialog.Builder(this)
-            .setTitle(getString(R.string.dialog_exit_title))
-            .setMessage(getString(R.string.dialog_exit_body))
-            .setPositiveButton(getString(R.string.exit)) { _, _ ->
-                finishAndRemoveTask()
-            }
-            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
-            .show()
     }
 
     private fun Bundle.restoreChevronState() {

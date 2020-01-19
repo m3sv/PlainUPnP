@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -20,6 +22,7 @@ import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.ControlsSheetState
 import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
+import timber.log.Timber
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment() {
@@ -37,11 +40,21 @@ class HomeFragment : BaseFragment() {
 
     private lateinit var glide: RequestManager
 
-    private val onBackPressedCallback = object : OnBackPressedCallback(false) {
+    private val handleBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
+            Timber.d("handleBackPressed")
             viewModel.intention(HomeIntention.BackPress)
         }
     }
+
+    private val showExitDialogCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            Timber.d("showExitDialog")
+            showExitConfirmationDialog()
+        }
+    }
+
+    private var onBackPressedCallback: OnBackPressedCallback = showExitDialogCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
@@ -67,7 +80,7 @@ class HomeFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         glide = Glide.with(this)
         observeState()
-        addBackPressedDispatcher()
+        addBackPressedCallback(onBackPressedCallback)
         initRecyclerView()
         restoreRecyclerState(savedInstanceState)
         observeControlsSheetState()
@@ -82,19 +95,26 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    private fun addBackPressedDispatcher() {
-        requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-    }
-
     private fun observeState() {
         viewModel.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is HomeState.Loading -> binding.progress.show()
                 is HomeState.Success -> {
-                    contentAdapter.setWithDiff(state.contentItems)
+                    when (val directory = state.directory) {
+                        is Directory.Root -> {
+                            contentAdapter.setWithDiff(directory.content)
+                            binding.name.text = directory.name
+                            addBackPressedCallback(showExitDialogCallback)
+                        }
+                        is Directory.SubDirectory -> {
+                            contentAdapter.setWithDiff(directory.content)
+                            binding.name.text = directory.parentName
+                            addBackPressedCallback(handleBackPressedCallback)
+                        }
+                    }
+
                     state.filterText.consume()?.let(contentAdapter::filter)
                     binding.progress.disappear()
-                    binding.name.text = state.directoryName
                 }
             }
         }
@@ -142,11 +162,37 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun enableBackPressedCallback() {
-        onBackPressedCallback.isEnabled = true
+        handleBackPressedCallback.isEnabled = true
+        showExitDialogCallback.isEnabled = true
     }
 
     private fun disableBackPressedCallback() {
-        onBackPressedCallback.isEnabled = false
+        handleBackPressedCallback.isEnabled = false
+        showExitDialogCallback.isEnabled = false
+    }
+
+    private fun showExitConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.dialog_exit_title))
+            .setMessage(getString(R.string.dialog_exit_body))
+            .setPositiveButton(getString(R.string.exit)) { _, _ ->
+                requireActivity().finishAndRemoveTask()
+            }
+            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
+            .show()
+    }
+
+    private fun Fragment.addBackPressedCallback(callback: OnBackPressedCallback) {
+        onBackPressedCallback.remove()
+
+        requireActivity()
+            .onBackPressedDispatcher
+            .addCallback(
+                viewLifecycleOwner,
+                callback
+            )
+
+        onBackPressedCallback = callback
     }
 
     companion object {
