@@ -4,7 +4,7 @@ import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import io.reactivex.Observable
 
-interface UpnpManager {
+interface UpnpManager : UpnpNavigator {
     val renderers: Observable<List<DeviceDisplay>>
 
     val contentDirectories: Observable<List<DeviceDisplay>>

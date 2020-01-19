@@ -17,7 +17,6 @@ object AppModule {
 
     @Provides
     @JvmStatic
-    @Singleton
     fun provideUpnpNavigator(
         upnpServiceController: UpnpServiceController,
         upnpStateStore: UpnpStateStore
@@ -42,9 +41,9 @@ object AppModule {
             RendererDiscoveryObservable(upnpServiceController, upnpResourceProvider),
             ContentDirectoryDiscoveryObservable(upnpServiceController),
             upnpServiceController,
-            upnpNavigator,
             launchLocallyUseCase,
-            upnpStateStore
+            upnpStateStore,
+            upnpNavigator
         )
 
     @Provides

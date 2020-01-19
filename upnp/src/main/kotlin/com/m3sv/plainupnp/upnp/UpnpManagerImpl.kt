@@ -23,10 +23,10 @@ class UpnpManagerImpl @Inject constructor(
     override val renderers: RendererDiscoveryObservable,
     override val contentDirectories: ContentDirectoryDiscoveryObservable,
     private val serviceController: UpnpServiceController,
-    private val navigator: UpnpNavigator,
     private val launchLocallyUseCase: LaunchLocallyUseCase,
-    private val stateStore: UpnpStateStore
-) : UpnpManager, CoroutineScope, UpnpNavigator by navigator {
+    private val stateStore: UpnpStateStore,
+    upnpNavigator: UpnpNavigator
+) : UpnpManager, CoroutineScope, UpnpNavigator by upnpNavigator {
 
     override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
 
