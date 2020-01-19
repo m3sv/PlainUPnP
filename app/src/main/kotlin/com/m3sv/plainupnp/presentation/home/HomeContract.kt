@@ -7,13 +7,24 @@ sealed class HomeIntention {
     object BackPress : HomeIntention()
 }
 
+sealed class Directory {
+    data class Root(
+        val name: String,
+        val content: List<ContentItem>
+    ) : Directory()
+
+    data class SubDirectory(
+        val parentName: String,
+        val content: List<ContentItem>
+    ) : Directory()
+
+}
+
 sealed class HomeState {
     object Initial : HomeState()
     object Loading : HomeState()
     data class Success(
-        val directoryName: String,
-        val contentItems: List<ContentItem>,
-        val isRoot: Boolean,
+        val directory: Directory,
         val filterText: Consumable<String>
     ) : HomeState()
 }

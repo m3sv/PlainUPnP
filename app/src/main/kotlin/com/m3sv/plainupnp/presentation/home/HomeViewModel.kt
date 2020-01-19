@@ -9,11 +9,13 @@ import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.presentation.main.FilterDelegate
 import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.Destination
+import com.m3sv.plainupnp.upnp.UpnpDirectory
 import com.m3sv.plainupnp.upnp.UpnpManager
 import com.m3sv.plainupnp.upnp.didl.*
 import com.m3sv.plainupnp.upnp.usecase.ObserveUpnpStateUseCase
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -29,13 +31,20 @@ class HomeViewModel @Inject constructor(
             .subscribe { upnpState ->
                 val newState = when (upnpState) {
                     is ContentState.Loading -> HomeState.Loading
-                    is ContentState.Success ->
-                        HomeState.Success(
-                            upnpState.directoryName,
-                            mapItems(upnpState.content),
-                            upnpState.isRoot,
-                            Consumable("")
-                        )
+                    is ContentState.Success -> {
+                        val directory = when (val directory = upnpState.upnpDirectory) {
+                            is UpnpDirectory.Root -> Directory.Root(
+                                directory.name,
+                                mapItems(directory.content)
+                            )
+                            is UpnpDirectory.SubUpnpDirectory -> Directory.SubDirectory(
+                                directory.parentName,
+                                mapItems(directory.content)
+                            )
+                        }
+
+                        HomeState.Success(directory, Consumable(""))
+                    }
                 }
 
                 updateState { newState }
@@ -96,6 +105,7 @@ class HomeViewModel @Inject constructor(
     }
 
     override fun intention(intention: HomeIntention) {
+        Timber.d(intention.toString())
         when (intention) {
             is HomeIntention.ItemClick -> manager.itemClick(intention.position)
             is HomeIntention.BackPress -> manager.navigateTo(Destination.Back)

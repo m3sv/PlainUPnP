@@ -133,12 +133,17 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun playNext() {
         launch {
-            stateStore.peekState()?.let {
-                if (it is ContentState.Success
-                    && next in it.content.indices
-                    && it.content[next].didlObject is DIDLItem
+            stateStore.peekState()?.let { state ->
+                if (state is ContentState.Success
+                    && next in state.upnpDirectory.content.indices
+                    && state.upnpDirectory.content[next].didlObject is DIDLItem
                 ) {
-                    renderItem(RenderItem(it.content[next].didlObject as DIDLItem, next))
+                    renderItem(
+                        RenderItem(
+                            state.upnpDirectory.content[next].didlObject as DIDLItem,
+                            next
+                        )
+                    )
                 }
             }
         }
@@ -148,10 +153,15 @@ class UpnpManagerImpl @Inject constructor(
         launch {
             stateStore.peekState()?.let { state ->
                 if (state is ContentState.Success
-                    && previous in state.content.indices
-                    && state.content[previous].didlObject is DIDLItem
+                    && previous in state.upnpDirectory.content.indices
+                    && state.upnpDirectory.content[previous].didlObject is DIDLItem
                 ) {
-                    renderItem(RenderItem(state.content[previous].didlObject as DIDLItem, previous))
+                    renderItem(
+                        RenderItem(
+                            state.upnpDirectory.content[previous].didlObject as DIDLItem,
+                            previous
+                        )
+                    )
                 }
             }
         }
@@ -197,7 +207,14 @@ class UpnpManagerImpl @Inject constructor(
         launch {
             stateStore.peekState()?.let { state ->
                 when (state) {
-                    is ContentState.Success -> handleClick(position, state.content)
+                    is ContentState.Success -> {
+                        val content = when (val directory = state.upnpDirectory) {
+                            is UpnpDirectory.Root -> directory.content
+                            is UpnpDirectory.SubUpnpDirectory -> directory.content
+                        }
+
+                        handleClick(position, content)
+                    }
                     is ContentState.Loading -> {
                         // no-op
                     }
