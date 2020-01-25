@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 dependencies {
     compileOnly Dependencies.dagger.annotation
 
+    implementation Dependencies.androidx.material
     implementation Dependencies.coroutines.core
     implementation Dependencies.coroutines.rxJava2
     implementation Dependencies.kotlin
@@ -13,4 +14,5 @@ dependencies {
 
     implementation project(":common")
     api project(":nanohttpd")
+    implementation 'androidx.core:core-ktx:1.1.0'
 }

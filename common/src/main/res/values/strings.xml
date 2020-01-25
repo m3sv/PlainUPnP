@@ -19,6 +19,9 @@
     <string name="model_number" translatable="false">Model number</string>
     <string name="model_desc" translatable="false">Model description</string>
     <string name="about_copyright" translatable="false">Copyright © 2019 Vadym Shavalda</string>
+    <!--    TODO Localize notifications-->
+    <string name="notification_channel_name" translatable="false">PlainUPnP server</string>
+    <string name="notification_channel_description" translatable="false">Indicates that PlainUPnP server is running</string>
 
     <string name="version">Version</string>
     <string name="app_url">Placeholder</string>
@@ -57,4 +60,7 @@
     <string name="menu_item_search">Search</string>
     <string name="menu_item_settings">Settings</string>
     <string name="navigation_controls">Controls</string>
+    <string name="notification_title">PlainUPnP Server</string>
+    <string name="notification_body">PlainUPnP Server is running in the background</string>
+    <string name="shut_down">Shut down</string>
 </resources>
