@@ -1,0 +1,29 @@
+apply from: "../scripts/android-dynamic-feature.gradle"
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    implementation project(':app')
+    implementation project(':common')
+    implementation project(':upnp')
+
+    implementation Dependencies.androidx.recyclerView
+    implementation Dependencies.androidx.lifecycle.extensions
+    implementation Dependencies.androidx.lifecycle.liveDataKtx
+    implementation Dependencies.androidx.lifecycle.viewModelKtx
+    implementation Dependencies.androidx.navigation.fragment
+    implementation Dependencies.androidx.navigation.ui
+
+    implementation Dependencies.dagger.core
+    compileOnly Dependencies.dagger.annotation
+    kapt Dependencies.dagger.compiler
+
+    implementation Dependencies.glide.core
+    implementation(Dependencies.glide.recyclerView) {
+        // Excludes the support library because it's already included by Glide.
+        transitive = false
+    }
+    implementation Dependencies.coroutines.core
+    implementation Dependencies.coroutines.rxJava2
+
+    compileOnly Dependencies.dagger.annotation
+}

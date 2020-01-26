@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.dynamic-feature'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 
@@ -7,7 +7,6 @@ android {
     buildToolsVersion Versions.buildTools
 
     defaultConfig {
-        applicationId "com.m3sv.plainupnp"
         minSdkVersion Versions.minSdk
         targetSdkVersion Versions.targetSdk
 
@@ -15,6 +14,12 @@ android {
         versionName Versions.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+        androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
 
     // TODO investigate this
@@ -29,4 +34,9 @@ android {
     dataBinding {
         enabled = true
     }
+}
+
+
+dependencies {
+    implementation Dependencies.kotlin
 }

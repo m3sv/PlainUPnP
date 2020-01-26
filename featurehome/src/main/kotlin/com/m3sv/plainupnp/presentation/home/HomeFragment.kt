@@ -12,17 +12,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
+import com.m3sv.home.databinding.HomeFragmentBinding
+import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.MarginDecoration
 import com.m3sv.plainupnp.common.utils.disappear
 import com.m3sv.plainupnp.common.utils.show
-import com.m3sv.plainupnp.databinding.HomeFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.ControlsSheetState
-import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
-import timber.log.Timber
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment() {
@@ -42,14 +41,12 @@ class HomeFragment : BaseFragment() {
 
     private val handleBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
-            Timber.d("handleBackPressed")
             viewModel.intention(HomeIntention.BackPress)
         }
     }
 
     private val showExitDialogCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            Timber.d("showExitDialog")
             showExitConfirmationDialog()
         }
     }
@@ -64,7 +61,10 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun inject() {
-        (activity as MainActivity).mainActivitySubComponent.inject(this)
+        DaggerHomeComponent
+            .factory()
+            .create((requireActivity().applicationContext as App).appComponent)
+            .inject(this)
     }
 
     override fun onCreateView(
@@ -172,7 +172,7 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun showExitConfirmationDialog() {
-        AlertDialog.Builder(requireContext())
+        AlertDialog.Builder(requireActivity())
             .setTitle(getString(R.string.dialog_exit_title))
             .setMessage(getString(R.string.dialog_exit_body))
             .setPositiveButton(getString(R.string.exit)) { _, _ ->

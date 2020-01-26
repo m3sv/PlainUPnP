@@ -8,15 +8,16 @@
     <fragment
         android:id="@+id/home_fragment"
         android:name="com.m3sv.plainupnp.presentation.home.HomeFragment"
-        android:label="MainFragment"
+        android:label="HomeFragment"
+        app:moduleName="featurehome"
         tools:layout="@layout/home_fragment">
         <action
             android:id="@+id/action_mainFragment_to_settingsFragment"
-            app:popExitAnim="@anim/slide_down"
+            app:destination="@id/settings_fragment"
             app:enterAnim="@anim/slide_up"
             app:exitAnim="@anim/slide_from_center_to_left"
             app:popEnterAnim="@anim/slide_from_left_to_right"
-            app:destination="@id/settings_fragment" />
+            app:popExitAnim="@anim/slide_down" />
     </fragment>
 
     <fragment

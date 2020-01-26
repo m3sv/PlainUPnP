@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion Versions.compileSdk
@@ -24,5 +25,13 @@ android {
     // TODO investigate this
     lintOptions {
         warning 'InvalidPackage'
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    dataBinding {
+        enabled = true
     }
 }

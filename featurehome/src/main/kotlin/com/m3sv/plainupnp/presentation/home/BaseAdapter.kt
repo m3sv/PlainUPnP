@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.presentation.base
+package com.m3sv.plainupnp.presentation.home
 
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
