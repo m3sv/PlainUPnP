@@ -1,3 +1,9 @@
-include ':app', ':common', ':upnp', ':nanohttpd', ':feature_home'
+include ':app',
+        ':common',
+        ':feature_home',
+        ':feature_settings',
+        ':nanohttpd',
+        ':upnp'
+
 
 

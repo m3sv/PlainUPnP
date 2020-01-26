@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
-import com.m3sv.home.databinding.HomeFragmentBinding
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.MarginDecoration
@@ -21,6 +20,7 @@ import com.m3sv.plainupnp.common.utils.show
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.ControlsSheetState
+import com.m3sv.plainupnp.presentation.home.databinding.HomeFragmentBinding
 import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
 import javax.inject.Inject
 
