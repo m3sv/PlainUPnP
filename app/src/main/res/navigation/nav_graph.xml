@@ -24,6 +24,7 @@
         android:id="@+id/settings_fragment"
         android:name="com.m3sv.plainupnp.presentation.settings.SettingsFragment"
         android:label="SettingsFragment"
+        app:moduleName="feature_settings"
         tools:layout="@layout/settings_fragment" />
 </navigation>
 

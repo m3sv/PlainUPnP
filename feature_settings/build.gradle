@@ -1,0 +1,18 @@
+apply from: "../scripts/android-dynamic-feature.gradle"
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    implementation project(':app')
+    implementation project(':common')
+    implementation project(':upnp')
+
+    implementation Dependencies.androidx.preference
+
+    implementation Dependencies.dagger.core
+    compileOnly Dependencies.dagger.annotation
+    kapt Dependencies.dagger.compiler
+
+    implementation Dependencies.coroutines.core
+    implementation Dependencies.coroutines.rxJava2
+    compileOnly Dependencies.dagger.annotation
+}

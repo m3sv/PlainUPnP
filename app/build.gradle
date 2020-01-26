@@ -34,7 +34,7 @@ android {
         enabled = true
     }
 
-    dynamicFeatures = [":feature_home"]
+    dynamicFeatures = [":feature_home", ":feature_settings"]
 }
 
 dependencies {

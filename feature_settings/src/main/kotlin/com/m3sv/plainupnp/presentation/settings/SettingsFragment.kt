@@ -9,8 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.presentation.main.MainActivity
+import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.upnp.UpnpManager
 import javax.inject.Inject
 
@@ -41,7 +40,10 @@ class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     private fun inject() {
-        (activity as MainActivity).mainActivitySubComponent.inject(this)
+        DaggerSettingsComponent
+            .factory()
+            .create((requireActivity().applicationContext as App).appComponent)
+            .inject(this)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -59,7 +61,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        val darkThemeKey = getString(R.string.dark_theme_key)
+        val darkThemeKey = getString(com.m3sv.plainupnp.common.R.string.dark_theme_key)
         when (key) {
             darkThemeKey -> {
                 val defaultNightMode = if (isDarkThemeSet(sharedPreferences, darkThemeKey))

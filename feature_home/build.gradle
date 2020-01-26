@@ -1,6 +1,10 @@
 apply from: "../scripts/android-dynamic-feature.gradle"
 apply plugin: 'kotlin-kapt'
 
+android {
+    dataBinding.enabled = true
+}
+
 dependencies {
     implementation project(':app')
     implementation project(':common')
