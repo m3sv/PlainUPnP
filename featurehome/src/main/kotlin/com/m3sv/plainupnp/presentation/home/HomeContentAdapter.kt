@@ -12,12 +12,8 @@ import com.m3sv.plainupnp.common.ItemsDiffCallback
 import com.m3sv.plainupnp.common.utils.dp
 import com.m3sv.plainupnp.databinding.FolderItemBinding
 import com.m3sv.plainupnp.databinding.MediaItemBinding
-import com.m3sv.plainupnp.presentation.base.BaseAdapter
-import com.m3sv.plainupnp.presentation.base.ItemViewHolder
 import java.util.*
 
-
-typealias OnItemClickListener = (Int) -> Unit
 
 class GalleryContentAdapter(
     private val glide: RequestManager,

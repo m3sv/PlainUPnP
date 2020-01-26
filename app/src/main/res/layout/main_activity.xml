@@ -9,7 +9,7 @@
 
         <fragment
             android:id="@+id/nav_host_container"
-            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:name="androidx.navigation.dynamicfeatures.fragment.DynamicNavHostFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:defaultNavHost="true"

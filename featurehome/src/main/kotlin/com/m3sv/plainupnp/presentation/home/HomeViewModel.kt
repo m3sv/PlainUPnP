@@ -15,7 +15,6 @@ import com.m3sv.plainupnp.upnp.didl.*
 import com.m3sv.plainupnp.upnp.usecase.ObserveUpnpStateUseCase
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -105,7 +104,6 @@ class HomeViewModel @Inject constructor(
     }
 
     override fun intention(intention: HomeIntention) {
-        Timber.d(intention.toString())
         when (intention) {
             is HomeIntention.ItemClick -> manager.itemClick(intention.position)
             is HomeIntention.BackPress -> manager.navigateTo(Destination.Back)

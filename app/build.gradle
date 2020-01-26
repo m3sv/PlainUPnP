@@ -20,10 +20,6 @@ android {
         }
     }
 
-    dataBinding {
-        enabled = true
-    }
-
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
@@ -33,6 +29,12 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+
+    dataBinding {
+        enabled = true
+    }
+
+    dynamicFeatures = [":featurehome"]
 }
 
 dependencies {
@@ -73,6 +75,10 @@ dependencies {
 
     implementation project(':common')
     implementation project(':upnp')
+
+    dependencies {
+        implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.0-SNAPSHOT"
+    }
 
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito

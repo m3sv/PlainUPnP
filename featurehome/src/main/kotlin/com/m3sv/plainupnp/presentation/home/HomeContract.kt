@@ -8,6 +8,7 @@ sealed class HomeIntention {
 }
 
 sealed class Directory {
+
     data class Root(
         val name: String,
         val content: List<ContentItem>
