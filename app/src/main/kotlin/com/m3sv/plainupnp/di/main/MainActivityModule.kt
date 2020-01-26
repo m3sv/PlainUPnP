@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.di.activity
+package com.m3sv.plainupnp.di.main
 
 import androidx.lifecycle.ViewModel
 import com.m3sv.plainupnp.di.ViewModelKey

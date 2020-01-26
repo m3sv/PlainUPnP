@@ -56,4 +56,8 @@ class PlainUpnpAndroidService : AndroidUpnpServiceImpl(), CoroutineScope {
 
         return super.onStartCommand(intent, flags, startId)
     }
+
+    fun inject() {
+        // TODO inject upnp manager here
+    }
 }
