@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.Context
 import android.provider.MediaStore
-import com.m3sv.plainupnp.ContentCache
+import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.PersonWithRole
 import org.fourthline.cling.support.model.Res

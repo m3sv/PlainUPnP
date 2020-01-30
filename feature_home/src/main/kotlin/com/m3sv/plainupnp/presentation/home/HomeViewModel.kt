@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.presentation.home
 
-import com.m3sv.plainupnp.Consumable
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
@@ -42,7 +42,10 @@ class HomeViewModel @Inject constructor(
                             )
                         }
 
-                        HomeState.Success(directory, Consumable(""))
+                        HomeState.Success(
+                            directory,
+                            Consumable("")
+                        )
                     }
                 }
 
@@ -53,7 +56,11 @@ class HomeViewModel @Inject constructor(
             filterDelegate.state.collect { text ->
                 updateState { previousState ->
                     when (previousState) {
-                        is HomeState.Success -> previousState.copy(filterText = Consumable(text))
+                        is HomeState.Success -> previousState.copy(
+                            filterText = Consumable(
+                                text
+                            )
+                        )
                         else -> previousState
                     }
                 }

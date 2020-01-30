@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.text.TextUtils
-import com.m3sv.plainupnp.ContentCache
+import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.mediacontainers.*
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider

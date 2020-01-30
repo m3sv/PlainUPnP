@@ -25,7 +25,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.Context
 import android.provider.MediaStore
-import com.m3sv.plainupnp.ContentCache
+import com.m3sv.plainupnp.common.ContentCache
 import org.fourthline.cling.support.model.container.Container
 import timber.log.Timber
 
