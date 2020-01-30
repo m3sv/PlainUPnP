@@ -5,7 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.m3sv.plainupnp.ContentCache
+import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.filters.CallableFilter

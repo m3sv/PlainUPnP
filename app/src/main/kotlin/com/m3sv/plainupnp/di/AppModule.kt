@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.di
 
 import android.app.Application
 import android.content.Context
-import com.m3sv.plainupnp.ContentCache
+import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.cleanslate.UpnpServiceListener
 import com.m3sv.plainupnp.upnp.resourceproviders.UpnpResourceProvider

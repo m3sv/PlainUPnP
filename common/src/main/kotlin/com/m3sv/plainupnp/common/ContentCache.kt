@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp
+package com.m3sv.plainupnp.common
 
 import android.util.LruCache
 import javax.inject.Inject
