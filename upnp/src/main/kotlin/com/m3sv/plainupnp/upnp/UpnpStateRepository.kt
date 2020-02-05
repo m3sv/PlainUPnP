@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import io.reactivex.Observable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
@@ -15,6 +16,9 @@ interface UpnpStateStore {
 }
 
 sealed class UpnpDirectory(val content: List<DIDLObjectDisplay>) {
+
+    object None : UpnpDirectory(listOf())
+
     class Root(
         val name: String,
         content: List<DIDLObjectDisplay>
@@ -24,6 +28,7 @@ sealed class UpnpDirectory(val content: List<DIDLObjectDisplay>) {
         val parentName: String,
         content: List<DIDLObjectDisplay>
     ) : UpnpDirectory(content)
+
 }
 
 sealed class ContentState {
@@ -37,7 +42,8 @@ class UpnpStateRepository @Inject constructor() : UpnpStateStore {
 
     private var currentState: ContentState? = null
 
-    override val state: Observable<ContentState> = contentSubject
+    override val state: Observable<ContentState> =
+        contentSubject.subscribeOn(Schedulers.computation())
 
     override suspend fun setState(state: ContentState) {
         currentState = state

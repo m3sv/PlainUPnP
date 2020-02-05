@@ -3,11 +3,16 @@ package com.m3sv.plainupnp.presentation.home
 import com.m3sv.plainupnp.common.Consumable
 
 sealed class HomeIntention {
+
     data class ItemClick(val position: Int) : HomeIntention()
+
     object BackPress : HomeIntention()
+
 }
 
 sealed class Directory {
+
+    object None : Directory()
 
     data class Root(
         val name: String,
@@ -21,11 +26,15 @@ sealed class Directory {
 
 }
 
+
 sealed class HomeState {
-    object Initial : HomeState()
+
     object Loading : HomeState()
+
     data class Success(
-        val directory: Directory,
-        val filterText: Consumable<String>
+        val directory: Directory = Directory.None,
+        val enableThumbnails: Boolean = true,
+        val filterText: Consumable<String> = Consumable()
     ) : HomeState()
+
 }
