@@ -19,6 +19,10 @@
     <string name="model_number" translatable="false">Model number</string>
     <string name="model_desc" translatable="false">Model description</string>
     <string name="about_copyright" translatable="false">Copyright © 2019 Vadym Shavalda</string>
+    <string name="enable_thumbnails_key" translatable="false">pref_enable_thumbnails</string>
+    <string name="enable_video_container_key" translatable="false">pref_contentDirectoryService_video</string>
+    <string name="enable_audio_container_key" translatable="false">pref_contentDirectoryService_audio</string>
+    <string name="enable_image_container_key" translatable="false">pref_contentDirectoryService_image</string>
     <!--    TODO Localize notifications-->
     <string name="notification_channel_name" translatable="false">PlainUPnP server</string>
     <string name="notification_channel_description" translatable="false">Indicates that PlainUPnP server is running</string>

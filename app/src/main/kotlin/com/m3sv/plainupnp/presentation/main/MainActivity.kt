@@ -18,6 +18,8 @@ import androidx.navigation.ui.NavigationUI
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
+import com.m3sv.plainupnp.common.ShutdownDispatcher
+import com.m3sv.plainupnp.common.Shutdownable
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.common.utils.hideKeyboard
@@ -44,7 +46,8 @@ private val UpnpRendererState.icon: Int
 
 class MainActivity : BaseActivity<MainActivityBinding>(),
     NavController.OnDestinationChangedListener,
-    ControlsActionCallback {
+    ControlsActionCallback,
+    Shutdownable {
 
     lateinit var mainActivitySubComponent: MainActivitySubComponent
 
@@ -59,6 +62,8 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
         super.onCreate(savedInstanceState)
+        ShutdownDispatcher.addListener(this)
+
         viewModel = getViewModel()
 
         findNavController(R.id.nav_host_container).addOnDestinationChangedListener(this)
@@ -93,6 +98,7 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
 
     override fun onDestroy() {
         if (isFinishing) viewModel.intention(MainIntention.StopUpnpService)
+        ShutdownDispatcher.removeListener(this)
         super.onDestroy()
     }
 
@@ -275,6 +281,10 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
         mainActivitySubComponent =
             (applicationContext as App).appComponent.mainActivitySubComponent().create()
         mainActivitySubComponent.inject(this)
+    }
+
+    override fun shutdown() {
+        finishAndRemoveTask()
     }
 
     private fun setupBottomAppBarForHome() {

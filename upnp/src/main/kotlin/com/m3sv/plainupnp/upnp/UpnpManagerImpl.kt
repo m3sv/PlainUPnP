@@ -207,14 +207,7 @@ class UpnpManagerImpl @Inject constructor(
         launch {
             stateStore.peekState()?.let { state ->
                 when (state) {
-                    is ContentState.Success -> {
-                        val content = when (val directory = state.upnpDirectory) {
-                            is UpnpDirectory.Root -> directory.content
-                            is UpnpDirectory.SubUpnpDirectory -> directory.content
-                        }
-
-                        handleClick(position, content)
-                    }
+                    is ContentState.Success -> handleClick(position, state.upnpDirectory.content)
                     is ContentState.Loading -> {
                         // no-op
                     }

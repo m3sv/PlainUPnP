@@ -1,7 +1,9 @@
 package com.m3sv.plainupnp.presentation.home
 
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.AreThumbnailsEnabledUseCase
 import com.m3sv.plainupnp.common.Consumable
+import com.m3sv.plainupnp.common.ObserveThumbnailsEnabledUseCase
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
@@ -21,48 +23,61 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val manager: UpnpManager,
     private val filterDelegate: FilterDelegate,
-    observeUpnpStateUseCase: ObserveUpnpStateUseCase
-) : BaseViewModel<HomeIntention, HomeState>(HomeState.Initial) {
+    private val areThumbnailsEnabled: AreThumbnailsEnabledUseCase,
+    observeUpnpStateUseCase: ObserveUpnpStateUseCase,
+    observeThumbnailsEnabled: ObserveThumbnailsEnabledUseCase
+) : BaseViewModel<HomeIntention, HomeState>(HomeState.Success()) {
 
     init {
         observeUpnpStateUseCase
             .execute()
-            .subscribe { upnpState ->
-                val newState = when (upnpState) {
+            .map { contentState ->
+                val newState = when (contentState) {
                     is ContentState.Loading -> HomeState.Loading
                     is ContentState.Success -> {
-                        val directory = when (val directory = upnpState.upnpDirectory) {
+                        val directory = when (val directory = contentState.upnpDirectory) {
                             is UpnpDirectory.Root -> Directory.Root(
                                 directory.name,
                                 mapItems(directory.content)
                             )
+
                             is UpnpDirectory.SubUpnpDirectory -> Directory.SubDirectory(
                                 directory.parentName,
                                 mapItems(directory.content)
                             )
+
+                            is UpnpDirectory.None -> Directory.None
                         }
 
                         HomeState.Success(
                             directory,
+                            areThumbnailsEnabled(),
                             Consumable("")
                         )
                     }
                 }
 
-                updateState { newState }
-            }.disposeBy(disposables)
+                newState
+            }
+            .subscribe { newState -> updateState { newState } }
+            .disposeBy(disposables)
 
         launch {
             filterDelegate.state.collect { text ->
                 updateState { previousState ->
-                    when (previousState) {
-                        is HomeState.Success -> previousState.copy(
-                            filterText = Consumable(
-                                text
-                            )
-                        )
-                        else -> previousState
-                    }
+                    (previousState as? HomeState.Success)
+                        ?.copy(filterText = Consumable(text))
+                        ?: previousState
+                }
+            }
+        }
+
+        launch {
+            observeThumbnailsEnabled().collect { enableThumbnails ->
+                updateState { previousState ->
+                    (previousState as? HomeState.Success)
+                        ?.copy(enableThumbnails = enableThumbnails)
+                        ?: previousState
                 }
             }
         }

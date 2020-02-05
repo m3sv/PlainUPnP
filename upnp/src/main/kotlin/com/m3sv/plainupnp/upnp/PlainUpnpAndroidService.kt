@@ -2,6 +2,8 @@ package com.m3sv.plainupnp.upnp
 
 import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
+import com.m3sv.plainupnp.common.ShutdownDispatcher
+import com.m3sv.plainupnp.common.Shutdownable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -12,7 +14,7 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 
-class PlainUpnpAndroidService : AndroidUpnpServiceImpl(), CoroutineScope {
+class PlainUpnpAndroidService : AndroidUpnpServiceImpl(), CoroutineScope, Shutdownable {
 
     private val serviceJob = SupervisorJob()
 
@@ -33,6 +35,7 @@ class PlainUpnpAndroidService : AndroidUpnpServiceImpl(), CoroutineScope {
 
     override fun onCreate() {
         super.onCreate()
+        ShutdownDispatcher.addListener(this)
         notificationBuilder = NotificationBuilder(this)
         notificationManager = NotificationManagerCompat.from(this)
 
@@ -47,14 +50,23 @@ class PlainUpnpAndroidService : AndroidUpnpServiceImpl(), CoroutineScope {
         }
     }
 
+    override fun onDestroy() {
+        ShutdownDispatcher.removeListener(this)
+        super.onDestroy()
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.let {
             if (NotificationBuilder.ACTION_EXIT == intent.action) {
-                // TODO kill application
+                ShutdownDispatcher.shutdown()
             }
         }
 
         return super.onStartCommand(intent, flags, startId)
+    }
+
+    override fun shutdown() {
+        stopSelf()
     }
 
     fun inject() {

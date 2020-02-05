@@ -20,8 +20,7 @@ class GalleryContentAdapter(
     private val onItemClickListener: OnItemClickListener
 ) : BaseAdapter<ContentItem>(diffCallback) {
 
-    // TODO update using OnSharePreferencesChangedListener
-    var loadThumbnails = true
+    var showThumbnails: Boolean = true
 
     override fun getItemViewType(position: Int): Int = items[position].type.ordinal
 
@@ -70,9 +69,8 @@ class GalleryContentAdapter(
         holder: ItemViewHolder<ViewDataBinding>,
         contentItem: ContentItem
     ) {
-
         with(holder.extractBinding<MediaItemBinding>()) {
-            if (loadThumbnails)
+            if (showThumbnails)
                 when (contentItem.type) {
                     ContentType.IMAGE,
                     ContentType.VIDEO -> loadImage(contentItem.uri).into(thumbnail)
