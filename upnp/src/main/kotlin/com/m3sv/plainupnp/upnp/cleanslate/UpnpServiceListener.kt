@@ -10,6 +10,7 @@ import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.fourthline.cling.android.AndroidUpnpService
@@ -34,7 +35,7 @@ class UpnpServiceListener @Inject constructor(
         }
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
-            GlobalScope.launch {
+            GlobalScope.launch(Dispatchers.IO) {
                 mediaServer.start()
                 upnpService = (service as AndroidUpnpService).also { upnpService ->
                     upnpService.controlPoint.search()
