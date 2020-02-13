@@ -125,13 +125,13 @@ public abstract class NanoHTTPD {
      */
     public void start() throws IOException {
         try {
-            if (myServerSocket != null && !myServerSocket.isClosed())
-                myServerSocket.close();
+            if (myServerSocket != null && !myServerSocket.isClosed()) myServerSocket.close();
         } catch (IOException e) {
             Timber.e(e);
         }
 
         myServerSocket = new ServerSocket();
+
         myServerSocket.bind((hostname != null) ? new InetSocketAddress(hostname, myPort) : new InetSocketAddress(myPort));
 
         myThread = new Thread(new Runnable() {
@@ -771,7 +771,7 @@ public abstract class NanoHTTPD {
 
                         String boundaryStartString = "boundary=";
                         int boundaryContentStart = contentTypeHeader.indexOf(boundaryStartString) + boundaryStartString.length();
-                        String boundary = contentTypeHeader.substring(boundaryContentStart, contentTypeHeader.length());
+                        String boundary = contentTypeHeader.substring(boundaryContentStart);
                         if (boundary.startsWith("\"") && boundary.startsWith("\"")) {
                             boundary = boundary.substring(1, boundary.length() - 1);
                         }
@@ -780,7 +780,7 @@ public abstract class NanoHTTPD {
                     } else {
                         // Handle application/x-www-form-urlencoded
                         StringBuilder postLine = new StringBuilder();
-                        char pbuf[] = new char[512];
+                        char[] pbuf = new char[512];
                         int read = in.read(pbuf);
                         while (read >= 0 && !postLine.toString().endsWith("\r\n")) {
                             postLine.append(String.valueOf(pbuf, 0, read));
