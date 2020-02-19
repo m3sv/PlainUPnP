@@ -128,7 +128,7 @@ class UpnpManagerImpl @Inject constructor(
             ?.subscribe(rendererStateSubject)
 
         rendererCommand = serviceController
-            .createRendererCommand(upnpRendererStateObservable)
+            .createRendererCommand(requireNotNull(upnpRendererStateObservable))
             ?.apply {
                 if (item.item !is ClingImageItem)
                     resume()
