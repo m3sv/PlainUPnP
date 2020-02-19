@@ -120,13 +120,18 @@ class UpnpManagerImpl @Inject constructor(
             upnpRendererStateObservable = UpnpRendererStateObservable(id, uri, type)
         }
 
-        upnpRendererStateObservable?.doOnNext { if (it.state == UpnpRendererState.State.FINISHED) rendererCommand?.pause() }
+        upnpRendererStateObservable
+            ?.doOnNext {
+                if (it.state == UpnpRendererState.State.FINISHED)
+                    rendererCommand?.pause()
+            }
             ?.subscribe(rendererStateSubject)
 
-        rendererCommand = serviceController.createRendererCommand(upnpRendererStateObservable)
+        rendererCommand = serviceController
+            .createRendererCommand(upnpRendererStateObservable)
             ?.apply {
-                if (item.item !is ClingImageItem) resume()
-
+                if (item.item !is ClingImageItem)
+                    resume()
                 launchItem(item.item)
             }
     }

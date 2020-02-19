@@ -21,7 +21,6 @@ import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.ControlsSheetState
 import com.m3sv.plainupnp.presentation.home.databinding.HomeFragmentBinding
-import com.m3sv.plainupnp.presentation.views.OffsetItemDecoration
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment() {
@@ -149,13 +148,11 @@ class HomeFragment : BaseFragment() {
         binding.content.run {
             setHasFixedSize(true)
             addItemDecoration(MarginDecoration(resources.getDimension(R.dimen.media_item_margin).toInt()))
-            addItemDecoration(OffsetItemDecoration(requireContext()))
 
             layoutManager = recyclerLayoutManager
             adapter = contentAdapter
         }
     }
-
 
     private fun restoreRecyclerState(bundle: Bundle?) {
         if (bundle != null)
