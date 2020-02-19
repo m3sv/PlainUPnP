@@ -8,7 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.m3sv.plainupnp.common.utils.dp
 import kotlin.math.roundToInt
 
-class OffsetItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
+class OffsetItemDecoration(context: Context, private val foregroundDrawable: Drawable) :
+    RecyclerView.ItemDecoration() {
 
     private var divider: Drawable? = null
 
@@ -37,7 +38,9 @@ class OffsetItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
             left = parent.paddingLeft
             right = parent.width - parent.paddingRight
             canvas.clipRect(
-                left, parent.paddingTop, right,
+                left,
+                parent.paddingTop,
+                right,
                 parent.height - parent.paddingBottom
             )
         } else {
@@ -51,11 +54,13 @@ class OffsetItemDecoration(context: Context) : RecyclerView.ItemDecoration() {
             val bottom = bounds.bottom + child.translationY.roundToInt()
             val top = bottom - (divider?.intrinsicHeight ?: 0)
 
-            divider?.let {
-                it.setBounds(left, top, right, bottom)
-                it.draw(canvas)
+            divider?.run {
+                setBounds(left, top, right, bottom)
+                draw(canvas)
             }
         }
+
+        foregroundDrawable.draw(canvas)
         canvas.restore()
     }
 

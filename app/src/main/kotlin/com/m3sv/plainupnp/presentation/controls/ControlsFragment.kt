@@ -165,15 +165,15 @@ class ControlsFragment : BaseFragment() {
         with(binding) {
             progress.isEnabled = false
 
-            controlsContainer.next.setOnClickListener {
+            next.setOnClickListener {
                 actionCallback?.onAction(ControlsAction.NextClick)
             }
 
-            controlsContainer.previous.setOnClickListener {
+            previous.setOnClickListener {
                 actionCallback?.onAction(ControlsAction.PreviousClick)
             }
 
-            controlsContainer.play.setOnClickListener {
+            play.setOnClickListener {
                 actionCallback?.onAction(ControlsAction.PlayClick)
             }
 
@@ -201,8 +201,8 @@ class ControlsFragment : BaseFragment() {
                     }
             }
         }
-    }
 
+    }
     fun toggle() {
         when (behavior.state) {
             BottomSheetBehavior.STATE_HIDDEN -> open()
@@ -250,7 +250,7 @@ class ControlsFragment : BaseFragment() {
     }
 
     fun setPlayIcon(@DrawableRes icon: Int) {
-        binding.controlsContainer.play.setImageResource(icon)
+        binding.play.setImageResource(icon)
     }
 
     fun setTitle(text: String) {

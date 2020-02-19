@@ -3,13 +3,14 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:background="@drawable/item_background"
         android:descendantFocusability="blocksDescendants"
         android:focusable="true"
+        android:foreground="?selectableItemBackground"
         android:orientation="horizontal">
 
         <ImageView
@@ -33,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="72dp"
             android:layout_marginEnd="16dp"
             android:ellipsize="end"
             android:gravity="top"
@@ -50,5 +51,5 @@
             android:background="@drawable/content_shadow"
             android:visibility="gone" />
 
-    </LinearLayout>
+    </FrameLayout>
 </layout>

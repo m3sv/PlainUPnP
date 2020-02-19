@@ -10,7 +10,7 @@ import com.bumptech.glide.util.FixedPreloadSizeProvider
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ItemsDiffCallback
 import com.m3sv.plainupnp.common.utils.dp
-import com.m3sv.plainupnp.databinding.FolderItemBinding
+import com.m3sv.plainupnp.databinding.DirectoryItemBinding
 import com.m3sv.plainupnp.databinding.MediaItemBinding
 import java.util.*
 
@@ -29,19 +29,21 @@ class GalleryContentAdapter(
         viewType: Int
     ): ItemViewHolder<ViewDataBinding> = when (ContentType.values()[viewType]) {
         ContentType.DIRECTORY -> ItemViewHolder(
-            FolderItemBinding.inflate(
+            binding = DirectoryItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
-            ), onItemClickListener
+            ),
+            onItemClickListener = onItemClickListener
         )
 
         else -> ItemViewHolder(
-            MediaItemBinding.inflate(
+            binding = MediaItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
-            ), onItemClickListener
+            ),
+            onItemClickListener = onItemClickListener
         )
     }
 
@@ -93,7 +95,7 @@ class GalleryContentAdapter(
         holder: ItemViewHolder<*>,
         contentItem: ContentItem
     ) {
-        with(holder.extractBinding<FolderItemBinding>()) {
+        with(holder.extractBinding<DirectoryItemBinding>()) {
             title.text = contentItem.name
             thumbnail.setImageResource(R.drawable.ic_folder)
         }
