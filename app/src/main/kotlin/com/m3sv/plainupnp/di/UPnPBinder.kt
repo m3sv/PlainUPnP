@@ -9,7 +9,7 @@ import javax.inject.Singleton
 abstract class UPnPBinder {
     @Binds
     @Singleton
-    abstract fun bindController(controller: DefaultUpnpServiceController): UpnpServiceController
+    abstract fun bindController(controller: UpnpServiceControllerImpl): UpnpServiceController
 
     @Binds
     @Singleton

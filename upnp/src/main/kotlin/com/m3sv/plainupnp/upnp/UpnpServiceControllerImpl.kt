@@ -6,7 +6,7 @@ import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.meta.LocalDevice
 import javax.inject.Inject
 
-class DefaultUpnpServiceController @Inject constructor(override val serviceListener: UpnpServiceListener) :
+class UpnpServiceControllerImpl @Inject constructor(override val serviceListener: UpnpServiceListener) :
     UpnpServiceController {
 
     override val contentDirectoryDiscovery: ContentDirectoryDiscovery =
