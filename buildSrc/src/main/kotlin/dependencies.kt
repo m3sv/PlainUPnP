@@ -9,7 +9,7 @@ object Versions {
     const val jetty = "8.2.0.v20160908"
     const val kotlin = "1.3.61"
     const val minSdk = 21
-    const val navigation = "2.2.0-rc04"
+    const val navigation = "2.3.0-alpha03"
     const val okHttp = "3.9.1"
     const val supportLibrary = "1.1.0"
     const val targetSdk = 29
@@ -19,7 +19,7 @@ object Versions {
 }
 
 object ClasspathDependencies {
-    const val androidTools = "com.android.tools.build:gradle:3.5.1"
+    const val androidTools = "com.android.tools.build:gradle:3.6.0"
     const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val navigationSafeArgs =
         "androidx.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
@@ -38,11 +38,13 @@ object Dependencies {
         "lifecycle" to mapOf(
             "extensions" to "androidx.lifecycle:lifecycle-extensions:${Versions.architectureComponents}",
             "liveDataKtx" to "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.architectureComponents}",
-            "viewModelKtx" to "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.architectureComponents}"
+            "viewModelKtx" to "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.architectureComponents}",
+            "lifecycleKtx" to "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.architectureComponents}"
         ),
         "navigation" to mapOf(
             "fragment" to "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}",
-            "ui" to "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
+            "ui" to "androidx.navigation:navigation-ui-ktx:${Versions.navigation}",
+            "dynamicFeatures" to "androidx.navigation:navigation-dynamic-features-fragment:${Versions.navigation}"
         ),
         "preference" to "androidx.preference:preference:${Versions.supportLibrary}",
         "recyclerView" to "androidx.recyclerview:recyclerview:1.0.0"

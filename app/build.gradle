@@ -30,7 +30,7 @@ android {
         jvmTarget = "1.8"
     }
 
-    dataBinding {
+    viewBinding {
         enabled = true
     }
 
@@ -49,8 +49,11 @@ dependencies {
     implementation Dependencies.androidx.lifecycle.extensions
     implementation Dependencies.androidx.lifecycle.liveDataKtx
     implementation Dependencies.androidx.lifecycle.viewModelKtx
+    implementation Dependencies.androidx.lifecycle.lifecycleKtx
+
     implementation Dependencies.androidx.navigation.fragment
     implementation Dependencies.androidx.navigation.ui
+    implementation Dependencies.androidx.navigation.dynamicFeatures
 
     implementation Dependencies.coroutines.core
     implementation Dependencies.coroutines.rxJava2
@@ -75,10 +78,6 @@ dependencies {
 
     implementation project(':common')
     implementation project(':upnp')
-
-    dependencies {
-        implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.0-SNAPSHOT"
-    }
 
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito

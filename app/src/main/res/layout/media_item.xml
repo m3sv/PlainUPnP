@@ -1,55 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="@drawable/item_background"
+    android:descendantFocusability="blocksDescendants"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="56dp"
         android:layout_height="56dp"
-        android:background="@drawable/item_background"
-        android:descendantFocusability="blocksDescendants"
-        android:focusable="true"
-        android:foreground="?selectableItemBackground"
-        android:orientation="horizontal">
+        android:layout_gravity="center_vertical"
+        android:scaleType="centerCrop"
+        tools:src="@drawable/ic_folder" />
 
-        <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_gravity="center_vertical"
-            android:scaleType="centerCrop"
-            tools:src="@drawable/ic_folder" />
+    <ImageView
+        android:id="@+id/content_type"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="46dp"
+        android:visibility="gone" />
 
-        <ImageView
-            android:id="@+id/content_type"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="bottom|end"
-            android:layout_marginBottom="46dp"
-            android:visibility="gone" />
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:gravity="top"
+        android:includeFontPadding="false"
+        android:maxLines="2"
+        tools:text="really long titlereally long titlereally long titlereally long titlereally long titlereally long titlereally long title " />
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="72dp"
-            android:layout_marginEnd="16dp"
-            android:ellipsize="end"
-            android:gravity="top"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            tools:text="really long titlereally long titlereally long titlereally long titlereally long titlereally long titlereally long title " />
+    <View
+        android:id="@+id/content_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="46dp"
+        android:background="@drawable/content_shadow"
+        android:visibility="gone" />
 
-        <View
-            android:id="@+id/content_shadow"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="46dp"
-            android:background="@drawable/content_shadow"
-            android:visibility="gone" />
-
-    </FrameLayout>
-</layout>
+</FrameLayout>

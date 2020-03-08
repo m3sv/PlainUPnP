@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.presentation.main
 
-import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
 
 enum class PlayerButton {
@@ -27,8 +26,7 @@ sealed class MainState {
     object Initial : MainState()
     data class Render(
         val renderers: List<SpinnerItem> = listOf(),
-        val contentDirectories: List<SpinnerItem> = listOf(),
-        val rendererState: UpnpRendererState? = null
+        val contentDirectories: List<SpinnerItem> = listOf()
     ) : MainState()
 
     object Exit : MainState()

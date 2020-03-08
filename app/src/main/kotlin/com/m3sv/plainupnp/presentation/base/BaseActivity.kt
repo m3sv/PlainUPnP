@@ -12,8 +12,6 @@ import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
-import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
 import com.m3sv.plainupnp.R
@@ -22,12 +20,7 @@ import javax.inject.Inject
 
 data class ActivityConfig(@LayoutRes val layoutId: Int)
 
-abstract class BaseActivity<Binding : ViewDataBinding> : AppCompatActivity() {
-
-    protected abstract val activityConfig: ActivityConfig
-
-    protected lateinit var binding: Binding
-        private set
+abstract class BaseActivity : AppCompatActivity() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelFactory
@@ -43,7 +36,6 @@ abstract class BaseActivity<Binding : ViewDataBinding> : AppCompatActivity() {
         }
 
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, activityConfig.layoutId)
     }
 
     protected fun requestReadStoragePermission() {

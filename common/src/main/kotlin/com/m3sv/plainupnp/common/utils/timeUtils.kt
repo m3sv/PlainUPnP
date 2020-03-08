@@ -3,13 +3,13 @@ package com.m3sv.plainupnp.common.utils
 /**
  * @param duration in seconds
  */
-fun formatTime(max: Int, progress: Int, duration: Long): String? {
+fun formatTime(max: Int, progress: Int, duration: Long): String {
     if (progress < 0 || max < 0 || duration < 0) {
-        return null
+        return "00:00:00"
     }
 
     if (progress > max) {
-        return null
+        return "00:00:00"
     }
 
     fun formatTime(h: Long, m: Long, s: Long): String {

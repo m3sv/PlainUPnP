@@ -1,7 +1,9 @@
 <resources>
-    <dimen name="bottom_sheet_corner_radius">10dp</dimen>
-    <dimen name="bottom_sheet_top_padding">4dp</dimen>
-    <dimen name="spinner_height_min">32dp</dimen>
-    <dimen name="controls_peek_height">114dp</dimen>
     <dimen name="media_item_margin">16dp</dimen>
+    <dimen name="media_controls_size">56dp</dimen>
+    <dimen name="media_controls_sheet_art_margin">16dp</dimen>
+    <dimen name="media_controls_sheet_corner_radius">10dp</dimen>
+    <dimen name="media_controls_sheet_peek_height">80dp</dimen>
+    <dimen name="media_controls_sheet_spinner_height_min">32dp</dimen>
+    <dimen name="media_controls_sheet_top_padding">4dp</dimen>
 </resources>

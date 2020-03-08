@@ -1,6 +1,10 @@
 package com.m3sv.plainupnp.data.upnp
 
+import kotlinx.coroutines.flow.Flow
+
 interface UpnpRendererState {
+
+    val flow: Flow<UpnpRendererState>
 
     val id: String
 
