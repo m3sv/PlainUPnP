@@ -23,8 +23,6 @@ import com.m3sv.plainupnp.common.Shutdownable
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.common.utils.hideKeyboard
-import com.m3sv.plainupnp.data.upnp.UpnpItemType
-import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.di.main.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.base.BaseActivity
@@ -107,10 +105,6 @@ class MainActivity : BaseActivity(),
                 }
             }.enforce
         }
-
-        viewModel.upnpState().observe(this) { upnpRendererState ->
-            handleRendererState(upnpRendererState)
-        }
     }
 
     override fun onDestinationChanged(
@@ -191,23 +185,6 @@ class MainActivity : BaseActivity(),
             true
         }
         else -> super.onKeyDown(keyCode, event)
-    }
-
-    private fun handleRendererState(rendererState: UpnpRendererState?) {
-        if (rendererState == null) return
-
-        bottomNavDrawer.setProgress(
-            rendererState.elapsedPercent,
-            rendererState.state == UpnpRendererState.State.PLAY
-        )
-
-        bottomNavDrawer.setPlayIcon(rendererState.icon)
-        bottomNavDrawer.setTitle(rendererState.title)
-
-        when (rendererState.type) {
-            UpnpItemType.AUDIO -> bottomNavDrawer.setThumbnail(R.drawable.ic_music)
-            else -> rendererState.uri?.let(bottomNavDrawer::setThumbnail)
-        }
     }
 
     private fun animateBottomDrawChanges() {
@@ -334,12 +311,3 @@ private fun View.animateAppear() {
     val anim = AnimationUtils.loadAnimation(context, R.anim.slide_up)
     startAnimation(anim)
 }
-
-private val UpnpRendererState.icon: Int
-    inline get() = when (state) {
-        UpnpRendererState.State.STOP -> R.drawable.ic_play_arrow
-        UpnpRendererState.State.PLAY -> R.drawable.ic_pause
-        UpnpRendererState.State.PAUSE -> R.drawable.ic_play_arrow
-        UpnpRendererState.State.INITIALIZING -> R.drawable.ic_play_arrow
-        UpnpRendererState.State.FINISHED -> R.drawable.ic_play_arrow
-    }
