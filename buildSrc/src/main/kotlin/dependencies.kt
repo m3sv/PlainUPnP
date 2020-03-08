@@ -10,6 +10,7 @@ object Versions {
     const val kotlin = "1.3.61"
     const val minSdk = 21
     const val navigation = "2.3.0-alpha03"
+    const val material = "1.2.0-alpha05"
     const val okHttp = "3.9.1"
     const val supportLibrary = "1.1.0"
     const val targetSdk = 29
@@ -34,7 +35,7 @@ object Dependencies {
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",
         "cardView" to "androidx.cardview:cardview:1.0.0",
         "constraintLayout" to "androidx.constraintlayout:constraintlayout:2.0.0-beta3",
-        "material" to "com.google.android.material:material:1.1.0",
+        "material" to "com.google.android.material:material:${Versions.material}",
         "lifecycle" to mapOf(
             "extensions" to "androidx.lifecycle:lifecycle-extensions:${Versions.architectureComponents}",
             "liveDataKtx" to "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.architectureComponents}",
