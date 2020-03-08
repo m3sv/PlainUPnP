@@ -203,7 +203,7 @@ class ControlsFragment : BaseFragment() {
         setTitle(rendererState.title)
 
         when (rendererState.type) {
-            UpnpItemType.AUDIO -> setThumbnail(R.drawable.ic_music)
+            UpnpItemType.AUDIO -> setThumbnail(R.drawable.ic_media_placeholder)
             else -> rendererState.uri?.let(::setThumbnail)
         }
     }
@@ -221,7 +221,7 @@ class ControlsFragment : BaseFragment() {
     }
 
     private fun setThumbnail(@DrawableRes resource: Int) {
-        Glide.with(this).load(resource).into(binding.art)
+        binding.art.setImageResource(resource)
     }
 
     private fun setProgress(progress: Int, isEnabled: Boolean) {

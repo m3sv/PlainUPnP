@@ -21,6 +21,8 @@ class MainViewModel @Inject constructor(
     private val filterDelegate: FilterDelegate
 ) : BaseViewModel<MainIntention, MainState>(MainState.Initial) {
 
+    private val upnpState: MutableLiveData<UpnpRendererState> = MutableLiveData()
+
     init {
         with(manager) {
             Observable
@@ -40,8 +42,6 @@ class MainViewModel @Inject constructor(
             }
         }
     }
-
-    private val upnpState: MutableLiveData<UpnpRendererState> = MutableLiveData()
 
     fun upnpState(): LiveData<UpnpRendererState> = upnpState
 
