@@ -27,7 +27,6 @@ import com.m3sv.plainupnp.data.upnp.UpnpItemType
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.di.main.MainActivitySubComponent
-import com.m3sv.plainupnp.presentation.base.ActivityConfig
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.controls.ControlsAction
 import com.m3sv.plainupnp.presentation.controls.ControlsActionCallback
@@ -44,14 +43,12 @@ private val UpnpRendererState.icon: Int
         UpnpRendererState.State.FINISHED -> R.drawable.ic_play_arrow
     }
 
-class MainActivity : BaseActivity<MainActivityBinding>(),
+class MainActivity : BaseActivity(),
     NavController.OnDestinationChangedListener,
     ControlsActionCallback,
     Shutdownable {
 
     lateinit var mainActivitySubComponent: MainActivitySubComponent
-
-    override val activityConfig: ActivityConfig = ActivityConfig(R.layout.main_activity)
 
     private lateinit var viewModel: MainViewModel
 
@@ -59,9 +56,14 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
 
     private val bottomNavDrawer: ControlsFragment by lazy(NONE) { getControlsFragment() }
 
+    private lateinit var binding: MainActivityBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
         super.onCreate(savedInstanceState)
+        binding = MainActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         ShutdownDispatcher.addListener(this)
 
         viewModel = getViewModel()
@@ -110,14 +112,16 @@ class MainActivity : BaseActivity<MainActivityBinding>(),
                         setRenderers(state.renderers)
                         setContentDirectories(state.contentDirectories)
                     }
-
-                    handleRendererState(state.rendererState)
                 }
                 is MainState.Exit -> finishAndRemoveTask()
                 is MainState.Initial -> {
                     // ignore
                 }
             }.enforce
+        }
+
+        viewModel.upnpState().observe(this) { upnpRendererState ->
+            handleRendererState(upnpRendererState)
         }
     }
 

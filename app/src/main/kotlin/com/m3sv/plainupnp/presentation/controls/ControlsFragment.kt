@@ -183,7 +183,7 @@ class ControlsFragment : BaseFragment() {
 
             scrimView.setOnClickListener { close() }
 
-            with(mainRendererDevicePicker) {
+            mainRendererDevicePicker?.run {
                 adapter = rendererAdapter
                 onItemSelectedListener =
                     onItemSelectedListener { position ->
@@ -192,7 +192,7 @@ class ControlsFragment : BaseFragment() {
                     }
             }
 
-            with(mainContentDevicePicker) {
+            mainContentDevicePicker?.run {
                 adapter = contentDirectoriesAdapter
                 onItemSelectedListener =
                     onItemSelectedListener { position ->
@@ -203,6 +203,7 @@ class ControlsFragment : BaseFragment() {
         }
 
     }
+
     fun toggle() {
         when (behavior.state) {
             BottomSheetBehavior.STATE_HIDDEN -> open()
@@ -214,7 +215,7 @@ class ControlsFragment : BaseFragment() {
     }
 
     fun open() {
-        behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        behavior.state = BottomSheetBehavior.STATE_COLLAPSED
         controlsSheetDelegate.onShow()
         alphaAnimator.start()
     }

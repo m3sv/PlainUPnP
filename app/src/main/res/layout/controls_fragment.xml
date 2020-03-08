@@ -1,185 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="false"
+    android:focusable="false"
+    android:orientation="vertical"
+    tools:background="@color/darkBackground">
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <View
+        android:id="@+id/scrim_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        android:background="@color/darkBackground"
+        android:clickable="false"
+        android:focusable="false" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/background_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        tools:background="@color/darkBackground">
+        android:background="@drawable/bottom_sheet_cornered_background"
+        android:clickable="true"
+        android:focusable="true"
+        app:behavior_fitToContents="true"
+        app:behavior_hideable="true"
+        app:behavior_peekHeight="@dimen/media_controls_sheet_peek_height"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <View
-            android:id="@+id/scrim_view"
+        <ImageView
+            android:id="@+id/handle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:alpha="0"
-            android:background="@color/darkBackground" />
+            android:layout_marginTop="16dp"
+            android:src="@drawable/bottom_sheet_handle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/background_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bottom_sheet_cornered_background"
-            android:clickable="true"
-            android:focusable="true"
-            app:behavior_halfExpandedRatio="@dimen/half_expanded_ratio"
-            app:behavior_hideable="true"
-            app:behavior_skipCollapsed="true"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        <include layout="@layout/collapse_container_layout" />
 
-            <ImageView
-                android:id="@+id/handle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:src="@drawable/bottom_sheet_handle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/art"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/media_controls_sheet_art_margin"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_media_placeholder"
+            app:layout_constraintBottom_toTopOf="@+id/progress"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinner_container" />
 
-            <ImageView
-                android:id="@+id/content_directory_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                app:layout_constraintBottom_toBottomOf="@+id/main_content_device_picker"
-                app:layout_constraintEnd_toStartOf="@+id/main_content_device_picker"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintHorizontal_chainStyle="spread_inside"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/main_content_device_picker"
-                app:srcCompat="@drawable/ic_content_directory" />
+        <SeekBar
+            android:id="@+id/progress"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:enabled="false"
+            android:progressBackgroundTint="@color/whiteHalfTransparent"
+            android:progressTint="@color/colorPrimaryLight"
+            android:thumbTint="@color/colorPrimary"
+            app:layout_constraintBottom_toTopOf="@id/title"
+            app:layout_constraintEnd_toEndOf="@id/art"
+            app:layout_constraintStart_toStartOf="@id/art" />
 
-            <ImageView
-                android:id="@+id/renderer_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/main_content_device_picker"
-                app:layout_constraintEnd_toStartOf="@+id/main_renderer_device_picker"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/main_content_device_picker"
-                app:layout_constraintTop_toTopOf="@+id/main_content_device_picker"
-                app:srcCompat="@drawable/ic_renderer" />
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@id/controls_container"
+            app:layout_constraintEnd_toEndOf="@id/art"
+            app:layout_constraintStart_toStartOf="@id/art" />
 
-            <Spinner
-                android:id="@+id/main_content_device_picker"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:minHeight="@dimen/spinner_height_min"
-                app:layout_constraintEnd_toStartOf="@+id/renderer_icon"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/content_directory_icon"
-                app:layout_constraintTop_toBottomOf="@id/handle"
-                app:layout_constraintVertical_bias="0.0"
-                tools:listitem="@android:layout/simple_spinner_item" />
-
-            <Spinner
-                android:id="@+id/main_renderer_device_picker"
-                android:layout_width="0dp"
-                android:layout_height="36dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="14dp"
-                android:layout_marginBottom="8dp"
-                android:minHeight="@dimen/spinner_height_min"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/renderer_icon"
-                app:layout_constraintTop_toBottomOf="@id/handle"
-                app:layout_constraintVertical_bias="0.0"
-                tools:listitem="@android:layout/simple_spinner_item" />
+        <LinearLayout
+            android:id="@+id/controls_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
             <ImageView
-                android:id="@+id/art"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="32dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginBottom="16dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintBottom_toTopOf="@+id/progress"
+                android:id="@+id/previous"
+                android:layout_width="@dimen/media_controls_size"
+                android:layout_height="@dimen/media_controls_size"
+                android:background="?selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/play"
+                app:layout_constraintEnd_toStartOf="@+id/play"
+                app:layout_constraintTop_toTopOf="@+id/play"
+                app:srcCompat="@drawable/ic_skip_previous" />
+
+            <ImageView
+                android:id="@+id/play"
+                android:layout_width="@dimen/media_controls_size"
+                android:layout_height="@dimen/media_controls_size"
+                android:background="?selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/next"
+                app:layout_constraintEnd_toStartOf="@+id/next"
+                app:layout_constraintTop_toTopOf="@+id/next"
+                app:srcCompat="@drawable/ic_play_arrow" />
+
+            <ImageView
+                android:id="@+id/next"
+                android:layout_width="@dimen/media_controls_size"
+                android:layout_height="@dimen/media_controls_size"
+                android:background="?selectableItemBackgroundBorderless"
+                android:padding="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/art"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/main_content_device_picker"
-                tools:src="@mipmap/ic_launcher" />
-
-            <SeekBar
-                android:id="@+id/progress"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:enabled="false"
-                android:progressBackgroundTint="@color/whiteHalfTransparent"
-                android:progressTint="@color/colorPrimaryLight"
-                android:thumbTint="@color/colorPrimary"
-                app:layout_constraintBottom_toTopOf="@id/title"
-                app:layout_constraintEnd_toEndOf="@id/art"
-                app:layout_constraintStart_toStartOf="@id/art" />
-
-            <TextView
-                android:id="@+id/title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:ellipsize="end"
-                android:gravity="center"
-                android:singleLine="true"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toTopOf="@id/controls_container"
-                app:layout_constraintEnd_toEndOf="@id/art"
-                app:layout_constraintStart_toStartOf="@id/art" />
-
-            <LinearLayout
-                android:id="@+id/controls_container"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="?actionBarSize"
-                android:padding="16dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
-
-                <ImageView
-                    android:id="@+id/previous"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:padding="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/play"
-                    app:layout_constraintEnd_toStartOf="@+id/play"
-                    app:layout_constraintTop_toTopOf="@+id/play"
-                    app:srcCompat="@drawable/ic_skip_previous" />
-
-                <ImageView
-                    android:id="@+id/play"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:padding="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/next"
-                    app:layout_constraintEnd_toStartOf="@+id/next"
-                    app:layout_constraintTop_toTopOf="@+id/next"
-                    app:srcCompat="@drawable/ic_play_arrow" />
-
-                <ImageView
-                    android:id="@+id/next"
-                    android:layout_width="56dp"
-                    android:layout_height="56dp"
-                    android:background="?selectableItemBackgroundBorderless"
-                    android:padding="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/art"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/art"
-                    app:srcCompat="@drawable/ic_skip_next" />
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-</layout>
+                app:layout_constraintTop_toTopOf="@+id/art"
+                app:srcCompat="@drawable/ic_skip_next" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

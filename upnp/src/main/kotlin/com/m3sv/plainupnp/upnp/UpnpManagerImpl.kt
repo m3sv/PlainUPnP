@@ -9,10 +9,11 @@ import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
-import io.reactivex.Observable
-import io.reactivex.subjects.PublishSubject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import timber.log.Timber
 import javax.inject.Inject
@@ -26,16 +27,17 @@ class UpnpManagerImpl @Inject constructor(
     private val launchLocallyUseCase: LaunchLocallyUseCase,
     private val stateStore: UpnpStateStore,
     upnpNavigator: UpnpNavigator
-) : UpnpManager, CoroutineScope, UpnpNavigator by upnpNavigator {
+) : UpnpManager,
+    CoroutineScope,
+    UpnpNavigator by upnpNavigator {
 
     override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
 
-    private val rendererStateSubject = PublishSubject.create<UpnpRendererState>()
+    private val upnpInnerStateChannel = BroadcastChannel<UpnpRendererState>(Channel.CONFLATED)
 
-    override val upnpRendererState: Observable<UpnpRendererState> =
-        rendererStateSubject.startWith(EmptyUpnpRendererState)
+    override val upnpRendererState: Flow<UpnpRendererState> = upnpInnerStateChannel.asFlow()
 
-    private var upnpRendererStateObservable: UpnpRendererStateObservable? = null
+    private var upnpInnerState: UpnpInnerState? = null
 
     private var rendererCommand: RendererCommand? = null
 
@@ -49,9 +51,12 @@ class UpnpManagerImpl @Inject constructor(
 
     init {
         launch {
-            renderItem.openSubscription().throttle(scope = this).collect {
-                render(it)
-            }
+            renderItem
+                .openSubscription()
+                .throttle(scope = this)
+                .collect { renderItem ->
+                    render(renderItem)
+                }
         }
     }
 
@@ -69,7 +74,6 @@ class UpnpManagerImpl @Inject constructor(
             navigateTo(Destination.Home)
         }
     }
-
 
     override fun selectRenderer(position: Int) {
         if (position !in renderers.currentRenderers().indices) {
@@ -109,7 +113,7 @@ class UpnpManagerImpl @Inject constructor(
             return
         }
 
-        with(item.item) {
+        upnpInnerState = with(item.item) {
             val type = when (this) {
                 is ClingAudioItem -> UpnpItemType.AUDIO
                 is ClingImageItem -> UpnpItemType.IMAGE
@@ -117,23 +121,24 @@ class UpnpManagerImpl @Inject constructor(
                 else -> UpnpItemType.UNKNOWN
             }
 
-            upnpRendererStateObservable = UpnpRendererStateObservable(id, uri, type)
+            UpnpInnerState(id, uri, type)
         }
 
-        upnpRendererStateObservable
-            ?.doOnNext {
-                if (it.state == UpnpRendererState.State.FINISHED)
-                    rendererCommand?.pause()
+        upnpInnerState?.let { innerState ->
+            launch {
+                innerState.flow.collect { state ->
+                    upnpInnerStateChannel.offer(state)
+                }
             }
-            ?.subscribe(rendererStateSubject)
 
-        rendererCommand = serviceController
-            .createRendererCommand(requireNotNull(upnpRendererStateObservable))
-            ?.apply {
-                if (item.item !is ClingImageItem)
-                    resume()
-                launchItem(item.item)
-            }
+            rendererCommand = serviceController
+                .createRendererCommand(innerState)
+                ?.apply {
+                    if (item.item !is ClingImageItem)
+                        resume()
+                    launchItem(item.item)
+                }
+        }
     }
 
     override fun playNext() {
@@ -195,9 +200,9 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override fun moveTo(progress: Int) {
-        upnpRendererStateObservable?.run {
+        upnpInnerState?.run {
             rendererCommand?.run {
-                formatTime(MAX_VOLUME_PROGRESS, progress, durationSeconds)?.let {
+                formatTime(MAX_VOLUME_PROGRESS, progress, durationSeconds).let {
                     commandSeek(it)
                 }
             }
@@ -257,6 +262,10 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun stopUpnpService() {
         serviceController.stop()
+    }
+
+    override fun togglePlayback() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     private companion object {

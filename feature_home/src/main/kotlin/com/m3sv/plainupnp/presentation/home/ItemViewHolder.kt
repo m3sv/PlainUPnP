@@ -1,11 +1,11 @@
 package com.m3sv.plainupnp.presentation.home
 
-import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 
 typealias OnItemClickListener = (Int) -> Unit
 
-open class ItemViewHolder<out T : ViewDataBinding>(
+open class ItemViewHolder<out T : ViewBinding>(
     val binding: T,
     onItemClickListener: OnItemClickListener
 ) : RecyclerView.ViewHolder(binding.root) {

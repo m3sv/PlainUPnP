@@ -1,34 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:background="@drawable/item_background"
+    android:focusable="true"
+    android:foreground="?selectableItemBackground"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp">
 
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <FrameLayout
-        android:id="@+id/container"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="56dp"
         android:layout_height="56dp"
-        android:background="@drawable/item_background"
-        android:focusable="true"
-        android:foreground="?selectableItemBackground"
-        android:orientation="horizontal">
+        tools:src="@drawable/ic_folder" />
 
-        <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            tools:src="@drawable/ic_folder" />
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="72dp"
-            android:layout_marginEnd="16dp"
-            android:ellipsize="end"
-            android:includeFontPadding="false"
-            android:maxLines="2"
-            android:textStyle="bold"
-            tools:text="very long title" />
-    </FrameLayout>
-</layout>
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="72dp"
+        android:layout_marginEnd="16dp"
+        android:ellipsize="end"
+        android:includeFontPadding="false"
+        android:maxLines="2"
+        android:textStyle="bold"
+        tools:text="very long title" />
+</FrameLayout>

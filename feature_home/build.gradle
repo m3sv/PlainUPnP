@@ -2,7 +2,7 @@ apply from: "../scripts/android-dynamic-feature.gradle"
 apply plugin: 'kotlin-kapt'
 
 android {
-    dataBinding.enabled = true
+    viewBinding.enabled = true
 }
 
 dependencies {
@@ -14,6 +14,7 @@ dependencies {
     implementation Dependencies.androidx.lifecycle.extensions
     implementation Dependencies.androidx.lifecycle.liveDataKtx
     implementation Dependencies.androidx.lifecycle.viewModelKtx
+
     implementation Dependencies.androidx.navigation.fragment
     implementation Dependencies.androidx.navigation.ui
 

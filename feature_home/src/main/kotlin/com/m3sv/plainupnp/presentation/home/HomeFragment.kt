@@ -14,7 +14,6 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.common.MarginDecoration
 import com.m3sv.plainupnp.common.utils.disappear
 import com.m3sv.plainupnp.common.utils.show
 import com.m3sv.plainupnp.presentation.base.BaseFragment
@@ -140,14 +139,12 @@ class HomeFragment : BaseFragment() {
 
         val preloadSizeProvider = contentAdapter.PreloadSizeProvider()
         val modelProvider = contentAdapter.PreloadModelProvider()
-        val preloader =
-            RecyclerViewPreloader<ContentItem>(glide, modelProvider, preloadSizeProvider, 10)
+        val preloader = RecyclerViewPreloader(glide, modelProvider, preloadSizeProvider, 10)
         binding.content.addOnScrollListener(preloader)
 
         recyclerLayoutManager = LinearLayoutManager(requireContext())
         binding.content.run {
             setHasFixedSize(true)
-            addItemDecoration(MarginDecoration(resources.getDimension(R.dimen.media_item_margin).toInt()))
 
             layoutManager = recyclerLayoutManager
             adapter = contentAdapter

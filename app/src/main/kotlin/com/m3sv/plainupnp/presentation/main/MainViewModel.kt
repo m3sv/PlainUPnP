@@ -1,5 +1,8 @@
 package com.m3sv.plainupnp.presentation.main
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
@@ -7,31 +10,40 @@ import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import com.m3sv.plainupnp.upnp.UpnpManager
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.Function3
+import io.reactivex.functions.BiFunction
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
     private val manager: UpnpManager,
-    private val upnpPlayClickedUseCase: UpnpPlayClickedUseCase,
     private val filterDelegate: FilterDelegate
 ) : BaseViewModel<MainIntention, MainState>(MainState.Initial) {
 
     init {
         with(manager) {
             Observable
-                .combineLatest<List<SpinnerItem>, List<SpinnerItem>, UpnpRendererState, MainState>(
+                .combineLatest<List<SpinnerItem>, List<SpinnerItem>, MainState>(
                     observeRenderers(),
                     observeContentDirectories(),
-                    upnpRendererState,
-                    Function3(MainState::Render)
+                    BiFunction(MainState::Render)
                 )
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { newState -> launch { updateState { newState } } }
                 .disposeBy(disposables)
         }
+
+        viewModelScope.launch {
+            manager.upnpRendererState.collect { state ->
+                upnpState.postValue(state)
+            }
+        }
     }
+
+    private val upnpState: MutableLiveData<UpnpRendererState> = MutableLiveData()
+
+    fun upnpState(): LiveData<UpnpRendererState> = upnpState
 
     private fun UpnpManager.observeContentDirectories() =
         contentDirectories.map { directories -> directories.map { SpinnerItem(it.device.friendlyName) } }
@@ -49,7 +61,7 @@ class MainViewModel @Inject constructor(
             is MainIntention.SelectRenderer -> manager.selectRenderer(intention.position)
             is MainIntention.PlayerButtonClick -> {
                 when (intention.button) {
-                    PlayerButton.PLAY -> upnpPlayClickedUseCase.execute()
+                    PlayerButton.PLAY -> manager.togglePlayback()
                     PlayerButton.PREVIOUS -> manager.playPrevious()
                     PlayerButton.NEXT -> manager.playNext()
                     PlayerButton.RAISE_VOLUME -> manager.raiseVolume()

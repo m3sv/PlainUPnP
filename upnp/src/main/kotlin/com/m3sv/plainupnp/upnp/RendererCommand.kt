@@ -29,7 +29,7 @@ import timber.log.Timber
 class RendererCommand(
     private val controller: UpnpServiceController,
     private val controlPoint: ControlPoint,
-    private val rendererStateObservable: UpnpRendererStateObservable
+    private val innerState: UpnpInnerState
 ) {
     private var job: Job? = null
 
@@ -91,22 +91,20 @@ class RendererCommand(
 
     fun commandSeek(relativeTimeTarget: String) = executeAVAction {
         Timber.v("Seek to $relativeTimeTarget")
-        pause()
         object : Seek(it, relativeTimeTarget) {
-            // TODO fix it, what is relativeTimeTarget ? :)
 
             override fun success(invocation: ActionInvocation<*>?) {
-                Timber.v("Success seeking!")
+                Timber.v("Success seeking, $invocation")
 
-                GlobalScope.launch {
-                    delay(1000)
-                    updatePositionInfo(true)
-                    resume()
-                }
+//                GlobalScope.launch {
+//                    delay(1000)
+//                    updatePositionInfo(true)
+//                    resume()
+//                }
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                Timber.w("Fail to seek ! $arg2")
+                Timber.e("Failure to seek: $arg2")
             }
         }
     }
@@ -116,7 +114,7 @@ class RendererCommand(
             override fun success(invocation: ActionInvocation<*>?) {
                 super.success(invocation)
                 Timber.v("Success to set volume")
-                rendererStateObservable.setVolume(volume)
+                innerState.volume = volume
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -159,7 +157,7 @@ class RendererCommand(
         object : SetMute(it, mute) {
             override fun success(invocation: ActionInvocation<*>?) {
                 Timber.v("Success setting mute status ! ")
-                rendererStateObservable.setMuted(mute)
+                innerState.isMute = mute
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -169,7 +167,7 @@ class RendererCommand(
     }
 
     fun toggleMute() {
-        setMute(!rendererStateObservable.isMute)
+        setMute(!innerState.isMute)
     }
 
     fun setURI(uri: String?, trackMetadata: TrackMetadata) = executeAVAction {
@@ -243,7 +241,7 @@ class RendererCommand(
     private fun updateMediaInfo() = executeAVAction {
         object : GetMediaInfo(it) {
             override fun received(arg0: ActionInvocation<*>, arg1: MediaInfo) {
-                rendererStateObservable.setMediaInfo(arg1)
+                innerState.mediaInfo = arg1
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -256,7 +254,7 @@ class RendererCommand(
         object : GetPositionInfo(it) {
             override fun received(arg0: ActionInvocation<*>, arg1: PositionInfo) {
                 if (!paused || ignorePaused)
-                    rendererStateObservable.setPositionInfo(arg1)
+                    innerState.positionInfo = arg1
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -268,7 +266,7 @@ class RendererCommand(
     private fun updateTransportInfo() = executeAVAction {
         object : GetTransportInfo(it) {
             override fun received(arg0: ActionInvocation<*>, arg1: TransportInfo) {
-                rendererStateObservable.setTransportInfo(arg1)
+                innerState.transportInfo = arg1
 
                 innerStopCounter = when (arg1.currentTransportState) {
                     TransportState.STOPPED -> ++innerStopCounter
@@ -295,7 +293,7 @@ class RendererCommand(
         object : GetVolume(it) {
             override fun received(arg0: ActionInvocation<*>, arg1: Int) {
                 Timber.d("Receive volume ! $arg1")
-                rendererStateObservable.setVolume(arg1)
+                innerState.volume = arg1
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
@@ -308,7 +306,7 @@ class RendererCommand(
         object : GetMute(it) {
             override fun received(arg0: ActionInvocation<*>, arg1: Boolean) {
                 Timber.d("Receive mute status ! $arg1")
-                rendererStateObservable.setMuted(arg1)
+                innerState.isMute = arg1
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {

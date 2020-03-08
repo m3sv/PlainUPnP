@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.presentation.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.ViewDataBinding
+import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.ListPreloader
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.RequestManager
@@ -27,13 +27,13 @@ class GalleryContentAdapter(
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ItemViewHolder<ViewDataBinding> = when (ContentType.values()[viewType]) {
+    ): ItemViewHolder<ViewBinding> = when (ContentType.values()[viewType]) {
         ContentType.DIRECTORY -> ItemViewHolder(
             binding = DirectoryItemBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
-            ),
+            ) as ViewBinding,
             onItemClickListener = onItemClickListener
         )
 
@@ -47,7 +47,7 @@ class GalleryContentAdapter(
         )
     }
 
-    override fun onBindViewHolder(holder: ItemViewHolder<ViewDataBinding>, position: Int) {
+    override fun onBindViewHolder(holder: ItemViewHolder<ViewBinding>, position: Int) {
         val item = items[position]
 
         holder.bind(item)
@@ -68,7 +68,7 @@ class GalleryContentAdapter(
     }
 
     private fun loadData(
-        holder: ItemViewHolder<ViewDataBinding>,
+        holder: ItemViewHolder<ViewBinding>,
         contentItem: ContentItem
     ) {
         with(holder.extractBinding<MediaItemBinding>()) {
@@ -116,7 +116,7 @@ class GalleryContentAdapter(
     inner class PreloadSizeProvider :
         FixedPreloadSizeProvider<ContentItem>(IMAGE_WIDTH, IMAGE_HEIGHT)
 
-    private fun <T : ViewDataBinding> ItemViewHolder<*>.extractBinding(): T =
+    private fun <T : ViewBinding> ItemViewHolder<*>.extractBinding(): T =
         (this as ItemViewHolder<T>).binding
 
     companion object {

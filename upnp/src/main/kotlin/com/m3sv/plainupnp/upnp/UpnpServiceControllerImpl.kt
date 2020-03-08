@@ -60,12 +60,12 @@ class UpnpServiceControllerImpl @Inject constructor(override val serviceListener
         serviceListener.upnpService?.registry?.removeDevice(localDevice)
     }
 
-    override fun createRendererCommand(rendererStateObservable: UpnpRendererStateObservable): RendererCommand? =
+    override fun createRendererCommand(upnpInnerState: UpnpInnerState): RendererCommand? =
         controlPoint?.let { controlPoint ->
             RendererCommand(
                 this,
                 controlPoint,
-                rendererStateObservable
+                upnpInnerState
             )
         }
 

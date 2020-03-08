@@ -1,6 +1,10 @@
 package com.m3sv.plainupnp.data.upnp
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+
 object EmptyUpnpRendererState : UpnpRendererState {
+    override val flow: Flow<UpnpRendererState> = emptyFlow()
     override val id: String = ""
     override val uri: String? = null
     override val type: UpnpItemType = UpnpItemType.UNKNOWN
