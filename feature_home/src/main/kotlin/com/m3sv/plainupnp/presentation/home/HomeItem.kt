@@ -10,5 +10,5 @@ data class ContentItem(
 )
 
 enum class ContentType {
-    IMAGE, AUDIO, VIDEO, DIRECTORY
+    IMAGE, AUDIO, VIDEO, FOLDER
 }

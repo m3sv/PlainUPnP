@@ -34,15 +34,6 @@ import com.m3sv.plainupnp.presentation.controls.ControlsFragment
 import kotlin.LazyThreadSafetyMode.NONE
 
 
-private val UpnpRendererState.icon: Int
-    inline get() = when (state) {
-        UpnpRendererState.State.STOP -> R.drawable.ic_play_arrow
-        UpnpRendererState.State.PLAY -> R.drawable.ic_pause
-        UpnpRendererState.State.PAUSE -> R.drawable.ic_play_arrow
-        UpnpRendererState.State.INITIALIZING -> R.drawable.ic_play_arrow
-        UpnpRendererState.State.FINISHED -> R.drawable.ic_play_arrow
-    }
-
 class MainActivity : BaseActivity(),
     NavController.OnDestinationChangedListener,
     ControlsActionCallback,
@@ -243,14 +234,14 @@ class MainActivity : BaseActivity(),
         }
     }
 
-    private val arrowUpAnimator by lazy {
+    private val arrowUpAnimator by lazy(mode = NONE) {
         ObjectAnimator.ofFloat(binding.bottomAppBarChevron, ROTATION, 0f)
             .apply {
                 duration = 200
             }
     }
 
-    private val arrowDownAnimator by lazy {
+    private val arrowDownAnimator by lazy(mode = NONE) {
         ObjectAnimator.ofFloat(binding.bottomAppBarChevron, ROTATION, 180f)
             .apply {
                 duration = 200
@@ -347,3 +338,11 @@ private fun View.animateAppear() {
     startAnimation(anim)
 }
 
+private val UpnpRendererState.icon: Int
+    inline get() = when (state) {
+        UpnpRendererState.State.STOP -> R.drawable.ic_play_arrow
+        UpnpRendererState.State.PLAY -> R.drawable.ic_pause
+        UpnpRendererState.State.PAUSE -> R.drawable.ic_play_arrow
+        UpnpRendererState.State.INITIALIZING -> R.drawable.ic_play_arrow
+        UpnpRendererState.State.FINISHED -> R.drawable.ic_play_arrow
+    }
