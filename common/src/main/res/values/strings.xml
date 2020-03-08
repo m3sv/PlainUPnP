@@ -62,7 +62,7 @@
     <string name="play_with">Play with</string>
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
-    <string name="dialog_exit_title">Exit?</string>
+    <string name="dialog_exit_title">Exit</string>
     <string name="dialog_exit_body">Are you sure you want to exit the application?</string>
     <string name="menu_item_search">Search</string>
     <string name="menu_item_settings">Settings</string>

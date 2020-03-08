@@ -33,7 +33,7 @@
     <string name="cancel">Annuleren</string>
     <string name="exit">Uitgang</string>
     <string name="dialog_exit_body">Weet u zeker dat u de toepassing wilt verlaten?</string>
-    <string name="dialog_exit_title">Uitgang?</string>
+    <string name="dialog_exit_title">Uitgang</string>
     <string name="menu_item_search">Zoeken</string>
     <string name="menu_item_settings">Instellingen</string>
     <string name="navigation_controls">Controls</string>
