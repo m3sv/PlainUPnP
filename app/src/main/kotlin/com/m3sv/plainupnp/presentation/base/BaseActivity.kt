@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
-import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
@@ -17,8 +16,6 @@ import androidx.lifecycle.ViewModelProviders
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.di.ViewModelFactory
 import javax.inject.Inject
-
-data class ActivityConfig(@LayoutRes val layoutId: Int)
 
 abstract class BaseActivity : AppCompatActivity() {
 
