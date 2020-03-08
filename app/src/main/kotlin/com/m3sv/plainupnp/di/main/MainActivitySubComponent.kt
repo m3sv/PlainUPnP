@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.di.main
 
-import com.m3sv.plainupnp.presentation.controls.ControlsFragment
+import com.m3sv.plainupnp.presentation.main.ControlsFragment
 import com.m3sv.plainupnp.presentation.main.MainActivity
 import dagger.Subcomponent
 

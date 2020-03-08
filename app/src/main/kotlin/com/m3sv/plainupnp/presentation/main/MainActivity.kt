@@ -28,9 +28,6 @@ import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.di.main.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.base.BaseActivity
-import com.m3sv.plainupnp.presentation.controls.ControlsAction
-import com.m3sv.plainupnp.presentation.controls.ControlsActionCallback
-import com.m3sv.plainupnp.presentation.controls.ControlsFragment
 import kotlin.LazyThreadSafetyMode.NONE
 
 
