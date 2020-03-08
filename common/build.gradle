@@ -1,8 +1,8 @@
 apply from: '../scripts/android-library.gradle'
 apply from: '../scripts/cling.gradle'
-apply plugin: 'kotlin-kapt'
 
 dependencies {
     implementation Dependencies.coroutines.core
     implementation Dependencies.coroutines.rxJava2
+    implementation Dependencies.androidx.material
 }
