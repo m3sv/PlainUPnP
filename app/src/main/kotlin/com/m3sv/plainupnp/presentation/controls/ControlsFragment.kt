@@ -183,7 +183,7 @@ class ControlsFragment : BaseFragment() {
 
             scrimView.setOnClickListener { close() }
 
-            mainRendererDevicePicker?.run {
+            with(pickers.mainRendererDevicePicker) {
                 adapter = rendererAdapter
                 onItemSelectedListener =
                     onItemSelectedListener { position ->
@@ -192,7 +192,7 @@ class ControlsFragment : BaseFragment() {
                     }
             }
 
-            mainContentDevicePicker?.run {
+            with(pickers.mainContentDevicePicker) {
                 adapter = contentDirectoriesAdapter
                 onItemSelectedListener =
                     onItemSelectedListener { position ->
@@ -201,7 +201,6 @@ class ControlsFragment : BaseFragment() {
                     }
             }
         }
-
     }
 
     fun toggle() {
