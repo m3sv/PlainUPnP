@@ -34,13 +34,15 @@
             android:id="@+id/handle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_margin="@dimen/media_controls_sheet_handle_margin"
             android:src="@drawable/bottom_sheet_handle"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <include layout="@layout/collapse_container_layout" />
+        <include
+            android:id="@+id/pickers"
+            layout="@layout/collapse_container_layout" />
 
         <ImageView
             android:id="@+id/art"
@@ -52,7 +54,7 @@
             app:layout_constraintBottom_toTopOf="@+id/progress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/spinner_container" />
+            app:layout_constraintTop_toBottomOf="@+id/pickers" />
 
         <SeekBar
             android:id="@+id/progress"
