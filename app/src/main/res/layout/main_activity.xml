@@ -15,7 +15,7 @@
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/bottom_nav_drawer"
-        android:name="com.m3sv.plainupnp.presentation.controls.ControlsFragment"
+        android:name="com.m3sv.plainupnp.presentation.main.ControlsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="?actionBarSize" />

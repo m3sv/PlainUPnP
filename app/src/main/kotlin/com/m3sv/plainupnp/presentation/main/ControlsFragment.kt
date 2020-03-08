@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.presentation.controls
+package com.m3sv.plainupnp.presentation.main
 
 import android.animation.Animator
 import android.animation.ObjectAnimator
@@ -26,11 +26,9 @@ import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
-import com.m3sv.plainupnp.presentation.main.MainActivity
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
-
 
 sealed class ControlsAction {
     object NextClick : ControlsAction()
@@ -40,7 +38,6 @@ sealed class ControlsAction {
     data class SelectRenderer(val position: Int) : ControlsAction()
     data class SelectContentDirectory(val position: Int) : ControlsAction()
 }
-
 
 interface ControlsActionCallback {
     fun onAction(action: ControlsAction)
@@ -54,6 +51,8 @@ class ControlsFragment : BaseFragment() {
     var actionCallback: ControlsActionCallback? = null
 
     private lateinit var binding: ControlsFragmentBinding
+
+    private lateinit var viewModel: MainViewModel
 
     private lateinit var rendererAdapter: SimpleArrayAdapter<SpinnerItem>
 
@@ -73,6 +72,7 @@ class ControlsFragment : BaseFragment() {
         (requireActivity() as MainActivity).mainActivitySubComponent.inject(this)
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        viewModel = getViewModel()
     }
 
     override fun onCreateView(
@@ -126,7 +126,6 @@ class ControlsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         rendererAdapter = SimpleArrayAdapter.init(binding.root.context)
         contentDirectoriesAdapter = SimpleArrayAdapter.init(binding.root.context)
 
@@ -178,7 +177,11 @@ class ControlsFragment : BaseFragment() {
             }
 
             progress.setOnSeekBarChangeListener(onSeekBarChangeListener { progress ->
-                actionCallback?.onAction(ControlsAction.ProgressChange(progress))
+                actionCallback?.onAction(
+                    ControlsAction.ProgressChange(
+                        progress
+                    )
+                )
             })
 
             scrimView.setOnClickListener { close() }
@@ -188,7 +191,11 @@ class ControlsFragment : BaseFragment() {
                 onItemSelectedListener =
                     onItemSelectedListener { position ->
                         Timber.d("Renderer click: $position")
-                        actionCallback?.onAction(ControlsAction.SelectRenderer(position - 1))
+                        actionCallback?.onAction(
+                            ControlsAction.SelectRenderer(
+                                position - 1
+                            )
+                        )
                     }
             }
 
@@ -197,7 +204,11 @@ class ControlsFragment : BaseFragment() {
                 onItemSelectedListener =
                     onItemSelectedListener { position ->
                         Timber.d("Content directory click: $position")
-                        actionCallback?.onAction(ControlsAction.SelectContentDirectory(position - 1))
+                        actionCallback?.onAction(
+                            ControlsAction.SelectContentDirectory(
+                                position - 1
+                            )
+                        )
                     }
             }
         }
