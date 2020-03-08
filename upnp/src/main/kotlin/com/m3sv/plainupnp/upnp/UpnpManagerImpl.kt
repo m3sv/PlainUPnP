@@ -97,6 +97,8 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
+    private var currentRendererState: UpnpRendererState? = null
+
     private fun render(item: RenderItem) {
         Timber.d("Render item: ${item.item.uri}")
 
@@ -127,6 +129,7 @@ class UpnpManagerImpl @Inject constructor(
         upnpInnerState?.let { innerState ->
             launch {
                 innerState.flow.collect { state ->
+                    currentRendererState = state
                     upnpInnerStateChannel.offer(state)
                 }
             }
@@ -138,6 +141,8 @@ class UpnpManagerImpl @Inject constructor(
                         resume()
                     launchItem(item.item)
                 }
+
+            currentRendererState = null
         }
     }
 
@@ -265,7 +270,16 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override fun togglePlayback() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        currentRendererState?.state?.let { state ->
+            when (state) {
+                UpnpRendererState.State.PLAY -> pausePlayback()
+                UpnpRendererState.State.PAUSE -> resumePlayback()
+                UpnpRendererState.State.STOP -> resumePlayback()
+                UpnpRendererState.State.INITIALIZING,
+                UpnpRendererState.State.FINISHED -> {
+                }
+            }
+        }
     }
 
     private companion object {

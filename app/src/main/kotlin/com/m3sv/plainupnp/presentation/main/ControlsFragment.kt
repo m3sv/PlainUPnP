@@ -192,11 +192,13 @@ class ControlsFragment : BaseFragment() {
     private fun handleRendererState(rendererState: UpnpRendererState?) {
         if (rendererState == null) return
 
+        val isProgressEnabled =
+            rendererState.state == UpnpRendererState.State.PLAY || rendererState.state == UpnpRendererState.State.PAUSE
+
         setProgress(
             rendererState.elapsedPercent,
-            rendererState.state == UpnpRendererState.State.PLAY
+            isProgressEnabled
         )
-
         setPlayIcon(rendererState.icon)
         setTitle(rendererState.title)
 
