@@ -38,13 +38,13 @@ class MainActivity : BaseActivity(),
 
     lateinit var mainActivitySubComponent: MainActivitySubComponent
 
+    private lateinit var binding: MainActivityBinding
+
     private lateinit var viewModel: MainViewModel
 
     private var bottomBarMenu = R.menu.bottom_app_bar_home_menu
 
     private val bottomNavDrawer: ControlsFragment by lazy(NONE) { getControlsFragment() }
-
-    private lateinit var binding: MainActivityBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
