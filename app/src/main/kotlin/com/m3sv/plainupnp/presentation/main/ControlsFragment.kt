@@ -11,8 +11,10 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.observe
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.BottomSheetCallback
 import com.m3sv.plainupnp.common.OnSlideAction
 import com.m3sv.plainupnp.common.OnStateChangedAction
@@ -21,6 +23,8 @@ import com.m3sv.plainupnp.common.utils.hide
 import com.m3sv.plainupnp.common.utils.onItemSelectedListener
 import com.m3sv.plainupnp.common.utils.onSeekBarChangeListener
 import com.m3sv.plainupnp.common.utils.show
+import com.m3sv.plainupnp.data.upnp.UpnpItemType
+import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.ControlsFragmentBinding
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
@@ -29,19 +33,6 @@ import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
-
-sealed class ControlsAction {
-    object NextClick : ControlsAction()
-    object PreviousClick : ControlsAction()
-    object PlayClick : ControlsAction()
-    data class ProgressChange(val progress: Int) : ControlsAction()
-    data class SelectRenderer(val position: Int) : ControlsAction()
-    data class SelectContentDirectory(val position: Int) : ControlsAction()
-}
-
-interface ControlsActionCallback {
-    fun onAction(action: ControlsAction)
-}
 
 class ControlsFragment : BaseFragment() {
 
@@ -84,48 +75,9 @@ class ControlsFragment : BaseFragment() {
         return binding.root
     }
 
-    private val alphaAnimator: ObjectAnimator by lazy {
-        ObjectAnimator.ofFloat(binding.scrimView, ALPHA, .5f).apply {
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
-
-                override fun onAnimationEnd(animation: Animator?) {
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-                }
-
-                override fun onAnimationStart(animation: Animator?) {
-                    alphaHideAnimator.cancel()
-                    binding.scrimView.show()
-                }
-            })
-        }
-    }
-
-    private val alphaHideAnimator: ObjectAnimator by lazy {
-        ObjectAnimator.ofFloat(binding.scrimView, ALPHA, 0f).apply {
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
-
-                override fun onAnimationEnd(animation: Animator?) {
-                    binding.scrimView.hide()
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-                }
-
-                override fun onAnimationStart(animation: Animator?) {
-                    alphaAnimator.cancel()
-                }
-            })
-        }
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         rendererAdapter = SimpleArrayAdapter.init(binding.root.context)
         contentDirectoriesAdapter = SimpleArrayAdapter.init(binding.root.context)
 
@@ -212,6 +164,23 @@ class ControlsFragment : BaseFragment() {
                     }
             }
         }
+
+        viewModel.upnpState().observe(viewLifecycleOwner) { upnpRendererState ->
+            handleRendererState(upnpRendererState)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        rendererAdapter.onSaveInstanceState(outState)
+        contentDirectoriesAdapter.onSaveInstanceState(outState)
+
+        outState.putBoolean(IS_EXPANDED, onBackPressedCallback.isEnabled)
+
+        // careful with lateinit in onSaveInstanceState
+        if (this::binding.isInitialized) outState.putFloat(
+            SCRIM_VIEW_ALPHA_KEY,
+            binding.scrimView.alpha
+        )
     }
 
     fun toggle() {
@@ -242,15 +211,6 @@ class ControlsFragment : BaseFragment() {
         bottomSheetCallback.addOnSlideAction(action)
     }
 
-    fun setProgress(progress: Int, isEnabled: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            binding.progress.setProgress(progress, true)
-        } else {
-            binding.progress.progress = progress
-        }
-
-        binding.progress.isEnabled = isEnabled
-    }
 
     fun setRenderers(items: List<SpinnerItem>) {
         rendererAdapter.setNewItems(items.addEmptyItem())
@@ -260,33 +220,87 @@ class ControlsFragment : BaseFragment() {
         contentDirectoriesAdapter.setNewItems(items.addEmptyItem())
     }
 
-    fun setPlayIcon(@DrawableRes icon: Int) {
+    private fun handleRendererState(rendererState: UpnpRendererState?) {
+        if (rendererState == null) return
+
+        setProgress(
+            rendererState.elapsedPercent,
+            rendererState.state == UpnpRendererState.State.PLAY
+        )
+
+        setPlayIcon(rendererState.icon)
+        setTitle(rendererState.title)
+
+        when (rendererState.type) {
+            UpnpItemType.AUDIO -> setThumbnail(R.drawable.ic_music)
+            else -> rendererState.uri?.let(::setThumbnail)
+        }
+    }
+
+    private fun setPlayIcon(@DrawableRes icon: Int) {
         binding.play.setImageResource(icon)
     }
 
-    fun setTitle(text: String) {
+    private fun setTitle(text: String) {
         binding.title.text = text
     }
 
-    fun setThumbnail(url: String) {
+    private fun setThumbnail(url: String) {
         Glide.with(this).load(url).into(binding.art)
     }
 
-    fun setThumbnail(@DrawableRes resource: Int) {
+    private fun setThumbnail(@DrawableRes resource: Int) {
         Glide.with(this).load(resource).into(binding.art)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        rendererAdapter.onSaveInstanceState(outState)
-        contentDirectoriesAdapter.onSaveInstanceState(outState)
+    private fun setProgress(progress: Int, isEnabled: Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            binding.progress.setProgress(progress, true)
+        } else {
+            binding.progress.progress = progress
+        }
 
-        outState.putBoolean(IS_EXPANDED, onBackPressedCallback.isEnabled)
+        binding.progress.isEnabled = isEnabled
+    }
 
-        // careful with lateinit in onSaveInstanceState
-        if (this::binding.isInitialized) outState.putFloat(
-            SCRIM_VIEW_ALPHA_KEY,
-            binding.scrimView.alpha
-        )
+    private val alphaAnimator: ObjectAnimator by lazy {
+        ObjectAnimator.ofFloat(binding.scrimView, ALPHA, .5f).apply {
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                    alphaHideAnimator.cancel()
+                    binding.scrimView.show()
+                }
+            })
+        }
+    }
+
+    private val alphaHideAnimator: ObjectAnimator by lazy {
+        ObjectAnimator.ofFloat(binding.scrimView, ALPHA, 0f).apply {
+            addListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    binding.scrimView.hide()
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                    alphaAnimator.cancel()
+                }
+            })
+        }
     }
 
     private fun List<SpinnerItem>.addEmptyItem() =
@@ -297,3 +311,26 @@ class ControlsFragment : BaseFragment() {
         private const val SCRIM_VIEW_ALPHA_KEY = "scrim_view_alpha_key"
     }
 }
+
+sealed class ControlsAction {
+    object NextClick : ControlsAction()
+    object PreviousClick : ControlsAction()
+    object PlayClick : ControlsAction()
+    data class ProgressChange(val progress: Int) : ControlsAction()
+    data class SelectRenderer(val position: Int) : ControlsAction()
+    data class SelectContentDirectory(val position: Int) : ControlsAction()
+}
+
+interface ControlsActionCallback {
+    fun onAction(action: ControlsAction)
+}
+
+private val UpnpRendererState.icon: Int
+    inline get() = when (state) {
+        UpnpRendererState.State.STOP -> R.drawable.ic_play_arrow
+        UpnpRendererState.State.PLAY -> R.drawable.ic_pause
+        UpnpRendererState.State.PAUSE -> R.drawable.ic_play_arrow
+        UpnpRendererState.State.INITIALIZING -> R.drawable.ic_play_arrow
+        UpnpRendererState.State.FINISHED -> R.drawable.ic_play_arrow
+    }
+
