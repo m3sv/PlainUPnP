@@ -39,8 +39,6 @@ class ControlsFragment : BaseFragment() {
     @Inject
     lateinit var controlsSheetDelegate: ControlsSheetDelegate
 
-    var actionCallback: ControlsActionCallback? = null
-
     private lateinit var binding: ControlsFragmentBinding
 
     private lateinit var viewModel: MainViewModel
@@ -77,27 +75,11 @@ class ControlsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         rendererAdapter = SimpleArrayAdapter.init(binding.root.context)
         contentDirectoriesAdapter = SimpleArrayAdapter.init(binding.root.context)
 
         if (savedInstanceState != null) {
-            rendererAdapter.onRestoreInstanceState(savedInstanceState)
-            contentDirectoriesAdapter.onRestoreInstanceState(savedInstanceState)
-
-            val isExpanded = savedInstanceState.getBoolean(IS_EXPANDED, false)
-
-            onBackPressedCallback.isEnabled = isExpanded
-
-            if (isExpanded) {
-                controlsSheetDelegate.onShow()
-                binding.scrimView.show()
-            } else {
-                controlsSheetDelegate.onDismiss()
-                binding.scrimView.hide()
-            }
-
-            binding.scrimView.alpha = savedInstanceState.getFloat(SCRIM_VIEW_ALPHA_KEY, 0f)
+            restorePreviousState(savedInstanceState)
         }
 
         behavior.addBottomSheetCallback(bottomSheetCallback)
@@ -117,23 +99,19 @@ class ControlsFragment : BaseFragment() {
             progress.isEnabled = false
 
             next.setOnClickListener {
-                actionCallback?.onAction(ControlsAction.NextClick)
+                viewModel.intention(MainIntention.PlayerButtonClick(PlayerButton.NEXT))
             }
 
             previous.setOnClickListener {
-                actionCallback?.onAction(ControlsAction.PreviousClick)
+                viewModel.intention(MainIntention.PlayerButtonClick(PlayerButton.PREVIOUS))
             }
 
             play.setOnClickListener {
-                actionCallback?.onAction(ControlsAction.PlayClick)
+                viewModel.intention(MainIntention.PlayerButtonClick(PlayerButton.PLAY))
             }
 
             progress.setOnSeekBarChangeListener(onSeekBarChangeListener { progress ->
-                actionCallback?.onAction(
-                    ControlsAction.ProgressChange(
-                        progress
-                    )
-                )
+                viewModel.intention(MainIntention.MoveTo(progress))
             })
 
             scrimView.setOnClickListener { close() }
@@ -143,11 +121,7 @@ class ControlsFragment : BaseFragment() {
                 onItemSelectedListener =
                     onItemSelectedListener { position ->
                         Timber.d("Renderer click: $position")
-                        actionCallback?.onAction(
-                            ControlsAction.SelectRenderer(
-                                position - 1
-                            )
-                        )
+                        viewModel.intention(MainIntention.SelectRenderer(position - 1))
                     }
             }
 
@@ -156,11 +130,7 @@ class ControlsFragment : BaseFragment() {
                 onItemSelectedListener =
                     onItemSelectedListener { position ->
                         Timber.d("Content directory click: $position")
-                        actionCallback?.onAction(
-                            ControlsAction.SelectContentDirectory(
-                                position - 1
-                            )
-                        )
+                        viewModel.intention(MainIntention.SelectContentDirectory(position - 1))
                     }
             }
         }
@@ -210,7 +180,6 @@ class ControlsFragment : BaseFragment() {
     fun addOnSlideAction(action: OnSlideAction) {
         bottomSheetCallback.addOnSlideAction(action)
     }
-
 
     fun setRenderers(items: List<SpinnerItem>) {
         rendererAdapter.setNewItems(items.addEmptyItem())
@@ -263,6 +232,25 @@ class ControlsFragment : BaseFragment() {
         binding.progress.isEnabled = isEnabled
     }
 
+    private fun restorePreviousState(savedInstanceState: Bundle) {
+        rendererAdapter.onRestoreInstanceState(savedInstanceState)
+        contentDirectoriesAdapter.onRestoreInstanceState(savedInstanceState)
+
+        val isExpanded = savedInstanceState.getBoolean(IS_EXPANDED, false)
+
+        onBackPressedCallback.isEnabled = isExpanded
+
+        if (isExpanded) {
+            controlsSheetDelegate.onShow()
+            binding.scrimView.show()
+        } else {
+            controlsSheetDelegate.onDismiss()
+            binding.scrimView.hide()
+        }
+
+        binding.scrimView.alpha = savedInstanceState.getFloat(SCRIM_VIEW_ALPHA_KEY, 0f)
+    }
+
     private val alphaAnimator: ObjectAnimator by lazy {
         ObjectAnimator.ofFloat(binding.scrimView, ALPHA, .5f).apply {
             addListener(object : Animator.AnimatorListener {
@@ -310,19 +298,6 @@ class ControlsFragment : BaseFragment() {
         private const val IS_EXPANDED = "controls_sheet_expanded_state"
         private const val SCRIM_VIEW_ALPHA_KEY = "scrim_view_alpha_key"
     }
-}
-
-sealed class ControlsAction {
-    object NextClick : ControlsAction()
-    object PreviousClick : ControlsAction()
-    object PlayClick : ControlsAction()
-    data class ProgressChange(val progress: Int) : ControlsAction()
-    data class SelectRenderer(val position: Int) : ControlsAction()
-    data class SelectContentDirectory(val position: Int) : ControlsAction()
-}
-
-interface ControlsActionCallback {
-    fun onAction(action: ControlsAction)
 }
 
 private val UpnpRendererState.icon: Int

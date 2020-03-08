@@ -31,7 +31,6 @@ import kotlin.LazyThreadSafetyMode.NONE
 
 class MainActivity : BaseActivity(),
     NavController.OnDestinationChangedListener,
-    ControlsActionCallback,
     Shutdownable {
 
     lateinit var mainActivitySubComponent: MainActivitySubComponent
@@ -161,19 +160,6 @@ class MainActivity : BaseActivity(),
         outState.putInt(OPTIONS_MENU_KEY, bottomBarMenu)
     }
 
-    override fun onAction(action: ControlsAction) {
-        val intention = when (action) {
-            is ControlsAction.NextClick -> MainIntention.PlayerButtonClick(PlayerButton.NEXT)
-            is ControlsAction.PreviousClick -> MainIntention.PlayerButtonClick(PlayerButton.PREVIOUS)
-            is ControlsAction.PlayClick -> MainIntention.PlayerButtonClick(PlayerButton.PLAY)
-            is ControlsAction.ProgressChange -> MainIntention.MoveTo(action.progress)
-            is ControlsAction.SelectRenderer -> MainIntention.SelectRenderer(action.position)
-            is ControlsAction.SelectContentDirectory -> MainIntention.SelectContentDirectory(action.position)
-        }
-
-        viewModel.intention(intention)
-    }
-
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
         KeyEvent.KEYCODE_VOLUME_UP -> {
             viewModel.intention(MainIntention.PlayerButtonClick(PlayerButton.RAISE_VOLUME))
@@ -231,9 +217,7 @@ class MainActivity : BaseActivity(),
     }
 
     private fun getControlsFragment(): ControlsFragment =
-        (supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment).apply {
-            actionCallback = this@MainActivity
-        }
+        (supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment)
 
     private fun setupBottomNavigationListener() {
         NavigationUI.setupWithNavController(
