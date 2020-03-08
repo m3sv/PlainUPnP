@@ -7,11 +7,9 @@ import io.reactivex.subjects.PublishSubject
 import javax.inject.Inject
 
 interface UpnpStateStore {
-
     val state: Observable<ContentState>
 
     suspend fun setState(state: ContentState)
-
     suspend fun peekState(): ContentState?
 }
 
