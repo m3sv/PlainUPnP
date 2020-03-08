@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
@@ -34,8 +33,6 @@ class HomeFragment : BaseFragment() {
     private lateinit var recyclerLayoutManager: LinearLayoutManager
 
     private lateinit var binding: HomeFragmentBinding
-
-    private lateinit var glide: RequestManager
 
     private val handleBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
@@ -76,7 +73,6 @@ class HomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        glide = Glide.with(this)
         observeState()
         addBackPressedCallback(onBackPressedCallback)
         initRecyclerView()
@@ -133,6 +129,8 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun initRecyclerView() {
+        val glide = Glide.with(this)
+
         contentAdapter = GalleryContentAdapter(glide) { position ->
             viewModel.intention(HomeIntention.ItemClick(position))
         }

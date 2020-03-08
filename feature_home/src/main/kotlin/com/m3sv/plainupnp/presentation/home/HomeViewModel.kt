@@ -89,7 +89,7 @@ class HomeViewModel @Inject constructor(
                 ContentItem(
                     item.didlObject.id,
                     item.title,
-                    ContentType.DIRECTORY,
+                    ContentType.FOLDER,
                     icon = R.drawable.ic_folder
                 )
             }
