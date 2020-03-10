@@ -40,4 +40,5 @@
     <string name="notification_body">Сервер PlainUPnP работает в фоновом режиме</string>
     <string name="notification_title">PlainUPnP Сервер</string>
     <string name="shut_down">Выключить</string>
+    <string name="start_here">Начните здесь</string>
 </resources>

@@ -14,6 +14,7 @@ import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.disappear
+import com.m3sv.plainupnp.common.utils.hide
 import com.m3sv.plainupnp.common.utils.show
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
@@ -74,7 +75,7 @@ class HomeFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeState()
-        addBackPressedCallback(onBackPressedCallback)
+        setBackPressedCallback(onBackPressedCallback)
         initRecyclerView()
         restoreRecyclerState(savedInstanceState)
         observeControlsSheetState()
@@ -98,12 +99,20 @@ class HomeFragment : BaseFragment() {
                         is Directory.Root -> {
                             contentAdapter.setWithDiff(directory.content)
                             binding.name.text = directory.name
-                            addBackPressedCallback(showExitDialogCallback)
+                            setBackPressedCallback(showExitDialogCallback)
+                            binding.emptyHomeView.root.hide()
                         }
                         is Directory.SubDirectory -> {
                             contentAdapter.setWithDiff(directory.content)
                             binding.name.text = directory.parentName
-                            addBackPressedCallback(handleBackPressedCallback)
+                            setBackPressedCallback(handleBackPressedCallback)
+                            binding.emptyHomeView.root.hide()
+                        }
+                        is Directory.None -> {
+                            contentAdapter.setWithDiff(listOf())
+                            binding.name.text = ""
+                            setBackPressedCallback(showExitDialogCallback)
+                            binding.emptyHomeView.root.show()
                         }
                     }
 
@@ -175,7 +184,7 @@ class HomeFragment : BaseFragment() {
             .show()
     }
 
-    private fun Fragment.addBackPressedCallback(callback: OnBackPressedCallback) {
+    private fun Fragment.setBackPressedCallback(callback: OnBackPressedCallback) {
         onBackPressedCallback.remove()
 
         requireActivity()

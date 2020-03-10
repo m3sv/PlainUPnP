@@ -63,6 +63,7 @@ class UpnpManagerImpl @Inject constructor(
     override fun selectContentDirectory(position: Int) {
         if (position !in contentDirectories.currentContentDirectories().indices) {
             Timber.d("Content directory position is outside of bounds, ignore")
+            navigateTo(Destination.Empty)
             serviceController.selectedContentDirectory = null
             return
         }

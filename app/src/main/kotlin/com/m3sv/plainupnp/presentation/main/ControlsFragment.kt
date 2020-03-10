@@ -10,7 +10,6 @@ import android.view.View.ALPHA
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.observe
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -49,7 +48,7 @@ class ControlsFragment : BaseFragment() {
 
     private val bottomSheetCallback: BottomSheetCallback = BottomSheetCallback()
 
-    private val behavior: BottomSheetBehavior<ConstraintLayout> by lazy(NONE) {
+    private val behavior by lazy(NONE) {
         BottomSheetBehavior.from(binding.backgroundContainer)
     }
 

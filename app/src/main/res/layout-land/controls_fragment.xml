@@ -18,114 +18,120 @@
         android:clickable="false"
         android:focusable="false" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/background_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bottom_sheet_cornered_background"
-        android:clickable="true"
-        android:focusable="true"
         app:behavior_fitToContents="true"
         app:behavior_hideable="true"
         app:behavior_peekHeight="@dimen/media_controls_sheet_peek_height"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-        <ImageView
-            android:id="@+id/handle"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/media_controls_sheet_handle_margin"
-            android:src="@drawable/bottom_sheet_handle"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <include
-            android:id="@+id/pickers"
-            layout="@layout/collapse_container_layout" />
-
-        <ImageView
-            android:id="@+id/art"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="16dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_media_placeholder"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/pickers"
-            app:layout_constraintVertical_bias="0" />
-
-        <SeekBar
-            android:id="@+id/progress"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:enabled="false"
-            app:layout_constraintBottom_toBottomOf="@id/art"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/art"
-            app:layout_constraintTop_toTopOf="@id/art" />
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:ellipsize="end"
-            android:gravity="center"
-            android:singleLine="true"
-            android:textSize="14sp"
-            app:layout_constraintBottom_toTopOf="@+id/progress"
-            app:layout_constraintEnd_toEndOf="@+id/progress"
-            app:layout_constraintStart_toStartOf="@+id/progress" />
-
-        <LinearLayout
-            android:id="@+id/controls_container"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="?actionBarSize"
-            android:padding="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/art"
-            app:layout_constraintTop_toBottomOf="@+id/progress">
+            android:background="@drawable/bottom_sheet_cornered_background"
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageView
-                android:id="@+id/previous"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/play"
-                app:layout_constraintEnd_toStartOf="@+id/play"
-                app:layout_constraintTop_toTopOf="@+id/play"
-                app:srcCompat="@drawable/ic_skip_previous" />
-
-            <ImageView
-                android:id="@+id/play"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/next"
-                app:layout_constraintEnd_toStartOf="@+id/next"
-                app:layout_constraintTop_toTopOf="@+id/next"
-                app:srcCompat="@drawable/ic_play_arrow" />
-
-            <ImageView
-                android:id="@+id/next"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="?selectableItemBackgroundBorderless"
-                android:padding="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/art"
+                android:id="@+id/handle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/media_controls_sheet_handle_margin"
+                android:src="@drawable/bottom_sheet_handle"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/art"
-                app:srcCompat="@drawable/ic_skip_next" />
-        </LinearLayout>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <include
+                android:id="@+id/pickers"
+                layout="@layout/collapse_container_layout" />
+
+            <ImageView
+                android:id="@+id/art"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_media_placeholder"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/pickers"
+                app:layout_constraintVertical_bias="0" />
+
+            <SeekBar
+                android:id="@+id/progress"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:enabled="false"
+                app:layout_constraintBottom_toBottomOf="@id/art"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/art"
+                app:layout_constraintTop_toTopOf="@id/art" />
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toTopOf="@+id/progress"
+                app:layout_constraintEnd_toEndOf="@+id/progress"
+                app:layout_constraintStart_toStartOf="@+id/progress" />
+
+            <LinearLayout
+                android:id="@+id/controls_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="?actionBarSize"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/art"
+                app:layout_constraintTop_toBottomOf="@+id/progress">
+
+                <ImageView
+                    android:id="@+id/previous"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/play"
+                    app:layout_constraintEnd_toStartOf="@+id/play"
+                    app:layout_constraintTop_toTopOf="@+id/play"
+                    app:srcCompat="@drawable/ic_skip_previous" />
+
+                <ImageView
+                    android:id="@+id/play"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/next"
+                    app:layout_constraintEnd_toStartOf="@+id/next"
+                    app:layout_constraintTop_toTopOf="@+id/next"
+                    app:srcCompat="@drawable/ic_play_arrow" />
+
+                <ImageView
+                    android:id="@+id/next"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/art"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/art"
+                    app:srcCompat="@drawable/ic_skip_next" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
