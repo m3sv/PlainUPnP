@@ -40,4 +40,5 @@
     <string name="notification_body">PlainUPnP Server draait op de achtergrond</string>
     <string name="notification_title">PlainUPnP Server</string>
     <string name="shut_down">Dichtgaan</string>
+    <string name="start_here">Begin hier</string>
 </resources>

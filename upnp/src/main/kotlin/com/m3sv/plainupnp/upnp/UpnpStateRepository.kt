@@ -14,7 +14,6 @@ interface UpnpStateStore {
 }
 
 sealed class UpnpDirectory(val content: List<DIDLObjectDisplay>) {
-
     object None : UpnpDirectory(listOf())
 
     class Root(
@@ -26,7 +25,6 @@ sealed class UpnpDirectory(val content: List<DIDLObjectDisplay>) {
         val parentName: String,
         content: List<DIDLObjectDisplay>
     ) : UpnpDirectory(content)
-
 }
 
 sealed class ContentState {
@@ -37,7 +35,6 @@ sealed class ContentState {
 class UpnpStateRepository @Inject constructor() : UpnpStateStore {
 
     private val contentSubject = PublishSubject.create<ContentState>()
-
     private var currentState: ContentState? = null
 
     override val state: Observable<ContentState> =

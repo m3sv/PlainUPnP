@@ -27,7 +27,6 @@
             android:id="@+id/content"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="?actionBarSize"
             android:clipToPadding="false"
             tools:listitem="@layout/media_item" />
     </LinearLayout>
@@ -44,4 +43,11 @@
         android:indeterminateTint="@color/colorPrimary"
         android:visibility="gone"
         tools:visibility="visible" />
+
+    <include
+        android:id="@+id/empty_home_view"
+        layout="@layout/empty_home_view"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
 </FrameLayout>

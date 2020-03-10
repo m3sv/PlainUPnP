@@ -11,6 +11,7 @@ dependencies {
     implementation project(':upnp')
 
     implementation Dependencies.androidx.recyclerView
+    implementation Dependencies.androidx.constraintLayout
     implementation Dependencies.androidx.lifecycle.extensions
     implementation Dependencies.androidx.lifecycle.liveDataKtx
     implementation Dependencies.androidx.lifecycle.viewModelKtx

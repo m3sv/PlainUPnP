@@ -15,6 +15,7 @@ interface UpnpNavigator {
 sealed class Destination {
     object Home : Destination()
     object Back : Destination()
+    object Empty : Destination()
     data class Path(val id: String, val directoryName: String) : Destination()
 }
 
@@ -53,29 +54,37 @@ class UpnpNavigatorImpl @Inject constructor(
                     setContentState(directory)
                 }
             }
+
+            is Destination.Empty -> browseToEmptyState()
         }
     }
 
     private fun browse(model: BrowseToModel, clearBackStack: Boolean = false) {
-        serviceController
-            .createContentDirectoryCommand()
-            ?.browse(model.id, null) { directories ->
-                val directory = if (model.id == HOME_DIRECTORY_ID) {
-                    UpnpDirectory.Root(HOME_DIRECTORY_NAME, directories ?: listOf())
-                } else {
-                    UpnpDirectory.SubUpnpDirectory(model.directoryName, directories ?: listOf())
-                }
-
-                val state = ContentState.Success(directory)
-
-                if (clearBackStack)
-                    clearBackStack()
-                else
-                    addCurrentStateToBackStack()
-
-                currentState = state
-                setContentState(state)
+        serviceController.createContentDirectoryCommand()?.browse(model.id, null) { directories ->
+            val directory = if (model.id == HOME_DIRECTORY_ID) {
+                UpnpDirectory.Root(HOME_DIRECTORY_NAME, directories ?: listOf())
+            } else {
+                UpnpDirectory.SubUpnpDirectory(model.directoryName, directories ?: listOf())
             }
+
+            val state = ContentState.Success(directory)
+
+            if (clearBackStack)
+                clearBackStack()
+            else
+                addCurrentStateToBackStack()
+
+            currentState = state
+            setContentState(state)
+        }
+    }
+
+    private fun browseToEmptyState() {
+        val state = ContentState.Success(UpnpDirectory.None)
+
+        clearBackStack()
+        currentState = state
+        setContentState(state)
     }
 
     private fun setContentState(state: ContentState) {

@@ -70,4 +70,5 @@
     <string name="notification_title">PlainUPnP Server</string>
     <string name="notification_body">PlainUPnP Server is running in the background</string>
     <string name="shut_down">Shut down</string>
+    <string name="start_here">Start here</string>
 </resources>
