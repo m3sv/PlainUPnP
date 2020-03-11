@@ -96,11 +96,12 @@ class RendererCommand(
             override fun success(invocation: ActionInvocation<*>?) {
                 Timber.v("Success seeking, $invocation")
 
-//                GlobalScope.launch {
-//                    delay(1000)
-//                    updatePositionInfo(true)
-//                    resume()
-//                }
+                // TODO get rid of this
+                GlobalScope.launch {
+                    delay(1000)
+                    updatePositionInfo(true)
+                    resume()
+                }
             }
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
