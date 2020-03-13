@@ -39,7 +39,7 @@ open class SimpleWebServer(
         uri: String,
         header: Map<String, String>,
         homeDir: File?
-    ): Response? {
+    ): Response {
         var newUri = uri
         var res: Response? = null
 
@@ -127,6 +127,8 @@ open class SimpleWebServer(
         } catch (ioe: IOException) {
             res = FORBIDDEN_READING_FAILED
         }
+
+        if (res == null) res = FORBIDDEN_READING_FAILED
 
         return res
     }
@@ -304,22 +306,22 @@ open class SimpleWebServer(
     override fun serve(
         uri: String,
         method: Method,
-        header: Map<String, String>,
-        parms: Map<String, String>,
+        headers: Map<String, String>,
+        params: Map<String, String>,
         files: Map<String, String>
-    ): Response? {
+    ): Response {
         if (!quiet) {
             Timber.d("$method '$uri' ")
 
-            var e = header.keys.iterator()
+            var e = headers.keys.iterator()
             while (e.hasNext()) {
                 val value = e.next()
-                Timber.d("HDR: '%s'='%s'", value, header[value])
+                Timber.d("HDR: '%s'='%s'", value, headers[value])
             }
-            e = parms.keys.iterator()
+            e = params.keys.iterator()
             while (e.hasNext()) {
                 val value = e.next()
-                Timber.d("PRM: '%s'='%s'", value, parms[value])
+                Timber.d("PRM: '%s'='%s'", value, params[value])
             }
             e = files.keys.iterator()
             while (e.hasNext()) {
@@ -327,7 +329,7 @@ open class SimpleWebServer(
                 Timber.d("UPLOADED: '%s'='%s'", value, files[value])
             }
         }
-        return serveFile(uri, header, rootDir)
+        return serveFile(uri, headers, rootDir)
     }
 
     companion object {

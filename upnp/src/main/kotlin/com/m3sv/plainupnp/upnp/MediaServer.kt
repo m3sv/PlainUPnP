@@ -4,6 +4,7 @@ import android.content.ContentUris
 import android.content.Context
 import android.os.Build
 import android.provider.MediaStore
+import com.m3sv.plainupnp.nanohttpd.MIME_PLAINTEXT
 import com.m3sv.plainupnp.nanohttpd.Method
 import com.m3sv.plainupnp.nanohttpd.Response
 import com.m3sv.plainupnp.nanohttpd.SimpleWebServer
@@ -21,17 +22,17 @@ class MediaServer @Inject constructor(private val context: Context) :
     override fun serve(
         uri: String,
         method: Method,
-        header: Map<String, String>,
-        parms: Map<String, String>,
+        headers: Map<String, String>,
+        params: Map<String, String>,
         files: Map<String, String>
-    ): Response? {
+    ): Response {
         Timber.i("Serve uri: $uri")
         return try {
             val obj = getFileServerObject(uri)
 
             Timber.i("Will serve: %s", obj.path)
 
-            serveFile(obj.inputStream, File(obj.path), obj.mime, header).apply {
+            serveFile(obj.inputStream, File(obj.path), obj.mime, headers).apply {
                 addHeader("realTimeInfo.dlna.org", "DLNA.ORG_TLAG=*")
                 addHeader("contentFeatures.dlna.org", "")
                 addHeader("transferMode.dlna.org", "Streaming")
