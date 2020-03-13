@@ -28,6 +28,8 @@ public abstract class NanoHTTPD {
     private final int myPort;
     private ServerSocket myServerSocket;
     private Thread myThread;
+    private TempFileManagerFactory tempFileManagerFactory;
+    private AsyncRunner asyncRunner;
 
     /**
      * Constructs an HTTP server on given hostname and port.
@@ -35,8 +37,8 @@ public abstract class NanoHTTPD {
     public NanoHTTPD(String hostname, int port) {
         this.hostname = hostname;
         this.myPort = port;
-        setTempFileManagerFactory(new DefaultTempFileManagerFactory());
-        setAsyncRunner(new ThreadPoolRunner());
+        tempFileManagerFactory = new DefaultTempFileManagerFactory();
+        asyncRunner = new ThreadPoolRunner();
     }
 
     /**
@@ -133,7 +135,10 @@ public abstract class NanoHTTPD {
      * @param headers Header entries, percent decoded
      * @return HTTP response, see class Response for details
      */
-    public abstract Response serve(String uri, Method method, Map<String, String> headers, Map<String, String> params,
+    public abstract Response serve(String uri,
+                                   Method method,
+                                   Map<String, String> headers,
+                                   Map<String, String> params,
                                    Map<String, String> files);
 
     /**
@@ -177,42 +182,5 @@ public abstract class NanoHTTPD {
         }
         return decoded;
     }
-
-    /**
-     * Pluggable strategy for asynchronously executing requests.
-     */
-    private AsyncRunner asyncRunner;
-
-    /**
-     * Pluggable strategy for asynchronously executing requests.
-     *
-     * @param asyncRunner new strategy for handling threads.
-     */
-    public void setAsyncRunner(AsyncRunner asyncRunner) {
-        this.asyncRunner = asyncRunner;
-    }
-
-    /**
-     * Pluggable strategy for asynchronously executing requests.
-     */
-    public interface AsyncRunner {
-        void exec(Runnable code);
-    }
-
-    /**
-     * Pluggable strategy for creating and cleaning up temporary files.
-     */
-    private TempFileManagerFactory tempFileManagerFactory;
-
-    /**
-     * Pluggable strategy for creating and cleaning up temporary files.
-     *
-     * @param tempFileManagerFactory new strategy for handling temp files.
-     */
-    public void setTempFileManagerFactory(TempFileManagerFactory tempFileManagerFactory) {
-        this.tempFileManagerFactory = tempFileManagerFactory;
-    }
-
-    // ------------------------------------------------------------------------------- //
 
 }
