@@ -13,14 +13,6 @@ import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.upnp.UpnpManager
 import javax.inject.Inject
 
-private val Fragment.packageName
-    get() = requireActivity().packageName
-
-private val Fragment.appVersion: String
-    get() = requireActivity()
-        .packageManager
-        .getPackageInfo(requireActivity().packageName, 0)
-        .versionName
 
 class SettingsFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener,
@@ -64,7 +56,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
         val darkThemeKey = getString(com.m3sv.plainupnp.common.R.string.dark_theme_key)
         when (key) {
             darkThemeKey -> {
-                val defaultNightMode = if (isDarkThemeSet(sharedPreferences, darkThemeKey))
+                val defaultNightMode = if (sharedPreferences.isDarkThemeSet(darkThemeKey))
                     AppCompatDelegate.MODE_NIGHT_YES
                 else
                     AppCompatDelegate.MODE_NIGHT_NO
@@ -104,10 +96,8 @@ class SettingsFragment : PreferenceFragmentCompat(),
         playMarketFallbackIntent()
     }
 
-    private fun isDarkThemeSet(
-        sharedPreferences: SharedPreferences,
-        darkThemeKey: String
-    ) = sharedPreferences.getBoolean(darkThemeKey, false)
+    private fun SharedPreferences.isDarkThemeSet(darkThemeKey: String) =
+        getBoolean(darkThemeKey, false)
 
     private companion object {
         private const val VERSION = "version"
@@ -120,5 +110,14 @@ class SettingsFragment : PreferenceFragmentCompat(),
             "https://www.freeprivacypolicy.com/privacy/view/bf0284b77ca1af94b405030efd47d254"
         private const val PLAY_STORE_PREFIX = "http://play.google.com/store/apps/details?id="
         private const val MARKET_PREFIX = "market://details?id="
+
+        private val Fragment.packageName
+            get() = requireActivity().packageName
+
+        private val Fragment.appVersion: String
+            get() = requireActivity()
+                .packageManager
+                .getPackageInfo(requireActivity().packageName, 0)
+                .versionName
     }
 }
