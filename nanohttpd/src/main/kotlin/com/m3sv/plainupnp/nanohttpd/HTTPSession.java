@@ -22,10 +22,12 @@ import java.util.StringTokenizer;
 
 import timber.log.Timber;
 
+import static com.m3sv.plainupnp.nanohttpd.NanoHTTPDKt.MIME_PLAINTEXT;
+
 /**
  * Handles one session, i.e. parses the HTTP request and returns the response.
  */
-class HTTPSession {
+public class HTTPSession {
     public static final int BUFSIZE = 8192;
 
     /**
@@ -109,12 +111,12 @@ class HTTPSession {
             // throw it out to close socket object (finalAccept)
             throw e;
         } catch (IOException ioe) {
-            Response r = new Response(Response.Status.INTERNAL_ERROR, NanoHTTPD.MIME_PLAINTEXT, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
+            Response r = new Response(Response.Status.INTERNAL_ERROR, MIME_PLAINTEXT, "SERVER INTERNAL ERROR: IOException: " + ioe.getMessage());
             r.send(outputStream);
             if (outputStream != null)
                 NanoHttpdUtils.safeClose(outputStream);
         } catch (ResponseException re) {
-            Response r = new Response(re.getStatus(), NanoHTTPD.MIME_PLAINTEXT, re.getMessage());
+            Response r = new Response(re.getStatus(), MIME_PLAINTEXT, re.getMessage());
             r.send(outputStream);
             if (outputStream != null)
                 NanoHttpdUtils.safeClose(outputStream);
