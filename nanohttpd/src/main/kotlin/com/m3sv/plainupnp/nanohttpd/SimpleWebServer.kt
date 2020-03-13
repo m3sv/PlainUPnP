@@ -32,10 +32,6 @@ open class SimpleWebServer(
         return newUri.toString()
     }
 
-    override fun restart() {
-
-    }
-
     /**
      * Serves file from homeDir and its' subdirectories (only). Uses only URI, ignores all headers and HTTP parameters.
      */
@@ -119,7 +115,8 @@ open class SimpleWebServer(
 
                 if (dot >= 0) {
                     mime =
-                        MIME_TYPES[f.canonicalPath.substring(dot + 1).toLowerCase(Locale.getDefault())]
+                        MIME_TYPES[f.canonicalPath.substring(dot + 1)
+                            .toLowerCase(Locale.getDefault())]
                 }
 
                 if (mime == null) {
