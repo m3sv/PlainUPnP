@@ -1,12 +1,14 @@
 package com.m3sv.plainupnp.nanohttpd
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.io.IOException
 import java.io.OutputStream
 import java.io.UnsupportedEncodingException
 import java.net.InetSocketAddress
 import java.net.ServerSocket
-import java.net.Socket
 import java.net.URLDecoder
 
 /**
@@ -23,24 +25,18 @@ abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
     private val tempFileManagerFactory = DefaultTempFileManagerFactory()
     private val asyncRunner = ThreadPoolRunner()
 
-    private var myServerSocket: ServerSocket? = null
-    private var myThread: Thread? = null
+    private var serverSocket: ServerSocket? = null
 
     @Throws(IOException::class)
+    @Synchronized
     fun start() {
         closeServerSocket()
-        bindServerSocket()
         startListenerThread()
     }
 
     fun stop() {
         Timber.d("Stop the server")
-        try {
-            myServerSocket?.safeClose()
-            myThread?.join()
-        } catch (e: Exception) {
-            Timber.e(e)
-        }
+        serverSocket?.safeClose()
     }
 
     /**
@@ -99,7 +95,6 @@ abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
         )
     }
 
-
     /**
      * Decode percent encoded `String` values.
      *
@@ -117,61 +112,50 @@ abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
 
     private fun closeServerSocket() {
         try {
-            myServerSocket?.let { if (!it.isClosed) it.close() }
+            serverSocket?.let { if (!it.isClosed) it.close() }
         } catch (e: IOException) {
             Timber.e(e)
         }
     }
 
-    private fun bindServerSocket() {
-        val socketAddress = if (hostName == null)
-            InetSocketAddress(port)
-        else
-            InetSocketAddress(hostName, port)
-
-        myServerSocket = ServerSocket().apply { bind(socketAddress) }
-    }
-
     private fun startListenerThread() {
-        myServerSocket?.let { serverSocket ->
-            myThread = Thread(Runnable {
+        serverSocket = ServerSocket().apply {
+            GlobalScope.launch(Dispatchers.IO) {
+                val socketAddress = if (hostName == null)
+                    InetSocketAddress(port)
+                else
+                    InetSocketAddress(hostName, port)
+
+                bind(socketAddress)
                 do {
                     try {
-                        val finalAccept: Socket = serverSocket.accept()
+                        val finalAccept = accept()
                         val inputStream = finalAccept.getInputStream()
                         if (inputStream == null) {
                             finalAccept.safeClose()
                         } else {
-                            asyncRunner.exec {
-                                var outputStream: OutputStream? = null
-                                try {
-                                    outputStream = finalAccept.getOutputStream()
-                                    val tempFileManager =
-                                        tempFileManagerFactory.create()
-                                    val session = HTTPSession(
-                                        this,
-                                        tempFileManager,
-                                        inputStream,
-                                        outputStream
-                                    )
-                                    session.execute()
-                                } catch (e: IOException) {
-                                    Timber.e(e)
-                                } finally {
-                                    outputStream?.safeClose()
-                                    inputStream.safeClose()
-                                    finalAccept.safeClose()
-                                }
+                            var outputStream: OutputStream? = null
+                            try {
+                                outputStream = finalAccept.getOutputStream()
+                                val tempFileManager = tempFileManagerFactory.create()
+                                HTTPSession(
+                                    this@NanoHTTPD,
+                                    tempFileManager,
+                                    inputStream,
+                                    outputStream
+                                ).execute()
+                            } catch (e: IOException) {
+                                Timber.e(e)
+                            } finally {
+                                outputStream?.safeClose()
+                                inputStream.safeClose()
+                                finalAccept.safeClose()
                             }
                         }
                     } catch (e: IOException) {
                         Timber.e(e)
                     }
-                } while (!serverSocket.isClosed)
-            }).apply {
-                isDaemon = true
-                name = "NanoHttpd Main Listener"
-                start()
+                } while (!isClosed)
             }
         }
     }

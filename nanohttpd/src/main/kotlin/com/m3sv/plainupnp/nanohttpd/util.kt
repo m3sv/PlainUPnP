@@ -2,6 +2,7 @@
 
 package com.m3sv.plainupnp.nanohttpd
 
+import timber.log.Timber
 import java.io.Closeable
 import java.io.IOException
 import java.net.ServerSocket
@@ -16,6 +17,7 @@ fun ServerSocket.safeClose() {
     try {
         close()
     } catch (e: IOException) {
+        Timber.e(e)
     }
 }
 
@@ -23,6 +25,7 @@ fun Socket.safeClose() {
     try {
         close()
     } catch (e: IOException) {
+        Timber.e(e)
     }
 }
 
@@ -31,6 +34,7 @@ fun Closeable.safeClose() {
     try {
         close()
     } catch (e: IOException) {
+        Timber.e(e)
     }
 }
 

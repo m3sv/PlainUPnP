@@ -7,7 +7,10 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
-import com.m3sv.plainupnp.upnp.*
+import com.m3sv.plainupnp.upnp.CDevice
+import com.m3sv.plainupnp.upnp.CRegistryListener
+import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
+import com.m3sv.plainupnp.upnp.RegistryListener
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +23,6 @@ import javax.inject.Inject
 
 class UpnpServiceListener @Inject constructor(
     private val context: Context,
-    private val mediaServer: MediaServer,
     private val contentCache: ContentCache
 ) {
 
@@ -36,17 +38,14 @@ class UpnpServiceListener @Inject constructor(
 
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
             GlobalScope.launch(Dispatchers.IO) {
-                mediaServer.start()
                 upnpService = (service as AndroidUpnpService).also { upnpService ->
                     upnpService.controlPoint.search()
-                    upnpService.registry
-                        .addDevice(
-                            LocalUpnpDevice.getLocalDevice(
-                                LocalServiceResourceProvider(context),
-                                context,
-                                contentCache
-                            )
-                        )
+                    val localUpnpDevice = LocalUpnpDevice.getLocalDevice(
+                        LocalServiceResourceProvider(context),
+                        context,
+                        contentCache
+                    )
+                    upnpService.registry.addDevice(localUpnpDevice)
                 }
                 waitingListener.map { addListenerSafe(it) }
             }
@@ -64,7 +63,6 @@ class UpnpServiceListener @Inject constructor(
     fun unbindService() {
         Timber.d("Unbind!")
         upnpService = null
-        mediaServer.stop()
         context.unbindService(serviceConnection)
     }
 
