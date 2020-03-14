@@ -16,7 +16,8 @@
         android:alpha="0"
         android:background="@color/darkBackground"
         android:clickable="false"
-        android:focusable="false" />
+        android:focusable="false"
+        android:visibility="gone" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/background_container"
