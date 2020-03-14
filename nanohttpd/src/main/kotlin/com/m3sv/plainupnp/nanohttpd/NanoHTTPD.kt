@@ -23,7 +23,6 @@ const val MIME_DEFAULT_BINARY = "application/octet-stream"
 
 abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
     private val tempFileManagerFactory = DefaultTempFileManagerFactory()
-    private val asyncRunner = ThreadPoolRunner()
 
     private var serverSocket: ServerSocket? = null
 
