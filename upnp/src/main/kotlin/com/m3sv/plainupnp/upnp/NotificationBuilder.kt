@@ -20,13 +20,12 @@ class NotificationBuilder(private val context: Context) {
     private val platformNotificationManager: NotificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-    suspend fun buildNotification(): Notification {
+    fun buildNotification(): Notification {
         if (shouldCreateNowPlayingChannel()) {
             createServerNotificationChannel()
         }
 
         val builder = NotificationCompat.Builder(context, SERVER_NOTIFICATION_CHANNEL)
-
         val title = context.resources.getString(R.string.notification_title)
 
         return builder

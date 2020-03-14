@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.presentation.home
 
+import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.AreThumbnailsEnabledUseCase
 import com.m3sv.plainupnp.common.Consumable
@@ -24,11 +25,24 @@ class HomeViewModel @Inject constructor(
     private val manager: UpnpManager,
     private val filterDelegate: FilterDelegate,
     private val areThumbnailsEnabled: AreThumbnailsEnabledUseCase,
-    observeUpnpStateUseCase: ObserveUpnpStateUseCase,
-    observeThumbnailsEnabled: ObserveThumbnailsEnabledUseCase
+    private val observeUpnpStateUseCase: ObserveUpnpStateUseCase,
+    private val observeThumbnailsEnabledUseCase: ObserveThumbnailsEnabledUseCase
 ) : BaseViewModel<HomeIntention, HomeState>(HomeState.Success()) {
 
     init {
+        observeUpnpState()
+        observeFilter()
+        observeThumbnailsEnabled()
+    }
+
+    override fun intention(intention: HomeIntention) {
+        when (intention) {
+            is HomeIntention.ItemClick -> manager.itemClick(intention.position)
+            is HomeIntention.BackPress -> manager.navigateTo(Destination.Back)
+        }.enforce
+    }
+
+    private fun observeUpnpState() {
         observeUpnpStateUseCase
             .execute()
             .map { contentState ->
@@ -61,22 +75,26 @@ class HomeViewModel @Inject constructor(
             }
             .subscribe { newState -> updateState { newState } }
             .disposeBy(disposables)
+    }
 
-        launch {
-            filterDelegate.state.collect { text ->
+    private fun observeThumbnailsEnabled() {
+        viewModelScope.launch {
+            observeThumbnailsEnabledUseCase().collect { enableThumbnails ->
                 updateState { previousState ->
                     (previousState as? HomeState.Success)
-                        ?.copy(filterText = Consumable(text))
+                        ?.copy(enableThumbnails = enableThumbnails)
                         ?: previousState
                 }
             }
         }
+    }
 
-        launch {
-            observeThumbnailsEnabled().collect { enableThumbnails ->
+    private fun observeFilter() {
+        viewModelScope.launch {
+            filterDelegate.state.collect { text ->
                 updateState { previousState ->
                     (previousState as? HomeState.Success)
-                        ?.copy(enableThumbnails = enableThumbnails)
+                        ?.copy(filterText = Consumable(text))
                         ?: previousState
                 }
             }
@@ -123,12 +141,5 @@ class HomeViewModel @Inject constructor(
 
             else -> throw IllegalStateException("Unknown DIDLObject")
         }
-    }
-
-    override fun intention(intention: HomeIntention) {
-        when (intention) {
-            is HomeIntention.ItemClick -> manager.itemClick(intention.position)
-            is HomeIntention.BackPress -> manager.navigateTo(Destination.Back)
-        }.enforce
     }
 }
