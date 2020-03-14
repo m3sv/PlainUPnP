@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.presentation.main
 
-import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
@@ -18,10 +17,7 @@ import com.m3sv.plainupnp.common.BottomSheetCallback
 import com.m3sv.plainupnp.common.OnSlideAction
 import com.m3sv.plainupnp.common.OnStateChangedAction
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
-import com.m3sv.plainupnp.common.utils.hide
-import com.m3sv.plainupnp.common.utils.onItemSelectedListener
-import com.m3sv.plainupnp.common.utils.onSeekBarChangeListener
-import com.m3sv.plainupnp.common.utils.show
+import com.m3sv.plainupnp.common.utils.*
 import com.m3sv.plainupnp.data.upnp.UpnpItemType
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.ControlsFragmentBinding
@@ -253,43 +249,19 @@ class ControlsFragment : BaseFragment() {
     }
 
     private val alphaAnimator: ObjectAnimator by lazy {
-        ObjectAnimator.ofFloat(binding.scrimView, ALPHA, .5f).apply {
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
-
-                override fun onAnimationEnd(animation: Animator?) {
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-                }
-
-                override fun onAnimationStart(animation: Animator?) {
-                    alphaHideAnimator.cancel()
-                    binding.scrimView.show()
-                }
-            })
-        }
+        ObjectAnimator
+            .ofFloat(binding.scrimView, ALPHA, .5f)
+            .onAnimationStart {
+                alphaHideAnimator.cancel()
+                binding.scrimView.show()
+            }
     }
 
     private val alphaHideAnimator: ObjectAnimator by lazy {
-        ObjectAnimator.ofFloat(binding.scrimView, ALPHA, 0f).apply {
-            addListener(object : Animator.AnimatorListener {
-                override fun onAnimationRepeat(animation: Animator?) {
-                }
-
-                override fun onAnimationEnd(animation: Animator?) {
-                    binding.scrimView.hide()
-                }
-
-                override fun onAnimationCancel(animation: Animator?) {
-                }
-
-                override fun onAnimationStart(animation: Animator?) {
-                    alphaAnimator.cancel()
-                }
-            })
-        }
+        ObjectAnimator
+            .ofFloat(binding.scrimView, ALPHA, 0f)
+            .onAnimationEnd { binding.scrimView.hide() }
+            .onAnimationStart { alphaAnimator.cancel() }
     }
 
     private fun List<SpinnerItem>.addEmptyItem() =
