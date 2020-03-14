@@ -41,7 +41,9 @@ class MainActivity : BaseActivity(),
 
     private var bottomBarMenu = R.menu.bottom_app_bar_home_menu
 
-    private val bottomNavDrawer: ControlsFragment by lazy(NONE) { getControlsFragment() }
+    private val controlsFragment: ControlsFragment by lazy(NONE) {
+        (supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
@@ -69,7 +71,7 @@ class MainActivity : BaseActivity(),
         }
 
         animateBottomDrawChanges()
-        binding.controlsContainer.setOnClickListener { bottomNavDrawer.toggle() }
+        binding.controlsContainer.setOnClickListener { controlsFragment.toggle() }
         setSupportActionBar(binding.bottomBar)
     }
 
@@ -93,7 +95,7 @@ class MainActivity : BaseActivity(),
         viewModel.state.observe(this) { state ->
             when (state) {
                 is MainState.Render -> {
-                    with(bottomNavDrawer) {
+                    with(controlsFragment) {
                         setRenderers(state.renderers)
                         setContentDirectories(state.contentDirectories)
                     }
@@ -145,7 +147,7 @@ class MainActivity : BaseActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_settings -> {
-                bottomNavDrawer.close()
+                controlsFragment.close()
                 findNavController(R.id.nav_host_container).navigate(R.id.action_mainFragment_to_settingsFragment)
             }
             R.id.menu_search -> item.expandActionView()
@@ -174,7 +176,7 @@ class MainActivity : BaseActivity(),
     }
 
     private fun animateBottomDrawChanges() {
-        with(bottomNavDrawer) {
+        with(controlsFragment) {
             addOnStateChangedAction(TriggerOnceStateAction(this@MainActivity::animateChevronArrow))
             addOnStateChangedAction(ChangeSettingsMenuStateAction(this@MainActivity::replaceAppBarMenu))
         }
@@ -215,9 +217,6 @@ class MainActivity : BaseActivity(),
             arrowDownAnimator.start()
         }
     }
-
-    private fun getControlsFragment(): ControlsFragment =
-        (supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment)
 
     private fun setupBottomNavigationListener() {
         NavigationUI.setupWithNavController(
