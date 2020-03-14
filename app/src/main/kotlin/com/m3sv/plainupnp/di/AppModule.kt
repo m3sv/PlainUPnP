@@ -59,12 +59,10 @@ object AppModule {
     @Singleton
     fun provideServiceListener(
         context: Context,
-        mediaServer: MediaServer,
         contentCache: ContentCache
     ) =
         UpnpServiceListener(
             context,
-            mediaServer,
             contentCache
         )
 }

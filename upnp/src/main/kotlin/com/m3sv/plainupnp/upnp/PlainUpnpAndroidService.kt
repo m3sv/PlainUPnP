@@ -4,10 +4,7 @@ import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import com.m3sv.plainupnp.common.ShutdownDispatcher
 import com.m3sv.plainupnp.common.Shutdownable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.fourthline.cling.android.AndroidUpnpServiceConfiguration
 import org.fourthline.cling.android.AndroidUpnpServiceImpl
 import java.util.concurrent.ExecutorService
@@ -26,6 +23,8 @@ class PlainUpnpAndroidService : AndroidUpnpServiceImpl(), CoroutineScope, Shutdo
     private lateinit var notificationBuilder: NotificationBuilder
 
     private val executor = Executors.newFixedThreadPool(64)
+
+    private var mediaServer: MediaServer? = null
 
     override fun createConfiguration(): AndroidUpnpServiceConfiguration =
         object : AndroidUpnpServiceConfiguration() {
@@ -48,18 +47,21 @@ class PlainUpnpAndroidService : AndroidUpnpServiceImpl(), CoroutineScope, Shutdo
                 notification
             )
         }
+
+        GlobalScope.launch(Dispatchers.IO) {
+            mediaServer = MediaServer(this@PlainUpnpAndroidService).apply { start() }
+        }
     }
 
     override fun onDestroy() {
+        mediaServer?.stop()
         ShutdownDispatcher.removeListener(this)
         super.onDestroy()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        intent?.let {
-            if (NotificationBuilder.ACTION_EXIT == intent.action) {
-                ShutdownDispatcher.shutdown()
-            }
+        if (NotificationBuilder.ACTION_EXIT == intent?.action) {
+            ShutdownDispatcher.shutdown()
         }
 
         return super.onStartCommand(intent, flags, startId)
