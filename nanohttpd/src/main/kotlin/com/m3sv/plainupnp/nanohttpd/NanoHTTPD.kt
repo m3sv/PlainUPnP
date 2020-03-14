@@ -27,7 +27,6 @@ abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
 
     private var serverSocket: ServerSocket? = null
 
-    @Throws(IOException::class)
     @Synchronized
     fun start() {
         closeServerSocket()

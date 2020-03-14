@@ -24,32 +24,9 @@ class MainViewModel @Inject constructor(
     private val upnpState: MutableLiveData<UpnpRendererState> = MutableLiveData()
 
     init {
-        with(manager) {
-            Observable
-                .combineLatest<List<SpinnerItem>, List<SpinnerItem>, MainState>(
-                    observeRenderers(),
-                    observeContentDirectories(),
-                    BiFunction(MainState::Render)
-                )
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { newState -> launch { updateState { newState } } }
-                .disposeBy(disposables)
-        }
-
-        viewModelScope.launch {
-            manager.upnpRendererState.collect { state ->
-                upnpState.postValue(state)
-            }
-        }
+        observeUpnpManager()
+        observeUpnpState()
     }
-
-    fun upnpState(): LiveData<UpnpRendererState> = upnpState
-
-    private fun UpnpManager.observeContentDirectories() =
-        contentDirectories.map { directories -> directories.map { SpinnerItem(it.device.friendlyName) } }
-
-    private fun UpnpManager.observeRenderers() =
-        renderers.map { renderers -> renderers.map { SpinnerItem(it.device.friendlyName) } }
 
     override fun intention(intention: MainIntention) {
         Timber.d("Execute: $intention")
@@ -74,7 +51,37 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun upnpState(): LiveData<UpnpRendererState> = upnpState
+
+    private fun observeUpnpState() {
+        viewModelScope.launch {
+            manager.upnpRendererState.collect { state ->
+                upnpState.postValue(state)
+            }
+        }
+    }
+
+    private fun observeUpnpManager() {
+        with(manager) {
+            Observable
+                .combineLatest<List<SpinnerItem>, List<SpinnerItem>, MainState>(
+                    observeRenderers(),
+                    observeContentDirectories(),
+                    BiFunction(MainState::Render)
+                )
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { newState -> viewModelScope.launch { updateState { newState } } }
+                .disposeBy(disposables)
+        }
+    }
+
+    private fun UpnpManager.observeContentDirectories() =
+        contentDirectories.map { directories -> directories.map { SpinnerItem(it.device.friendlyName) } }
+
+    private fun UpnpManager.observeRenderers() =
+        renderers.map { renderers -> renderers.map { SpinnerItem(it.device.friendlyName) } }
+
     private fun filterText(text: String) {
-        launch { filterDelegate.filter(text) }
+        viewModelScope.launch { filterDelegate.filter(text) }
     }
 }

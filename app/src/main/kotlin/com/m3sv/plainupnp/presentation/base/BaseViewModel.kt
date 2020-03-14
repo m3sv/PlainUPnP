@@ -5,18 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlin.coroutines.CoroutineContext
 
 
-abstract class BaseViewModel<Intention, State>(initialState: State) : ViewModel(),
-    CoroutineScope {
-
-    private val job = Job()
-
-    override val coroutineContext: CoroutineContext = Dispatchers.Main + job
+abstract class BaseViewModel<Intention, State>(initialState: State) : ViewModel() {
 
     protected val disposables: CompositeDisposable = CompositeDisposable()
 
