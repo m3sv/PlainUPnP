@@ -13,7 +13,6 @@
         android:id="@+id/scrim_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:alpha="0"
         android:background="@color/darkBackground"
         android:clickable="false"
         android:focusable="false"
