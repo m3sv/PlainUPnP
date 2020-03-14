@@ -70,8 +70,8 @@ class ControlsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rendererAdapter = SimpleArrayAdapter.init(binding.root.context)
-        contentDirectoriesAdapter = SimpleArrayAdapter.init(binding.root.context)
+        rendererAdapter = SimpleArrayAdapter.init(view.context)
+        contentDirectoriesAdapter = SimpleArrayAdapter.init(view.context)
 
         if (savedInstanceState != null) {
             restorePreviousState(savedInstanceState)
