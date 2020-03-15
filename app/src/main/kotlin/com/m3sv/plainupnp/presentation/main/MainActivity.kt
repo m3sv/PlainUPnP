@@ -114,13 +114,8 @@ class MainActivity : BaseActivity(),
         arguments: Bundle?
     ) {
         when (destination.id) {
-            R.id.home_fragment -> {
-                setupBottomAppBarForHome()
-            }
-
-            R.id.settings_fragment -> {
-                setupBottomAppBarForSettings()
-            }
+            R.id.home_fragment -> setupBottomAppBarForHome()
+            R.id.settings_fragment -> setupBottomAppBarForSettings()
         }
     }
 
@@ -197,17 +192,15 @@ class MainActivity : BaseActivity(),
     }
 
     private val arrowUpAnimator by lazy(mode = NONE) {
-        ObjectAnimator.ofFloat(binding.bottomAppBarChevron, ROTATION, 0f)
-            .apply {
-                duration = 200
-            }
+        ObjectAnimator
+            .ofFloat(binding.bottomAppBarChevron, ROTATION, 0f)
+            .apply { duration = 200 }
     }
 
     private val arrowDownAnimator by lazy(mode = NONE) {
-        ObjectAnimator.ofFloat(binding.bottomAppBarChevron, ROTATION, 180f)
-            .apply {
-                duration = 200
-            }
+        ObjectAnimator
+            .ofFloat(binding.bottomAppBarChevron, ROTATION, 180f)
+            .apply { duration = 200 }
     }
 
     private fun animateChevronArrow(isHidden: Boolean) {
