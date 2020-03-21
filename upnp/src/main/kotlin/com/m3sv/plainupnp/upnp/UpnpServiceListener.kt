@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp.cleanslate
+package com.m3sv.plainupnp.upnp
 
 import android.content.ComponentName
 import android.content.Context
@@ -7,20 +7,19 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
-import com.m3sv.plainupnp.upnp.CDevice
-import com.m3sv.plainupnp.upnp.CRegistryListener
-import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
-import com.m3sv.plainupnp.upnp.RegistryListener
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.fourthline.cling.android.AndroidUpnpService
+import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.message.header.STAllHeader
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UpnpServiceListener @Inject constructor(
     private val context: Context,
     private val contentCache: ContentCache
@@ -28,6 +27,9 @@ class UpnpServiceListener @Inject constructor(
 
     var upnpService: AndroidUpnpService? = null
         private set
+
+    val controlPoint: ControlPoint?
+        get() = upnpService?.controlPoint
 
     private val waitingListener: MutableList<RegistryListener> = mutableListOf()
 

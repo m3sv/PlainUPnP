@@ -1,8 +1,6 @@
 package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
-import com.m3sv.plainupnp.upnp.cleanslate.UpnpServiceListener
-import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.meta.LocalDevice
 import javax.inject.Inject
 
@@ -26,9 +24,6 @@ class UpnpServiceControllerImpl @Inject constructor(override val serviceListener
 
         this.selectedContentDirectory = contentDirectory
     }
-
-    private val controlPoint: ControlPoint?
-        get() = serviceListener.upnpService?.controlPoint
 
     override fun setSelectedRenderer(renderer: UpnpDevice, force: Boolean) {
         // Skip if no change and no force
@@ -61,7 +56,7 @@ class UpnpServiceControllerImpl @Inject constructor(override val serviceListener
     }
 
     override fun createRendererCommand(upnpInnerState: UpnpInnerState): RendererCommand? =
-        controlPoint?.let { controlPoint ->
+        serviceListener.controlPoint?.let { controlPoint ->
             RendererCommand(
                 this,
                 controlPoint,
@@ -70,5 +65,10 @@ class UpnpServiceControllerImpl @Inject constructor(override val serviceListener
         }
 
     override fun createContentDirectoryCommand(): ContentDirectoryCommand? =
-        controlPoint?.let { controlPoint -> ContentDirectoryCommand(controlPoint, this) }
+        serviceListener.controlPoint?.let { controlPoint ->
+            ContentDirectoryCommand(
+                controlPoint,
+                this
+            )
+        }
 }

@@ -10,6 +10,7 @@ import android.view.View.ROTATION
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -17,15 +18,14 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
-import com.m3sv.plainupnp.common.ShutdownDispatcher
-import com.m3sv.plainupnp.common.Shutdownable
-import com.m3sv.plainupnp.common.TriggerOnceStateAction
+import com.m3sv.plainupnp.common.*
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.common.utils.hideKeyboard
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.di.main.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.base.BaseActivity
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlin.LazyThreadSafetyMode.NONE
 
 
@@ -39,15 +39,21 @@ class MainActivity : BaseActivity(),
 
     private lateinit var viewModel: MainViewModel
 
+    private lateinit var volumeIndicator: VolumeIndicator
+
     private var bottomBarMenu = R.menu.bottom_app_bar_home_menu
 
     private val controlsFragment: ControlsFragment by lazy(NONE) {
         (supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment)
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
         super.onCreate(savedInstanceState)
+
+        volumeIndicator = VolumeIndicator(this)
+
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -106,6 +112,12 @@ class MainActivity : BaseActivity(),
                 }
             }.enforce
         }
+
+        lifecycleScope.launch {
+            viewModel.volume.collect { volume ->
+                volumeIndicator.volume = volume
+            }
+        }
     }
 
     override fun onDestinationChanged(
@@ -152,7 +164,6 @@ class MainActivity : BaseActivity(),
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-
         outState.putFloat(CHEVRON_ROTATION_ANGLE_KEY, binding.bottomAppBarChevron.rotation)
         outState.putInt(OPTIONS_MENU_KEY, bottomBarMenu)
     }

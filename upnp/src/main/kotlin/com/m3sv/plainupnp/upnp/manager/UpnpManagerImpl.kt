@@ -1,9 +1,10 @@
-package com.m3sv.plainupnp.upnp
+package com.m3sv.plainupnp.upnp.manager
 
 
 import com.m3sv.plainupnp.common.utils.formatTime
 import com.m3sv.plainupnp.common.utils.throttle
 import com.m3sv.plainupnp.data.upnp.*
+import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.collect
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
-
 
 class UpnpManagerImpl @Inject constructor(
     override val renderers: RendererDiscoveryObservable,
@@ -252,14 +252,6 @@ class UpnpManagerImpl @Inject constructor(
                 )
             }
         }
-    }
-
-    override fun raiseVolume() {
-        rendererCommand?.raiseVolume()
-    }
-
-    override fun lowerVolume() {
-        rendererCommand?.lowerVolume()
     }
 
     override fun startUpnpService() {
