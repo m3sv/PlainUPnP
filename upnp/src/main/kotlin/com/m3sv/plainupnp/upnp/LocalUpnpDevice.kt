@@ -1,11 +1,10 @@
-package com.m3sv.plainupnp.upnp.cleanslate
+package com.m3sv.plainupnp.upnp
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import android.text.TextUtils
 import com.m3sv.plainupnp.common.ContentCache
-import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.mediacontainers.*
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
@@ -418,7 +417,10 @@ class LocalUpnpDevice : AbstractContentDirectoryService() {
                 DeviceIdentity(UDN.valueOf(UUID(0, 10).toString())),
                 type,
                 details,
-                getLocalService(context, contentCache)
+                getLocalService(
+                    context,
+                    contentCache
+                )
             )
         }
 

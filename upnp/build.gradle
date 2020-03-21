@@ -14,5 +14,8 @@ dependencies {
 
     implementation project(":common")
     api project(":nanohttpd")
-    implementation 'androidx.core:core-ktx:1.1.0'
+    implementation 'androidx.core:core-ktx:1.2.0'
+
+    compileOnly Dependencies.dagger.annotation
+    implementation Dependencies.dagger.core
 }

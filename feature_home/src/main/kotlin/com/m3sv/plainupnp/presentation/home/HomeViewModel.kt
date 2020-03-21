@@ -13,8 +13,8 @@ import com.m3sv.plainupnp.presentation.main.FilterDelegate
 import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.Destination
 import com.m3sv.plainupnp.upnp.UpnpDirectory
-import com.m3sv.plainupnp.upnp.UpnpManager
 import com.m3sv.plainupnp.upnp.didl.*
+import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import com.m3sv.plainupnp.upnp.usecase.ObserveUpnpStateUseCase
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch

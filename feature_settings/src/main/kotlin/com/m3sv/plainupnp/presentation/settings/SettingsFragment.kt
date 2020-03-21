@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.m3sv.plainupnp.App
-import com.m3sv.plainupnp.upnp.UpnpManager
+import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import javax.inject.Inject
 
 

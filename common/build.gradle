@@ -1,6 +1,10 @@
 apply from: '../scripts/android-library.gradle'
 apply from: '../scripts/cling.gradle'
 
+android {
+    viewBinding.enabled = true
+}
+
 dependencies {
     implementation Dependencies.coroutines.core
     implementation Dependencies.coroutines.rxJava2

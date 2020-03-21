@@ -7,7 +7,7 @@ import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
-import com.m3sv.plainupnp.upnp.UpnpManager
+import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
@@ -17,11 +17,14 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
-    private val manager: UpnpManager,
+    private val upnpManager: UpnpManager,
+    private val volumeManager: BufferedVolumeManager,
     private val filterDelegate: FilterDelegate
 ) : BaseViewModel<MainIntention, MainState>(MainState.Initial) {
 
     private val upnpState: MutableLiveData<UpnpRendererState> = MutableLiveData()
+
+    val volume = volumeManager.observeVolume()
 
     init {
         observeUpnpManager()
@@ -30,24 +33,27 @@ class MainViewModel @Inject constructor(
 
     override fun intention(intention: MainIntention) {
         Timber.d("Execute: $intention")
-        return when (intention) {
-            is MainIntention.ResumeUpnp -> manager.resumeRendererUpdate()
-            is MainIntention.PauseUpnp -> manager.pauseRendererUpdate()
-            is MainIntention.MoveTo -> manager.moveTo(intention.progress)
-            is MainIntention.SelectContentDirectory -> manager.selectContentDirectory(intention.position)
-            is MainIntention.SelectRenderer -> manager.selectRenderer(intention.position)
-            is MainIntention.PlayerButtonClick -> {
-                when (intention.button) {
-                    PlayerButton.PLAY -> manager.togglePlayback()
-                    PlayerButton.PREVIOUS -> manager.playPrevious()
-                    PlayerButton.NEXT -> manager.playNext()
-                    PlayerButton.RAISE_VOLUME -> manager.raiseVolume()
-                    PlayerButton.LOWER_VOLUME -> manager.lowerVolume()
+        viewModelScope.launch {
+            when (intention) {
+                is MainIntention.ResumeUpnp -> upnpManager.resumeRendererUpdate()
+                is MainIntention.PauseUpnp -> upnpManager.pauseRendererUpdate()
+                is MainIntention.MoveTo -> upnpManager.moveTo(intention.progress)
+                is MainIntention.SelectContentDirectory ->
+                    upnpManager.selectContentDirectory(intention.position)
+                is MainIntention.SelectRenderer -> upnpManager.selectRenderer(intention.position)
+                is MainIntention.PlayerButtonClick -> {
+                    when (intention.button) {
+                        PlayerButton.PLAY -> upnpManager.togglePlayback()
+                        PlayerButton.PREVIOUS -> upnpManager.playPrevious()
+                        PlayerButton.NEXT -> upnpManager.playNext()
+                        PlayerButton.RAISE_VOLUME -> volumeManager.raiseVolume()
+                        PlayerButton.LOWER_VOLUME -> volumeManager.lowerVolume()
+                    }
                 }
+                is MainIntention.StartUpnpService -> upnpManager.startUpnpService()
+                is MainIntention.StopUpnpService -> upnpManager.stopUpnpService()
+                is MainIntention.Filter -> filterText(intention.text)
             }
-            is MainIntention.StartUpnpService -> manager.startUpnpService()
-            is MainIntention.StopUpnpService -> manager.stopUpnpService()
-            is MainIntention.Filter -> filterText(intention.text)
         }
     }
 
@@ -55,14 +61,14 @@ class MainViewModel @Inject constructor(
 
     private fun observeUpnpState() {
         viewModelScope.launch {
-            manager.upnpRendererState.collect { state ->
+            upnpManager.upnpRendererState.collect { state ->
                 upnpState.postValue(state)
             }
         }
     }
 
     private fun observeUpnpManager() {
-        with(manager) {
+        with(upnpManager) {
             Observable
                 .combineLatest<List<SpinnerItem>, List<SpinnerItem>, MainState>(
                     observeRenderers(),

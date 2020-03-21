@@ -50,6 +50,7 @@ dependencies {
     implementation Dependencies.androidx.lifecycle.liveDataKtx
     implementation Dependencies.androidx.lifecycle.viewModelKtx
     implementation Dependencies.androidx.lifecycle.lifecycleKtx
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
 
     implementation Dependencies.androidx.navigation.fragment
     implementation Dependencies.androidx.navigation.ui

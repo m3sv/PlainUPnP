@@ -22,7 +22,6 @@ import org.fourthline.cling.support.model.item.*
 import org.fourthline.cling.support.renderingcontrol.callback.GetMute
 import org.fourthline.cling.support.renderingcontrol.callback.GetVolume
 import org.fourthline.cling.support.renderingcontrol.callback.SetMute
-import org.fourthline.cling.support.renderingcontrol.callback.SetVolume
 import timber.log.Timber
 
 
@@ -106,50 +105,6 @@ class RendererCommand(
 
             override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
                 Timber.e("Failure to seek: $arg2")
-            }
-        }
-    }
-
-    fun setVolume(volume: Int) = executeRenderingAction {
-        object : SetVolume(it, volume.toLong()) {
-            override fun success(invocation: ActionInvocation<*>?) {
-                super.success(invocation)
-                Timber.v("Success to set volume")
-                innerState.volume = volume
-            }
-
-            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                Timber.w("Fail to set volume ! $arg2")
-            }
-        }
-    }
-
-    fun raiseVolume() = executeRenderingAction {
-        object : GetVolume(it) {
-            override fun received(arg0: ActionInvocation<*>, arg1: Int) {
-                Timber.d("Raise volume: $arg1 + 1")
-                if (arg1 in 0..100) {
-                    setVolume(arg1 + 1)
-                }
-            }
-
-            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                Timber.w("Fail to get volume ! $arg2")
-            }
-        }
-    }
-
-    fun lowerVolume() = executeRenderingAction {
-        object : GetVolume(it) {
-            override fun received(arg0: ActionInvocation<*>, arg1: Int) {
-                Timber.d("Lower volume: $arg1 - 1")
-                if (arg1 in 0..100) {
-                    setVolume(arg1 - 1)
-                }
-            }
-
-            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                Timber.w("Fail to get volume ! $arg2")
             }
         }
     }
