@@ -64,6 +64,7 @@ class PlainUpnpAndroidService : AndroidUpnpServiceImpl(), CoroutineScope, Shutdo
     }
 
     override fun shutdown() {
+        stopForeground(true)
         stopSelf()
     }
 

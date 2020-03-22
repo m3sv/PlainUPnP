@@ -33,6 +33,7 @@ class MainViewModel @Inject constructor(
 
     override fun intention(intention: MainIntention) {
         Timber.d("Execute: $intention")
+
         viewModelScope.launch {
             when (intention) {
                 is MainIntention.ResumeUpnp -> upnpManager.resumeRendererUpdate()
