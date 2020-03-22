@@ -19,8 +19,8 @@ object Versions {
     const val supportLibrary = "1.1.0"
     const val targetSdk = 29
     const val test = "1.2.0"
-    const val versionCode = 48
-    const val versionName = "1.5.3"
+    const val versionCode = 50
+    const val versionName = "2.0.0"
 }
 
 object ClasspathDependencies {
