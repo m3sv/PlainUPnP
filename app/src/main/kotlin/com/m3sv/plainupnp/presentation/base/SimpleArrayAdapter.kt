@@ -37,8 +37,10 @@ class SimpleArrayAdapter<T : Parcelable> private constructor(
     }
 
     companion object {
-        internal inline fun <reified T : Parcelable> init(context: Context): SimpleArrayAdapter<T> =
-            SimpleArrayAdapter(context, T::class.java.simpleName)
+        internal inline fun <reified T : Parcelable> init(
+            context: Context,
+            key: String
+        ): SimpleArrayAdapter<T> = SimpleArrayAdapter(context, key)
     }
 }
 

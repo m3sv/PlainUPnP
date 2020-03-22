@@ -3,6 +3,7 @@ package com.m3sv.plainupnp.presentation.main
 import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.ALPHA
@@ -25,7 +26,6 @@ import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
 
@@ -34,7 +34,10 @@ class ControlsFragment : BaseFragment() {
     @Inject
     lateinit var controlsSheetDelegate: ControlsSheetDelegate
 
-    private lateinit var binding: ControlsFragmentBinding
+    private var _binding: ControlsFragmentBinding? = null
+
+    private val binding: ControlsFragmentBinding
+        get() = requireNotNull(_binding)
 
     private lateinit var viewModel: MainViewModel
 
@@ -64,17 +67,18 @@ class ControlsFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = ControlsFragmentBinding.inflate(inflater, container, false)
+        _binding = ControlsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rendererAdapter = SimpleArrayAdapter.init(view.context)
-        contentDirectoriesAdapter = SimpleArrayAdapter.init(view.context)
+        initAdapters(view)
 
         if (savedInstanceState != null) {
             restorePreviousState(savedInstanceState)
+        } else {
+            behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
 
         behavior.addBottomSheetCallback(bottomSheetCallback)
@@ -87,8 +91,6 @@ class ControlsFragment : BaseFragment() {
                 alphaHideAnimator.start()
             }
         })
-
-        behavior.state = BottomSheetBehavior.STATE_HIDDEN
 
         with(binding) {
             progress.isEnabled = false
@@ -115,7 +117,6 @@ class ControlsFragment : BaseFragment() {
                 adapter = rendererAdapter
                 onItemSelectedListener =
                     onItemSelectedListener { position ->
-                        Timber.d("Renderer click: $position")
                         viewModel.intention(MainIntention.SelectRenderer(position - 1))
                     }
             }
@@ -124,7 +125,6 @@ class ControlsFragment : BaseFragment() {
                 adapter = contentDirectoriesAdapter
                 onItemSelectedListener =
                     onItemSelectedListener { position ->
-                        Timber.d("Content directory click: $position")
                         viewModel.intention(MainIntention.SelectContentDirectory(position - 1))
                     }
             }
@@ -136,14 +136,16 @@ class ControlsFragment : BaseFragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        rendererAdapter.onSaveInstanceState(outState)
-        contentDirectoriesAdapter.onSaveInstanceState(outState)
-        controlsSheetDelegate.onDismiss()
+        saveAdaptersState(outState)
+        saveViewState(outState)
+        saveBackPressedCallbackState(outState)
     }
 
     private fun restorePreviousState(savedInstanceState: Bundle) {
-        rendererAdapter.onRestoreInstanceState(savedInstanceState)
-        contentDirectoriesAdapter.onRestoreInstanceState(savedInstanceState)
+        restoreAdaptersState(savedInstanceState)
+        restoreBehaviorState(savedInstanceState)
+        restoreScrimViewState(savedInstanceState)
+        restoreBackPressedCallbackState(savedInstanceState)
     }
 
     fun toggle() {
@@ -159,6 +161,7 @@ class ControlsFragment : BaseFragment() {
     fun open() {
         behavior.state = BottomSheetBehavior.STATE_COLLAPSED
         controlsSheetDelegate.onShow()
+        binding.scrimView.alpha = 0f
         alphaAnimator.start()
     }
 
@@ -180,6 +183,11 @@ class ControlsFragment : BaseFragment() {
 
     fun setContentDirectories(items: List<SpinnerItem>) {
         contentDirectoriesAdapter.setNewItems(items.addEmptyItem())
+    }
+
+    private fun initAdapters(view: View) {
+        rendererAdapter = SimpleArrayAdapter.init(view.context, RENDERERS_ADAPTER_KEY)
+        contentDirectoriesAdapter = SimpleArrayAdapter.init(view.context, CONTENT_ADAPTER_KEY)
     }
 
     private fun handleRendererState(rendererState: UpnpRendererState?) {
@@ -227,7 +235,6 @@ class ControlsFragment : BaseFragment() {
     }
 
     private val alphaAnimator: ObjectAnimator by lazy {
-        binding.scrimView.alpha = 0f
         ObjectAnimator
             .ofFloat(binding.scrimView, ALPHA, .5f)
             .onAnimationStart {
@@ -243,8 +250,73 @@ class ControlsFragment : BaseFragment() {
             .onAnimationStart { alphaAnimator.cancel() }
     }
 
+    private fun saveViewState(outState: Bundle) {
+        if (_binding != null) {
+            saveBehaviorState(outState)
+            saveScrimViewState(outState)
+        }
+    }
+
+    private fun saveBehaviorState(outState: Bundle) {
+        outState.putParcelable(
+            BEHAVIOR_STATE_KEY,
+            behavior.onSaveInstanceState(binding.controlsRoot, binding.backgroundContainer)
+        )
+    }
+
+    private fun saveAdaptersState(outState: Bundle) {
+        rendererAdapter.onSaveInstanceState(outState)
+        contentDirectoriesAdapter.onSaveInstanceState(outState)
+    }
+
+    private fun saveScrimViewState(outState: Bundle) {
+        outState.putFloat(SCRIM_VIEW_ALPHA_KEY, binding.scrimView.alpha)
+        outState.putInt(SCRIM_VIEW_VISIBILITY_KEY, binding.scrimView.visibility)
+    }
+
+    private fun saveBackPressedCallbackState(outState: Bundle) {
+        outState.putBoolean(BACK_PRESSED_CALLBACK_KEY, onBackPressedCallback.isEnabled)
+    }
+
+    private fun restoreScrimViewState(savedInstanceState: Bundle) {
+        val scrimViewAlpha = savedInstanceState.getFloat(SCRIM_VIEW_ALPHA_KEY)
+        binding.scrimView.alpha = scrimViewAlpha
+        val scrimViewVisibility = savedInstanceState.getInt(SCRIM_VIEW_VISIBILITY_KEY)
+        binding.scrimView.visibility = scrimViewVisibility
+    }
+
+    private fun restoreBehaviorState(savedInstanceState: Bundle) {
+        val behaviorState = savedInstanceState.getParcelable<Parcelable>(BEHAVIOR_STATE_KEY)
+
+        if (behaviorState != null)
+            behavior.onRestoreInstanceState(
+                binding.controlsRoot,
+                binding.backgroundContainer,
+                behaviorState
+            )
+    }
+
+    private fun restoreAdaptersState(savedInstanceState: Bundle) {
+        rendererAdapter.onRestoreInstanceState(savedInstanceState)
+        contentDirectoriesAdapter.onRestoreInstanceState(savedInstanceState)
+    }
+
+    private fun restoreBackPressedCallbackState(savedInstanceState: Bundle) {
+        onBackPressedCallback.isEnabled = savedInstanceState.getBoolean(BACK_PRESSED_CALLBACK_KEY)
+    }
+
     private fun List<SpinnerItem>.addEmptyItem() =
         this.toMutableList().apply { add(0, SpinnerItem("Empty item")) }.toList()
+
+    companion object {
+        private const val RENDERERS_ADAPTER_KEY = "renderers"
+        private const val CONTENT_ADAPTER_KEY = "contentDirectories"
+
+        private const val SCRIM_VIEW_VISIBILITY_KEY = "SCRIM_VIEW_VISIBILITY"
+        private const val SCRIM_VIEW_ALPHA_KEY = "SCRIM_VIEW_ALPHA"
+        private const val BEHAVIOR_STATE_KEY = "BEHAVIOR_STATE"
+        private const val BACK_PRESSED_CALLBACK_KEY = "BACK_PRESSED_CALLBACK_KEY"
+    }
 }
 
 private val UpnpRendererState.icon: Int
