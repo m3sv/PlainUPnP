@@ -240,6 +240,7 @@ class MainActivity : BaseActivity(),
     }
 
     override fun shutdown() {
+        viewModel.intention(MainIntention.StopUpnpService)
         finishAndRemoveTask()
     }
 
