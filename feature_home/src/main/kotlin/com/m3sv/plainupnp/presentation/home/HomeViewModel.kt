@@ -117,7 +117,7 @@ class HomeViewModel @Inject constructor(
                     (item.didlObject as ClingDIDLItem).uri,
                     item.title,
                     ContentType.IMAGE,
-                    icon = R.drawable.ic_image
+                    icon = R.drawable.ic_bordered_image
                 )
             }
 
@@ -126,7 +126,7 @@ class HomeViewModel @Inject constructor(
                     (item.didlObject as ClingDIDLItem).uri,
                     item.title,
                     ContentType.VIDEO,
-                    icon = R.drawable.ic_video
+                    icon = R.drawable.ic_bordered_video
                 )
             }
 
@@ -135,7 +135,7 @@ class HomeViewModel @Inject constructor(
                     (item.didlObject as ClingDIDLItem).uri,
                     item.title,
                     ContentType.AUDIO,
-                    icon = R.drawable.ic_music
+                    icon = R.drawable.ic_bordered_music
                 )
             }
 
