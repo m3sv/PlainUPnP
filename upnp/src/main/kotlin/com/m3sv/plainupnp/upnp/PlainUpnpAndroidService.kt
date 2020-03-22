@@ -4,21 +4,12 @@ import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import com.m3sv.plainupnp.common.ShutdownDispatcher
 import com.m3sv.plainupnp.common.Shutdownable
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import org.fourthline.cling.android.AndroidUpnpServiceConfiguration
 import org.fourthline.cling.android.AndroidUpnpServiceImpl
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.coroutines.CoroutineContext
 
-class PlainUpnpAndroidService : AndroidUpnpServiceImpl(), CoroutineScope, Shutdownable {
-
-    private val serviceJob = SupervisorJob()
-
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main + serviceJob
+class PlainUpnpAndroidService : AndroidUpnpServiceImpl(), Shutdownable {
 
     private lateinit var notificationManager: NotificationManagerCompat
 
