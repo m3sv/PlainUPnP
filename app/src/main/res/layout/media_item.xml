@@ -18,7 +18,7 @@
         android:layout_height="56dp"
         android:layout_gravity="center_vertical"
         android:scaleType="centerCrop"
-        tools:src="@drawable/ic_folder" />
+        tools:src="@drawable/ic_bordered_music" />
 
     <ImageView
         android:id="@+id/content_type"
