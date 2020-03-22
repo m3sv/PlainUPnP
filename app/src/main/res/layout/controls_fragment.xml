@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/controls_root"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/controls_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="false"
@@ -49,7 +49,7 @@
                 android:id="@+id/pickers"
                 layout="@layout/collapse_container_layout" />
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/art"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -59,7 +59,8 @@
                 app:layout_constraintBottom_toTopOf="@+id/progress"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/pickers" />
+                app:layout_constraintTop_toBottomOf="@+id/pickers"
+                app:shapeAppearanceOverlay="@style/RoundedImageView" />
 
             <SeekBar
                 android:id="@+id/progress"
