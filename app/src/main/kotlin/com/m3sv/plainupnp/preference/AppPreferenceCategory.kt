@@ -3,6 +3,7 @@ package com.m3sv.plainupnp.preference
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.TextView
+import androidx.core.widget.TextViewCompat
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceViewHolder
 import com.m3sv.plainupnp.R
@@ -27,6 +28,10 @@ class AppPreferenceCategory : PreferenceCategory {
     override fun onBindViewHolder(holder: PreferenceViewHolder) {
         super.onBindViewHolder(holder)
         with(holder.findViewById(android.R.id.title) as TextView) {
+            TextViewCompat.setTextAppearance(
+                this,
+                R.style.TextAppearance_MaterialComponents_Subtitle1
+            )
             setTextColor(resources.getColor(R.color.colorPrimary))
         }
     }

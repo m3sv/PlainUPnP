@@ -48,7 +48,8 @@
                 android:background="?attr/selectableItemBackground"
                 android:gravity="center"
                 android:padding="8dp"
-                android:text="@string/navigation_controls" />
+                android:text="@string/navigation_controls"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Button" />
         </LinearLayout>
     </com.google.android.material.bottomappbar.BottomAppBar>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

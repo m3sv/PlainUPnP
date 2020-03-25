@@ -2,9 +2,7 @@ package com.m3sv.plainupnp.presentation.home
 
 import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.common.AreThumbnailsEnabledUseCase
 import com.m3sv.plainupnp.common.Consumable
-import com.m3sv.plainupnp.common.ObserveThumbnailsEnabledUseCase
 import com.m3sv.plainupnp.common.utils.disposeBy
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
@@ -24,15 +22,12 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val manager: UpnpManager,
     private val filterDelegate: FilterDelegate,
-    private val areThumbnailsEnabled: AreThumbnailsEnabledUseCase,
-    private val observeUpnpStateUseCase: ObserveUpnpStateUseCase,
-    private val observeThumbnailsEnabledUseCase: ObserveThumbnailsEnabledUseCase
+    private val observeUpnpStateUseCase: ObserveUpnpStateUseCase
 ) : BaseViewModel<HomeIntention, HomeState>(HomeState.Success()) {
 
     init {
         observeUpnpState()
         observeFilter()
-        observeThumbnailsEnabled()
     }
 
     override fun intention(intention: HomeIntention) {
@@ -65,7 +60,6 @@ class HomeViewModel @Inject constructor(
 
                         HomeState.Success(
                             directory,
-                            areThumbnailsEnabled(),
                             Consumable("")
                         )
                     }
@@ -75,18 +69,6 @@ class HomeViewModel @Inject constructor(
             }
             .subscribe { newState -> updateState { newState } }
             .disposeBy(disposables)
-    }
-
-    private fun observeThumbnailsEnabled() {
-        viewModelScope.launch {
-            observeThumbnailsEnabledUseCase().collect { enableThumbnails ->
-                updateState { previousState ->
-                    (previousState as? HomeState.Success)
-                        ?.copy(enableThumbnails = enableThumbnails)
-                        ?: previousState
-                }
-            }
-        }
     }
 
     private fun observeFilter() {

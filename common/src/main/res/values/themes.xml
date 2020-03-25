@@ -10,6 +10,9 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="toolbarColor">@android:color/transparent</item>
+        <item name="android:spinnerStyle">@style/Theme.Plain.SpinnerItem</item>
+        <item name="android:switchPreferenceStyle">@style/Theme.Plain.SwitchPreference</item>
     </style>
 
     <style name="Theme.Plain.Splash">
@@ -17,5 +20,15 @@
     </style>
 
     <style name="ThemeOverlay.Plain.ActionBar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
+
+    <style name="Theme.Plain.SpinnerItem" parent="Widget.AppCompat.Spinner">
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Caption</item>
+        <item name="maxLines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="Theme.Plain.SwitchPreference" parent="">
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Display1</item>
+    </style>
 
 </resources>

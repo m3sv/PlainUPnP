@@ -27,7 +27,6 @@ sealed class HomeState {
 
     data class Success(
         val directory: Directory = Directory.None,
-        val enableThumbnails: Boolean = true,
         val filterText: Consumable<String> = Consumable()
     ) : HomeState()
 }

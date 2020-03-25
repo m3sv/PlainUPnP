@@ -30,10 +30,6 @@ android {
         jvmTarget = "1.8"
     }
 
-    viewBinding {
-        enabled = true
-    }
-
     dynamicFeatures = [":feature_home", ":feature_settings"]
 }
 
@@ -76,6 +72,9 @@ dependencies {
 
     implementation Dependencies.rx.kotlin
     implementation Dependencies.rx.android
+
+    implementation Dependencies.androidx.preference
+
 
     implementation project(':common')
     implementation project(':upnp')

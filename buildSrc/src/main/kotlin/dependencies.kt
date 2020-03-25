@@ -14,13 +14,13 @@ object Versions {
     const val minSdk = 21
     const val navigation = "2.3.0-alpha03"
     const val material = "1.2.0-alpha05"
-    const val okHttp = "3.9.1"
+    const val okHttp = "4.4.1"
     const val recyclerView = "1.1.0"
     const val supportLibrary = "1.1.0"
     const val targetSdk = 29
     const val test = "1.2.0"
-    const val versionCode = 50
-    const val versionName = "2.0.0"
+    const val versionCode = 51
+    const val versionName = "2.0.1"
 }
 
 object ClasspathDependencies {

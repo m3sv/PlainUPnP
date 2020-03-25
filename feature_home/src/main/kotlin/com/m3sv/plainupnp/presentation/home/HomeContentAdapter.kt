@@ -19,8 +19,6 @@ class GalleryContentAdapter(
     private val onItemClickListener: OnItemClickListener
 ) : BaseAdapter<ContentItem>(diffCallback) {
 
-    var showThumbnails: Boolean = true
-
     override fun getItemViewType(position: Int): Int = items[position].type.ordinal
 
     override fun onCreateViewHolder(
@@ -71,15 +69,7 @@ class GalleryContentAdapter(
         contentItem: ContentItem
     ) {
         with(holder.extractBinding<MediaItemBinding>()) {
-            if (showThumbnails)
-                when (contentItem.type) {
-                    ContentType.IMAGE,
-                    ContentType.VIDEO -> loadImage(contentItem.uri).into(thumbnail)
-                    else -> thumbnail.setImageResource(contentItem.icon)
-                }
-            else
-                thumbnail.setImageResource(contentItem.icon)
-
+            thumbnail.setImageResource(contentItem.icon)
             title.text = contentItem.name
             contentType.setImageResource(contentItem.icon)
         }

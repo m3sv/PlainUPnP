@@ -118,7 +118,6 @@ class HomeFragment : BaseFragment() {
 
                     state.filterText.consume()?.let(contentAdapter::filter)
                     binding.progress.disappear()
-                    contentAdapter.showThumbnails = state.enableThumbnails
                 }
             }
         }

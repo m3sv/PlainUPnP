@@ -25,8 +25,7 @@
         android:layout_marginStart="72dp"
         android:layout_marginEnd="16dp"
         android:ellipsize="end"
-        android:includeFontPadding="false"
         android:maxLines="2"
-        android:textStyle="bold"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
         tools:text="very long title" />
 </FrameLayout>

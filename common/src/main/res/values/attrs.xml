@@ -8,4 +8,6 @@
         <attr name="backgroundColor" format="color" />
         <attr name="searchViewColor" format="color" />
     </declare-styleable>
+
+    <attr name="toolbarColor" format="color" />
 </resources>

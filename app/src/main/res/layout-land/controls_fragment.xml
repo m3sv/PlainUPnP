@@ -84,7 +84,7 @@
                 android:ellipsize="end"
                 android:gravity="center"
                 android:singleLine="true"
-                android:textSize="14sp"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
                 app:layout_constraintBottom_toTopOf="@+id/progress"
                 app:layout_constraintEnd_toEndOf="@+id/progress"
                 app:layout_constraintStart_toStartOf="@+id/progress" />
