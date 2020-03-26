@@ -40,6 +40,12 @@
         android:layout_height="match_parent"
         android:layout_below="@id/appbar"
         android:clipToPadding="false"
+        android:scrollbars="vertical"
+        app:fastScrollEnabled="true"
+        app:fastScrollHorizontalThumbDrawable="@drawable/thumb_selector"
+        app:fastScrollHorizontalTrackDrawable="@drawable/line_selector"
+        app:fastScrollVerticalThumbDrawable="@drawable/thumb_selector"
+        app:fastScrollVerticalTrackDrawable="@drawable/line_selector"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/media_item" />
 
