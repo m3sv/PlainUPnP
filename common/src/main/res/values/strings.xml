@@ -46,8 +46,8 @@
     <string name="search">Filter…</string>
     <string name="play_locally">Play locally</string>
     <string name="about">About</string>
-    <string name="rate">Rate PlainUPnP</string>
-    <string name="open_play_store">Open Google Play</string>
+    <string name="rate">Enjoy using Plain UPnP?</string>
+    <string name="open_play_store">Click here to give a review on Google Play</string>
     <string name="github_link_title">Source code on Github</string>
     <string name="all">All</string>
     <string name="album">Album</string>
@@ -71,4 +71,6 @@
     <string name="notification_body">PlainUPnP Server is running in the background</string>
     <string name="shut_down">Shut down</string>
     <string name="start_here">Start here</string>
+    <string name="contact_us_title">Contact us</string>
+    <string name="contact_us_body">Feature is missing? Send us an email!</string>
 </resources>

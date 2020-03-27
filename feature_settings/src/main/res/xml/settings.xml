@@ -31,10 +31,10 @@
     </com.m3sv.plainupnp.preference.AppPreferenceCategory>
 
     <com.m3sv.plainupnp.preference.AppPreferenceCategory android:title="@string/about">
-        <PreferenceScreen
-            android:key="version"
-            android:summary="1.0"
-            android:title="@string/version" />
+        <Preference
+            android:key="contact_us"
+            android:summary="@string/contact_us_body"
+            android:title="@string/contact_us_title" />
 
         <Preference
             android:key="rate"
@@ -45,6 +45,11 @@
             android:key="github"
             android:summary="@string/source_url"
             android:title="@string/github_link_title" />
+
+        <Preference
+            android:key="version"
+            android:summary="1.0"
+            android:title="@string/version" />
 
         <Preference
             android:key="privacy_policy"

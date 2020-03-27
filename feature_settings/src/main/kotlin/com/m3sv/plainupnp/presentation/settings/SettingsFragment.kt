@@ -29,6 +29,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
         findPreference<Preference>(RATE)?.onPreferenceClickListener = this
         findPreference<Preference>(GITHUB)?.onPreferenceClickListener = this
         findPreference<Preference>(PRIVACY_POLICY)?.onPreferenceClickListener = this
+        findPreference<Preference>(CONTACT_US)?.onPreferenceClickListener = this
     }
 
     private fun inject() {
@@ -67,33 +68,50 @@ class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     override fun onPreferenceClick(preference: Preference): Boolean {
-        val intent: Intent? = when (preference.key) {
+        val result = when (preference.key) {
             RATE -> rateApplication()
-            GITHUB -> githubIntent()
-            PRIVACY_POLICY -> privacyPolicyIntent()
+            GITHUB -> github()
+            PRIVACY_POLICY -> privacyPolicy()
+            CONTACT_US -> openEmail()
             else -> null
         }
 
-        if (intent != null)
-            startActivity(intent)
-
-        return intent != null
+        return result != null
     }
 
-    private fun privacyPolicyIntent() = Intent(Intent.ACTION_VIEW, Uri.parse(PRIVACY_POLICY_LINK))
+    private fun openEmail() {
+        Intent(Intent.ACTION_SENDTO).apply {
+            type = "*/*"
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(EMAIL))
+            putExtra(Intent.EXTRA_SUBJECT, "")
+            putExtra(Intent.EXTRA_TEXT, "")
+        }.startIntentIfAble()
+    }
 
-    private fun githubIntent() = Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_LINK))
+    private fun privacyPolicy() = Intent(
+        Intent.ACTION_VIEW,
+        Uri.parse(PRIVACY_POLICY_LINK)
+    ).startIntentIfAble()
 
-    private fun playMarketIntent() =
-        Intent(Intent.ACTION_VIEW, Uri.parse("$MARKET_PREFIX$packageName"))
+    private fun github() =
+        Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_LINK)).startIntentIfAble()
 
-    private fun playMarketFallbackIntent() =
-        Intent(Intent.ACTION_VIEW, Uri.parse("$PLAY_STORE_PREFIX$packageName"))
-
-    private fun rateApplication(): Intent = try {
+    private fun rateApplication() = try {
         playMarketIntent()
     } catch (e: Throwable) {
         playMarketFallbackIntent()
+    }
+
+    private fun playMarketIntent() =
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("$MARKET_PREFIX$packageName")))
+
+    private fun playMarketFallbackIntent() =
+        Intent(Intent.ACTION_VIEW, Uri.parse("$PLAY_STORE_PREFIX$packageName")).startIntentIfAble()
+
+    private fun Intent.startIntentIfAble() {
+        if (resolveActivity(requireContext().packageManager) != null) {
+            startActivity(this)
+        }
     }
 
     private fun SharedPreferences.isDarkThemeSet(darkThemeKey: String) =
@@ -104,6 +122,9 @@ class SettingsFragment : PreferenceFragmentCompat(),
         private const val RATE = "rate"
         private const val GITHUB = "github"
         private const val PRIVACY_POLICY = "privacy_policy"
+        private const val CONTACT_US = "contact_us"
+
+        private const val EMAIL = "m3sv.dev@gmail.com"
 
         private const val GITHUB_LINK = "https://github.com/m3sv/PlainUPnP"
         private const val PRIVACY_POLICY_LINK =
