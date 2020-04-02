@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.text.TextUtils
 import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.upnp.mediacontainers.*
+import kotlinx.coroutines.runBlocking
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException
@@ -38,15 +39,12 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         firstResult: Long,
         maxResults: Long,
         orderby: Array<SortCriterion>
-    ): BrowseResult {
-        Timber.d("Will browse $objectID")
-
+    ): BrowseResult = runBlocking {
         try {
-            stringSplitter.setString(objectID)
-
             var type = -1
             val subtype = mutableListOf<Int>()
 
+            stringSplitter.setString(objectID)
             for (s in stringSplitter) {
                 val i = Integer.parseInt(s)
                 if (type == -1) {
@@ -61,8 +59,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 }
             }
 
-            var container: Container? = null
-
             Timber.d("Browsing type $type")
 
             val rootContainer = BaseContainer(
@@ -73,283 +69,264 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 baseURL
             )
 
-            val (imageContainer: Container?, allImageContainer: Container?) = populateImageContainer(
-                rootContainer
-            )
+            val rootImagesContainer: Container? = getRootImagesContainer(rootContainer)
+            val rootAudioContainer: Container? = getRootAudioContainer(rootContainer)
+            val rootVideoContainer: Container? = getRootVideoContainer(rootContainer)
 
-            var audioContainer: Container? = null
-
-            var artistAudioContainer: Container? = null
-
-            var albumAudioContainer: Container? = null
-
-            var allAudioContainer: Container? = null
-
-            if (sharedPref.getBoolean(CONTENT_DIRECTORY_AUDIO, true)) {
-                audioContainer = BaseContainer(
-                    AUDIO_ID.toString(),
-                    ROOT_ID.toString(),
-                    context.getString(R.string.audio),
-                    appName,
-                    baseURL
-                )
-
-                with(rootContainer) {
-                    addContainer(audioContainer)
-                    childCount += 1
-                }
-
-                with(audioContainer) {
-                    artistAudioContainer = ArtistContainer(
-                        ARTIST_ID.toString(),
-                        AUDIO_ID.toString(),
-                        context.getString(R.string.artist),
-                        appName,
-                        baseURL,
-                        context,
-                        cache
-                    )
-
-                    addContainer(artistAudioContainer)
-                    childCount += 1
-
-                    albumAudioContainer = AlbumContainer(
-                        ALBUM_ID.toString(),
-                        AUDIO_ID.toString(),
-                        context.getString(R.string.album),
-                        appName,
-                        baseURL,
-                        context,
-                        null,
-                        cache = cache
-                    )
-
-                    addContainer(albumAudioContainer)
-                    childCount += 1
-
-                    allAudioContainer = AudioContainer(
-                        ALL_ID.toString(),
-                        AUDIO_ID.toString(),
-                        context.getString(R.string.all),
-                        appName,
-                        baseURL,
-                        context,
-                        null,
-                        null,
-                        cache = cache
-                    )
-
-                    addContainer(allAudioContainer)
-                    childCount += 1
-                }
-            }
-
-            val (videoContainer: Container?, allVideoContainer: Container?) =
-                populateVideoContainer(rootContainer)
-
-            if (subtype.isEmpty()) {
-                container = when (type) {
+            val container: Container? = if (subtype.isEmpty()) {
+                when (type) {
                     ROOT_ID -> rootContainer
-                    AUDIO_ID -> audioContainer
-                    VIDEO_ID -> videoContainer
-                    IMAGE_ID -> imageContainer
-                    else -> container
+                    AUDIO_ID -> rootAudioContainer
+                    VIDEO_ID -> rootVideoContainer
+                    IMAGE_ID -> rootImagesContainer
+                    else -> throw noSuchObject
                 }
             } else {
                 when (type) {
-                    VIDEO_ID -> if (subtype[0] == ALL_ID) {
-                        Timber.d("Listing all videos...")
-                        container = allVideoContainer
-                    }
+                    VIDEO_ID ->
+                        if (subtype[0] == ALL_ID) {
+                            getAllVideosContainer()
+                        } else
+                            throw noSuchObject
 
                     AUDIO_ID -> when {
-                        subtype.size == 1 -> when {
-                            subtype[0] == ARTIST_ID -> {
-                                Timber.d("Listing all artists...")
-                                container = artistAudioContainer
-                            }
-
-                            subtype[0] == ALBUM_ID -> {
-                                Timber.d("Listing album of all artists...")
-                                container = albumAudioContainer
-                            }
-
-                            subtype[0] == ALL_ID -> {
-                                Timber.d("Listing all songs...")
-                                container = allAudioContainer
-                            }
+                        subtype.size == 1 -> when (subtype[0]) {
+                            ARTIST_ID -> getAllArtistsContainer()
+                            ALBUM_ID -> getAllAlbumsContainer()
+                            ALL_ID -> getAllAudioContainer()
+                            else -> throw noSuchObject
                         }
+
                         subtype.size == 2 && subtype[0] == ARTIST_ID -> {
                             val artistId = subtype[1].toString()
                             val parentId = "$AUDIO_ID$SEPARATOR${subtype[0]}"
                             Timber.d("Listing album of artist $artistId")
 
-                            container = AlbumContainer(
-                                artistId,
-                                parentId,
-                                "",
-                                appName,
-                                baseURL,
-                                context,
-                                artistId,
-                                cache = cache
-                            )
+                            getArtistContainer(artistId, parentId)
                         }
+
                         subtype.size == 2 && subtype[0] == ALBUM_ID -> {
                             val albumId = subtype[1].toString()
                             val parentId = "$AUDIO_ID$SEPARATOR${subtype[0]}"
                             Timber.d("Listing song of album $albumId")
 
-                            container = AudioContainer(
-                                albumId,
-                                parentId,
-                                "",
-                                appName,
-                                baseURL,
-                                context,
-                                null,
-                                albumId,
-                                cache = cache
-                            )
+                            getAlbumContainer(albumId, parentId)
                         }
+
                         subtype.size == 3 && subtype[0] == ARTIST_ID -> {
                             val albumId = subtype[2].toString()
                             val parentId =
                                 "$AUDIO_ID$SEPARATOR${subtype[0]}$SEPARATOR${subtype[1]}"
+
                             Timber.d(
                                 "Listing song of album %s for artist %s",
                                 albumId,
                                 subtype[1]
                             )
 
-                            container = AudioContainer(
-                                albumId,
-                                parentId,
-                                "",
-                                appName,
-                                baseURL,
-                                context,
-                                null,
-                                albumId,
-                                cache = cache
-                            )
+                            getAlbumContainer(albumId, parentId)
                         }
+                        else -> throw noSuchObject
                     }
 
-                    IMAGE_ID -> if (subtype[0] == ALL_ID) {
-                        Timber.d("Listing all images...")
-                        container = allImageContainer
-                    }
+                    IMAGE_ID ->
+                        if (subtype[0] == ALL_ID)
+                            getAllImagesContainer()
+                        else
+                            throw noSuchObject
+
+                    else -> throw noSuchObject
                 }
             }
 
-            container?.let {
-                Timber.d("List container...")
-                val didl = DIDLContent()
-
-                // Get container first
-                for (c in it.containers)
-                    didl.addContainer(c)
-
-                Timber.d("List item...")
-
-                // Then get item
-                for (i in it.items)
-                    didl.addItem(i)
-
-                Timber.d("Return result...")
-
-                val count = it.childCount
-
-                Timber.d("Child count: $count")
-                val answer: String
-
-                try {
-                    answer = DIDLParser().generate(didl)
-                } catch (ex: Exception) {
-                    throw ContentDirectoryException(
-                        ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString()
-                    )
-                }
-
-                Timber.d("Answer : $answer")
-
-                return BrowseResult(answer, count.toLong(), count.toLong())
-            }
+            if (container != null) {
+                getBrowseResult(container)
+            } else
+                throw noSuchObject
         } catch (ex: Exception) {
-            throw ContentDirectoryException(ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString())
+            throw ContentDirectoryException(
+                ContentDirectoryErrorCode.CANNOT_PROCESS,
+                ex.toString()
+            )
         }
-
-        Timber.e("No container for: $objectID")
-        throw ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)
     }
 
-    private fun populateImageContainer(rootContainer: BaseContainer): Pair<Container?, Container?> {
-        var imageContainer: Container? = null
-        var allImageContainer: Container? = null
-
-        if (sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)) {
-            imageContainer = BaseContainer(
-                IMAGE_ID.toString(),
-                ROOT_ID.toString(),
-                context.getString(R.string.images),
-                appName,
-                baseURL
-            )
-            rootContainer.addContainer(imageContainer)
-            rootContainer.childCount = rootContainer.childCount + 1
-
-            allImageContainer = ImageContainer(
-                ALL_ID.toString(),
-                IMAGE_ID.toString(),
-                context.getString(R.string.all),
-                appName,
-                baseURL,
-                context,
-                cache = cache
-            )
-            imageContainer.addContainer(allImageContainer)
-            imageContainer.childCount = imageContainer.childCount + 1
-        }
-        return Pair(imageContainer, allImageContainer)
-    }
-
-    private fun populateVideoContainer(rootContainer: BaseContainer): Pair<Container?, Container?> {
-        var videoContainer: Container? = null
-        var allVideoContainer: Container? = null
-
-        if (sharedPref.getBoolean(CONTENT_DIRECTORY_VIDEO, true)) {
-            videoContainer = BaseContainer(
+    private fun getRootVideoContainer(rootContainer: BaseContainer): BaseContainer? =
+        if (videoEnabled) {
+            Timber.d("Fetch videos")
+            BaseContainer(
                 VIDEO_ID.toString(),
                 ROOT_ID.toString(),
                 context.getString(R.string.videos),
                 appName,
                 baseURL
-            )
-
-            with(rootContainer) {
-                addContainer(videoContainer)
-                childCount = rootContainer.childCount + 1
+            ).apply {
+                rootContainer.addContainer(this)
+                addContainer(getAllVideosContainer())
             }
+        } else null
 
-            allVideoContainer = VideoContainer(
-                ALL_ID.toString(),
-                VIDEO_ID.toString(),
-                context.getString(R.string.all),
+    private fun getRootAudioContainer(rootContainer: BaseContainer): BaseContainer? =
+        if (audioEnabled) {
+            Timber.d("Fetch audio")
+            BaseContainer(
+                AUDIO_ID.toString(),
+                ROOT_ID.toString(),
+                context.getString(R.string.audio),
                 appName,
-                baseURL,
-                context,
-                cache = cache
-            )
-
-            with(videoContainer) {
-                addContainer(allVideoContainer)
-                childCount = videoContainer.childCount + 1
+                baseURL
+            ).apply {
+                rootContainer.addContainer(this)
+                addContainer(getAllArtistsContainer())
+                addContainer(getAllAlbumsContainer())
+                addContainer(getAllAudioContainer())
             }
+        } else null
+
+    private fun getRootImagesContainer(rootContainer: BaseContainer): BaseContainer? =
+        if (imagesEnabled) {
+            Timber.d("Fetch images")
+            BaseContainer(
+                IMAGE_ID.toString(),
+                ROOT_ID.toString(),
+                context.getString(R.string.images),
+                appName,
+                baseURL
+            ).apply {
+                rootContainer.addContainer(this)
+                addContainer(getAllImagesContainer())
+            }
+        } else null
+
+    private fun getBrowseResult(container: Container): BrowseResult {
+        Timber.d("List container...")
+        val didl = DIDLContent()
+
+        // Get container first
+        for (c in container.containers)
+            didl.addContainer(c)
+
+        Timber.d("List item...")
+
+        // Then get item
+        for (i in container.items)
+            didl.addItem(i)
+
+        Timber.d("Return result...")
+
+        val count = container.childCount
+
+        Timber.d("Child count: $count")
+        val answer: String
+
+        try {
+            answer = DIDLParser().generate(didl)
+        } catch (ex: Exception) {
+            throw ContentDirectoryException(ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString())
         }
 
-        return Pair(videoContainer, allVideoContainer)
+        Timber.d("Answer: $answer")
+
+        return BrowseResult(answer, count.toLong(), count.toLong())
     }
+
+    private val noSuchObject = ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)
+
+    private fun getAlbumContainer(
+        albumId: String,
+        parentId: String
+    ): AudioContainer = AudioContainer(
+        albumId,
+        parentId,
+        "",
+        appName,
+        baseURL,
+        context,
+        null,
+        albumId,
+        cache = cache
+    )
+
+    private fun getArtistContainer(
+        artistId: String,
+        parentId: String
+    ): AlbumContainer = AlbumContainer(
+        artistId,
+        parentId,
+        "",
+        appName,
+        baseURL,
+        context,
+        artistId,
+        cache = cache
+    )
+
+    private fun getAllVideosContainer(): VideoContainer =
+        VideoContainer(
+            ALL_ID.toString(),
+            VIDEO_ID.toString(),
+            context.getString(R.string.all),
+            appName,
+            baseURL,
+            context,
+            cache = cache
+        )
+
+    private fun getAllAudioContainer(): AudioContainer =
+        AudioContainer(
+            ALL_ID.toString(),
+            AUDIO_ID.toString(),
+            context.getString(R.string.all),
+            appName,
+            baseURL,
+            context,
+            null,
+            null,
+            cache = cache
+        )
+
+    private fun getAllAlbumsContainer(): AlbumContainer =
+        AlbumContainer(
+            ALBUM_ID.toString(),
+            AUDIO_ID.toString(),
+            context.getString(R.string.album),
+            appName,
+            baseURL,
+            context,
+            null,
+            cache = cache
+        )
+
+    private fun getAllArtistsContainer(): ArtistContainer =
+        ArtistContainer(
+            ARTIST_ID.toString(),
+            AUDIO_ID.toString(),
+            context.getString(R.string.artist),
+            appName,
+            baseURL,
+            context,
+            cache
+        )
+
+    private fun getAllImagesContainer(): ImageContainer =
+        ImageContainer(
+            ALL_ID.toString(),
+            IMAGE_ID.toString(),
+            context.getString(R.string.all),
+            appName,
+            baseURL,
+            context,
+            cache = cache
+        )
+
+    private val imagesEnabled
+        get() = sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)
+
+    private val audioEnabled
+        get() = sharedPref.getBoolean(CONTENT_DIRECTORY_AUDIO, true)
+
+    private val videoEnabled
+        get() = sharedPref.getBoolean(CONTENT_DIRECTORY_VIDEO, true)
 
     companion object {
         const val SEPARATOR = '$'

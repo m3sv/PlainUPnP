@@ -295,7 +295,7 @@ class LocalUpnpDevice : AbstractContentDirectoryService() {
 
     private fun populateImageContainer(rootContainer: BaseContainer): Pair<Container?, Container?> {
         var imageContainer: Container? = null
-        var allImageContainer: Container? = null
+        var allImagesContainer: Container? = null
 
         if (sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)) {
             imageContainer = BaseContainer(
@@ -308,7 +308,7 @@ class LocalUpnpDevice : AbstractContentDirectoryService() {
             rootContainer.addContainer(imageContainer)
             rootContainer.childCount = rootContainer.childCount + 1
 
-            allImageContainer = ImageContainer(
+            allImagesContainer = ImageContainer(
                 ALL_ID.toString(),
                 IMAGE_ID.toString(),
                 context.getString(R.string.all),
@@ -317,10 +317,10 @@ class LocalUpnpDevice : AbstractContentDirectoryService() {
                 context,
                 cache = cache
             )
-            imageContainer.addContainer(allImageContainer)
+            imageContainer.addContainer(allImagesContainer)
             imageContainer.childCount = imageContainer.childCount + 1
         }
-        return Pair(imageContainer, allImageContainer)
+        return Pair(imageContainer, allImagesContainer)
     }
 
     private fun populateVideoContainer(rootContainer: BaseContainer): Pair<Container?, Container?> {

@@ -7,12 +7,12 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
+import com.m3sv.plainupnp.upnp.cling.AndroidUpnpService
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.fourthline.cling.android.AndroidUpnpService
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.message.header.STAllHeader
 import timber.log.Timber

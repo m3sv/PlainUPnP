@@ -4,8 +4,8 @@ import android.content.Intent
 import androidx.core.app.NotificationManagerCompat
 import com.m3sv.plainupnp.common.ShutdownDispatcher
 import com.m3sv.plainupnp.common.Shutdownable
-import org.fourthline.cling.android.AndroidUpnpServiceConfiguration
-import org.fourthline.cling.android.AndroidUpnpServiceImpl
+import com.m3sv.plainupnp.upnp.cling.AndroidUpnpServiceConfiguration
+import com.m3sv.plainupnp.upnp.cling.AndroidUpnpServiceImpl
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
