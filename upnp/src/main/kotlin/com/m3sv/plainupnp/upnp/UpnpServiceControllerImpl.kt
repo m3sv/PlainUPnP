@@ -16,6 +16,10 @@ class UpnpServiceControllerImpl @Inject constructor(override val serviceListener
 
     override var selectedContentDirectory: UpnpDevice? = null
 
+    init {
+        start()
+    }
+
     override fun setSelectedContentDirectory(contentDirectory: UpnpDevice, force: Boolean) {
         if (!force
             && selectedContentDirectory != null

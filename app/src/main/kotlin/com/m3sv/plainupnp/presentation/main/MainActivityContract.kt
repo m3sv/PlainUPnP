@@ -18,8 +18,6 @@ sealed class MainIntention {
     data class Filter(val text: String) : MainIntention()
     object ResumeUpnp : MainIntention()
     object PauseUpnp : MainIntention()
-    object StartUpnpService : MainIntention()
-    object StopUpnpService : MainIntention()
 }
 
 sealed class MainState {

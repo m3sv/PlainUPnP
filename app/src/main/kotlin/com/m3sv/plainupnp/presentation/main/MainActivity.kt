@@ -47,17 +47,15 @@ class MainActivity : BaseActivity(),
         (supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment)
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (savedInstanceState == null)
+            ShutdownDispatcher.addListener(this)
+
         inject()
         super.onCreate(savedInstanceState)
-
         volumeIndicator = VolumeIndicator(this)
-
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        ShutdownDispatcher.addListener(this)
 
         viewModel = getViewModel()
 
@@ -67,14 +65,11 @@ class MainActivity : BaseActivity(),
         setupBottomNavigationListener()
         requestReadStoragePermission()
 
-        if (savedInstanceState == null) {
-            startUpnpService()
-        } else {
+        if (savedInstanceState != null)
             with(savedInstanceState) {
                 restoreChevronState()
                 restoreMenu()
             }
-        }
 
         animateBottomDrawChanges()
         binding.controlsContainer.setOnClickListener { controlsFragment.toggle() }
@@ -92,8 +87,8 @@ class MainActivity : BaseActivity(),
     }
 
     override fun onDestroy() {
-        if (isFinishing) viewModel.intention(MainIntention.StopUpnpService)
-        ShutdownDispatcher.removeListener(this)
+        if (isFinishing)
+            ShutdownDispatcher.removeListener(this)
         super.onDestroy()
     }
 
@@ -229,10 +224,6 @@ class MainActivity : BaseActivity(),
         )
     }
 
-    private fun startUpnpService() {
-        viewModel.intention(MainIntention.StartUpnpService)
-    }
-
     private fun inject() {
         mainActivitySubComponent =
             (applicationContext as App).appComponent.mainActivitySubComponent().create()
@@ -240,7 +231,6 @@ class MainActivity : BaseActivity(),
     }
 
     override fun shutdown() {
-        viewModel.intention(MainIntention.StopUpnpService)
         finishAndRemoveTask()
     }
 

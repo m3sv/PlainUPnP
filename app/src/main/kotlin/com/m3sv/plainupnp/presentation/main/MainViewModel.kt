@@ -13,7 +13,6 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.BiFunction
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
@@ -22,7 +21,6 @@ class MainViewModel @Inject constructor(
     private val filterDelegate: FilterDelegate
 ) : BaseViewModel<MainIntention, MainState>(MainState.Initial) {
 
-    private val upnpState: MutableLiveData<UpnpRendererState> = MutableLiveData()
 
     val volume = volumeManager.observeVolume()
 
@@ -31,9 +29,11 @@ class MainViewModel @Inject constructor(
         observeUpnpState()
     }
 
-    override fun intention(intention: MainIntention) {
-        Timber.d("Execute: $intention")
+    private val upnpState: MutableLiveData<UpnpRendererState> = MutableLiveData()
 
+    fun upnpState(): LiveData<UpnpRendererState> = upnpState
+
+    override fun intention(intention: MainIntention) {
         viewModelScope.launch {
             when (intention) {
                 is MainIntention.ResumeUpnp -> upnpManager.resumeRendererUpdate()
@@ -42,23 +42,21 @@ class MainViewModel @Inject constructor(
                 is MainIntention.SelectContentDirectory ->
                     upnpManager.selectContentDirectory(intention.position)
                 is MainIntention.SelectRenderer -> upnpManager.selectRenderer(intention.position)
-                is MainIntention.PlayerButtonClick -> {
-                    when (intention.button) {
-                        PlayerButton.PLAY -> upnpManager.togglePlayback()
-                        PlayerButton.PREVIOUS -> upnpManager.playPrevious()
-                        PlayerButton.NEXT -> upnpManager.playNext()
-                        PlayerButton.RAISE_VOLUME -> volumeManager.raiseVolume()
-                        PlayerButton.LOWER_VOLUME -> volumeManager.lowerVolume()
-                    }
-                }
-                is MainIntention.StartUpnpService -> upnpManager.startUpnpService()
-                is MainIntention.StopUpnpService -> upnpManager.stopUpnpService()
+                is MainIntention.PlayerButtonClick -> handleButtonClick(intention.button)
                 is MainIntention.Filter -> filterText(intention.text)
             }
         }
     }
 
-    fun upnpState(): LiveData<UpnpRendererState> = upnpState
+    private suspend fun handleButtonClick(button: PlayerButton) {
+        when (button) {
+            PlayerButton.PLAY -> upnpManager.togglePlayback()
+            PlayerButton.PREVIOUS -> upnpManager.playPrevious()
+            PlayerButton.NEXT -> upnpManager.playNext()
+            PlayerButton.RAISE_VOLUME -> volumeManager.raiseVolume()
+            PlayerButton.LOWER_VOLUME -> volumeManager.lowerVolume()
+        }
+    }
 
     private fun observeUpnpState() {
         viewModelScope.launch {
