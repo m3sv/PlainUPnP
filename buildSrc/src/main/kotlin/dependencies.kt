@@ -2,7 +2,7 @@ object Versions {
     const val architectureComponents = "2.1.0"
     const val buildTools = "29.0.0"
     const val cardView = "1.0.0"
-    const val cling = "2.1.1"
+    const val cling = "3.0.1"
     const val compileSdk = 29
     const val constraintLayout = "2.0.0-beta4"
     const val coroutines = "1.3.4"
@@ -19,8 +19,8 @@ object Versions {
     const val supportLibrary = "1.1.0"
     const val targetSdk = 29
     const val test = "1.2.0"
-    const val versionCode = 51
-    const val versionName = "2.0.1"
+    const val versionCode = 52
+    const val versionName = "2.0.2"
 }
 
 object ClasspathDependencies {
