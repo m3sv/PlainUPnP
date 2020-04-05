@@ -116,10 +116,15 @@ class HomeFragment : BaseFragment() {
                         }
                     }
 
-                    lifecycleScope.launch {
-                        state.filterText.consume()?.let { contentAdapter.filter(it) }
-                    }
                     binding.progress.disappear()
+                }
+            }
+        }
+
+        viewModel.filterText.observe(viewLifecycleOwner) { textConsumable ->
+            lifecycleScope.launch {
+                textConsumable.consume()?.let { text ->
+                    contentAdapter.filter(text)
                 }
             }
         }

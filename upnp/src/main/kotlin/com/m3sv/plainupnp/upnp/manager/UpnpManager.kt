@@ -3,12 +3,11 @@ package com.m3sv.plainupnp.upnp.manager
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.upnp.UpnpNavigator
-import io.reactivex.Observable
 import kotlinx.coroutines.flow.Flow
 
 interface UpnpManager : UpnpNavigator {
-    val renderers: Observable<List<DeviceDisplay>>
-    val contentDirectories: Observable<List<DeviceDisplay>>
+    val renderers: Flow<List<DeviceDisplay>>
+    val contentDirectories: Flow<List<DeviceDisplay>>
     val upnpRendererState: Flow<UpnpRendererState>
 
     fun resumeRendererUpdate()

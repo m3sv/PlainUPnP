@@ -1,7 +1,5 @@
 package com.m3sv.plainupnp.presentation.main
 
-import com.m3sv.plainupnp.presentation.base.SpinnerItem
-
 enum class PlayerButton {
     PLAY,
     PREVIOUS,
@@ -18,14 +16,4 @@ sealed class MainIntention {
     data class Filter(val text: String) : MainIntention()
     object ResumeUpnp : MainIntention()
     object PauseUpnp : MainIntention()
-}
-
-sealed class MainState {
-    object Initial : MainState()
-    data class Render(
-        val renderers: List<SpinnerItem> = listOf(),
-        val contentDirectories: List<SpinnerItem> = listOf()
-    ) : MainState()
-
-    object Exit : MainState()
 }

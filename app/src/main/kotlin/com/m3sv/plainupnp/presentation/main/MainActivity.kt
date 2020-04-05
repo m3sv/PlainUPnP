@@ -10,7 +10,6 @@ import android.view.View.ROTATION
 import android.view.animation.AnimationUtils
 import android.view.inputmethod.EditorInfo
 import androidx.appcompat.widget.SearchView
-import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -19,13 +18,10 @@ import androidx.navigation.ui.NavigationUI
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.*
-import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.common.utils.hideKeyboard
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.di.main.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.base.BaseActivity
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import kotlin.LazyThreadSafetyMode.NONE
 
 
@@ -93,25 +89,8 @@ class MainActivity : BaseActivity(),
     }
 
     private fun observeState() {
-        viewModel.state.observe(this) { state ->
-            when (state) {
-                is MainState.Render -> {
-                    with(controlsFragment) {
-                        setRenderers(state.renderers)
-                        setContentDirectories(state.contentDirectories)
-                    }
-                }
-                is MainState.Exit -> finishAndRemoveTask()
-                is MainState.Initial -> {
-                    // ignore
-                }
-            }.enforce
-        }
-
-        lifecycleScope.launch {
-            viewModel.volume.collect { volume ->
-                volumeIndicator.volume = volume
-            }
+        viewModel.volume.observe(this) { volume ->
+            volumeIndicator.volume = volume
         }
     }
 

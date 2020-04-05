@@ -1,17 +1,11 @@
 package com.m3sv.plainupnp.presentation.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.m3sv.plainupnp.common.utils.disposeBy
-import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.functions.BiFunction
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,19 +13,27 @@ class MainViewModel @Inject constructor(
     private val upnpManager: UpnpManager,
     private val volumeManager: BufferedVolumeManager,
     private val filterDelegate: FilterDelegate
-) : BaseViewModel<MainIntention, MainState>(MainState.Initial) {
+) : BaseViewModel<MainIntention>() {
 
+    val volume = volumeManager
+        .observeVolume()
+        .asLiveData()
 
-    val volume = volumeManager.observeVolume()
+    val upnpState = upnpManager
+        .upnpRendererState
+        .asLiveData()
 
-    init {
-        observeUpnpManager()
-        observeUpnpState()
-    }
+    val renderers =
+        upnpManager
+            .renderers
+            .map { renderers -> renderers.map { SpinnerItem(it.device.friendlyName) } }
+            .asLiveData()
 
-    private val upnpState: MutableLiveData<UpnpRendererState> = MutableLiveData()
-
-    fun upnpState(): LiveData<UpnpRendererState> = upnpState
+    val contentDirectories =
+        upnpManager
+            .contentDirectories
+            .map { directories -> directories.map { SpinnerItem(it.device.friendlyName) } }
+            .asLiveData()
 
     override fun intention(intention: MainIntention) {
         viewModelScope.launch {
@@ -57,34 +59,6 @@ class MainViewModel @Inject constructor(
             PlayerButton.LOWER_VOLUME -> volumeManager.lowerVolume()
         }
     }
-
-    private fun observeUpnpState() {
-        viewModelScope.launch {
-            upnpManager.upnpRendererState.collect { state ->
-                upnpState.postValue(state)
-            }
-        }
-    }
-
-    private fun observeUpnpManager() {
-        with(upnpManager) {
-            Observable
-                .combineLatest<List<SpinnerItem>, List<SpinnerItem>, MainState>(
-                    observeRenderers(),
-                    observeContentDirectories(),
-                    BiFunction(MainState::Render)
-                )
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { newState -> viewModelScope.launch { updateState { newState } } }
-                .disposeBy(disposables)
-        }
-    }
-
-    private fun UpnpManager.observeContentDirectories() =
-        contentDirectories.map { directories -> directories.map { SpinnerItem(it.device.friendlyName) } }
-
-    private fun UpnpManager.observeRenderers() =
-        renderers.map { renderers -> renderers.map { SpinnerItem(it.device.friendlyName) } }
 
     private fun filterText(text: String) {
         viewModelScope.launch { filterDelegate.filter(text) }

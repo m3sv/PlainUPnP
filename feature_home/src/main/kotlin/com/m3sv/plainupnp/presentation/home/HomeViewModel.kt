@@ -1,6 +1,8 @@
 package com.m3sv.plainupnp.presentation.home
 
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.utils.disposeBy
@@ -14,21 +16,23 @@ import com.m3sv.plainupnp.upnp.UpnpDirectory
 import com.m3sv.plainupnp.upnp.didl.*
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import com.m3sv.plainupnp.upnp.usecase.ObserveUpnpStateUseCase
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 
 class HomeViewModel @Inject constructor(
     private val manager: UpnpManager,
-    private val filterDelegate: FilterDelegate,
+    filterDelegate: FilterDelegate,
     private val observeUpnpStateUseCase: ObserveUpnpStateUseCase
-) : BaseViewModel<HomeIntention, HomeState>(HomeState.Success()) {
+) : BaseViewModel<HomeIntention>() {
 
     init {
         observeUpnpState()
-        observeFilter()
     }
+
+    // TODO Filtering must be done in a separate use case, refactor this
+    @ExperimentalCoroutinesApi
+    val filterText: LiveData<Consumable<String>> = filterDelegate.state.asLiveData()
 
     override fun intention(intention: HomeIntention) {
         when (intention) {
@@ -36,6 +40,9 @@ class HomeViewModel @Inject constructor(
             is HomeIntention.BackPress -> manager.navigateTo(Destination.Back)
         }.enforce
     }
+
+    private val mutableState = MutableLiveData<HomeState>()
+    val state: LiveData<HomeState> = mutableState
 
     private fun observeUpnpState() {
         observeUpnpStateUseCase
@@ -58,29 +65,14 @@ class HomeViewModel @Inject constructor(
                             is UpnpDirectory.None -> Directory.None
                         }
 
-                        HomeState.Success(
-                            directory,
-                            Consumable("")
-                        )
+                        HomeState.Success(directory)
                     }
                 }
 
                 newState
             }
-            .subscribe { newState -> updateState { newState } }
+            .subscribe { newState -> mutableState.postValue(newState) }
             .disposeBy(disposables)
-    }
-
-    private fun observeFilter() {
-        viewModelScope.launch {
-            filterDelegate.state.collect { text ->
-                updateState { previousState ->
-                    (previousState as? HomeState.Success)
-                        ?.copy(filterText = Consumable(text))
-                        ?: previousState
-                }
-            }
-        }
     }
 
     private fun mapItems(items: List<DIDLObjectDisplay>): List<ContentItem> = items.map { item ->

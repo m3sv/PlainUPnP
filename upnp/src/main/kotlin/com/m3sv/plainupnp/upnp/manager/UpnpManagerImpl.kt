@@ -20,9 +20,10 @@ import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
+@ExperimentalCoroutinesApi
 class UpnpManagerImpl @Inject constructor(
-    override val renderers: RendererDiscoveryObservable,
-    override val contentDirectories: ContentDirectoryDiscoveryObservable,
+    private val renderer: RendererDiscoveryObservable,
+    private val contentDirectory: ContentDirectoryDiscoveryObservable,
     private val serviceController: UpnpServiceController,
     private val launchLocallyUseCase: LaunchLocallyUseCase,
     private val stateStore: UpnpStateStore,
@@ -60,15 +61,19 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
+    override val contentDirectories: Flow<List<DeviceDisplay>> = contentDirectory.subscribe()
+
+    override val renderers: Flow<List<DeviceDisplay>> = renderer.observe()
+
     override fun selectContentDirectory(position: Int) {
-        if (position !in contentDirectories.currentContentDirectories().indices) {
+        if (position !in contentDirectory.currentContentDirectories.indices) {
             Timber.d("Content directory position is outside of bounds, ignore")
             navigateTo(Destination.Empty)
             serviceController.selectedContentDirectory = null
             return
         }
 
-        val contentDirectory = contentDirectories.currentContentDirectories()[position].device
+        val contentDirectory = contentDirectory.currentContentDirectories[position].device
 
         if (contentDirectory != serviceController.selectedContentDirectory) {
             serviceController.selectedContentDirectory = contentDirectory
@@ -77,12 +82,12 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override fun selectRenderer(position: Int) {
-        if (position !in renderers.currentRenderers().indices) {
+        if (position !in renderer.currentRenderers.indices) {
             Timber.d("Renderer position is outside of bounds, ignore")
             return
         }
 
-        val renderer = renderers.currentRenderers()[position].device
+        val renderer = renderer.currentRenderers[position].device
 
         if (renderer is LocalDevice) {
             isLocal = true

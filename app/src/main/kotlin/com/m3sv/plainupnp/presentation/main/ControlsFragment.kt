@@ -130,8 +130,16 @@ class ControlsFragment : BaseFragment() {
             }
         }
 
-        viewModel.upnpState().observe(viewLifecycleOwner) { upnpRendererState ->
+        viewModel.upnpState.observe(viewLifecycleOwner) { upnpRendererState ->
             handleRendererState(upnpRendererState)
+        }
+
+        viewModel.renderers.observe(viewLifecycleOwner) { renderers ->
+            setRenderers(renderers)
+        }
+
+        viewModel.contentDirectories.observe(viewLifecycleOwner) { contentDirectories ->
+            setContentDirectories(contentDirectories)
         }
     }
 
@@ -177,11 +185,11 @@ class ControlsFragment : BaseFragment() {
         bottomSheetCallback.addOnSlideAction(action)
     }
 
-    fun setRenderers(items: List<SpinnerItem>) {
+    private fun setRenderers(items: List<SpinnerItem>) {
         rendererAdapter.setNewItems(items.addEmptyItem())
     }
 
-    fun setContentDirectories(items: List<SpinnerItem>) {
+    private fun setContentDirectories(items: List<SpinnerItem>) {
         contentDirectoriesAdapter.setNewItems(items.addEmptyItem())
     }
 
