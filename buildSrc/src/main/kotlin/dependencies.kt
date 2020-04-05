@@ -56,8 +56,7 @@ object Dependencies {
     )
 
     val coroutines = mapOf(
-        "core" to "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}",
-        "rxJava2" to "org.jetbrains.kotlinx:kotlinx-coroutines-rx2:${Versions.coroutines}"
+        "core" to "org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.coroutines}"
     )
 
     val dagger = mapOf(
@@ -68,13 +67,7 @@ object Dependencies {
 
     val glide = mapOf(
         "compiler" to "com.github.bumptech.glide:compiler:${Versions.glide}",
-        "core" to "com.github.bumptech.glide:glide:${Versions.glide}",
-        "recyclerView" to "com.github.bumptech.glide:recyclerview-integration:${Versions.glide}"
-    )
-
-    val rx = mapOf(
-        "android" to "io.reactivex.rxjava2:rxandroid:2.0.1",
-        "kotlin" to "com.github.ReactiveX:rxKotlin:2.3.0"
+        "core" to "com.github.bumptech.glide:glide:${Versions.glide}"
     )
 
     val test = mapOf(

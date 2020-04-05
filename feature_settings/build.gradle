@@ -13,6 +13,5 @@ dependencies {
     kapt Dependencies.dagger.compiler
 
     implementation Dependencies.coroutines.core
-    implementation Dependencies.coroutines.rxJava2
     compileOnly Dependencies.dagger.annotation
 }

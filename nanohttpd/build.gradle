@@ -2,7 +2,6 @@ apply from: '../scripts/android-library.gradle'
 
 dependencies {
     implementation Dependencies.coroutines.core
-    implementation Dependencies.coroutines.rxJava2
     implementation Dependencies.kotlin
     implementation Dependencies.timber
 
