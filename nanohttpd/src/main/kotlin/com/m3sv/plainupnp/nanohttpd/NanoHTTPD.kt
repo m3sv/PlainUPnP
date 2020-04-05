@@ -28,7 +28,7 @@ abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
 
     @Synchronized
     fun start() {
-        closeServerSocket()
+        serverSocket?.safeClose()
         startListenerThread()
     }
 
@@ -106,14 +106,6 @@ abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
         } catch (ignored: UnsupportedEncodingException) {
         }
         return decoded
-    }
-
-    private fun closeServerSocket() {
-        try {
-            serverSocket?.let { if (!it.isClosed) it.close() }
-        } catch (e: IOException) {
-            Timber.e(e)
-        }
     }
 
     private fun startListenerThread() {

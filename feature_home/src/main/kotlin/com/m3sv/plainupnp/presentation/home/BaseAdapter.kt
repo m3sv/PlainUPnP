@@ -4,10 +4,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.m3sv.plainupnp.common.ItemsDiffCallback
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.properties.Delegates
 
 abstract class BaseAdapter<T>(private val diffCallback: ItemsDiffCallback<T>) :
-        RecyclerView.Adapter<ItemViewHolder<*>>() {
+    RecyclerView.Adapter<ItemViewHolder<*>>() {
     private var originalItems = listOf<T>()
 
     var items: List<T> by Delegates.observable(mutableListOf()) { _, _, newValue ->
@@ -32,18 +36,27 @@ abstract class BaseAdapter<T>(private val diffCallback: ItemsDiffCallback<T>) :
         items = diffCallback.newItems
     }
 
-
     fun resetItems() {
         setWithDiff(originalItems)
     }
 
-    fun filterWithDiff(predicate: (T) -> Boolean) {
-        diffCallback.oldItems = diffCallback.newItems
-        diffCallback.newItems = originalItems.filter(predicate)
+    private var filterJob: Job? = null
 
-        val diffResult = DiffUtil.calculateDiff(diffCallback)
-        diffResult.dispatchUpdatesTo(this)
-        items = diffCallback.newItems
+    suspend fun filterWithDiff(predicate: (T) -> Boolean) {
+        filterJob?.cancel()
+        filterJob = withContext(Dispatchers.IO) {
+            launch {
+                diffCallback.oldItems = diffCallback.newItems
+                diffCallback.newItems = originalItems.filter(predicate)
+
+                val diffResult = DiffUtil.calculateDiff(diffCallback)
+
+                withContext(Dispatchers.Main) {
+                    diffResult.dispatchUpdatesTo(this@BaseAdapter)
+                    items = diffCallback.newItems
+                }
+            }
+        }
     }
 
     /**

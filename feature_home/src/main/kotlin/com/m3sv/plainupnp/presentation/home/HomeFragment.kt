@@ -7,10 +7,9 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
-import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.disappear
@@ -20,6 +19,7 @@ import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.ControlsSheetState
 import com.m3sv.plainupnp.presentation.home.databinding.HomeFragmentBinding
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment() {
@@ -116,7 +116,9 @@ class HomeFragment : BaseFragment() {
                         }
                     }
 
-                    state.filterText.consume()?.let(contentAdapter::filter)
+                    lifecycleScope.launch {
+                        state.filterText.consume()?.let { contentAdapter.filter(it) }
+                    }
                     binding.progress.disappear()
                 }
             }
@@ -137,21 +139,13 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun initRecyclerView() {
-        val glide = Glide.with(this)
-
-        contentAdapter = GalleryContentAdapter(glide) { position ->
+        contentAdapter = GalleryContentAdapter { position ->
             viewModel.intention(HomeIntention.ItemClick(position))
         }
-
-        val preloadSizeProvider = contentAdapter.PreloadSizeProvider()
-        val modelProvider = contentAdapter.PreloadModelProvider()
-        val preloader = RecyclerViewPreloader(glide, modelProvider, preloadSizeProvider, 10)
-        binding.content.addOnScrollListener(preloader)
 
         recyclerLayoutManager = LinearLayoutManager(requireContext())
         binding.content.run {
             setHasFixedSize(true)
-
             layoutManager = recyclerLayoutManager
             adapter = contentAdapter
         }
