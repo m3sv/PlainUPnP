@@ -1,6 +1,7 @@
 package com.m3sv.plainupnp
 
 import android.app.Application
+import android.os.StrictMode
 import com.m3sv.plainupnp.di.AppComponent
 import com.m3sv.plainupnp.di.ApplicationProviderModule
 import com.m3sv.plainupnp.di.DaggerAppComponent
@@ -17,7 +18,15 @@ class App : Application() {
             .applicationProviderModule(ApplicationProviderModule(this))
             .build()
 
-        if (BuildConfig.DEBUG)
+        if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+            StrictMode.setThreadPolicy(
+                StrictMode
+                    .ThreadPolicy
+                    .Builder()
+                    .detectAll()
+                    .build()
+            )
+        }
     }
 }
