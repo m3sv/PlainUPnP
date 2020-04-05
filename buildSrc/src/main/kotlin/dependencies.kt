@@ -8,7 +8,6 @@ object Versions {
     const val coroutines = "1.3.4"
     const val dagger = "2.24"
     const val detekt = "1.0.0"
-    const val glide = "4.11.0"
     const val jetty = "8.2.0.v20160908"
     const val kotlin = "1.3.70"
     const val minSdk = 21
@@ -34,6 +33,7 @@ object Dependencies {
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
     const val timber = "com.jakewharton.timber:timber:4.7.1"
     const val okHttp = "com.squareup.okhttp3:okhttp:4.2.2"
+    const val coil = "io.coil-kt:coil:0.9.5"
 
     val androidx = mapOf(
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",
@@ -65,13 +65,9 @@ object Dependencies {
         "core" to "com.google.dagger:dagger:${Versions.dagger}"
     )
 
-    val glide = mapOf(
-        "compiler" to "com.github.bumptech.glide:compiler:${Versions.glide}",
-        "core" to "com.github.bumptech.glide:glide:${Versions.glide}"
-    )
-
     val test = mapOf(
         "junit" to "junit:junit:4.12",
         "mockito" to "org.mockito:mockito-core:1.10.19"
     )
+
 }

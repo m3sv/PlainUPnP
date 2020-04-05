@@ -23,7 +23,6 @@ dependencies {
     compileOnly Dependencies.dagger.annotation
     kapt Dependencies.dagger.compiler
 
-    implementation Dependencies.glide.core
     implementation Dependencies.coroutines.core
 
     compileOnly Dependencies.dagger.annotation

@@ -39,7 +39,6 @@ This is a rewrite of trishika's [DroidUPnP](https://github.com/trishika/DroidUPn
 * MVVM with LiveData for presentation 
 * RxJava/RxKotlin
 * Coroutines
-* Glide 
 * Dagger 2 for dependency injection
 * Cling for UPnP functionality
 * CircleCI for CI/CD

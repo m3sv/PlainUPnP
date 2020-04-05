@@ -58,13 +58,11 @@ dependencies {
     compileOnly Dependencies.dagger.annotation
     kapt Dependencies.dagger.compiler
 
-    implementation Dependencies.glide.core
-    kapt Dependencies.glide.compiler
-
     implementation Dependencies.kotlin
     implementation Dependencies.okHttp
     implementation Dependencies.timber
 
+    implementation Dependencies.coil
     implementation Dependencies.androidx.preference
 
     implementation project(':common')
