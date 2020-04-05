@@ -1,13 +1,15 @@
 package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
-import io.reactivex.Observable
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 import javax.inject.Inject
 
 interface UpnpStateStore {
-    val state: Observable<ContentState>
+    val state: Flow<ContentState>
 
     suspend fun setState(state: ContentState)
     suspend fun peekState(): ContentState?
@@ -32,17 +34,17 @@ sealed class ContentState {
     data class Success(val upnpDirectory: UpnpDirectory) : ContentState()
 }
 
+@ExperimentalCoroutinesApi
 class UpnpStateRepository @Inject constructor() : UpnpStateStore {
 
-    private val contentSubject = PublishSubject.create<ContentState>()
+    private val contentChannel = BroadcastChannel<ContentState>(Channel.BUFFERED)
     private var currentState: ContentState? = null
 
-    override val state: Observable<ContentState> =
-        contentSubject.subscribeOn(Schedulers.computation())
+    override val state: Flow<ContentState> = contentChannel.asFlow()
 
     override suspend fun setState(state: ContentState) {
         currentState = state
-        contentSubject.onNext(state)
+        contentChannel.offer(state)
     }
 
     override suspend fun peekState(): ContentState? = currentState
