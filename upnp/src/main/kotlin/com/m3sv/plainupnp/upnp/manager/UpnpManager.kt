@@ -11,8 +11,6 @@ interface UpnpManager : UpnpNavigator {
     val contentDirectories: Observable<List<DeviceDisplay>>
     val upnpRendererState: Flow<UpnpRendererState>
 
-    fun startUpnpService()
-    fun stopUpnpService()
     fun resumeRendererUpdate()
     fun pauseRendererUpdate()
     fun selectContentDirectory(position: Int)

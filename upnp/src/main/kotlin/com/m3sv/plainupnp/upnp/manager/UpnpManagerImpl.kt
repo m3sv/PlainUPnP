@@ -254,14 +254,6 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    override fun startUpnpService() {
-        serviceController.start()
-    }
-
-    override fun stopUpnpService() {
-        serviceController.stop()
-    }
-
     override fun togglePlayback() {
         currentRendererState?.state?.let { state ->
             when (state) {
