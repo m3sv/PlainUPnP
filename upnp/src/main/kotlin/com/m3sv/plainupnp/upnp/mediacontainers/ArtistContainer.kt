@@ -25,36 +25,30 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.Context
 import android.provider.MediaStore
-import com.m3sv.plainupnp.common.ContentCache
 import org.fourthline.cling.support.model.container.Container
 import timber.log.Timber
 
 class ArtistContainer(
-        id: String,
-        parentID: String,
-        title: String,
-        creator: String,
-        baseURL: String,
-        ctx: Context,
-        private val cache: ContentCache
+    id: String,
+    parentID: String,
+    title: String,
+    creator: String,
+    baseURL: String,
+    private val ctx: Context
 ) : DynamicContainer(
-        id,
-        parentID,
-        title,
-        creator,
-        baseURL,
-        ctx,
-        MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI
+    id,
+    parentID,
+    title,
+    creator,
+    baseURL
 ) {
 
-    init {
-        Timber.d("Create ArtistContainer of id " + id + " , " + this.id)
-    }
+    private val uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI
 
     override fun getChildCount(): Int? {
         val columns = arrayOf(MediaStore.Audio.Artists._ID)
 
-        ctx.contentResolver.query(uri, columns, where, whereVal, orderBy).use { cursor ->
+        ctx.contentResolver.query(uri, columns, null, null, null).use { cursor ->
             return cursor?.count ?: 0
         }
     }
@@ -67,22 +61,21 @@ class ArtistContainer(
             if (moveToFirst()) {
                 do {
                     val artistId =
-                            getInt(getColumnIndex(MediaStore.Audio.Artists._ID)).toString()
+                        getInt(getColumnIndex(MediaStore.Audio.Artists._ID)).toString()
                     val artist =
-                            getString(getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST))
+                        getString(getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST))
 
                     Timber.d("Add album container: artistId:$artistId; artistArtist:$artist")
                     containers.add(
-                            AlbumContainer(
-                                    artistId,
-                                    id,
-                                    artist,
-                                    artist,
-                                    baseURL,
-                                    ctx,
-                                    artistId,
-                                    cache = cache
-                            )
+                        AlbumContainer(
+                            artistId,
+                            id,
+                            artist,
+                            artist,
+                            baseURL,
+                            ctx,
+                            artistId
+                        )
                     )
 
                 } while (moveToNext())

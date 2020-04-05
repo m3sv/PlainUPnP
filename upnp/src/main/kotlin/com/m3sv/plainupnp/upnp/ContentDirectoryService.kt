@@ -3,7 +3,6 @@ package com.m3sv.plainupnp.upnp
 import android.content.Context
 import android.content.SharedPreferences
 import android.text.TextUtils
-import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.upnp.mediacontainers.*
 import kotlinx.coroutines.runBlocking
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
@@ -16,6 +15,7 @@ import org.fourthline.cling.support.model.DIDLContent
 import org.fourthline.cling.support.model.SortCriterion
 import org.fourthline.cling.support.model.container.Container
 import timber.log.Timber
+import kotlin.LazyThreadSafetyMode.NONE
 
 class ContentDirectoryService : AbstractContentDirectoryService() {
 
@@ -25,9 +25,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     lateinit var sharedPref: SharedPreferences
 
-    lateinit var cache: ContentCache
-
-    private val appName by lazy(mode = LazyThreadSafetyMode.NONE) { context.getString(R.string.app_name) }
+    private val appName by lazy(NONE) { context.getString(R.string.app_name) }
 
     private val stringSplitter = TextUtils.SimpleStringSplitter(SEPARATOR)
 
@@ -69,15 +67,15 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 baseURL
             )
 
-            val rootImagesContainer: Container? = getRootImagesContainer(rootContainer)
-            val rootAudioContainer: Container? = getRootAudioContainer(rootContainer)
-            val rootVideoContainer: Container? = getRootVideoContainer(rootContainer)
+            val rootImagesContainer = getRootImagesContainer(rootContainer)
+            val rootAudioContainer = getRootAudioContainer(rootContainer)
+            val rootVideosContainer = getRootVideoContainer(rootContainer)
 
             val container: Container? = if (subtype.isEmpty()) {
                 when (type) {
                     ROOT_ID -> rootContainer
                     AUDIO_ID -> rootAudioContainer
-                    VIDEO_ID -> rootVideoContainer
+                    VIDEO_ID -> rootVideosContainer
                     IMAGE_ID -> rootImagesContainer
                     else -> throw noSuchObject
                 }
@@ -151,6 +149,38 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         }
     }
 
+    private fun getBrowseResult(container: Container): BrowseResult {
+        Timber.d("List container...")
+        val didl = DIDLContent()
+
+        // Get container first
+        for (c in container.containers)
+            didl.addContainer(c)
+
+        Timber.d("List item...")
+
+        // Then get item
+        for (i in container.items)
+            didl.addItem(i)
+
+        Timber.d("Return result...")
+
+        val count = container.childCount
+
+        Timber.d("Child count: $count")
+        val answer: String
+
+        try {
+            answer = DIDLParser().generate(didl)
+        } catch (ex: Exception) {
+            throw ContentDirectoryException(ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString())
+        }
+
+        Timber.d("Answer: $answer")
+
+        return BrowseResult(answer, count.toLong(), count.toLong())
+    }
+
     private fun getRootVideoContainer(rootContainer: BaseContainer): BaseContainer? =
         if (videoEnabled) {
             Timber.d("Fetch videos")
@@ -198,40 +228,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             }
         } else null
 
-    private fun getBrowseResult(container: Container): BrowseResult {
-        Timber.d("List container...")
-        val didl = DIDLContent()
-
-        // Get container first
-        for (c in container.containers)
-            didl.addContainer(c)
-
-        Timber.d("List item...")
-
-        // Then get item
-        for (i in container.items)
-            didl.addItem(i)
-
-        Timber.d("Return result...")
-
-        val count = container.childCount
-
-        Timber.d("Child count: $count")
-        val answer: String
-
-        try {
-            answer = DIDLParser().generate(didl)
-        } catch (ex: Exception) {
-            throw ContentDirectoryException(ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString())
-        }
-
-        Timber.d("Answer: $answer")
-
-        return BrowseResult(answer, count.toLong(), count.toLong())
-    }
-
-    private val noSuchObject = ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)
-
     private fun getAlbumContainer(
         albumId: String,
         parentId: String
@@ -243,8 +239,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         baseURL,
         context,
         null,
-        albumId,
-        cache = cache
+        albumId
     )
 
     private fun getArtistContainer(
@@ -257,8 +252,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         appName,
         baseURL,
         context,
-        artistId,
-        cache = cache
+        artistId
     )
 
     private fun getAllVideosContainer(): VideoContainer =
@@ -268,8 +262,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             context.getString(R.string.all),
             appName,
             baseURL,
-            context,
-            cache = cache
+            context
         )
 
     private fun getAllAudioContainer(): AudioContainer =
@@ -281,8 +274,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             baseURL,
             context,
             null,
-            null,
-            cache = cache
+            null
         )
 
     private fun getAllAlbumsContainer(): AlbumContainer =
@@ -293,8 +285,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             appName,
             baseURL,
             context,
-            null,
-            cache = cache
+            null
         )
 
     private fun getAllArtistsContainer(): ArtistContainer =
@@ -304,8 +295,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             context.getString(R.string.artist),
             appName,
             baseURL,
-            context,
-            cache
+            context
         )
 
     private fun getAllImagesContainer(): ImageContainer =
@@ -315,8 +305,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             context.getString(R.string.all),
             appName,
             baseURL,
-            context,
-            cache = cache
+            context.contentResolver
         )
 
     private val imagesEnabled
@@ -348,6 +337,9 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         const val AUDIO_PREFIX = "a-"
         const val IMAGE_PREFIX = "i-"
         const val DIRECTORY_PREFIX = "d-"
+
+        private val noSuchObject =
+            ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)
 
         fun isRoot(parentId: String?) =
             parentId?.compareTo(ROOT_ID.toString()) == 0

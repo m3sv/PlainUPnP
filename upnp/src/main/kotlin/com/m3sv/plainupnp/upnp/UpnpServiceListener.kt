@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
-import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.cling.AndroidUpnpService
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
@@ -20,10 +19,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class UpnpServiceListener @Inject constructor(
-    private val context: Context,
-    private val contentCache: ContentCache
-) {
+class UpnpServiceListener @Inject constructor(private val context: Context) {
 
     var upnpService: AndroidUpnpService? = null
         private set
@@ -44,8 +40,7 @@ class UpnpServiceListener @Inject constructor(
                     upnpService.controlPoint.search()
                     val localUpnpDevice = LocalUpnpDevice.getLocalDevice(
                         LocalServiceResourceProvider(context),
-                        context,
-                        contentCache
+                        context
                     )
                     upnpService.registry.addDevice(localUpnpDevice)
                 }

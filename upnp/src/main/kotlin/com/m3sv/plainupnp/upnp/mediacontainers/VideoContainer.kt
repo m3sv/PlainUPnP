@@ -25,7 +25,6 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.Context
 import android.provider.MediaStore
-import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
@@ -34,69 +33,68 @@ import org.seamless.util.MimeType
 import timber.log.Timber
 
 class VideoContainer(
-        id: String,
-        parentID: String,
-        title: String,
-        creator: String,
-        baseURL: String,
-        ctx: Context,
-        private val cache: ContentCache
+    id: String,
+    parentID: String,
+    title: String,
+    creator: String,
+    baseURL: String,
+    private val ctx: Context
 ) : DynamicContainer(
-        id,
-        parentID,
-        title,
-        creator,
-        baseURL,
-        ctx,
-        MediaStore.Video.Media.EXTERNAL_CONTENT_URI
+    id,
+    parentID,
+    title,
+    creator,
+    baseURL
 ) {
+
+    private val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 
     override fun getChildCount(): Int? {
         val columns = arrayOf(MediaStore.Video.Media._ID)
 
-        ctx.contentResolver.query(uri, columns, where, whereVal, orderBy).use { cursor ->
+        ctx.contentResolver.query(uri, columns, null, null, null).use { cursor ->
             return cursor?.count ?: 0
         }
     }
 
     override fun getContainers(): List<Container> {
         val columns = arrayOf(
-                MediaStore.Video.Media._ID,
-                MediaStore.Video.Media.TITLE,
-                MediaStore.Video.Media.DATA,
-                MediaStore.Video.Media.ARTIST,
-                MediaStore.Video.Media.MIME_TYPE,
-                MediaStore.Video.Media.SIZE,
-                MediaStore.Video.Media.DURATION,
-                MediaStore.Video.Media.HEIGHT,
-                MediaStore.Video.Media.WIDTH
+            MediaStore.Video.Media._ID,
+            MediaStore.Video.Media.TITLE,
+            MediaStore.Video.Media.DATA,
+            MediaStore.Video.Media.ARTIST,
+            MediaStore.Video.Media.MIME_TYPE,
+            MediaStore.Video.Media.SIZE,
+            MediaStore.Video.Media.DURATION,
+            MediaStore.Video.Media.HEIGHT,
+            MediaStore.Video.Media.WIDTH
         )
 
-        ctx.contentResolver.query(uri, columns, where, whereVal, orderBy)?.use { cursor ->
+        val start = System.currentTimeMillis()
+
+        ctx.contentResolver.query(uri, columns, null, null, null)?.use { cursor ->
             with(cursor) {
                 if (moveToFirst()) {
                     do {
                         val id = ContentDirectoryService.VIDEO_PREFIX + getInt(
-                                getColumnIndex(MediaStore.Video.Media._ID)
+                            getColumnIndex(MediaStore.Video.Media._ID)
                         )
                         val title =
-                                getString(getColumnIndexOrThrow(MediaStore.Video.Media.TITLE))
+                            getString(getColumnIndexOrThrow(MediaStore.Video.Media.TITLE))
                         val creator =
-                                getString(getColumnIndexOrThrow(MediaStore.Video.Media.ARTIST))
+                            getString(getColumnIndexOrThrow(MediaStore.Video.Media.ARTIST))
                         val filePath =
-                                getString(getColumnIndexOrThrow(MediaStore.Video.Media.DATA))
+                            getString(getColumnIndexOrThrow(MediaStore.Video.Media.DATA))
                         val mimeType =
-                                getString(getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE))
+                            getString(getColumnIndexOrThrow(MediaStore.Video.Media.MIME_TYPE))
                         val size =
-                                getLong(getColumnIndexOrThrow(MediaStore.Video.Media.SIZE))
+                            getLong(getColumnIndexOrThrow(MediaStore.Video.Media.SIZE))
                         val duration =
-                                getLong(getColumnIndexOrThrow(MediaStore.Video.Media.DURATION))
+                            getLong(getColumnIndexOrThrow(MediaStore.Video.Media.DURATION))
                         val height =
-                                getLong(getColumnIndexOrThrow(MediaStore.Images.Media.HEIGHT))
+                            getLong(getColumnIndexOrThrow(MediaStore.Images.Media.HEIGHT))
                         val width =
-                                getLong(getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH))
-
-                        cache.put(id, filePath)
+                            getLong(getColumnIndexOrThrow(MediaStore.Images.Media.WIDTH))
 
                         var extension = ""
                         val dot = filePath.lastIndexOf('.')
@@ -104,10 +102,10 @@ class VideoContainer(
                             extension = filePath.substring(dot).toLowerCase()
 
                         val res = Res(
-                                MimeType(
-                                        mimeType.substring(0, mimeType.indexOf('/')),
-                                        mimeType.substring(mimeType.indexOf('/') + 1)
-                                ), size, "http://$baseURL/$id$extension"
+                            MimeType(
+                                mimeType.substring(0, mimeType.indexOf('/')),
+                                mimeType.substring(mimeType.indexOf('/') + 1)
+                            ), size, "http://$baseURL/$id$extension"
                         )
                         res.duration = ((duration / (1000 * 60 * 60)).toString() + ":"
                                 + duration % (1000 * 60 * 60) / (1000 * 60) + ":"
@@ -121,6 +119,9 @@ class VideoContainer(
                 }
             }
         }
+
+        val end = System.currentTimeMillis()
+        Timber.d("Query took: ${(end - start) / 1000} seconds")
 
         return containers
     }

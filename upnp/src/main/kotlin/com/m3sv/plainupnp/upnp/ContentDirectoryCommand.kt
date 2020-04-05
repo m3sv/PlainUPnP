@@ -25,7 +25,8 @@ class ContentDirectoryCommand(
     private val contentDirectoryService: Service<*, *>?
         get() = if (controller.selectedContentDirectory == null)
             null
-        else (controller.selectedContentDirectory as CDevice).device?.findService(UDAServiceType("ContentDirectory"))
+        else
+            (controller.selectedContentDirectory as CDevice).device?.findService(UDAServiceType("ContentDirectory"))
 
     private fun buildContentList(
         parent: String?,
@@ -33,8 +34,8 @@ class ContentDirectoryCommand(
     ): List<DIDLObjectDisplay> {
         val result = mutableListOf<DIDLObjectDisplay>()
 
-        parent?.let {
-            result.add(DIDLObjectDisplay(ClingDIDLParentContainer(it)))
+        if (parent != null) {
+            result.add(DIDLObjectDisplay(ClingDIDLParentContainer(parent)))
         }
 
         for (item in didl.containers) {
@@ -51,14 +52,10 @@ class ContentDirectoryCommand(
             }
 
             result.add(DIDLObjectDisplay(clingItem))
-
-            Timber.v("Add item: %s", item.title)
-
-            for (p in item.properties)
-                Timber.v("%s %s", p.descriptorName, p.toString())
         }
 
         return result
+
     }
 
     fun browse(

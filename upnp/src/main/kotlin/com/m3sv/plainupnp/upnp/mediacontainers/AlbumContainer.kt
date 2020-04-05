@@ -3,32 +3,23 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
-import com.m3sv.plainupnp.common.ContentCache
 import org.fourthline.cling.support.model.container.Container
 import timber.log.Timber
 
 class AlbumContainer(
-        id: String,
-        parentID: String,
-        title: String,
-        creator: String,
-        baseURL: String,
-        ctx: Context,
-        private val artistId: String?,
-        uri: Uri = artistId?.let {
-            MediaStore.Audio.Artists.Albums.getContentUri("external", it.toLong())
-        } ?: MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-        private val cache: ContentCache
-) : DynamicContainer(
-        id,
-        parentID,
-        title,
-        creator,
-        baseURL,
-        ctx,
-        uri
-) {
+    id: String,
+    parentID: String,
+    title: String,
+    creator: String,
+    baseURL: String,
+    private val ctx: Context,
+    private val artistId: String?
+) : DynamicContainer(id, parentID, title, creator, baseURL) {
     private val artist: String? = null
+
+    private val uri: Uri = artistId?.let {
+        MediaStore.Audio.Artists.Albums.getContentUri("external", it.toLong())
+    } ?: MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI
 
     override fun getChildCount(): Int? {
         val columns: Array<String> = if (artistId == null)
@@ -36,7 +27,7 @@ class AlbumContainer(
         else
             arrayOf(MediaStore.Audio.Artists.Albums.ALBUM)
 
-        ctx.contentResolver.query(uri, columns, where, whereVal, orderBy).use { cursor ->
+        ctx.contentResolver.query(uri, columns, null, null, null).use { cursor ->
             return cursor?.count ?: 0
         }
     }
@@ -44,12 +35,14 @@ class AlbumContainer(
     override fun getContainers(): List<Container> {
         Timber.d("Get albums!")
 
+        val containers = mutableListOf<Container>()
+
         val columns: Array<String> = if (artistId == null)
             arrayOf(MediaStore.Audio.Albums._ID, MediaStore.Audio.Albums.ALBUM)
         else
             arrayOf(MediaStore.Audio.Artists.Albums.ALBUM)
 
-        ctx.contentResolver.query(uri, columns, where, whereVal, orderBy)?.use { cursor ->
+        ctx.contentResolver.query(uri, columns, null, null, null)?.use { cursor ->
             with(cursor) {
                 if (moveToFirst()) {
                     do {
@@ -60,7 +53,7 @@ class AlbumContainer(
                             album = getString(getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM))
                         } else {
                             album =
-                                    getString(getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM))
+                                getString(getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM))
 
                             albumId = resolveAlbumId(album, albumId)
                         }
@@ -68,17 +61,16 @@ class AlbumContainer(
                         if (albumId != null && album != null) {
                             Timber.d(" current $id albumId : $albumId album : $album")
                             containers.add(
-                                    AudioContainer(
-                                            albumId,
-                                            id,
-                                            album,
-                                            artist,
-                                            baseURL,
-                                            ctx,
-                                            null,
-                                            albumId,
-                                            cache = cache
-                                    )
+                                AudioContainer(
+                                    albumId,
+                                    id,
+                                    album,
+                                    artist,
+                                    baseURL,
+                                    ctx,
+                                    null,
+                                    albumId
+                                )
                             )
                         } else {
                             Timber.d("Unable to get albumId or album")
@@ -98,11 +90,12 @@ class AlbumContainer(
         val whereVal2 = arrayOf(album)
 
         ctx.contentResolver.query(
-                MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-                columns2, where2, whereVal2, null
+            MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
+            columns2, where2, whereVal2, null
         )?.use { cursor ->
             if (cursor.moveToFirst())
-                result = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Albums._ID)).toString()
+                result =
+                    cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Albums._ID)).toString()
         }
 
         return result

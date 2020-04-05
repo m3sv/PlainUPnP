@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.upnp
 
 import android.content.Context
 import android.preference.PreferenceManager
-import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
 import org.fourthline.cling.model.DefaultServiceManager
@@ -16,8 +15,7 @@ class LocalUpnpDevice {
     companion object {
         fun getLocalDevice(
             serviceResourceProvider: LocalServiceResourceProvider,
-            context: Context,
-            contentCache: ContentCache
+            context: Context
         ): LocalDevice {
             val details = DeviceDetails(
                 serviceResourceProvider.settingContentDirectoryName,
@@ -47,17 +45,11 @@ class LocalUpnpDevice {
                 DeviceIdentity(UDN.valueOf(UUID(0, 10).toString())),
                 type,
                 details,
-                getLocalService(
-                    context,
-                    contentCache
-                )
+                getLocalService(context)
             )
         }
 
-        private fun getLocalService(
-            context: Context,
-            contentCache: ContentCache
-        ) = (AnnotationLocalServiceBinder()
+        private fun getLocalService(context: Context) = (AnnotationLocalServiceBinder()
             .read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>)
             .apply {
                 manager = DefaultServiceManager(this, ContentDirectoryService::class.java).apply {
@@ -65,7 +57,6 @@ class LocalUpnpDevice {
                         service.context = context
                         service.baseURL = "${getLocalIpAddress(context).hostAddress}:$PORT"
                         service.sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-                        service.cache = contentCache
                     }
                 }
             }

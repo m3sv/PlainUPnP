@@ -5,4 +5,6 @@ dependencies {
     implementation Dependencies.coroutines.core
     implementation Dependencies.coroutines.rxJava2
     implementation Dependencies.androidx.material
+    compileOnly Dependencies.dagger.annotation
+    implementation Dependencies.timber
 }

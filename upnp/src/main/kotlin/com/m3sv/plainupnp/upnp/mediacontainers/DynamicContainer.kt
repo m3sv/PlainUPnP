@@ -23,8 +23,6 @@
 
 package com.m3sv.plainupnp.upnp.mediacontainers
 
-import android.content.Context
-import android.net.Uri
 import org.fourthline.cling.support.model.container.Container
 
 abstract class DynamicContainer(
@@ -32,18 +30,11 @@ abstract class DynamicContainer(
     parentID: String?,
     title: String?,
     creator: String?,
-    baseURL: String,
-    protected val ctx: Context,
-    protected val uri: Uri
+    baseURL: String
 ) : BaseContainer(id, parentID, title, creator, baseURL) {
-
-    protected var where: String? = null
-
-    protected var whereVal: Array<String> = emptyArray()
-
-    protected var orderBy: String? = null
 
     abstract override fun getChildCount(): Int?
 
     abstract override fun getContainers(): List<Container>
+
 }

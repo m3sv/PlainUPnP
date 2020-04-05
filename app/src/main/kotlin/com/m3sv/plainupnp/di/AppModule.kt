@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.upnp.UpnpServiceListener
 import dagger.Module
 import dagger.Provides
@@ -28,12 +27,5 @@ object AppModule {
     @Provides
     @JvmStatic
     @Singleton
-    fun provideServiceListener(
-        context: Context,
-        contentCache: ContentCache
-    ) =
-        UpnpServiceListener(
-            context,
-            contentCache
-        )
+    fun provideServiceListener(context: Context) = UpnpServiceListener(context)
 }
