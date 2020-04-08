@@ -3,8 +3,10 @@ package com.m3sv.plainupnp.upnp
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.upnp.filters.CallableContentDirectoryFilter
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
+import org.fourthline.cling.UpnpService
 
-class ContentDirectoryDiscovery(controller: UpnpServiceController) : DeviceDiscovery(controller) {
+class ContentDirectoryDiscovery(controller: UpnpServiceController, upnpService: UpnpService) :
+    DeviceDiscovery(controller, upnpService = upnpService) {
 
     override val callableFilter: CallableFilter =
         CallableContentDirectoryFilter()

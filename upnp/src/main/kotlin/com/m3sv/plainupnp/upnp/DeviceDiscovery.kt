@@ -27,27 +27,20 @@ package com.m3sv.plainupnp.upnp
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
+import org.fourthline.cling.UpnpService
 import timber.log.Timber
 import java.util.concurrent.CopyOnWriteArrayList
 
-abstract class DeviceDiscovery(protected val controller: UpnpServiceController) {
+abstract class DeviceDiscovery(
+    protected val controller: UpnpServiceController,
+    private val upnpService: UpnpService
+) {
 
     protected abstract val callableFilter: CallableFilter
 
-    private val browsingRegistryListener: BrowsingRegistryListener = BrowsingRegistryListener()
+    val browsingRegistryListener: BrowsingRegistryListener = BrowsingRegistryListener()
 
     private val observerList: CopyOnWriteArrayList<DeviceDiscoveryObserver> = CopyOnWriteArrayList()
-
-    fun resume(serviceListener: UpnpServiceListener) {
-        serviceListener.addListener(browsingRegistryListener)
-    }
-
-    fun pause(serviceListener: UpnpServiceListener) {
-        with(serviceListener) {
-            removeListener(browsingRegistryListener)
-            clearListener()
-        }
-    }
 
     inner class BrowsingRegistryListener : RegistryListener {
 
@@ -84,15 +77,31 @@ abstract class DeviceDiscovery(protected val controller: UpnpServiceController) 
         println(o)
         observerList.add(o)
 
-        controller
-            .serviceListener
-            .getFilteredDeviceList(callableFilter)
+        upnpService.getFilteredDeviceList(callableFilter)
             .forEach { o.addedDevice(UpnpDeviceEvent.Added(it)) }
     }
 
     fun removeObserver(o: DeviceDiscoveryObserver) {
         observerList.remove(o)
     }
+
+    private fun UpnpService.getFilteredDeviceList(filter: CallableFilter): Collection<UpnpDevice> {
+        val deviceList = mutableListOf<UpnpDevice>()
+
+        try {
+            registry?.devices?.forEach {
+                val device = CDevice(it)
+                filter.device = device
+
+                if (filter.call()) deviceList.add(device)
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+
+        return deviceList
+    }
+
 
     private fun notifyAdded(device: UpnpDevice) {
         for (o in observerList)

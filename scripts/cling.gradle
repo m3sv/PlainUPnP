@@ -1,5 +1,5 @@
 dependencies {
-    implementation('org.fourthline.cling:cling-support:3.0.2')
+    implementation('org.fourthline.cling:plaincling-support:3.0.0')
     implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: Versions.jetty
     implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: Versions.jetty
 }

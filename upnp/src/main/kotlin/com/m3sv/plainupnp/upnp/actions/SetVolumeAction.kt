@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp.actions
 
 import com.m3sv.plainupnp.upnp.UpnpServiceController
-import com.m3sv.plainupnp.upnp.UpnpServiceListener
+import org.fourthline.cling.UpnpService
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
@@ -13,9 +13,9 @@ import kotlin.coroutines.suspendCoroutine
 
 
 class SetVolumeAction @Inject constructor(
-    listener: UpnpServiceListener,
+    service: UpnpService,
     controller: UpnpServiceController
-) : RenderingAction(listener, controller) {
+) : RenderingAction(service, controller) {
 
     suspend operator fun invoke(volume: Int) = suspendCoroutine<Int> { continuation ->
         executeRenderingAction {

@@ -2,11 +2,11 @@ object Versions {
     const val architectureComponents = "2.1.0"
     const val buildTools = "29.0.0"
     const val cardView = "1.0.0"
-    const val cling = "3.0.1"
+    const val cling = "3.0.0"
     const val compileSdk = 29
     const val constraintLayout = "2.0.0-beta4"
     const val coroutines = "1.3.4"
-    const val dagger = "2.24"
+    const val dagger = "2.27"
     const val detekt = "1.0.0"
     const val jetty = "8.2.0.v20160908"
     const val kotlin = "1.3.70"

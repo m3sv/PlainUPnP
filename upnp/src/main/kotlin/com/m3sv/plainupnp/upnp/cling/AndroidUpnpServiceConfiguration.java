@@ -89,9 +89,7 @@ public class AndroidUpnpServiceConfiguration extends DefaultUpnpServiceConfigura
     public StreamClient createStreamClient() {
         // Use Jetty
         return new StreamClientImpl(
-                new StreamClientConfigurationImpl(
-                        getSyncProtocolExecutorService()
-                ) {
+                new StreamClientConfigurationImpl(getSyncProtocolExecutorService()) {
                     @Override
                     public String getUserAgentValue(int majorVersion, int minorVersion) {
                         // TODO: UPNP VIOLATION: Synology NAS requires User-Agent to contain

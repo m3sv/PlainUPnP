@@ -17,7 +17,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.common.*
+import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
+import com.m3sv.plainupnp.common.TriggerOnceStateAction
+import com.m3sv.plainupnp.common.VolumeIndicator
 import com.m3sv.plainupnp.common.utils.hideKeyboard
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.di.main.MainActivitySubComponent
@@ -26,8 +28,7 @@ import kotlin.LazyThreadSafetyMode.NONE
 
 
 class MainActivity : BaseActivity(),
-    NavController.OnDestinationChangedListener,
-    Shutdownable {
+    NavController.OnDestinationChangedListener {
 
     lateinit var mainActivitySubComponent: MainActivitySubComponent
 
@@ -44,9 +45,6 @@ class MainActivity : BaseActivity(),
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (savedInstanceState == null)
-            ShutdownDispatcher.addListener(this)
-
         inject()
         super.onCreate(savedInstanceState)
         volumeIndicator = VolumeIndicator(this)
@@ -80,12 +78,6 @@ class MainActivity : BaseActivity(),
     override fun onStop() {
         viewModel.intention(MainIntention.PauseUpnp)
         super.onStop()
-    }
-
-    override fun onDestroy() {
-        if (isFinishing)
-            ShutdownDispatcher.removeListener(this)
-        super.onDestroy()
     }
 
     private fun observeState() {
@@ -207,10 +199,6 @@ class MainActivity : BaseActivity(),
         mainActivitySubComponent =
             (applicationContext as App).appComponent.mainActivitySubComponent().create()
         mainActivitySubComponent.inject(this)
-    }
-
-    override fun shutdown() {
-        finishAndRemoveTask()
     }
 
     private fun setupBottomAppBarForHome() {

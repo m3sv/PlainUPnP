@@ -24,6 +24,4 @@ dependencies {
     kapt Dependencies.dagger.compiler
 
     implementation Dependencies.coroutines.core
-
-    compileOnly Dependencies.dagger.annotation
 }

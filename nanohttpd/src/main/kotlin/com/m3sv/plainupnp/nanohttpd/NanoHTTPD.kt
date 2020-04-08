@@ -33,7 +33,6 @@ abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
     }
 
     fun stop() {
-        Timber.d("Stop the server")
         serverSocket?.safeClose()
     }
 

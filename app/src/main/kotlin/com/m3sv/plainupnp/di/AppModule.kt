@@ -4,15 +4,14 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
-import com.m3sv.plainupnp.upnp.UpnpServiceListener
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 
 @Module
-object AppModule {
-
+object
+AppModule {
     @Provides
     @JvmStatic
     @Singleton
@@ -23,9 +22,4 @@ object AppModule {
     @Singleton
     fun provideSharedPreferences(app: Application): SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(app)
-
-    @Provides
-    @JvmStatic
-    @Singleton
-    fun provideServiceListener(context: Context) = UpnpServiceListener(context)
 }

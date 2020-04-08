@@ -9,8 +9,6 @@ interface UpnpServiceController {
 
     var selectedContentDirectory: UpnpDevice?
 
-    val serviceListener: UpnpServiceListener
-
     val contentDirectoryDiscovery: ContentDirectoryDiscovery
 
     val rendererDiscovery: RendererDiscovery

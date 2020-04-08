@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp.actions
 
 import com.m3sv.plainupnp.upnp.UpnpServiceController
-import com.m3sv.plainupnp.upnp.UpnpServiceListener
+import org.fourthline.cling.UpnpService
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
@@ -10,7 +10,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class MuteVolumeAction @Inject constructor(
-    listener: UpnpServiceListener,
+    listener: UpnpService,
     controller: UpnpServiceController
 ) : RenderingAction(listener, controller) {
 

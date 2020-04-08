@@ -1,16 +1,17 @@
 package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
+import org.fourthline.cling.UpnpService
 import org.fourthline.cling.model.meta.LocalDevice
 import javax.inject.Inject
 
-class UpnpServiceControllerImpl @Inject constructor(override val serviceListener: UpnpServiceListener) :
+class UpnpServiceControllerImpl @Inject constructor(private val upnpService: UpnpService) :
     UpnpServiceController {
 
     override val contentDirectoryDiscovery: ContentDirectoryDiscovery =
-        ContentDirectoryDiscovery(this)
+        ContentDirectoryDiscovery(this, upnpService)
 
-    override val rendererDiscovery: RendererDiscovery = RendererDiscovery(this)
+    override val rendererDiscovery: RendererDiscovery = RendererDiscovery(this, upnpService)
 
     override var selectedRenderer: UpnpDevice? = null
 
@@ -40,27 +41,25 @@ class UpnpServiceControllerImpl @Inject constructor(override val serviceListener
     }
 
     override fun start() {
-        rendererDiscovery.resume(serviceListener)
-        contentDirectoryDiscovery.resume(serviceListener)
-        serviceListener.bindService()
+        upnpService.addListenerSafe(rendererDiscovery.browsingRegistryListener)
+        upnpService.addListenerSafe(contentDirectoryDiscovery.browsingRegistryListener)
     }
 
     override fun stop() {
-        rendererDiscovery.pause(serviceListener)
-        contentDirectoryDiscovery.pause(serviceListener)
-        serviceListener.unbindService()
+        upnpService.removeListenerSafe(rendererDiscovery.browsingRegistryListener)
+        upnpService.removeListenerSafe(contentDirectoryDiscovery.browsingRegistryListener)
     }
 
     override fun addDevice(localDevice: LocalDevice) {
-        serviceListener.upnpService?.registry?.addDevice(localDevice)
+        upnpService.registry?.addDevice(localDevice)
     }
 
     override fun removeDevice(localDevice: LocalDevice) {
-        serviceListener.upnpService?.registry?.removeDevice(localDevice)
+        upnpService.registry?.removeDevice(localDevice)
     }
 
     override fun createRendererCommand(upnpInnerState: UpnpInnerState): RendererCommand? =
-        serviceListener.controlPoint?.let { controlPoint ->
+        upnpService.controlPoint?.let { controlPoint ->
             RendererCommand(
                 this,
                 controlPoint,
@@ -69,10 +68,27 @@ class UpnpServiceControllerImpl @Inject constructor(override val serviceListener
         }
 
     override fun createContentDirectoryCommand(): ContentDirectoryCommand? =
-        serviceListener.controlPoint?.let { controlPoint ->
+        upnpService.controlPoint?.let { controlPoint ->
             ContentDirectoryCommand(
                 controlPoint,
                 this
             )
         }
+
+
+    private fun UpnpService.addListenerSafe(registryListener: RegistryListener) {
+        registry?.run {
+            // Get ready for future device advertisements
+            addListener(CRegistryListener(registryListener))
+
+            // Now add all devices to the list we already know about
+            devices?.forEach {
+                registryListener.deviceAdded(CDevice(it))
+            }
+        }
+    }
+
+    private fun UpnpService.removeListenerSafe(registryListener: RegistryListener) {
+        registry?.removeListener(CRegistryListener(registryListener))
+    }
 }
