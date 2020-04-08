@@ -103,6 +103,7 @@ abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
         try {
             decoded = URLDecoder.decode(str, "UTF8")
         } catch (ignored: UnsupportedEncodingException) {
+            Timber.e(ignored)
         }
         return decoded
     }

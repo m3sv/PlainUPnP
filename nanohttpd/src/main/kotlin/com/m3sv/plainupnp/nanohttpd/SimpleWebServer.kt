@@ -114,9 +114,8 @@ open class SimpleWebServer(
                 val dot = f.canonicalPath.lastIndexOf('.')
 
                 if (dot >= 0) {
-                    mime =
-                        MIME_TYPES[f.canonicalPath.substring(dot + 1)
-                            .toLowerCase(Locale.getDefault())]
+                    mime = MIME_TYPES[f.canonicalPath.substring(dot + 1)
+                        .toLowerCase(Locale.getDefault())]
                 }
 
                 if (mime == null) {
