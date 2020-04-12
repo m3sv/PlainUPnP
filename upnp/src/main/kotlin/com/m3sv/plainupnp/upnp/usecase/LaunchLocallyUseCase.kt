@@ -3,7 +3,6 @@ package com.m3sv.plainupnp.upnp.usecase
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.m3sv.plainupnp.common.ContentCache
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
@@ -11,17 +10,10 @@ import com.m3sv.plainupnp.upnp.manager.RenderItem
 import timber.log.Timber
 import javax.inject.Inject
 
-data class LocalModel(
-    val uri: String,
-    val contentType: String
-)
-
-class LaunchLocallyUseCase @Inject constructor(
-    private val context: Context,
-    private val contentCache: ContentCache
-) {
+class LaunchLocallyUseCase @Inject constructor(private val context: Context) {
     fun execute(item: RenderItem) {
-        item.item.uri?.let { uri ->
+        val uri = item.item.uri
+        if (uri != null) {
             val contentType = when (item.item) {
                 is ClingAudioItem -> "audio/*"
                 is ClingImageItem -> "image/*"
@@ -29,22 +21,14 @@ class LaunchLocallyUseCase @Inject constructor(
                 else -> null
             }
 
-            contentType?.let {
-                LocalModel(
-                    contentCache.get(item.item.id) ?: uri,
-                    contentType
-                )
-            }?.let {
+            if (contentType != null) {
                 try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(it.uri)).apply {
-                        setDataAndType(Uri.parse(it.uri), it.contentType)
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri)).apply {
+                        setDataAndType(Uri.parse(uri), contentType)
+                        flags += Intent.FLAG_ACTIVITY_NEW_TASK
                     }
-                    // TODO Add title
-//                    val title = context.getString(R.string.play_with)
-                    val chooser = Intent.createChooser(intent, "")
-                        .apply { flags += Intent.FLAG_ACTIVITY_NEW_TASK }
                     if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(chooser)
+                        context.startActivity(intent)
                     }
                 } catch (e: Exception) {
                     Timber.e(e)
