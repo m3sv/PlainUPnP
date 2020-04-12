@@ -12,6 +12,9 @@ class LocalServiceResourceProvider @Inject constructor(private val context: Cont
     val appName: String = context.getString(R.string.app_name)
     val appUrl: String = context.getString(R.string.app_url)
     val settingContentDirectoryName = getSettingContentDirectoryName(context)
+
+    // TODO have different model number for different flavors
+    val modelNumber = context.getString(R.string.model_number)
     val appVersion: String
         get() {
             var result = "1.0"

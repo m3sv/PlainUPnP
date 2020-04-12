@@ -19,16 +19,17 @@ class LocalUpnpDevice {
         ): LocalDevice {
             val details = DeviceDetails(
                 serviceResourceProvider.settingContentDirectoryName,
-
                 ManufacturerDetails(
                     serviceResourceProvider.appName,
                     serviceResourceProvider.appUrl
                 ),
                 ModelDetails(
                     serviceResourceProvider.appName,
+                    serviceResourceProvider.appUrl,
+                    serviceResourceProvider.modelNumber,
                     serviceResourceProvider.appUrl
                 ),
-                serviceResourceProvider.appName,
+                serviceResourceProvider.appVersion,
                 serviceResourceProvider.appVersion
             )
 

@@ -19,7 +19,7 @@
     <string name="copyright" translatable="false">Copyright</string>
     <string name="model_url" translatable="false">Model URL</string>
     <string name="presention_url" translatable="false">Presentation URL</string>
-    <string name="model_number" translatable="false">Model number</string>
+    <string name="model_number" translatable="false">2.1.0-PlayStore</string>
     <string name="model_desc" translatable="false">Model description</string>
     <string name="about_copyright" translatable="false">Copyright © 2019 Vadym Shavalda</string>
     <string name="enable_thumbnails_key" translatable="false">pref_enable_thumbnails</string>
@@ -31,7 +31,7 @@
     <string name="notification_channel_description" translatable="false">Indicates that PlainUPnP server is running</string>
 
     <string name="version">Version</string>
-    <string name="app_url">Placeholder</string>
+    <string name="app_url" translatable="false">https://github.com/m3sv/PlainUPnP</string>
     <string name="home">Home</string>
     <string name="active_content_directory_description">Activate a local Content Directory server</string>
     <string name="content_directory_title">Content Directory</string>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="version">Versie</string>
-    <string name="app_url">Plaatshouder</string>
     <string name="home">Home</string>
     <string name="active_content_directory_description">Een lokale Content Directory-server activeren</string>
     <string name="content_directory_title">Inhoud Directory</string>
