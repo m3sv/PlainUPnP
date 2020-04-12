@@ -46,7 +46,7 @@ dependencies {
     implementation Dependencies.androidx.lifecycle.liveDataKtx
     implementation Dependencies.androidx.lifecycle.viewModelKtx
     implementation Dependencies.androidx.lifecycle.lifecycleKtx
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
+    implementation Dependencies.androidx.lifecycle.liveDataKtx
 
     implementation Dependencies.androidx.navigation.fragment
     implementation Dependencies.androidx.navigation.ui
@@ -61,19 +61,16 @@ dependencies {
     implementation Dependencies.kotlin
     implementation Dependencies.timber
 
-    implementation Dependencies.androidx.preference
+    implementation Dependencies.glide
 
-    implementation project(':common')
-    implementation project(':upnp')
-
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-
-    implementation "org.nanohttpd:nanohttpd:2.3.1"
-    implementation "org.nanohttpd:nanohttpd-webserver:2.3.1"
-
+    implementation Dependencies.nanohttpd.core
+    implementation Dependencies.nanohttpd.webserver
 
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
+
+    implementation project(':common')
+    implementation project(':upnp')
 }
 
 detekt {

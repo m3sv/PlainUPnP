@@ -1,9 +1,0 @@
-apply from: '../scripts/android-library.gradle'
-
-dependencies {
-    implementation Dependencies.coroutines.core
-    implementation Dependencies.kotlin
-    implementation Dependencies.timber
-
-    implementation project(":common")
-}
