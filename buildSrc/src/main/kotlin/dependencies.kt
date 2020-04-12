@@ -11,6 +11,7 @@ object Versions {
     const val jetty = "8.2.0.v20160908"
     const val kotlin = "1.3.70"
     const val minSdk = 21
+    const val nanohttpd = "2.3.1"
     const val navigation = "2.3.0-alpha03"
     const val material = "1.2.0-alpha05"
     const val recyclerView = "1.1.0"
@@ -31,11 +32,13 @@ object ClasspathDependencies {
 object Dependencies {
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
     const val timber = "com.jakewharton.timber:timber:4.7.1"
-
+    const val glide = "com.github.bumptech.glide:glide:4.11.0"
+    const val javaxCdi = "javax.enterprise:cdi-api:2.0.SP1"
     val androidx = mapOf(
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",
         "cardView" to "androidx.cardview:cardview:${Versions.cardView}",
         "constraintLayout" to "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}",
+        "coreKtx" to "androidx.core:core-ktx:1.2.0",
         "material" to "com.google.android.material:material:${Versions.material}",
         "lifecycle" to mapOf(
             "extensions" to "androidx.lifecycle:lifecycle-extensions:${Versions.architectureComponents}",
@@ -60,6 +63,11 @@ object Dependencies {
         "annotation" to "javax.inject:javax.inject:1",
         "compiler" to "com.google.dagger:dagger-compiler:${Versions.dagger}",
         "core" to "com.google.dagger:dagger:${Versions.dagger}"
+    )
+
+    val nanohttpd = mapOf(
+        "core" to "org.nanohttpd:nanohttpd:${Versions.nanohttpd}",
+        "webserver" to "org.nanohttpd:nanohttpd-webserver:${Versions.nanohttpd}"
     )
 
     val test = mapOf(

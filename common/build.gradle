@@ -4,6 +4,8 @@ apply from: '../scripts/cling.gradle'
 dependencies {
     implementation Dependencies.coroutines.core
     implementation Dependencies.androidx.material
+
     compileOnly Dependencies.dagger.annotation
+
     implementation Dependencies.timber
 }

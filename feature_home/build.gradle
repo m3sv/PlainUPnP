@@ -6,10 +6,6 @@ android {
 }
 
 dependencies {
-    implementation project(':app')
-    implementation project(':common')
-    implementation project(':upnp')
-
     implementation Dependencies.androidx.recyclerView
     implementation Dependencies.androidx.constraintLayout
     implementation Dependencies.androidx.lifecycle.extensions
@@ -24,4 +20,8 @@ dependencies {
     kapt Dependencies.dagger.compiler
 
     implementation Dependencies.coroutines.core
+
+    implementation project(':app')
+    implementation project(':common')
+    implementation project(':upnp')
 }
