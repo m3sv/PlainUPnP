@@ -59,14 +59,15 @@ dependencies {
     kapt Dependencies.dagger.compiler
 
     implementation Dependencies.kotlin
-    implementation Dependencies.okHttp
     implementation Dependencies.timber
 
-    implementation Dependencies.coil
     implementation Dependencies.androidx.preference
 
     implementation project(':common')
     implementation project(':upnp')
+
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+
 
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito

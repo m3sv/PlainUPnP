@@ -49,8 +49,7 @@ class LocalUpnpDevice {
             )
         }
 
-        private fun getLocalService(context: Context) = (AnnotationLocalServiceBinder()
-            .read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>)
+        private fun getLocalService(context: Context) = getLocalService()
             .apply {
                 manager = DefaultServiceManager(this, ContentDirectoryService::class.java).apply {
                     (implementation as ContentDirectoryService).let { service ->
@@ -60,5 +59,8 @@ class LocalUpnpDevice {
                     }
                 }
             }
+
+        private fun getLocalService() = (AnnotationLocalServiceBinder()
+            .read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>)
     }
 }

@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.nanohttpd
 
+import android.net.Uri
 import timber.log.Timber
 import java.io.*
 import java.net.URLEncoder
@@ -133,81 +134,75 @@ open class SimpleWebServer(
     }
 
     protected fun serveFile(
-        inputStream: InputStream,
-        f: File,
+        fileUri: Uri,
         mime: String,
+        inputStream: FileDescriptor,
         header: Map<String, String>
     ): Response {
         var res: Response = FORBIDDEN_READING_FAILED
 
         try {
-            // Calculate etag
-            val eTag =
-                Integer.toHexString(("${f.absolutePath}${f.lastModified()}${f.length()}").hashCode())
+            val eTag = Integer.toHexString((fileUri.toString()).hashCode())
 
-            // Support (simple) skipping:
             var startFrom: Long = 0
             var endAt: Long = -1
             var range: String? = header["range"]
-            range?.let {
-                if (it.startsWith("bytes=")) {
-                    range = it.substring("bytes=".length)
-                    val minus = it.indexOf('-')
-                    try {
-                        if (minus > 0) {
-                            startFrom = java.lang.Long.parseLong(it.substring(0, minus))
-                            endAt = java.lang.Long.parseLong(it.substring(minus + 1))
-                        }
-                    } catch (ignored: NumberFormatException) {
-                    }
+
+            if (range != null && range.startsWith("bytes=")) {
+                range = range.substring("bytes=".length)
+                val minusIndex = range.indexOf('-')
+
+                if (minusIndex > 0) {
+                    startFrom = range.substring(0, minusIndex).toLongOrNull() ?: 0L
+                    endAt = range.substring(minusIndex + 1).toLongOrNull() ?: -1L
                 }
             }
 
-            // Change return code and add Content-Range header when skipping is requested
-            val fileLen = f.length()
+            val fis = FileInputStream(inputStream)
+            val fileLen = fis.available()
+
             if (range != null && startFrom >= 0) {
                 if (startFrom >= fileLen) {
                     res = Response(
                         Response.Status.RANGE_NOT_SATISFIABLE,
                         MIME_PLAINTEXT,
                         ""
-                    ).also {
-                        it.addHeader("Content-Range", "bytes 0-0/$fileLen")
-                        it.addHeader("ETag", eTag)
+                    ).apply {
+                        addHeader("Content-Range", "bytes 0-0/$fileLen")
+                        addHeader("ETag", eTag)
                     }
-
                 } else {
                     if (endAt < 0) {
-                        endAt = fileLen - 1
+                        endAt = fileLen - 1L
                     }
-                    var newLen = endAt - startFrom + 1
+                    var newLen = endAt - startFrom
                     if (newLen < 0) {
                         newLen = 0
                     }
 
                     val dataLen = newLen
-                    val fis = object : FileInputStream(f) {
+                    val bufferedInputStream = object : FileInputStream(inputStream) {
                         override fun available(): Int {
                             return dataLen.toInt()
                         }
                     }
-                    fis.skip(startFrom)
+                    bufferedInputStream.skip(startFrom)
 
-                    res = Response(Response.Status.PARTIAL_CONTENT, mime, fis)
-                        .also {
-                            it.addHeader("Content-Length", "" + dataLen)
-                            it.addHeader("Content-Range", "bytes $startFrom-$endAt/$fileLen")
-                            it.addHeader("ETag", eTag)
+                    res = Response(Response.Status.PARTIAL_CONTENT, mime, bufferedInputStream)
+                        .apply {
+                            addHeader("Content-Length", dataLen.toString())
+                            addHeader("Content-Range", "bytes $startFrom-$endAt/$fileLen")
+                            addHeader("ETag", eTag)
                         }
                 }
             } else {
                 res = if (eTag == header["if-none-match"])
                     Response(Response.Status.NOT_MODIFIED, mime, "")
                 else {
-                    Response(Response.Status.OK, mime, inputStream)
-                        .also {
-                            it.addHeader("Content-Length", "" + fileLen)
-                            it.addHeader("ETag", eTag)
+                    Response(Response.Status.OK, mime, fis)
+                        .apply {
+                            addHeader("Content-Length", fileLen.toString())
+                            addHeader("ETag", eTag)
                         }
                 }
             }
@@ -216,10 +211,7 @@ open class SimpleWebServer(
         }
 
         // Announce that the file server accepts partial content requests
-        res.addHeader(
-            "Accept-Ranges",
-            "bytes"
-        )
+        res.addHeader("Accept-Ranges", "bytes")
 
         return res
     }
@@ -244,13 +236,13 @@ open class SimpleWebServer(
             }
         }
 
-        val files = Arrays.asList(*f.list { dir, name -> File(dir, name).isFile })
+        val files = f.list { dir, name -> File(dir, name).isFile } ?: arrayOf()
         files.sort()
-        val directories = Arrays.asList(*f.list { dir, name -> File(dir, name).isDirectory })
+        val directories = f.list { dir, name -> File(dir, name).isDirectory } ?: arrayOf()
         directories.sort()
         if (up != null || directories.size + files.size > 0) {
             msg.append("<ul>")
-            if (up != null || directories.size > 0) {
+            if (up != null || directories.isNotEmpty()) {
                 msg.append("<section class=\"directories\">")
                 if (up != null) {
                     msg.append("<li><a rel=\"directory\" href=\"")
@@ -267,7 +259,7 @@ open class SimpleWebServer(
                 }
                 msg.append("</section>")
             }
-            if (files.size > 0) {
+            if (files.isNotEmpty()) {
                 msg.append("<section class=\"files\">")
                 for (i in files.indices) {
                     val file = files[i]

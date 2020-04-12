@@ -194,8 +194,8 @@ class RendererCommand(
 
     }
 
-    private fun updateMediaInfo() = executeAVAction {
-        object : GetMediaInfo(it) {
+    private fun updateMediaInfo() = executeAVAction { service ->
+        object : GetMediaInfo(service) {
             override fun received(arg0: ActionInvocation<*>, arg1: MediaInfo) {
                 innerState.mediaInfo = arg1
             }
@@ -292,15 +292,6 @@ class RendererCommand(
         getAVTransportService()?.let { service ->
             controlPoint.execute(callback.invoke(service))
         }
-    }
-
-
-    fun updateFull() {
-        updateMediaInfo()
-        updatePositionInfo()
-        updateVolume()
-        updateMute()
-        updateTransportInfo()
     }
 
     private suspend fun updateInfo() {

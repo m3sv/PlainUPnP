@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.observe
-import coil.api.load
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.BottomSheetCallback
@@ -225,7 +225,7 @@ class ControlsFragment : BaseFragment() {
     }
 
     private fun setThumbnail(url: String) {
-        binding.art.load(url)
+        Glide.with(this).load(url).into(binding.art)
     }
 
     private fun setThumbnail(@DrawableRes resource: Int) {
