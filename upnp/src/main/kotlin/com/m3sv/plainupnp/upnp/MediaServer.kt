@@ -6,43 +6,43 @@ import android.net.Uri
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
-import com.m3sv.plainupnp.nanohttpd.MIME_PLAINTEXT
-import com.m3sv.plainupnp.nanohttpd.Method
-import com.m3sv.plainupnp.nanohttpd.Response
-import com.m3sv.plainupnp.nanohttpd.SimpleWebServer
+import fi.iki.elonen.NanoHTTPD
 import timber.log.Timber
+import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 
 class MediaServer @Inject constructor(private val context: Context) :
-    SimpleWebServer(null, PORT, null, true) {
+    SimpleInputStreamServer(null, PORT, listOf(), true) {
 
-    override fun serve(
-        uri: String,
-        method: Method,
-        headers: Map<String, String>,
-        params: Map<String, String>,
-        files: Map<String, String>
-    ): Response {
-        Timber.i("Serve uri: $uri")
-        return try {
-            val obj = getFileServerObject(uri)
+    override fun serve(session: IHTTPSession): Response = try {
+        val obj = getFileServerObject(session.uri)
 
-            Timber.i("Will serve: %s", obj)
-            Timber.i("Headers: $headers")
+        Timber.i("Will serve: %s", obj)
+        Timber.i("Headers: ${session.headers}")
 
-            serveFile(obj.fileUri, obj.mime, obj.inputStream.fileDescriptor, headers).apply {
-                addHeader("realTimeInfo.dlna.org", "DLNA.ORG_TLAG=*")
-                addHeader("contentFeatures.dlna.org", "")
-                addHeader("transferMode.dlna.org", "Streaming")
-                addHeader(
-                    "Server",
-                    "DLNADOC/1.50 UPnP/1.0 Cling/2.0 PlainUPnP/" + "0.0" + " Android/" + Build.VERSION.RELEASE
-                )
-            }
-        } catch (e: InvalidIdentifierException) {
-            Response(Response.Status.NOT_FOUND, MIME_PLAINTEXT, "Error 404, file not found.")
+        serveFile(
+            obj.fileUri.toString(),
+            session.headers,
+            obj.inputStream.fileDescriptor,
+            obj.mime
+        ).apply {
+            addHeader("realTimeInfo.dlna.org", "DLNA.ORG_TLAG=*")
+            addHeader("contentFeatures.dlna.org", "")
+            addHeader("transferMode.dlna.org", "Streaming")
+            addHeader(
+                "Server",
+                "DLNADOC/1.50 UPnP/1.0 Cling/2.0 PlainUPnP/" + "0.0" + " Android/" + Build.VERSION.RELEASE
+            )
         }
+    } catch (e: InvalidIdentifierException) {
+        val stream = "Error 404, file not found.".byteInputStream(StandardCharsets.UTF_8)
+        NanoHTTPD.newFixedLengthResponse(
+            Response.Status.NOT_FOUND,
+            MIME_PLAINTEXT,
+            stream,
+            stream.available().toLong()
+        )
     }
 
     inner class InvalidIdentifierException(message: String) : java.lang.Exception(message)
