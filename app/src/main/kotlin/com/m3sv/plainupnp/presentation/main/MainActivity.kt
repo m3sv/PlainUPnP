@@ -191,11 +191,13 @@ class MainActivity : BaseActivity(),
     }
 
     private fun animateChevronArrow(isHidden: Boolean) {
-        if (isHidden) {
-            arrowUpAnimator.start()
+        val animator = if (isHidden) {
+            arrowUpAnimator
         } else {
-            arrowDownAnimator.start()
+            arrowDownAnimator
         }
+
+        animator.start()
     }
 
     private fun setupBottomNavigationListener() {
