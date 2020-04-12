@@ -22,6 +22,7 @@ const val MIME_PLAINTEXT = "text/plain"
 const val MIME_DEFAULT_BINARY = "application/octet-stream"
 
 abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
+
     private val tempFileManagerFactory = DefaultTempFileManagerFactory()
 
     private var serverSocket: ServerSocket? = null
@@ -109,43 +110,42 @@ abstract class NanoHTTPD(private val hostName: String?, private val port: Int) {
     }
 
     private fun startListenerThread() {
-        serverSocket = ServerSocket().apply {
+        serverSocket = ServerSocket().also { serverSocket ->
             GlobalScope.launch(Dispatchers.IO) {
                 val socketAddress = if (hostName == null)
                     InetSocketAddress(port)
                 else
                     InetSocketAddress(hostName, port)
 
-                bind(socketAddress)
+                serverSocket.bind(socketAddress)
+
                 do {
                     try {
-                        val finalAccept = accept()
+                        val finalAccept = serverSocket.accept()
                         val inputStream = finalAccept.getInputStream()
-                        if (inputStream == null) {
+
+                        var outputStream: OutputStream? = null
+                        val tempFileManager = tempFileManagerFactory.create()
+                        try {
+                            outputStream = finalAccept.getOutputStream()
+                            HTTPSession(
+                                this@NanoHTTPD,
+                                tempFileManager,
+                                inputStream,
+                                outputStream
+                            ).execute()
+                        } catch (e: IOException) {
+                            Timber.e(e)
+                        } finally {
+                            outputStream?.safeClose()
+                            inputStream.safeClose()
                             finalAccept.safeClose()
-                        } else {
-                            var outputStream: OutputStream? = null
-                            try {
-                                outputStream = finalAccept.getOutputStream()
-                                val tempFileManager = tempFileManagerFactory.create()
-                                HTTPSession(
-                                    this@NanoHTTPD,
-                                    tempFileManager,
-                                    inputStream,
-                                    outputStream
-                                ).execute()
-                            } catch (e: IOException) {
-                                Timber.e(e)
-                            } finally {
-                                outputStream?.safeClose()
-                                inputStream.safeClose()
-                                finalAccept.safeClose()
-                            }
                         }
                     } catch (e: IOException) {
                         Timber.e(e)
+                        serverSocket.safeClose()
                     }
-                } while (!isClosed)
+                } while (!serverSocket.isClosed)
             }
         }
     }

@@ -13,7 +13,6 @@ object Versions {
     const val minSdk = 21
     const val navigation = "2.3.0-alpha03"
     const val material = "1.2.0-alpha05"
-    const val okHttp = "4.4.1"
     const val recyclerView = "1.1.0"
     const val supportLibrary = "1.1.0"
     const val targetSdk = 29
@@ -32,8 +31,6 @@ object ClasspathDependencies {
 object Dependencies {
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
     const val timber = "com.jakewharton.timber:timber:4.7.1"
-    const val okHttp = "com.squareup.okhttp3:okhttp:4.2.2"
-    const val coil = "io.coil-kt:coil:0.9.5"
 
     val androidx = mapOf(
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",

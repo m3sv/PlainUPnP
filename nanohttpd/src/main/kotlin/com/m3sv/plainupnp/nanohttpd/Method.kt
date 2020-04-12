@@ -12,7 +12,10 @@ enum class Method {
 
     companion object {
         @JvmStatic
-        fun lookup(method: String): Method? =
-            values().find { it.toString().equals(method, ignoreCase = true) }
+        fun lookup(method: String?): Method? =
+            if (method == null)
+                null
+            else
+                values().find { it.toString().equals(method, ignoreCase = true) }
     }
 }
