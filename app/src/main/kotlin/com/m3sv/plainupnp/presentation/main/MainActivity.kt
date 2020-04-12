@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
+import com.google.android.material.bottomappbar.BottomAppBar
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
@@ -163,8 +164,17 @@ class MainActivity : BaseActivity(),
         }
 
         with(binding.bottomBar) {
+            clearSearchItemInput()
             replaceMenu(bottomBarMenu)
             setupSearchMenuItem(menu, false)
+        }
+    }
+
+    private fun BottomAppBar.clearSearchItemInput() {
+        menu.findItem(R.id.menu_search)?.let { item ->
+            (item.actionView as SearchView).apply {
+                setQuery("", true)
+            }
         }
     }
 
