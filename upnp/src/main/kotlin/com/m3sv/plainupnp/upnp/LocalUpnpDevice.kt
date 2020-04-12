@@ -41,10 +41,22 @@ class LocalUpnpDevice {
 
             val type = UDADeviceType("MediaServer", 1)
 
+            val iconInputStream = context.resources.openRawResource(R.raw.ic_launcher_round)
+
+            val icon = Icon(
+                "image/png",
+                128,
+                128,
+                32,
+                "plainupnp-icon",
+                iconInputStream
+            )
+
             return LocalDevice(
                 DeviceIdentity(UDN.valueOf(UUID(0, 10).toString())),
                 type,
                 details,
+                icon,
                 getLocalService(context)
             )
         }
