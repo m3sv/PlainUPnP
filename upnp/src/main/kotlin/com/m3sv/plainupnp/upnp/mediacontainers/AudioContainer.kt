@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.upnp.mediacontainers
 
-import android.content.Context
+import android.content.ContentResolver
 import android.provider.MediaStore
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.PersonWithRole
@@ -16,7 +16,7 @@ class AudioContainer(
     title: String,
     creator: String?,
     baseURL: String,
-    private val ctx: Context,
+    private val contentResolver: ContentResolver,
     artist: String?,
     albumId: String?
 ) : DynamicContainer(id, parentID, title, creator, baseURL) {
@@ -43,7 +43,13 @@ class AudioContainer(
     override fun getChildCount(): Int? {
         val columns = arrayOf(MediaStore.Audio.Media._ID)
 
-        ctx.contentResolver.query(uri, columns, where, whereVal, orderBy).use { cursor ->
+        contentResolver.query(
+            uri,
+            columns,
+            where,
+            whereVal,
+            orderBy
+        ).use { cursor ->
             return cursor?.count ?: 0
         }
     }
@@ -60,7 +66,7 @@ class AudioContainer(
             MediaStore.Audio.Media.ALBUM
         )
 
-        ctx.contentResolver.query(uri, columns, where, whereVal, orderBy)?.use { cursor ->
+        contentResolver.query(uri, columns, where, whereVal, orderBy)?.use { cursor ->
             with(cursor) {
                 if (moveToFirst()) {
                     do {

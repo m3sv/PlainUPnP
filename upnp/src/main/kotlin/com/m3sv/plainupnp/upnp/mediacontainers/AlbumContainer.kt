@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.upnp.mediacontainers
 
-import android.content.Context
+import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
 import org.fourthline.cling.support.model.container.Container
@@ -12,7 +12,7 @@ class AlbumContainer(
     title: String,
     creator: String,
     baseURL: String,
-    private val ctx: Context,
+    private val contentResolver: ContentResolver,
     private val artistId: String?
 ) : DynamicContainer(id, parentID, title, creator, baseURL) {
     private val artist: String? = null
@@ -27,9 +27,16 @@ class AlbumContainer(
         else
             arrayOf(MediaStore.Audio.Artists.Albums.ALBUM)
 
-        ctx.contentResolver.query(uri, columns, null, null, null).use { cursor ->
-            return cursor?.count ?: 0
-        }
+        contentResolver
+            .query(
+                uri,
+                columns,
+                null,
+                null,
+                null
+            ).use { cursor ->
+                return cursor?.count ?: 0
+            }
     }
 
     override fun getContainers(): List<Container> {
@@ -42,7 +49,7 @@ class AlbumContainer(
         else
             arrayOf(MediaStore.Audio.Artists.Albums.ALBUM)
 
-        ctx.contentResolver.query(
+        contentResolver.query(
             uri,
             columns,
             null,
@@ -81,7 +88,7 @@ class AlbumContainer(
                             album,
                             artist,
                             baseURL,
-                            ctx,
+                            contentResolver,
                             null,
                             albumId
                         )
@@ -101,7 +108,7 @@ class AlbumContainer(
         val where = MediaStore.Audio.Albums.ALBUM + "=?"
         val whereVal = arrayOf(album)
 
-        ctx.contentResolver.query(
+        contentResolver.query(
             MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
             columns,
             where,

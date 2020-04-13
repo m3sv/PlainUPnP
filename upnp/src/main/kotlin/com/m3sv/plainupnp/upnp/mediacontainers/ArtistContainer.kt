@@ -23,10 +23,9 @@
 
 package com.m3sv.plainupnp.upnp.mediacontainers
 
-import android.content.Context
+import android.content.ContentResolver
 import android.provider.MediaStore
 import org.fourthline.cling.support.model.container.Container
-import timber.log.Timber
 
 class ArtistContainer(
     id: String,
@@ -34,7 +33,7 @@ class ArtistContainer(
     title: String,
     creator: String,
     baseURL: String,
-    private val ctx: Context
+    private val contentResolver: ContentResolver
 ) : DynamicContainer(
     id,
     parentID,
@@ -42,30 +41,44 @@ class ArtistContainer(
     creator,
     baseURL
 ) {
-
     private val uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI
 
     override fun getChildCount(): Int? {
         val columns = arrayOf(MediaStore.Audio.Artists._ID)
 
-        ctx.contentResolver.query(uri, columns, null, null, null).use { cursor ->
-            return cursor?.count ?: 0
-        }
+        contentResolver
+            .query(
+                uri,
+                columns,
+                null,
+                null,
+                null
+            ).use { cursor ->
+                return cursor?.count ?: 0
+            }
     }
 
     override fun getContainers(): List<Container> {
-        Timber.d("Get artist!")
+        val columns = arrayOf(
+            MediaStore.Audio.Artists._ID,
+            MediaStore.Audio.Artists.ARTIST
+        )
 
-        val columns = arrayOf(MediaStore.Audio.Artists._ID, MediaStore.Audio.Artists.ARTIST)
-        ctx.contentResolver.query(uri, columns, null, null, null)?.apply {
-            if (moveToFirst()) {
-                do {
-                    val artistId =
-                        getInt(getColumnIndex(MediaStore.Audio.Artists._ID)).toString()
-                    val artist =
-                        getString(getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST))
+        contentResolver
+            .query(
+                uri,
+                columns,
+                null,
+                null,
+                null
+            )?.use { cursor ->
+                val artistsIdColumn = cursor.getColumnIndex(MediaStore.Audio.Artists._ID)
+                val artistsColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST)
 
-                    Timber.d("Add album container: artistId:$artistId; artistArtist:$artist")
+                while (cursor.moveToNext()) {
+                    val artistId = cursor.getInt(artistsIdColumn).toString()
+                    val artist = cursor.getString(artistsColumn)
+
                     containers.add(
                         AlbumContainer(
                             artistId,
@@ -73,16 +86,12 @@ class ArtistContainer(
                             artist,
                             artist,
                             baseURL,
-                            ctx,
+                            contentResolver,
                             artistId
                         )
                     )
-
-                } while (moveToNext())
+                }
             }
-
-            close()
-        }
 
         return containers
     }
