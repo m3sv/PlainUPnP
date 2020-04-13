@@ -31,7 +31,6 @@ import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
 import org.fourthline.cling.support.model.item.ImageItem
 import org.seamless.util.MimeType
-import timber.log.Timber
 
 class ImageContainer(
     id: String,
@@ -44,15 +43,17 @@ class ImageContainer(
 
     private val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-    override fun getChildCount(): Int? {
-        contentResolver.query(uri, CHILD_COUNT_COLUMNS, null, null, null).use { cursor ->
-            return cursor?.count ?: 0
-        }
+    override fun getChildCount(): Int? = contentResolver.query(
+        uri,
+        CHILD_COUNT_COLUMNS,
+        null,
+        null,
+        null
+    ).use { cursor ->
+        return cursor?.count ?: 0
     }
 
     override fun getContainers(): List<Container> {
-        val queryStart = System.currentTimeMillis()
-        var processingStart = System.currentTimeMillis()
         contentResolver
             .query(
                 uri,
@@ -61,57 +62,45 @@ class ImageContainer(
                 null,
                 null
             )?.use { cursor ->
-                val end = System.currentTimeMillis()
-                processingStart = System.currentTimeMillis()
+                val imagesIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
+                val imagesTitleColumn = cursor.getColumnIndex(MediaStore.Images.Media.TITLE)
+                val imagesMimeTypeColumn = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE)
+                val imagesMediaSizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE)
+                val imagesHeightColumn = cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT)
+                val imagesWidthColumn = cursor.getColumnIndex(MediaStore.Images.Media.WIDTH)
 
-                Timber.d("query took: ${end - queryStart} ms")
+                while (cursor.moveToNext()) {
+                    val id = ContentDirectoryService.IMAGE_PREFIX + cursor.getInt(imagesIdColumn)
+                    val title = cursor.getString(imagesTitleColumn)
+                    val mime = cursor.getString(imagesMimeTypeColumn)
+                    val size = cursor.getLong(imagesMediaSizeColumn)
+                    val height = cursor.getLong(imagesHeightColumn)
+                    val width = cursor.getLong(imagesWidthColumn)
 
-                with(cursor) {
-                    if (moveToFirst()) {
-                        do {
-                            val id = ContentDirectoryService.IMAGE_PREFIX + getInt(
-                                getColumnIndex(MediaStore.Images.Media._ID)
-                            )
-                            val title =
-                                getString(getColumnIndex(MediaStore.Images.Media.TITLE))
-                            val mime =
-                                getString(getColumnIndex(MediaStore.Images.Media.MIME_TYPE))
-                            val size =
-                                getLong(getColumnIndex(MediaStore.Images.Media.SIZE))
-                            val height =
-                                getLong(getColumnIndex(MediaStore.Images.Media.HEIGHT))
-                            val width =
-                                getLong(getColumnIndex(MediaStore.Images.Media.WIDTH))
+                    val mimeTypeSeparatorPosition = mime.indexOf('/')
+                    val mimeType = mime.substring(0, mimeTypeSeparatorPosition)
+                    val mimeSubType = mime.substring(mimeTypeSeparatorPosition + 1)
 
-                            val mimeTypeSeparatorPosition = mime.indexOf('/')
-                            val mimeType = mime.substring(0, mimeTypeSeparatorPosition)
-                            val mimeSubType = mime.substring(mimeTypeSeparatorPosition + 1)
-
-                            val res = Res(
-                                MimeType(mimeType, mimeSubType),
-                                size,
-                                "http://$baseURL/$id.$mimeSubType"
-                            ).apply {
-                                setResolution(width.toInt(), height.toInt())
-                            }
-
-                            addItem(
-                                ImageItem(
-                                    id,
-                                    parentID,
-                                    title,
-                                    "",
-                                    res
-                                )
-                            )
-                        } while (moveToNext())
+                    val res = Res(
+                        MimeType(mimeType, mimeSubType),
+                        size,
+                        "http://$baseURL/$id.$mimeSubType"
+                    ).apply {
+                        setResolution(width.toInt(), height.toInt())
                     }
+
+                    addItem(
+                        ImageItem(
+                            id,
+                            parentID,
+                            title,
+                            "",
+                            res
+                        )
+                    )
                 }
             }
 
-        val end = System.currentTimeMillis()
-
-        Timber.d("Processing query took: ${end - processingStart} ms")
         return containers
     }
 
