@@ -42,40 +42,52 @@ class AlbumContainer(
         else
             arrayOf(MediaStore.Audio.Artists.Albums.ALBUM)
 
-        ctx.contentResolver.query(uri, columns, null, null, null)?.use { cursor ->
-            with(cursor) {
-                if (moveToFirst()) {
-                    do {
-                        var albumId: String? = null
-                        val album: String?
-                        if (artistId == null) {
-                            albumId = getInt(getColumnIndex(MediaStore.Audio.Albums._ID)).toString()
-                            album = getString(getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM))
-                        } else {
-                            album =
-                                getString(getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM))
+        ctx.contentResolver.query(
+            uri,
+            columns,
+            null,
+            null,
+            null
+        )?.use { cursor ->
+            var albumIdColumn: Int? = null
+            var albumColumn: Int? = null
+            var artistsColumn: Int? = null
 
-                            albumId = resolveAlbumId(album, albumId)
-                        }
+            if (artistId == null) {
+                albumIdColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums._ID)
+                albumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Albums.ALBUM)
+            } else {
+                artistsColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.Albums.ALBUM)
+            }
 
-                        if (albumId != null && album != null) {
-                            Timber.d(" current $id albumId : $albumId album : $album")
-                            containers.add(
-                                AudioContainer(
-                                    albumId,
-                                    id,
-                                    album,
-                                    artist,
-                                    baseURL,
-                                    ctx,
-                                    null,
-                                    albumId
-                                )
-                            )
-                        } else {
-                            Timber.d("Unable to get albumId or album")
-                        }
-                    } while (moveToNext())
+            while (cursor.moveToNext()) {
+                var albumId: String?
+                val album: String?
+
+                if (artistId == null) {
+                    albumId = cursor.getInt(albumIdColumn!!).toString()
+                    album = cursor.getString(albumColumn!!)
+                } else {
+                    album = cursor.getString(artistsColumn!!)
+                    albumId = resolveAlbumId(album)
+                }
+
+                if (albumId != null && album != null) {
+                    Timber.d(" current $id albumId : $albumId album : $album")
+                    containers.add(
+                        AudioContainer(
+                            albumId,
+                            id,
+                            album,
+                            artist,
+                            baseURL,
+                            ctx,
+                            null,
+                            albumId
+                        )
+                    )
+                } else {
+                    Timber.e("Unable to get albumId or album")
                 }
             }
         }
@@ -83,15 +95,17 @@ class AlbumContainer(
         return containers
     }
 
-    private fun resolveAlbumId(album: String, albumId: String?): String? {
-        var result = albumId
-        val columns2 = arrayOf(MediaStore.Audio.Albums._ID)
-        val where2 = MediaStore.Audio.Albums.ALBUM + "=?"
-        val whereVal2 = arrayOf(album)
+    private fun resolveAlbumId(album: String): String? {
+        var result = ""
+        val columns = arrayOf(MediaStore.Audio.Albums._ID)
+        val where = MediaStore.Audio.Albums.ALBUM + "=?"
+        val whereVal = arrayOf(album)
 
         ctx.contentResolver.query(
             MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
-            columns2, where2, whereVal2, null
+            columns,
+            where,
+            whereVal, null
         )?.use { cursor ->
             if (cursor.moveToFirst())
                 result =
