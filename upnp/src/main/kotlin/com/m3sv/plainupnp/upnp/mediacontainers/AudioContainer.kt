@@ -8,7 +8,6 @@ import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
 import org.fourthline.cling.support.model.item.MusicTrack
 import org.seamless.util.MimeType
-import timber.log.Timber
 
 class AudioContainer(
     id: String,
@@ -21,10 +20,11 @@ class AudioContainer(
     albumId: String?
 ) : DynamicContainer(id, parentID, title, creator, baseURL) {
 
-    private var orderBy: String = MediaStore.Audio.Media.TRACK
-    private var where: String = MediaStore.Audio.Media.ARTIST + "=?"
-    private var whereVal: Array<String> = arrayOf()
     private val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+
+    private var orderBy: String? = null
+    private var where: String? = null
+    private var whereVal: Array<String>? = null
 
     init {
         if (artist != null) {
@@ -58,7 +58,6 @@ class AudioContainer(
         val columns = arrayOf(
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.DATA,
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.MIME_TYPE,
             MediaStore.Audio.Media.SIZE,
@@ -66,60 +65,55 @@ class AudioContainer(
             MediaStore.Audio.Media.ALBUM
         )
 
-        contentResolver.query(uri, columns, where, whereVal, orderBy)?.use { cursor ->
-            with(cursor) {
-                if (moveToFirst()) {
-                    do {
-                        val id =
-                            ContentDirectoryService.AUDIO_PREFIX + getInt(getColumnIndex(MediaStore.Audio.Media._ID))
-                        val title = getString(getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE))
-                        val creator =
-                            getString(getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST))
-                        val filePath = getString(getColumnIndexOrThrow(MediaStore.Audio.Media.DATA))
-                        val mimeType =
-                            getString(getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE))
-                        val size = getLong(getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE))
-                        val duration =
-                            getLong(getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION))
-                        val album = getString(getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM))
+        contentResolver.query(
+            uri,
+            columns,
+            where,
+            whereVal,
+            orderBy
+        )?.use { cursor ->
+            val audioIdColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
+            val audioTitleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
+            val audioArtistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+            val audioMimeTypeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
+            val audioSizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
+            val audioDurationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+            val audioAlbumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
 
-                        var extension = ""
+            while (cursor.moveToNext()) {
+                val id = ContentDirectoryService.AUDIO_PREFIX + cursor.getInt(audioIdColumn)
+                val title = cursor.getString(audioTitleColumn)
+                val creator = cursor.getString(audioArtistColumn)
+                val type = cursor.getString(audioMimeTypeColumn)
+                val size = cursor.getLong(audioSizeColumn)
+                val duration = cursor.getLong(audioDurationColumn)
+                val album = cursor.getString(audioAlbumColumn)
 
-                        val dot = filePath.lastIndexOf('.')
-                        if (dot >= 0)
-                            extension = filePath.substring(dot).toLowerCase()
+                val mimeType = type.substring(0, type.indexOf('/'))
+                val mimeSubType = type.substring(type.indexOf('/') + 1)
+                val res = Res(
+                    MimeType(mimeType, mimeSubType),
+                    size,
+                    "http://$baseURL/$id.$mimeSubType"
+                )
 
-                        val res = Res(
-                            MimeType(
-                                mimeType.substring(0, mimeType.indexOf('/')),
-                                mimeType.substring(mimeType.indexOf('/') + 1)
-                            ),
-                            size,
-                            "http://$baseURL/$id$extension"
-                        )
+                res.duration =
+                    "${(duration / (1000 * 60 * 60))}:${duration % (1000 * 60 * 60) / (1000 * 60)}:${duration % (1000 * 60) / 1000}"
 
-                        res.duration = ((duration / (1000 * 60 * 60)).toString() + ":"
-                                + duration % (1000 * 60 * 60) / (1000 * 60) + ":"
-                                + duration % (1000 * 60) / 1000)
-
-                        addItem(
-                            MusicTrack(
-                                id,
-                                parentID,
-                                title,
-                                creator,
-                                album,
-                                PersonWithRole(creator, "Performer"),
-                                res
-                            )
-                        )
-
-                        Timber.v("Added audio item $title from $filePath")
-
-                    } while (moveToNext())
-                }
+                addItem(
+                    MusicTrack(
+                        id,
+                        parentID,
+                        title,
+                        creator,
+                        album,
+                        PersonWithRole(creator, "Performer"),
+                        res
+                    )
+                )
             }
         }
+
         return containers
     }
 }
