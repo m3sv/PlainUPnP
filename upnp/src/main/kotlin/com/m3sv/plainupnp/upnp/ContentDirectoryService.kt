@@ -263,7 +263,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             context.getString(R.string.all),
             appName,
             baseURL,
-            context
+            context.contentResolver
         )
 
     private fun getAllAudioContainer(): AudioContainer =
