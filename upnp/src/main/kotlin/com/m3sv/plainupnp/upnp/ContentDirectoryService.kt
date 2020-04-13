@@ -142,6 +142,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             } else
                 throw noSuchObject
         } catch (ex: Exception) {
+            Timber.e(ex)
             throw ContentDirectoryException(
                 ContentDirectoryErrorCode.CANNOT_PROCESS,
                 ex.toString()
@@ -237,7 +238,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         "",
         appName,
         baseURL,
-        context,
+        context.contentResolver,
         null,
         albumId
     )
@@ -251,7 +252,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         "",
         appName,
         baseURL,
-        context,
+        context.contentResolver,
         artistId
     )
 
@@ -272,7 +273,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             context.getString(R.string.all),
             appName,
             baseURL,
-            context,
+            context.contentResolver,
             null,
             null
         )
@@ -284,7 +285,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             context.getString(R.string.album),
             appName,
             baseURL,
-            context,
+            context.contentResolver,
             null
         )
 
@@ -295,7 +296,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             context.getString(R.string.artist),
             appName,
             baseURL,
-            context
+            context.contentResolver
         )
 
     private fun getAllImagesContainer(): ImageContainer =
