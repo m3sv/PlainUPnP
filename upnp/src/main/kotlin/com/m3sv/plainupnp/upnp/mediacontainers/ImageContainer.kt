@@ -146,7 +146,7 @@ class ImageContainer(
     }
 
     companion object {
-        private val IMAGE_DATA_PATH = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        val IMAGE_DATA_PATH = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             MediaStore.Images.Media.RELATIVE_PATH
         else
             MediaStore.Images.Media.DATA

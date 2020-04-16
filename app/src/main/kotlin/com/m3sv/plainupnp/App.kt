@@ -6,6 +6,9 @@ import com.m3sv.plainupnp.di.AppComponent
 import com.m3sv.plainupnp.di.ApplicationProviderModule
 import com.m3sv.plainupnp.di.DaggerAppComponent
 import com.m3sv.plainupnp.upnp.MediaServer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class App : Application() {
@@ -31,6 +34,8 @@ class App : Application() {
             )
         }
 
-        MediaServer(this).apply { start() }
+        GlobalScope.launch(Dispatchers.IO) {
+            MediaServer(this@App).apply { start() }
+        }
     }
 }

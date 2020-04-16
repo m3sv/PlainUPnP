@@ -156,10 +156,9 @@ class VideoContainer(
     }
 
     companion object {
-        private val VIDEO_DATA_PATH = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        val VIDEO_DATA_PATH = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             MediaStore.Video.Media.RELATIVE_PATH
         else
             MediaStore.Video.Media.DATA
-
     }
 }

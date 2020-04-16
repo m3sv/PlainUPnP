@@ -151,7 +151,7 @@ class AudioContainer(
     companion object {
         private val URI = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
-        private val AUDIO_DATA_PATH = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        val AUDIO_DATA_PATH = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             MediaStore.Audio.Media.RELATIVE_PATH
         else
             MediaStore.Audio.Media.DATA

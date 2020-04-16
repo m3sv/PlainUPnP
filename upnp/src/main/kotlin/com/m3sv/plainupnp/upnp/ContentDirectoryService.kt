@@ -3,10 +3,9 @@ package com.m3sv.plainupnp.upnp
 import android.content.Context
 import android.content.SharedPreferences
 import android.provider.MediaStore
-import android.text.TextUtils
 import com.m3sv.plainupnp.upnp.discovery.FileHierarchyBuilder
 import com.m3sv.plainupnp.upnp.mediacontainers.*
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException
@@ -29,8 +28,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     private val appName by lazy(NONE) { context.getString(R.string.app_name) }
 
-    private val stringSplitter = TextUtils.SimpleStringSplitter(SEPARATOR)
-
     private val containerRegistry: MutableMap<Int, BaseContainer?> = mutableMapOf()
 
     @Throws(ContentDirectoryException::class)
@@ -43,19 +40,18 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         orderby: Array<SortCriterion>
     ): BrowseResult = runBlocking {
         try {
-            var type = -1
+            var root = -1
             val subtype = mutableListOf<Int>()
 
-            stringSplitter.setString(objectID)
-            for (s in stringSplitter) {
+            for (s in objectID.split(SEPARATOR)) {
                 val i = Integer.parseInt(s)
-                if (type == -1) {
-                    type = i
-                    if (type != ROOT_ID
-                        && type != VIDEO_ID
-                        && type != AUDIO_ID
-                        && type != IMAGE_ID
-                        && type !in containerRegistry.keys
+                if (root == -1) {
+                    root = i
+                    if (root != ROOT_ID
+                        && root != VIDEO_ID
+                        && root != AUDIO_ID
+                        && root != IMAGE_ID
+                        && root !in containerRegistry.keys
                     ) {
                         throw ContentDirectoryException(
                             ContentDirectoryErrorCode.NO_SUCH_OBJECT,
@@ -67,7 +63,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 }
             }
 
-            Timber.d("Browsing type $type")
+            Timber.d("Browsing type $root")
             if (containerRegistry[ROOT_ID] == null) {
                 containerRegistry[ROOT_ID] = BaseContainer(
                     ROOT_ID.toString(),
@@ -80,23 +76,41 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
             val rootContainer: BaseContainer = requireNotNull(containerRegistry[ROOT_ID])
 
-            if (containerRegistry[IMAGE_ID] == null)
-                containerRegistry[IMAGE_ID] = getRootImagesContainer(rootContainer)
+            val jobs = mutableListOf<Job>()
 
-            if (containerRegistry[AUDIO_ID] == null)
-                containerRegistry[AUDIO_ID] = getRootAudioContainer(rootContainer)
+            val imageContainerJob = if (containerRegistry[IMAGE_ID] == null)
+                launch(Dispatchers.IO) {
+                    containerRegistry[IMAGE_ID] = getRootImagesContainer(rootContainer)
+                } else null
 
-            if (containerRegistry[VIDEO_ID] == null)
-                containerRegistry[VIDEO_ID] = getRootVideoContainer(rootContainer)
+            if (imageContainerJob != null)
+                jobs.add(imageContainerJob)
+
+            val audioContainerJob = if (containerRegistry[AUDIO_ID] == null)
+                launch(Dispatchers.IO) {
+                    containerRegistry[AUDIO_ID] = getRootAudioContainer(rootContainer)
+                } else null
+
+            if (audioContainerJob != null)
+                jobs.add(audioContainerJob)
+
+            val videoContainerJob = if (containerRegistry[VIDEO_ID] == null)
+                launch(Dispatchers.IO) {
+                    containerRegistry[VIDEO_ID] = getRootVideoContainer(rootContainer)
+                } else null
+
+            if (videoContainerJob != null)
+                jobs.add(videoContainerJob)
+
+            jobs.joinAll()
 
             val container: Container = if (subtype.isEmpty()) {
-                containerRegistry[type] ?: throw noSuchObject
+                containerRegistry[root] ?: throw noSuchObject
             } else {
-                when (type) {
+                when (root) {
                     VIDEO_ID -> containerRegistry[subtype[0]] ?: throw noSuchObject
                     AUDIO_ID -> when {
                         subtype.size == 1 -> containerRegistry[subtype[0]] ?: throw noSuchObject
-
                         subtype.size == 2 && subtype[0] == ALL_ARTISTS -> {
                             val artistId = subtype[1].toString()
                             val parentId = "$AUDIO_ID$SEPARATOR${subtype[0]}"
@@ -104,7 +118,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                             getArtistContainer(artistId, parentId)
                         }
-
                         subtype.size == 2 && subtype[0] == ALL_ALBUMS -> {
                             val albumId = subtype[1].toString()
                             val parentId = "$AUDIO_ID$SEPARATOR${subtype[0]}"
@@ -112,7 +125,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                             getAlbumContainer(albumId, parentId)
                         }
-
                         subtype.size == 3 && subtype[0] == ALL_ARTISTS -> {
                             val albumId = subtype[2].toString()
                             val parentId =
@@ -197,7 +209,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                     baseContainer = this,
                     containerRegistry = containerRegistry,
                     uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                    column = MediaStore.Video.Media.RELATIVE_PATH
+                    column = VideoContainer.VIDEO_DATA_PATH
                 ) { id: String,
                     parentId: String?,
                     containerName: String,
@@ -247,7 +259,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                     baseContainer = this,
                     containerRegistry = containerRegistry,
                     uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    column = MediaStore.Audio.Media.RELATIVE_PATH
+                    column = AudioContainer.AUDIO_DATA_PATH
                 ) { id: String,
                     parentId: String?,
                     containerName: String,
@@ -287,7 +299,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                     baseContainer = this,
                     containerRegistry = containerRegistry,
                     uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    column = MediaStore.Images.Media.RELATIVE_PATH
+                    column = ImageContainer.IMAGE_DATA_PATH
                 ) { id: String,
                     parentId: String?,
                     containerName: String,
