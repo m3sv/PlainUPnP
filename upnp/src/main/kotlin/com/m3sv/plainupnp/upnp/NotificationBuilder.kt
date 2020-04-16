@@ -45,7 +45,8 @@ class NotificationBuilder(private val context: Context) {
                         PlainUpnpAndroidService::class.java
                     ).apply {
                         action = ACTION_EXIT
-                    }, PendingIntent.FLAG_ONE_SHOT
+                    },
+                    PendingIntent.FLAG_ONE_SHOT
                 )
             )
             .build()

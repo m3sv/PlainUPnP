@@ -1,7 +1,9 @@
 package com.m3sv.plainupnp.presentation.main
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.m3sv.plainupnp.ShutdownNotifier
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
@@ -12,8 +14,11 @@ import javax.inject.Inject
 class MainViewModel @Inject constructor(
     private val upnpManager: UpnpManager,
     private val volumeManager: BufferedVolumeManager,
-    private val filterDelegate: FilterDelegate
+    private val filterDelegate: FilterDelegate,
+    shutdownNotifier: ShutdownNotifier
 ) : BaseViewModel<MainIntention>() {
+
+    val shutdown: LiveData<Unit> = shutdownNotifier.flow.asLiveData()
 
     val volume = volumeManager
         .observeVolume()

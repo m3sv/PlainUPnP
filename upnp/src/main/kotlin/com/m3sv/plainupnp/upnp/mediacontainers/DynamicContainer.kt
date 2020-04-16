@@ -23,8 +23,6 @@
 
 package com.m3sv.plainupnp.upnp.mediacontainers
 
-import org.fourthline.cling.support.model.container.Container
-
 abstract class DynamicContainer(
     id: String,
     parentID: String?,
@@ -34,7 +32,5 @@ abstract class DynamicContainer(
 ) : BaseContainer(id, parentID, title, creator, baseURL) {
 
     abstract override fun getChildCount(): Int?
-
-    abstract override fun getContainers(): List<Container>
 
 }

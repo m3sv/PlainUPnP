@@ -25,6 +25,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.ContentResolver
 import android.net.Uri
+import android.os.Build
 import android.provider.MediaStore
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.Res
@@ -38,82 +39,116 @@ class ImageContainer(
     title: String?,
     creator: String?,
     baseURL: String,
+    private val directory: String?,
     private val contentResolver: ContentResolver
 ) : DynamicContainer(id, parentID, title, creator, baseURL) {
 
     private val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-    override fun getChildCount(): Int? = contentResolver.query(
-        uri,
-        CHILD_COUNT_COLUMNS,
-        null,
-        null,
-        null
-    ).use { cursor ->
-        return cursor?.count ?: 0
+    private val selection: String? =
+        if (directory != null) "$IMAGE_DATA_PATH LIKE ?" else null
+
+    private val selectionArgs: Array<String>? =
+        if (directory != null) arrayOf("%$directory/") else null
+
+    override fun getChildCount(): Int? {
+        val projection = if (directory != null)
+            arrayOf(
+                MediaStore.Images.Media._ID,
+                IMAGE_DATA_PATH
+            )
+        else
+            arrayOf(MediaStore.Images.Media._ID)
+
+        contentResolver.query(
+            uri,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        ).use { cursor ->
+            return cursor?.count ?: 0
+        }
     }
 
     override fun getContainers(): List<Container> {
-        contentResolver
-            .query(
-                uri,
-                CONTAINERS_COLUMNS,
-                null,
-                null,
-                null
-            )?.use { cursor ->
-                val imagesIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
-                val imagesTitleColumn = cursor.getColumnIndex(MediaStore.Images.Media.TITLE)
-                val imagesMimeTypeColumn = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE)
-                val imagesMediaSizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE)
-                val imagesHeightColumn = cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT)
-                val imagesWidthColumn = cursor.getColumnIndex(MediaStore.Images.Media.WIDTH)
+        if (items.isNotEmpty() || containers.isNotEmpty())
+            return containers
 
-                while (cursor.moveToNext()) {
-                    val id = ContentDirectoryService.IMAGE_PREFIX + cursor.getInt(imagesIdColumn)
-                    val title = cursor.getString(imagesTitleColumn)
-                    val mime = cursor.getString(imagesMimeTypeColumn)
-                    val size = cursor.getLong(imagesMediaSizeColumn)
-                    val height = cursor.getLong(imagesHeightColumn)
-                    val width = cursor.getLong(imagesWidthColumn)
+        val projection = if (directory != null) {
+            arrayOf(
+                MediaStore.Images.Media._ID,
+                IMAGE_DATA_PATH,
+                MediaStore.Images.Media.TITLE,
+                MediaStore.Images.Media.MIME_TYPE,
+                MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media.HEIGHT,
+                MediaStore.Images.Media.WIDTH
+            )
+        } else {
+            arrayOf(
+                MediaStore.Images.Media._ID,
+                MediaStore.Images.Media.TITLE,
+                MediaStore.Images.Media.MIME_TYPE,
+                MediaStore.Images.Media.SIZE,
+                MediaStore.Images.Media.HEIGHT,
+                MediaStore.Images.Media.WIDTH
+            )
+        }
 
-                    val mimeTypeSeparatorPosition = mime.indexOf('/')
-                    val mimeType = mime.substring(0, mimeTypeSeparatorPosition)
-                    val mimeSubType = mime.substring(mimeTypeSeparatorPosition + 1)
+        contentResolver.query(
+            uri,
+            projection,
+            selection,
+            selectionArgs,
+            null
+        )?.use { cursor ->
+            val imagesIdColumn = cursor.getColumnIndex(MediaStore.Images.Media._ID)
+            val imagesTitleColumn = cursor.getColumnIndex(MediaStore.Images.Media.TITLE)
+            val imagesMimeTypeColumn = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE)
+            val imagesMediaSizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE)
+            val imagesHeightColumn = cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT)
+            val imagesWidthColumn = cursor.getColumnIndex(MediaStore.Images.Media.WIDTH)
 
-                    val res = Res(
-                        MimeType(mimeType, mimeSubType),
-                        size,
-                        "http://$baseURL/$id.$mimeSubType"
-                    ).apply {
-                        setResolution(width.toInt(), height.toInt())
-                    }
+            while (cursor.moveToNext()) {
+                val id = ContentDirectoryService.IMAGE_PREFIX + cursor.getInt(imagesIdColumn)
+                val title = cursor.getString(imagesTitleColumn)
+                val mime = cursor.getString(imagesMimeTypeColumn)
+                val size = cursor.getLong(imagesMediaSizeColumn)
+                val height = cursor.getLong(imagesHeightColumn)
+                val width = cursor.getLong(imagesWidthColumn)
 
-                    addItem(
-                        ImageItem(
-                            id,
-                            parentID,
-                            title,
-                            "",
-                            res
-                        )
-                    )
+                val mimeTypeSeparatorPosition = mime.indexOf('/')
+                val mimeType = mime.substring(0, mimeTypeSeparatorPosition)
+                val mimeSubType = mime.substring(mimeTypeSeparatorPosition + 1)
+
+                val res = Res(
+                    MimeType(mimeType, mimeSubType),
+                    size,
+                    "http://$baseUrl/$id.$mimeSubType"
+                ).apply {
+                    setResolution(width.toInt(), height.toInt())
                 }
+
+                addItem(
+                    ImageItem(
+                        id,
+                        parentID,
+                        title,
+                        "",
+                        res
+                    )
+                )
             }
+        }
 
         return containers
     }
 
     companion object {
-        private val CHILD_COUNT_COLUMNS = arrayOf(MediaStore.Images.Media._ID)
-
-        private val CONTAINERS_COLUMNS = arrayOf(
-            MediaStore.Images.Media._ID,
-            MediaStore.Images.Media.TITLE,
-            MediaStore.Images.Media.MIME_TYPE,
-            MediaStore.Images.Media.SIZE,
-            MediaStore.Images.Media.HEIGHT,
-            MediaStore.Images.Media.WIDTH
-        )
+        private val IMAGE_DATA_PATH = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            MediaStore.Images.Media.RELATIVE_PATH
+        else
+            MediaStore.Images.Media.DATA
     }
 }

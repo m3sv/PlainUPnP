@@ -87,7 +87,7 @@ class AlbumContainer(
                             id,
                             album,
                             artist,
-                            baseURL,
+                            baseUrl,
                             contentResolver,
                             null,
                             albumId

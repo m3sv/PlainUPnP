@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationManagerCompat
+import com.m3sv.plainupnp.ShutdownNotifierImpl
 import kotlin.system.exitProcess
 
 class PlainUpnpAndroidService : Service() {
@@ -13,28 +14,30 @@ class PlainUpnpAndroidService : Service() {
     private lateinit var notificationBuilder: NotificationBuilder
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (NotificationBuilder.ACTION_EXIT == intent?.action) {
-            stopForeground(true)
-            stopSelf()
-            exitProcess(0)
+        notificationManager = NotificationManagerCompat.from(this)
+
+        when (intent?.action) {
+            NotificationBuilder.ACTION_EXIT -> {
+                ShutdownNotifierImpl.shutdown()
+                stopForeground(false)
+                notificationManager.cancelAll()
+                stopSelf(startId)
+                exitProcess(0)
+            }
+
+            START_SERVICE -> {
+                notificationBuilder = NotificationBuilder(this)
+                val notification = notificationBuilder.buildNotification()
+
+                startForeground(
+                    NotificationBuilder.SERVER_NOTIFICATION,
+                    notification
+                )
+            }
         }
 
-        if (START_SERVICE == intent?.action) {
-            notificationBuilder = NotificationBuilder(this)
-            notificationManager = NotificationManagerCompat.from(this)
-
-            val notification = notificationBuilder.buildNotification()
-            notificationManager.notify(NotificationBuilder.SERVER_NOTIFICATION, notification)
-
-            startForeground(
-                NotificationBuilder.SERVER_NOTIFICATION,
-                notification
-            )
-        }
-
-        return START_NOT_STICKY
+        return START_STICKY
     }
-
 
     fun inject() {
         // TODO inject upnp manager here

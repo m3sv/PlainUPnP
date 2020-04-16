@@ -85,7 +85,7 @@ class ArtistContainer(
                             id,
                             artist,
                             artist,
-                            baseURL,
+                            baseUrl,
                             contentResolver,
                             artistId
                         )

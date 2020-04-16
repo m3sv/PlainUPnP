@@ -1,6 +1,8 @@
 package com.m3sv.plainupnp.presentation.main
 
 import android.animation.ObjectAnimator
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.Menu
@@ -25,6 +27,7 @@ import com.m3sv.plainupnp.common.utils.hideKeyboard
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.di.main.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.base.BaseActivity
+import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import kotlin.LazyThreadSafetyMode.NONE
 
 
@@ -48,6 +51,19 @@ class MainActivity : BaseActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
         super.onCreate(savedInstanceState)
+
+        if (savedInstanceState == null) {
+            val intent = Intent(this, PlainUpnpAndroidService::class.java).apply {
+                action = PlainUpnpAndroidService.START_SERVICE
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
+        }
+
         volumeIndicator = VolumeIndicator(this)
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -84,6 +100,10 @@ class MainActivity : BaseActivity(),
     private fun observeState() {
         viewModel.volume.observe(this) { volume ->
             volumeIndicator.volume = volume
+        }
+
+        viewModel.shutdown.observe(this) {
+            finishAndRemoveTask()
         }
     }
 

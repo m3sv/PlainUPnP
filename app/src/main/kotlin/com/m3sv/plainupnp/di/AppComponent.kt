@@ -20,7 +20,8 @@ import javax.inject.Singleton
         AppModule::class,
         UpnpBindersModule::class,
         UpnpServiceModule::class,
-        ApplicationProviderModule::class
+        ApplicationProviderModule::class,
+        BinderModule::class
     ]
 )
 interface AppComponent {

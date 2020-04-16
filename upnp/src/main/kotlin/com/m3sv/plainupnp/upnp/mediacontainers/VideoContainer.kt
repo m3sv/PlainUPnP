@@ -24,6 +24,7 @@
 package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.ContentResolver
+import android.os.Build
 import android.provider.MediaStore
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.Res
@@ -37,6 +38,7 @@ class VideoContainer(
     title: String,
     creator: String,
     baseURL: String,
+    private val directory: String?,
     private val contentResolver: ContentResolver
 ) : DynamicContainer(
     id,
@@ -45,38 +47,68 @@ class VideoContainer(
     creator,
     baseURL
 ) {
-
     private val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 
-    override fun getChildCount(): Int =
+    private val selection: String? = if (directory != null) "$VIDEO_DATA_PATH LIKE ?" else null
+
+    private val selectionArgs: Array<String>? =
+        if (directory != null) arrayOf("%$directory/") else null
+
+    override fun getChildCount(): Int {
+        val projection = if (directory != null)
+            arrayOf(
+                MediaStore.Video.Media._ID,
+                VIDEO_DATA_PATH
+            )
+        else
+            arrayOf(MediaStore.Video.Media._ID)
+
         contentResolver.query(
             uri,
-            arrayOf(MediaStore.Video.Media._ID),
-            null,
-            null,
+            projection,
+            selection,
+            selectionArgs,
             null
         ).use { cursor ->
             return cursor?.count ?: 0
         }
+    }
 
     override fun getContainers(): List<Container> {
-        val columns = arrayOf(
-            MediaStore.Video.Media._ID,
-            MediaStore.Video.Media.TITLE,
-            MediaStore.Video.Media.DATA,
-            MediaStore.Video.Media.ARTIST,
-            MediaStore.Video.Media.MIME_TYPE,
-            MediaStore.Video.Media.SIZE,
-            MediaStore.Video.Media.DURATION,
-            MediaStore.Video.Media.HEIGHT,
-            MediaStore.Video.Media.WIDTH
-        )
+        if (items.isNotEmpty() || containers.isNotEmpty())
+            return containers
+
+        val projection = if (directory != null) {
+            arrayOf(
+                MediaStore.Video.Media._ID,
+                VIDEO_DATA_PATH,
+                MediaStore.Video.Media.TITLE,
+                MediaStore.Video.Media.DATA,
+                MediaStore.Video.Media.ARTIST,
+                MediaStore.Video.Media.MIME_TYPE,
+                MediaStore.Video.Media.SIZE,
+                MediaStore.Video.Media.DURATION,
+                MediaStore.Video.Media.HEIGHT,
+                MediaStore.Video.Media.WIDTH
+            )
+        } else {
+            arrayOf(
+                MediaStore.Video.Media._ID,
+                MediaStore.Video.Media.TITLE,
+                MediaStore.Video.Media.ARTIST,
+                MediaStore.Video.Media.MIME_TYPE,
+                MediaStore.Video.Media.SIZE,
+                MediaStore.Video.Media.DURATION,
+                MediaStore.Video.Media.HEIGHT,
+                MediaStore.Video.Media.WIDTH
+            )
+        }
 
         contentResolver.query(
             uri,
-            columns,
-            null,
-            null,
+            projection,
+            selection,
+            selectionArgs,
             null
         )?.use { cursor ->
             val videoIdColumn = cursor.getColumnIndex(MediaStore.Video.Media._ID)
@@ -109,7 +141,7 @@ class VideoContainer(
                         mimeTypeSubType
                     ),
                     size,
-                    "http://$baseURL/$id.$mimeTypeSubType"
+                    "http://$baseUrl/$id.$mimeTypeSubType"
                 ).apply {
                     duration =
                         "${videoDuration / (1000 * 60 * 60)}:${videoDuration % (1000 * 60 * 60) / (1000 * 60)}:${videoDuration % (1000 * 60) / 1000}"
@@ -121,5 +153,13 @@ class VideoContainer(
         }
 
         return containers
+    }
+
+    companion object {
+        private val VIDEO_DATA_PATH = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+            MediaStore.Video.Media.RELATIVE_PATH
+        else
+            MediaStore.Video.Media.DATA
+
     }
 }
