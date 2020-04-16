@@ -18,8 +18,8 @@ object Versions {
     const val supportLibrary = "1.1.0"
     const val targetSdk = 29
     const val test = "1.2.0"
-    const val versionCode = 52
-    const val versionName = "2.0.2"
+    const val versionCode = 53
+    const val versionName = "2.1.0-BETA"
 }
 
 object ClasspathDependencies {
