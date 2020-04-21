@@ -33,7 +33,7 @@ import org.fourthline.cling.support.model.container.Container
 import org.fourthline.cling.support.model.item.ImageItem
 import org.seamless.util.MimeType
 
-class ImageContainer(
+class ImageDirectoryContainer(
     id: String,
     parentID: String?,
     title: String?,

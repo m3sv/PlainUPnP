@@ -206,13 +206,13 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                     baseContainer = this,
                     containerRegistry = containerRegistry,
                     uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                    column = VideoContainer.VIDEO_DATA_PATH
+                    column = VideoDirectoryContainer.VIDEO_DATA_PATH
                 ) { id: String,
                     parentId: String?,
                     containerName: String,
                     directory: String ->
 
-                    VideoContainer(
+                    VideoDirectoryContainer(
                         id,
                         parentId ?: VIDEO_ID.toString(),
                         containerName,
@@ -255,13 +255,13 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                     baseContainer = this,
                     containerRegistry = containerRegistry,
                     uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    column = AudioContainer.AUDIO_DATA_PATH
+                    column = AudioDirectoryContainer.AUDIO_DATA_PATH
                 ) { id: String,
                     parentId: String?,
                     containerName: String,
                     path: String ->
 
-                    AudioContainer(
+                    AudioDirectoryContainer(
                         id = id,
                         parentID = parentId ?: AUDIO_ID.toString(),
                         title = containerName,
@@ -294,13 +294,13 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                     baseContainer = this,
                     containerRegistry = containerRegistry,
                     uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    column = ImageContainer.IMAGE_DATA_PATH
+                    column = ImageDirectoryContainer.IMAGE_DATA_PATH
                 ) { id: String,
                     parentId: String?,
                     containerName: String,
                     path: String ->
 
-                    ImageContainer(
+                    ImageDirectoryContainer(
                         id = id,
                         parentID = parentId ?: VIDEO_ID.toString(),
                         title = containerName,

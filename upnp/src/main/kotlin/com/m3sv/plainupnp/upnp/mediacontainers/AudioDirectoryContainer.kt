@@ -10,7 +10,7 @@ import org.fourthline.cling.support.model.container.Container
 import org.fourthline.cling.support.model.item.MusicTrack
 import org.seamless.util.MimeType
 
-class AudioContainer(
+class AudioDirectoryContainer(
     id: String,
     parentID: String,
     title: String,

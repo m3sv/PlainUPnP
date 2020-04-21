@@ -32,7 +32,7 @@ import org.fourthline.cling.support.model.container.Container
 import org.fourthline.cling.support.model.item.VideoItem
 import org.seamless.util.MimeType
 
-class VideoContainer(
+class VideoDirectoryContainer(
     id: String,
     parentID: String,
     title: String,
