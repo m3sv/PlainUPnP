@@ -14,7 +14,6 @@ import org.fourthline.cling.support.model.BrowseFlag
 import org.fourthline.cling.support.model.BrowseResult
 import org.fourthline.cling.support.model.DIDLContent
 import org.fourthline.cling.support.model.SortCriterion
-import org.fourthline.cling.support.model.container.Container
 import timber.log.Timber
 import kotlin.LazyThreadSafetyMode.NONE
 
@@ -65,12 +64,11 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
             Timber.d("Browsing type $root")
             if (containerRegistry[ROOT_ID] == null) {
-                containerRegistry[ROOT_ID] = BaseContainer(
+                containerRegistry[ROOT_ID] = Container(
                     ROOT_ID.toString(),
                     ROOT_ID.toString(),
                     appName,
-                    appName,
-                    baseURL
+                    appName
                 )
             }
 
@@ -104,7 +102,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
             jobs.joinAll()
 
-            val container: Container = if (subtype.isEmpty()) {
+            val container: BaseContainer = if (subtype.isEmpty()) {
                 containerRegistry[root] ?: throw noSuchObject
             } else {
                 when (root) {
@@ -156,7 +154,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         }
     }
 
-    private fun getBrowseResult(container: Container): BrowseResult {
+    private fun getBrowseResult(container: BaseContainer): BrowseResult {
         Timber.d("List container...")
         val didl = DIDLContent()
 
@@ -190,12 +188,11 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     private fun getRootVideoContainer(rootContainer: BaseContainer): BaseContainer? =
         if (videoEnabled) {
-            BaseContainer(
+            Container(
                 VIDEO_ID.toString(),
                 ROOT_ID.toString(),
                 context.getString(R.string.videos),
-                appName,
-                baseURL
+                appName
             ).apply {
                 rootContainer.addContainer(this)
                 val allVideosContainer = getAllVideosContainer()
@@ -220,7 +217,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         parentId ?: VIDEO_ID.toString(),
                         containerName,
                         appName,
-                        baseUrl,
+                        baseUrl = baseURL,
                         directory = directory,
                         contentResolver = context.contentResolver
                     )
@@ -230,12 +227,11 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     private fun getRootAudioContainer(rootContainer: BaseContainer): BaseContainer? =
         if (audioEnabled) {
-            BaseContainer(
+            Container(
                 AUDIO_ID.toString(),
                 ROOT_ID.toString(),
                 context.getString(R.string.audio),
-                appName,
-                baseURL
+                appName
             ).apply {
                 rootContainer.addContainer(this)
 
@@ -270,7 +266,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         parentID = parentId ?: AUDIO_ID.toString(),
                         title = containerName,
                         creator = appName,
-                        baseURL = baseUrl,
+                        baseUrl = baseURL,
                         directory = path,
                         contentResolver = context.contentResolver
                     )
@@ -280,12 +276,11 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     private fun getRootImagesContainer(rootContainer: BaseContainer): BaseContainer? =
         if (imagesEnabled) {
-            BaseContainer(
+            Container(
                 IMAGE_ID.toString(),
                 ROOT_ID.toString(),
                 context.getString(R.string.images),
-                appName,
-                baseURL
+                appName
             ).apply {
                 rootContainer.addContainer(this)
                 val allImagesContainer = getAllImagesContainer()
@@ -310,7 +305,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         parentID = parentId ?: VIDEO_ID.toString(),
                         title = containerName,
                         creator = appName,
-                        baseURL = baseUrl,
+                        baseUrl = baseURL,
                         directory = ContentDirectory(path),
                         contentResolver = context.contentResolver
                     )
@@ -327,8 +322,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         parentId,
         "",
         appName,
-        baseURL,
-        context.contentResolver,
+        baseUrl = baseURL,
+        contentResolver = context.contentResolver,
         albumId = albumId,
         artist = null
     )
@@ -362,10 +357,10 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             AUDIO_ID.toString(),
             context.getString(R.string.all),
             appName,
-            baseURL,
-            context.contentResolver,
-            null,
-            null
+            baseUrl = baseURL,
+            contentResolver = context.contentResolver,
+            albumId = null,
+            artist = null
         )
 
     private fun getAllAlbumsContainer(): AlbumContainer =
@@ -395,7 +390,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             parentID = IMAGE_ID.toString(),
             title = context.getString(R.string.all),
             creator = appName,
-            baseURL = baseURL,
+            baseUrl = baseURL,
             contentResolver = context.contentResolver
         )
 

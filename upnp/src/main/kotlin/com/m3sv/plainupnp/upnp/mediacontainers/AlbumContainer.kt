@@ -11,10 +11,11 @@ class AlbumContainer(
     parentID: String,
     title: String,
     creator: String,
-    baseURL: String,
+    private val baseUrl: String,
     private val contentResolver: ContentResolver,
     private val artistId: String?
-) : DynamicContainer(id, parentID, title, creator, baseURL) {
+) : BaseContainer(id, parentID, title, creator) {
+
     private val artist: String? = null
 
     private val uri: Uri = artistId?.let {
@@ -83,13 +84,13 @@ class AlbumContainer(
                     Timber.d(" current $id albumId : $albumId album : $album")
                     containers.add(
                         AllAudioContainer(
-                            albumId,
-                            id,
-                            album,
-                            artist,
-                            baseUrl,
-                            contentResolver,
-                            null,
+                            id = albumId,
+                            parentID = id,
+                            title = album,
+                            creator = artist,
+                            baseUrl = baseUrl,
+                            contentResolver = contentResolver,
+                            artist = null,
                             albumId = albumId
                         )
                     )

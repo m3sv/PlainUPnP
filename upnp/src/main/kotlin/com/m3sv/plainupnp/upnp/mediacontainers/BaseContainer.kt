@@ -27,12 +27,11 @@ import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.WriteStatus
 import org.fourthline.cling.support.model.container.Container
 
-open class BaseContainer(
+abstract class BaseContainer(
     id: String,
     parentID: String?,
     title: String?,
-    creator: String?,
-    val baseUrl: String
+    creator: String?
 ) : Container(
     if (ContentDirectoryService.isRoot(parentID))
         id
@@ -51,8 +50,5 @@ open class BaseContainer(
         isSearchable = true
     }
 
-    override fun addContainer(container: Container?): Container {
-        childCount += 1
-        return super.addContainer(container)
-    }
+    abstract override fun getChildCount(): Int?
 }

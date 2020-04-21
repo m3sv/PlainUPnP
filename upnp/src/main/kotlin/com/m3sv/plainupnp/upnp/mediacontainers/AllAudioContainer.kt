@@ -14,11 +14,11 @@ class AllAudioContainer(
     parentID: String,
     title: String,
     creator: String?,
-    private val baseURL: String,
-    private val contentResolver: ContentResolver,
     artist: String?,
-    albumId: String?
-) : DynamicContainer(id, parentID, title, creator, baseURL) {
+    albumId: String?,
+    private val baseUrl: String,
+    private val contentResolver: ContentResolver
+) : BaseContainer(id, parentID, title, creator) {
 
     private val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
@@ -94,7 +94,7 @@ class AllAudioContainer(
                 val res = Res(
                     MimeType(mimeType, mimeSubType),
                     size,
-                    "http://$baseURL/$id.$mimeSubType"
+                    "http://$baseUrl/$id.$mimeSubType"
                 )
 
                 res.duration =

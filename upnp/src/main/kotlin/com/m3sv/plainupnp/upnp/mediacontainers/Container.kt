@@ -20,17 +20,13 @@
  * You should have received a copy of the GNU General Public License
  * along with DroidUPNP.  If not, see <http:></http:>//www.gnu.org/licenses/>.
  */
-
 package com.m3sv.plainupnp.upnp.mediacontainers
 
-abstract class DynamicContainer(
+class Container(
     id: String,
     parentID: String?,
     title: String?,
-    creator: String?,
-    baseURL: String
-) : BaseContainer(id, parentID, title, creator, baseURL) {
-
-    abstract override fun getChildCount(): Int?
-
+    creator: String?
+) : BaseContainer(id, parentID, title, creator) {
+    override fun getChildCount(): Int = containers.size
 }

@@ -37,15 +37,14 @@ class VideoContainer(
     parentID: String,
     title: String,
     creator: String,
-    baseURL: String,
-    private val directory: String,
+    directory: String,
+    private val baseUrl: String,
     private val contentResolver: ContentResolver
-) : DynamicContainer(
+) : BaseContainer(
     id,
     parentID,
     title,
-    creator,
-    baseURL
+    creator
 ) {
     private val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 

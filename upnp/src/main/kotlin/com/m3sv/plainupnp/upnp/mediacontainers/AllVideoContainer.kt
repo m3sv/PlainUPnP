@@ -36,14 +36,13 @@ class AllVideoContainer(
     parentID: String,
     title: String,
     creator: String,
-    private val baseURL: String,
+    private val baseUrl: String,
     private val contentResolver: ContentResolver
-) : DynamicContainer(
+) : BaseContainer(
     id,
     parentID,
     title,
-    creator,
-    baseURL
+    creator
 ) {
     private val uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 
@@ -108,7 +107,7 @@ class AllVideoContainer(
                         mimeTypeSubType
                     ),
                     size,
-                    "http://$baseURL/$id.$mimeTypeSubType"
+                    "http://$baseUrl/$id.$mimeTypeSubType"
                 ).apply {
                     duration =
                         "${videoDuration / (1000 * 60 * 60)}:${videoDuration % (1000 * 60 * 60) / (1000 * 60)}:${videoDuration % (1000 * 60) / 1000}"

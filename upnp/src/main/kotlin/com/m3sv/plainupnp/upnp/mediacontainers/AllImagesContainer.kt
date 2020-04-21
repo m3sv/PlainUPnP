@@ -37,9 +37,9 @@ class AllImagesContainer(
     parentID: String?,
     title: String?,
     creator: String?,
-    private val baseURL: String,
+    private val baseUrl: String,
     private val contentResolver: ContentResolver
-) : DynamicContainer(id, parentID, title, creator, baseURL) {
+) : BaseContainer(id, parentID, title, creator) {
 
     private val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
@@ -84,7 +84,7 @@ class AllImagesContainer(
                     val res = Res(
                         MimeType(mimeType, mimeSubType),
                         size,
-                        "http://$baseURL/$id.$mimeSubType"
+                        "http://$baseUrl/$id.$mimeSubType"
                     ).apply {
                         setResolution(width.toInt(), height.toInt())
                     }

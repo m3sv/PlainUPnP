@@ -38,20 +38,16 @@ class ImageContainer(
     parentID: String?,
     title: String?,
     creator: String?,
-    baseURL: String,
+    private val baseUrl: String,
     private val directory: ContentDirectory,
     private val contentResolver: ContentResolver
-) : DynamicContainer(id, parentID, title, creator, baseURL) {
+) : BaseContainer(id, parentID, title, creator) {
 
     private val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
     private val selection: String = "$IMAGE_DATA_PATH LIKE ?"
 
-    private val selectionArgs: Array<String> = if (isQ) {
-        arrayOf("%$directory/")
-    } else {
-        arrayOf("%${directory.name}/%")
-    }
+    private val selectionArgs: Array<String> = arrayOf("%${directory.name}/${if (isQ) "" else "%"}")
 
     override fun getChildCount(): Int? {
         val projection = arrayOf(

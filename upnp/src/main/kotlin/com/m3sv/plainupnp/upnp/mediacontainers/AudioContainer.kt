@@ -15,12 +15,12 @@ class AudioContainer(
     parentID: String,
     title: String,
     creator: String?,
-    baseURL: String,
-    private val contentResolver: ContentResolver,
     directory: String,
     artist: String? = null,
-    albumId: String? = null
-) : DynamicContainer(id, parentID, title, creator, baseURL) {
+    albumId: String? = null,
+    private val baseUrl: String,
+    private val contentResolver: ContentResolver
+) : BaseContainer(id, parentID, title, creator) {
 
     private var orderBy: String? = null
 

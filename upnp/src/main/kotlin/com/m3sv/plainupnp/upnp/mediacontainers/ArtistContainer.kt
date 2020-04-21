@@ -32,14 +32,13 @@ class ArtistContainer(
     parentID: String,
     title: String,
     creator: String,
-    baseURL: String,
+    private val baseUrl: String,
     private val contentResolver: ContentResolver
-) : DynamicContainer(
+) : BaseContainer(
     id,
     parentID,
     title,
-    creator,
-    baseURL
+    creator
 ) {
     private val uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI
 
