@@ -1,7 +1,6 @@
 package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.ContentResolver
-import android.os.Build
 import android.provider.MediaStore
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.PersonWithRole
@@ -10,50 +9,45 @@ import org.fourthline.cling.support.model.container.Container
 import org.fourthline.cling.support.model.item.MusicTrack
 import org.seamless.util.MimeType
 
-class AudioContainer(
+class AllAudioContainer(
     id: String,
     parentID: String,
     title: String,
     creator: String?,
-    baseURL: String,
+    private val baseURL: String,
     private val contentResolver: ContentResolver,
-    directory: String,
-    artist: String? = null,
-    albumId: String? = null
+    artist: String?,
+    albumId: String?
 ) : DynamicContainer(id, parentID, title, creator, baseURL) {
 
-    private var orderBy: String? = null
+    private val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
-    private var selection: String = "$AUDIO_DATA_PATH LIKE ?"
-    private var selectionArgs: Array<String> = arrayOf("%$directory/")
+    private var orderBy: String? = null
+    private var where: String? = null
+    private var whereVal: Array<String>? = null
 
     init {
-        val directoryClause = " ,$selection"
-
         if (artist != null) {
-            selection = "${MediaStore.Audio.Media.ARTIST} = ?${directoryClause}"
-            selectionArgs = arrayOf(artist, "%$directory/")
+            where = MediaStore.Audio.Media.ARTIST + "=?"
+            whereVal = arrayOf(artist)
             orderBy = MediaStore.Audio.Media.ALBUM
         }
 
         if (albumId != null) {
-            selection = "${MediaStore.Audio.Media.ALBUM_ID} = ?${directoryClause}"
-            selectionArgs = arrayOf(albumId, "%$directory/")
+            where = MediaStore.Audio.Media.ALBUM_ID + "=?"
+            whereVal = arrayOf(albumId)
             orderBy = MediaStore.Audio.Media.TRACK
         }
     }
 
     override fun getChildCount(): Int? {
-        val projection = arrayOf(
-            MediaStore.Audio.Media._ID,
-            AUDIO_DATA_PATH
-        )
+        val columns = arrayOf(MediaStore.Audio.Media._ID)
 
         contentResolver.query(
-            URI,
-            projection,
-            selection,
-            selectionArgs,
+            uri,
+            columns,
+            where,
+            whereVal,
             orderBy
         ).use { cursor ->
             return cursor?.count ?: 0
@@ -61,9 +55,6 @@ class AudioContainer(
     }
 
     override fun getContainers(): List<Container> {
-        if (items.isNotEmpty() || containers.isNotEmpty())
-            return containers
-
         val columns = arrayOf(
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.TITLE,
@@ -75,10 +66,10 @@ class AudioContainer(
         )
 
         contentResolver.query(
-            URI,
+            uri,
             columns,
-            selection,
-            selectionArgs,
+            where,
+            whereVal,
             orderBy
         )?.use { cursor ->
             val audioIdColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
@@ -103,7 +94,7 @@ class AudioContainer(
                 val res = Res(
                     MimeType(mimeType, mimeSubType),
                     size,
-                    "http://$baseUrl/$id.$mimeSubType"
+                    "http://$baseURL/$id.$mimeSubType"
                 )
 
                 res.duration =
@@ -124,14 +115,5 @@ class AudioContainer(
         }
 
         return containers
-    }
-
-    companion object {
-        private val URI = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
-
-        val AUDIO_DATA_PATH = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-            MediaStore.Audio.Media.RELATIVE_PATH
-        else
-            MediaStore.Audio.Media.DATA
     }
 }

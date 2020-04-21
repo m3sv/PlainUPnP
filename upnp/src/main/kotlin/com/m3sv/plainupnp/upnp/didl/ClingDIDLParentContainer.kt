@@ -5,8 +5,6 @@ import org.fourthline.cling.support.model.container.Container
 
 class ClingDIDLParentContainer(id: String) : ClingDIDLObject(Container()), DIDLParentContainer {
 
-    override val childCount: Int = 0
-
     init {
         didlObject.id = id
     }

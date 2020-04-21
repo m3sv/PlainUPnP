@@ -82,7 +82,7 @@ class AlbumContainer(
                 if (albumId != null && album != null) {
                     Timber.d(" current $id albumId : $albumId album : $album")
                     containers.add(
-                        AudioContainer(
+                        AllAudioContainer(
                             albumId,
                             id,
                             album,
@@ -90,7 +90,7 @@ class AlbumContainer(
                             baseUrl,
                             contentResolver,
                             null,
-                            albumId
+                            albumId = albumId
                         )
                     )
                 } else {

@@ -143,7 +143,7 @@ class RendererCommand(
         }
     }
 
-    fun launchItem(item: DIDLItem) = executeAVAction {
+    fun launchItem(item: DIDLItem) = executeAVAction { service ->
         val obj = (item as ClingDIDLItem).didlObject as? Item ?: return
 
         var type = ""
@@ -176,7 +176,7 @@ class RendererCommand(
 
         // Stop playback before setting URI
 
-        object : Stop(it) {
+        object : Stop(service) {
             override fun success(invocation: ActionInvocation<*>?) {
                 Timber.v("Success stopping ! ")
                 callback()

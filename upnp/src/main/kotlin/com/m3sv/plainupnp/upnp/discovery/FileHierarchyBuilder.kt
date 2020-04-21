@@ -58,22 +58,13 @@ class FileHierarchyBuilder {
         containerBuilder: ContainerBuilder
     ) {
         val id = "${container.name}${container.id}".hashCode()
+
         val newContainer = containerBuilder(
             id.toString(),
             null,
             container.name,
             container.path
         )
-
-//            ImageContainer(
-//            id.toString(),
-//            ContentDirectoryService.IMAGE_ID.toString(),
-//            container.name,
-//            appName,
-//            baseUrl,
-//            directory = container.getPath(),
-//            contentResolver = context.contentResolver
-//        )
 
         baseContainer.addContainer(newContainer)
         containerRegistry[id] = newContainer
@@ -95,15 +86,6 @@ class FileHierarchyBuilder {
                         value.path
                     )
 
-//                ImageContainer(
-//                    id = leafId.toString(),
-//                    parentID = id.toString(),
-//                    title = it.key,
-//                    creator = appName,
-//                    baseURL = baseUrl,
-//                    directory = value.getPath(),
-//                    contentResolver = context.contentResolver
-//                )
                 newContainer.addContainer(leafContainer)
                 containerRegistry[leafId] = leafContainer
             }

@@ -212,11 +212,7 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun moveTo(progress: Int) {
         upnpInnerState?.run {
-            rendererCommand?.run {
-                formatTime(MAX_VOLUME_PROGRESS, progress, durationSeconds).let {
-                    commandSeek(it)
-                }
-            }
+            rendererCommand?.commandSeek(formatTime(MAX_VOLUME_PROGRESS, progress, durationSeconds))
         }
     }
 

@@ -1,44 +1,46 @@
 package com.m3sv.plainupnp.upnp.discovery
 
+import java.util.*
+
 class FileHierarchyExtractor {
     fun extract(
         roots: MutableMap<String, FolderRoot>,
-        directories: List<String>,
-        parent: FolderContainer?
+        directories: Queue<String>
     ) {
-        // if null then we're in the root
-        if (directories.isEmpty()) {
+        if (directories.isEmpty())
             return
+
+        val rootName = requireNotNull(directories.poll())
+
+        if (roots[rootName] == null) {
+            roots[rootName] = FolderRoot(rootName)
         }
 
-        if (parent == null) {
-            val directory = directories[0]
-            if (roots[directory] == null) {
-                roots[directory] = FolderRoot(directory, mutableMapOf())
-            }
+        var root: FolderContainer = requireNotNull(roots[rootName])
 
-            if (directories.size > 1) {
-                extract(roots, directories.subList(1, directories.size), roots[directory])
-            }
+        while (directories.isNotEmpty()) {
+            val directory = requireNotNull(directories.poll())
 
-            return
-        }
+            val element = root.children[directory]
+            val isElementExists = element != null
+            val isQueueEmpty = directories.isEmpty()
 
-        val element = directories[0]
-
-        if (directories.size > 1) {
-            if (parent.children[element] == null) {
-                parent.children[element] = FolderChild(element, parent)
-            }
-
-            extract(
-                roots,
-                directories.subList(1, directories.size),
-                parent.children[element] as FolderChild
-            )
-        } else {
-            if (parent.children[element] == null) {
-                parent.children[element] = FolderLeaf(element, parent)
+            when {
+                !isElementExists && isQueueEmpty -> root.children[directory] =
+                    FolderLeaf(directory, root)
+                !isElementExists && !isQueueEmpty -> {
+                    val child = FolderChild(directory, root)
+                    root.children[directory] = child
+                    root = child
+                }
+                isElementExists && isQueueEmpty -> Unit
+                isElementExists && !isQueueEmpty -> if (element is FolderLeaf) {
+                    val child = FolderChild(directory, root)
+                    root.children[directory] = child
+                    root = child
+                } else {
+                    root = element as FolderContainer
+                }
             }
         }
     }

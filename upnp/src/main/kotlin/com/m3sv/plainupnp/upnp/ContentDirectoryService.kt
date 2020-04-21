@@ -311,7 +311,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         title = containerName,
                         creator = appName,
                         baseURL = baseUrl,
-                        directory = path,
+                        directory = ContentDirectory(path),
                         contentResolver = context.contentResolver
                     )
                 }
@@ -322,15 +322,15 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
     private fun getAlbumContainer(
         albumId: String,
         parentId: String
-    ): AudioContainer = AudioContainer(
+    ): BaseContainer = AllAudioContainer(
         albumId,
         parentId,
         "",
         appName,
         baseURL,
         context.contentResolver,
-        null,
-        albumId = albumId
+        albumId = albumId,
+        artist = null
     )
 
     private fun getArtistContainer(
@@ -346,19 +346,18 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         artistId = artistId
     )
 
-    private fun getAllVideosContainer(): VideoContainer =
-        VideoContainer(
+    private fun getAllVideosContainer(): BaseContainer =
+        AllVideoContainer(
             ALL_VIDEO.toString(),
             VIDEO_ID.toString(),
             context.getString(R.string.all),
             appName,
             baseURL,
-            directory = null,
             contentResolver = context.contentResolver
         )
 
-    private fun getAllAudioContainer(): AudioContainer =
-        AudioContainer(
+    private fun getAllAudioContainer(): BaseContainer =
+        AllAudioContainer(
             ALL_AUDIO.toString(),
             AUDIO_ID.toString(),
             context.getString(R.string.all),
@@ -390,15 +389,14 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             context.contentResolver
         )
 
-    private fun getAllImagesContainer(): ImageContainer =
-        ImageContainer(
+    private fun getAllImagesContainer(): AllImagesContainer =
+        AllImagesContainer(
             id = ALL_IMAGE.toString(),
             parentID = IMAGE_ID.toString(),
             title = context.getString(R.string.all),
             creator = appName,
             baseURL = baseURL,
-            contentResolver = context.contentResolver,
-            directory = null
+            contentResolver = context.contentResolver
         )
 
     private val imagesEnabled

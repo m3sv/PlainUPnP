@@ -1,9 +1,11 @@
 package com.m3sv.plainupnp.upnp.discovery
 
+import java.util.*
+
 
 class FileTree(private val extractor: FileHierarchyExtractor) {
 
-    private val roots: MutableMap<String, FolderRoot> = mutableMapOf()
+    private val roots: MutableMap<String, FolderRoot> = TreeMap()
 
     val fileFolderRoots: Collection<FolderRoot> = roots.values
 
@@ -19,7 +21,7 @@ class FileTree(private val extractor: FileHierarchyExtractor) {
             return
 
         val splitPath = vettedPath.split("/")
-        extractor.extract(roots, splitPath, null)
+        extractor.extract(roots, LinkedList(splitPath))
         pathCache.add(vettedPath)
     }
 }

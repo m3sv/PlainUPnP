@@ -19,4 +19,7 @@ dependencies {
     compileOnly Dependencies.javaxCdi
 
     implementation project(":common")
+
+    testImplementation Dependencies.test.junit
+    testImplementation Dependencies.test.mockito
 }

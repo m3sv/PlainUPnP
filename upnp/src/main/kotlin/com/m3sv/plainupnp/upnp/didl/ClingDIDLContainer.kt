@@ -31,8 +31,5 @@ import org.fourthline.cling.support.model.container.Container
 class ClingDIDLContainer(item: Container) : ClingDIDLObject(item),
         DIDLContainer {
 
-    override val childCount: Int =
-            didlObject.takeIf { it is Container }?.let { (it as Container).childCount } ?: 0
-
     override val icon: Int = R.drawable.ic_action_collection
 }

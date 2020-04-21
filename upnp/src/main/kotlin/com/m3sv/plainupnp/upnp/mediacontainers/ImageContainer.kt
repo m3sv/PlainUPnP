@@ -39,26 +39,25 @@ class ImageContainer(
     title: String?,
     creator: String?,
     baseURL: String,
-    private val directory: String?,
+    private val directory: ContentDirectory,
     private val contentResolver: ContentResolver
 ) : DynamicContainer(id, parentID, title, creator, baseURL) {
 
     private val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-    private val selection: String? =
-        if (directory != null) "$IMAGE_DATA_PATH LIKE ?" else null
+    private val selection: String = "$IMAGE_DATA_PATH LIKE ?"
 
-    private val selectionArgs: Array<String>? =
-        if (directory != null) arrayOf("%$directory/") else null
+    private val selectionArgs: Array<String> = if (isQ) {
+        arrayOf("%$directory/")
+    } else {
+        arrayOf("%${directory.name}/%")
+    }
 
     override fun getChildCount(): Int? {
-        val projection = if (directory != null)
-            arrayOf(
-                MediaStore.Images.Media._ID,
-                IMAGE_DATA_PATH
-            )
-        else
-            arrayOf(MediaStore.Images.Media._ID)
+        val projection = arrayOf(
+            MediaStore.Images.Media._ID,
+            IMAGE_DATA_PATH
+        )
 
         contentResolver.query(
             uri,
@@ -75,26 +74,15 @@ class ImageContainer(
         if (items.isNotEmpty() || containers.isNotEmpty())
             return containers
 
-        val projection = if (directory != null) {
-            arrayOf(
-                MediaStore.Images.Media._ID,
-                IMAGE_DATA_PATH,
-                MediaStore.Images.Media.TITLE,
-                MediaStore.Images.Media.MIME_TYPE,
-                MediaStore.Images.Media.SIZE,
-                MediaStore.Images.Media.HEIGHT,
-                MediaStore.Images.Media.WIDTH
-            )
-        } else {
-            arrayOf(
-                MediaStore.Images.Media._ID,
-                MediaStore.Images.Media.TITLE,
-                MediaStore.Images.Media.MIME_TYPE,
-                MediaStore.Images.Media.SIZE,
-                MediaStore.Images.Media.HEIGHT,
-                MediaStore.Images.Media.WIDTH
-            )
-        }
+        val projection = arrayOf(
+            MediaStore.Images.Media._ID,
+            IMAGE_DATA_PATH,
+            MediaStore.Images.Media.TITLE,
+            MediaStore.Images.Media.MIME_TYPE,
+            MediaStore.Images.Media.SIZE,
+            MediaStore.Images.Media.HEIGHT,
+            MediaStore.Images.Media.WIDTH
+        )
 
         contentResolver.query(
             uri,
@@ -109,8 +97,12 @@ class ImageContainer(
             val imagesMediaSizeColumn = cursor.getColumnIndex(MediaStore.Images.Media.SIZE)
             val imagesHeightColumn = cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT)
             val imagesWidthColumn = cursor.getColumnIndex(MediaStore.Images.Media.WIDTH)
+            val dataColumn = cursor.getColumnIndex(IMAGE_DATA_PATH)
 
             while (cursor.moveToNext()) {
+                if (!isQ && !directory.samePath(cursor.getColumnName(dataColumn)))
+                    continue
+
                 val id = ContentDirectoryService.IMAGE_PREFIX + cursor.getInt(imagesIdColumn)
                 val title = cursor.getString(imagesTitleColumn)
                 val mime = cursor.getString(imagesMimeTypeColumn)
@@ -146,7 +138,9 @@ class ImageContainer(
     }
 
     companion object {
-        val IMAGE_DATA_PATH = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        private val isQ = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+
+        val IMAGE_DATA_PATH = if (isQ)
             MediaStore.Images.Media.RELATIVE_PATH
         else
             MediaStore.Images.Media.DATA
