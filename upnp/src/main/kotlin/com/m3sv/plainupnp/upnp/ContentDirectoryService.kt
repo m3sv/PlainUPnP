@@ -218,7 +218,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         containerName,
                         appName,
                         baseUrl = baseURL,
-                        directory = directory,
+                        directory = ContentDirectory(directory),
                         contentResolver = context.contentResolver
                     )
                 }
@@ -267,7 +267,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         title = containerName,
                         creator = appName,
                         baseUrl = baseURL,
-                        directory = path,
+                        directory = ContentDirectory(path),
                         contentResolver = context.contentResolver
                     )
                 }

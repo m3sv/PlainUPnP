@@ -3,6 +3,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 import android.content.ContentResolver
 import android.os.Build
 import android.provider.MediaStore
+import com.m3sv.plainupnp.common.utils.isQ
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.PersonWithRole
 import org.fourthline.cling.support.model.Res
@@ -15,17 +16,18 @@ class AudioDirectoryContainer(
     parentID: String,
     title: String,
     creator: String?,
-    directory: String,
     artist: String? = null,
     albumId: String? = null,
     private val baseUrl: String,
+    private val directory: ContentDirectory,
     private val contentResolver: ContentResolver
 ) : BaseContainer(id, parentID, title, creator) {
 
     private var orderBy: String? = null
 
     private var selection: String = "$AUDIO_DATA_PATH LIKE ?"
-    private var selectionArgs: Array<String> = arrayOf("%$directory/")
+
+    private var selectionArgs: Array<String> = arrayOf("%${directory.name}/${if (isQ) "" else "%"}")
 
     init {
         val directoryClause = " ,$selection"
@@ -66,6 +68,7 @@ class AudioDirectoryContainer(
 
         val columns = arrayOf(
             MediaStore.Audio.Media._ID,
+            AUDIO_DATA_PATH,
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.MIME_TYPE,
@@ -88,8 +91,12 @@ class AudioDirectoryContainer(
             val audioSizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
             val audioDurationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
             val audioAlbumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
+            val dataColumn = cursor.getColumnIndex(AUDIO_DATA_PATH)
 
             while (cursor.moveToNext()) {
+                if (!isQ && !directory.samePath(cursor.getString(dataColumn)))
+                    continue
+
                 val id = ContentDirectoryService.AUDIO_PREFIX + cursor.getInt(audioIdColumn)
                 val title = cursor.getString(audioTitleColumn)
                 val creator = cursor.getString(audioArtistColumn)

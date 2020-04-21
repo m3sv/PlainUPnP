@@ -25,8 +25,8 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.ContentResolver
 import android.net.Uri
-import android.os.Build
 import android.provider.MediaStore
+import com.m3sv.plainupnp.common.utils.isQ
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
@@ -96,7 +96,7 @@ class ImageDirectoryContainer(
             val dataColumn = cursor.getColumnIndex(IMAGE_DATA_PATH)
 
             while (cursor.moveToNext()) {
-                if (!isQ && !directory.samePath(cursor.getColumnName(dataColumn)))
+                if (!isQ && !directory.samePath(cursor.getString(dataColumn)))
                     continue
 
                 val id = ContentDirectoryService.IMAGE_PREFIX + cursor.getInt(imagesIdColumn)
@@ -134,8 +134,6 @@ class ImageDirectoryContainer(
     }
 
     companion object {
-        private val isQ = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-
         val IMAGE_DATA_PATH = if (isQ)
             MediaStore.Images.Media.RELATIVE_PATH
         else

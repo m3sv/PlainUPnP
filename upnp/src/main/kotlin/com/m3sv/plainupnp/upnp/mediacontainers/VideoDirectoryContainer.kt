@@ -26,6 +26,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 import android.content.ContentResolver
 import android.os.Build
 import android.provider.MediaStore
+import com.m3sv.plainupnp.common.utils.isQ
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
@@ -37,8 +38,8 @@ class VideoDirectoryContainer(
     parentID: String,
     title: String,
     creator: String,
-    directory: String,
     private val baseUrl: String,
+    private val directory: ContentDirectory,
     private val contentResolver: ContentResolver
 ) : BaseContainer(
     id,
@@ -50,7 +51,7 @@ class VideoDirectoryContainer(
 
     private val selection: String = "$VIDEO_DATA_PATH LIKE ?"
 
-    private val selectionArgs: Array<String> = arrayOf("%$directory/")
+    private val selectionArgs: Array<String> = arrayOf("%${directory.name}/${if (isQ) "" else "%"}")
 
     override fun getChildCount(): Int {
         val projection = arrayOf(
@@ -103,8 +104,12 @@ class VideoDirectoryContainer(
                 cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DURATION)
             val videoHeightColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.HEIGHT)
             val videoWidthColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.WIDTH)
+            val dataColumn = cursor.getColumnIndex(VIDEO_DATA_PATH)
 
             while (cursor.moveToNext()) {
+                if (!isQ && !directory.samePath(cursor.getString(dataColumn)))
+                    continue
+
                 val id = ContentDirectoryService.VIDEO_PREFIX + cursor.getInt(videoIdColumn)
                 val title = cursor.getString(videoTitleColumn)
                 val creator = cursor.getString(videoArtistColumn)
