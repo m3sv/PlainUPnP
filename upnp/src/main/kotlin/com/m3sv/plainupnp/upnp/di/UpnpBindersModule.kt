@@ -22,6 +22,10 @@ abstract class UpnpBindersModule {
 
     @Binds
     @Singleton
+    abstract fun bindServiceFinder(controller: UpnpServiceControllerImpl): RendererServiceFinder
+
+    @Binds
+    @Singleton
     abstract fun bindUpnpStore(upnpStateRepository: UpnpStateRepository): UpnpStateStore
 
     @Binds

@@ -1,26 +1,25 @@
 package com.m3sv.plainupnp.upnp.actions
 
-import com.m3sv.plainupnp.upnp.CDevice
-import com.m3sv.plainupnp.upnp.UpnpServiceController
+import com.m3sv.plainupnp.upnp.RendererServiceFinder
+import org.fourthline.cling.UpnpService
 import org.fourthline.cling.controlpoint.ActionCallback
-import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.meta.Service
 import org.fourthline.cling.model.types.UDAServiceType
+import timber.log.Timber
 
-internal abstract class AvAction(
-    private val controller: UpnpServiceController,
-    private val controlPoint: ControlPoint
+abstract class AvAction(
+    private val upnpService: UpnpService,
+    private val serviceFinder: RendererServiceFinder
 ) {
-
-    private fun getAVTransportService(): Service<*, *>? =
-        controller.selectedRenderer?.let {
-            (it as CDevice).device?.findService(UDAServiceType("AVTransport"))
-        }
-
-    inline fun executeAVAction(callback: (Service<*, *>) -> ActionCallback) {
-        getAVTransportService()?.let { service ->
-            controlPoint.execute(callback.invoke(service))
-        }
+    protected fun executeAVAction(callback: Service<*, *>.() -> ActionCallback) {
+        serviceFinder
+            .findService(UDAServiceType("AVTransport"))
+            ?.let { service ->
+                try {
+                    upnpService.controlPoint.execute(callback(service))
+                } catch (e: Exception) {
+                    Timber.e(e)
+                }
+            }
     }
-
 }

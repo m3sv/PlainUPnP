@@ -5,6 +5,9 @@ import com.m3sv.plainupnp.common.utils.formatTime
 import com.m3sv.plainupnp.common.utils.throttle
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.*
+import com.m3sv.plainupnp.upnp.actions.PauseAction
+import com.m3sv.plainupnp.upnp.actions.PlayAction
+import com.m3sv.plainupnp.upnp.actions.StopAction
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
@@ -27,6 +30,9 @@ class UpnpManagerImpl @Inject constructor(
     private val serviceController: UpnpServiceController,
     private val launchLocallyUseCase: LaunchLocallyUseCase,
     private val stateStore: UpnpStateStore,
+    private val stop: StopAction,
+    private val pause: PauseAction,
+    private val play: PlayAction,
     upnpNavigator: UpnpNavigator
 ) : UpnpManager,
     CoroutineScope,
@@ -106,12 +112,11 @@ class UpnpManagerImpl @Inject constructor(
     private var currentRendererState: UpnpRendererState? = null
 
     private fun render(item: RenderItem) {
-        Timber.d("Render item: ${item.item.uri}")
-
-        rendererCommand?.run {
-            pause()
-            commandStop()
+        launch {
+            stop()
         }
+
+        rendererCommand?.pause()
 
         next = item.position + 1
         previous = item.position - 1
@@ -130,9 +135,7 @@ class UpnpManagerImpl @Inject constructor(
             }
 
             UpnpInnerState(id, uri, type)
-        }
-
-        upnpInnerState?.let { innerState ->
+        }.also { innerState ->
             launch {
                 innerState.flow.collect { state ->
                     currentRendererState = state
@@ -199,15 +202,17 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override fun pausePlayback() {
-        rendererCommand?.commandPause()
+        launch { pause() }
     }
 
     override fun stopPlayback() {
-        rendererCommand?.commandStop()
+        launch { stop() }
     }
 
     override fun resumePlayback() {
-        rendererCommand?.commandPlay()
+        launch {
+            play()
+        }
     }
 
     override fun moveTo(progress: Int) {
@@ -262,8 +267,7 @@ class UpnpManagerImpl @Inject constructor(
                 UpnpRendererState.State.PAUSE -> resumePlayback()
                 UpnpRendererState.State.STOP -> resumePlayback()
                 UpnpRendererState.State.INITIALIZING,
-                UpnpRendererState.State.FINISHED -> {
-                }
+                UpnpRendererState.State.FINISHED -> Unit
             }
         }
     }

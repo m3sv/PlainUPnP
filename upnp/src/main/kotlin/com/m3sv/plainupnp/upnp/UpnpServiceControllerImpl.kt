@@ -3,10 +3,14 @@ package com.m3sv.plainupnp.upnp
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import org.fourthline.cling.UpnpService
 import org.fourthline.cling.model.meta.LocalDevice
+import org.fourthline.cling.model.meta.Service
+import org.fourthline.cling.model.types.ServiceType
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class UpnpServiceControllerImpl @Inject constructor(private val upnpService: UpnpService) :
-    UpnpServiceController {
+    UpnpServiceController, RendererServiceFinder {
 
     override val contentDirectoryDiscovery: ContentDirectoryDiscovery =
         ContentDirectoryDiscovery(this, upnpService)
@@ -75,6 +79,10 @@ class UpnpServiceControllerImpl @Inject constructor(private val upnpService: Upn
             )
         }
 
+    override fun findService(type: ServiceType): Service<*, *>? =
+        selectedRenderer?.let { clingDevice ->
+            (clingDevice as CDevice).device?.findService(type)
+        }
 
     private fun UpnpService.addListenerSafe(registryListener: RegistryListener) {
         registry?.run {

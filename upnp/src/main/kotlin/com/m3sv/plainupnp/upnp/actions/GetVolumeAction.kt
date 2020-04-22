@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.upnp.actions
 
-import com.m3sv.plainupnp.upnp.UpnpServiceController
+import com.m3sv.plainupnp.upnp.RendererServiceFinder
 import org.fourthline.cling.UpnpService
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -14,8 +14,8 @@ import kotlin.coroutines.suspendCoroutine
 
 class GetVolumeAction @Inject constructor(
     service: UpnpService,
-    controller: UpnpServiceController
-) : RenderingAction(service, controller) {
+    serviceFinder: RendererServiceFinder
+) : RenderingAction(service, serviceFinder) {
 
     suspend operator fun invoke(): Int = suspendCoroutine { continuation ->
         executeRenderingAction {

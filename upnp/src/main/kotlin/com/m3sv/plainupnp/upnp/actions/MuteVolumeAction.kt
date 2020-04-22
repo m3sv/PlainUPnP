@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.upnp.actions
 
-import com.m3sv.plainupnp.upnp.UpnpServiceController
+import com.m3sv.plainupnp.upnp.RendererServiceFinder
 import org.fourthline.cling.UpnpService
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -11,8 +11,8 @@ import javax.inject.Inject
 
 class MuteVolumeAction @Inject constructor(
     listener: UpnpService,
-    controller: UpnpServiceController
-) : RenderingAction(listener, controller) {
+    serviceFinder: RendererServiceFinder
+) : RenderingAction(listener, serviceFinder) {
 
     operator fun invoke(mute: Boolean) = executeRenderingAction {
         object : SetMute(this, mute) {

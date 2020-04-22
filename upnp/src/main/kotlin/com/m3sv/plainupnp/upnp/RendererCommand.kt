@@ -3,10 +3,7 @@ package com.m3sv.plainupnp.upnp
 import com.m3sv.plainupnp.data.upnp.DIDLItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.fourthline.cling.controlpoint.ActionCallback
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
@@ -21,15 +18,18 @@ import org.fourthline.cling.support.model.TransportState
 import org.fourthline.cling.support.model.item.*
 import org.fourthline.cling.support.renderingcontrol.callback.GetMute
 import org.fourthline.cling.support.renderingcontrol.callback.GetVolume
-import org.fourthline.cling.support.renderingcontrol.callback.SetMute
 import timber.log.Timber
+import kotlin.coroutines.CoroutineContext
 
 
 class RendererCommand(
-    private val controller: UpnpServiceController,
+    private val serviceFinder: RendererServiceFinder,
     private val controlPoint: ControlPoint,
     private val innerState: UpnpInnerState
-) {
+) : CoroutineScope {
+
+    override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
+
     private var job: Job? = null
 
     private var innerStopCounter = 0
@@ -62,32 +62,6 @@ class RendererCommand(
         }
     }
 
-    fun commandStop() = executeAVAction {
-        object : Stop(it) {
-            override fun success(invocation: ActionInvocation<*>?) {
-                Timber.v("Success stopping ! ")
-                // TODO update player state
-            }
-
-            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                Timber.w("Fail to stop ! $arg2")
-            }
-        }
-    }
-
-    fun commandPause() = executeAVAction {
-        object : Pause(it) {
-            override fun success(invocation: ActionInvocation<*>?) {
-                Timber.v("Success pausing ! ")
-                // TODO update player state
-            }
-
-            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                Timber.w("Fail to stop ! $arg2")
-            }
-        }
-    }
-
     fun commandSeek(relativeTimeTarget: String) = executeAVAction {
         Timber.v("Seek to $relativeTimeTarget")
         object : Seek(it, relativeTimeTarget) {
@@ -107,23 +81,6 @@ class RendererCommand(
                 Timber.e("Failure to seek: $arg2")
             }
         }
-    }
-
-    fun setMute(mute: Boolean) = executeRenderingAction {
-        object : SetMute(it, mute) {
-            override fun success(invocation: ActionInvocation<*>?) {
-                Timber.v("Success setting mute status ! ")
-                innerState.isMute = mute
-            }
-
-            override fun failure(arg0: ActionInvocation<*>, arg1: UpnpResponse, arg2: String) {
-                Timber.w("Fail to set mute status ! $arg2")
-            }
-        }
-    }
-
-    fun toggleMute() {
-        setMute(!innerState.isMute)
     }
 
     fun setURI(uri: String?, trackMetadata: TrackMetadata) = executeAVAction {
@@ -146,17 +103,13 @@ class RendererCommand(
     fun launchItem(item: DIDLItem) = executeAVAction { service ->
         val obj = (item as ClingDIDLItem).didlObject as? Item ?: return
 
-        var type = ""
-        when (obj) {
-            is AudioItem -> type = "audioItem"
-            is VideoItem -> type = "videoItem"
-            is ImageItem -> type = "imageItem"
-            is PlaylistItem -> type = "playlistItem"
-            is TextItem -> type = "textItem"
-
-            // TODO genre && artURI
-
-            // Stop playback before setting URI
+        val type = when (obj) {
+            is AudioItem -> "audioItem"
+            is VideoItem -> "videoItem"
+            is ImageItem -> "imageItem"
+            is PlaylistItem -> "playlistItem"
+            is TextItem -> "textItem"
+            else -> ""
         }
 
         // TODO genre && artURI
@@ -172,10 +125,7 @@ class RendererCommand(
             )
         }
 
-        Timber.i("TrackMetadata : $trackMetadata")
-
         // Stop playback before setting URI
-
         object : Stop(service) {
             override fun success(invocation: ActionInvocation<*>?) {
                 Timber.v("Success stopping ! ")
@@ -191,7 +141,6 @@ class RendererCommand(
                 setURI(item.uri, trackMetadata)
             }
         }
-
     }
 
     private fun updateMediaInfo() = executeAVAction { service ->
@@ -271,16 +220,11 @@ class RendererCommand(
         }
     }
 
-
     private fun getRenderingControlService(): Service<*, *>? =
-        controller.selectedRenderer?.let {
-            (it as CDevice).device?.findService(UDAServiceType("RenderingControl"))
-        }
+        serviceFinder.findService(UDAServiceType("RenderingControl"))
 
     private fun getAVTransportService(): Service<*, *>? =
-        controller.selectedRenderer?.let {
-            (it as CDevice).device?.findService(UDAServiceType("AVTransport"))
-        }
+        serviceFinder.findService(UDAServiceType("AVTransport"))
 
     private inline fun executeRenderingAction(callback: (Service<*, *>) -> ActionCallback) {
         getRenderingControlService()?.let { service ->
