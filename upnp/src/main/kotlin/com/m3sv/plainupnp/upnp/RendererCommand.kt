@@ -239,18 +239,14 @@ class RendererCommand(
     }
 
     private suspend fun updateInfo() {
-        var counter = 0
-
         while (true) {
-            if (counter % 6 == 0) {
+            if (!paused) {
                 updateMediaInfo()
+                updatePositionInfo()
+                updateTransportInfo()
             }
 
-            updatePositionInfo()
-            updateTransportInfo()
-
             delay(1000)
-            counter++
         }
     }
 }
