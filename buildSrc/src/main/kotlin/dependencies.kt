@@ -5,14 +5,14 @@ object Versions {
     const val cling = "3.0.0"
     const val compileSdk = 29
     const val constraintLayout = "2.0.0-beta4"
-    const val coroutines = "1.3.4"
+    const val coroutines = "1.3.5"
     const val dagger = "2.27"
     const val detekt = "1.0.0"
     const val jetty = "8.2.0.v20160908"
-    const val kotlin = "1.3.70"
+    const val kotlin = "1.3.71"
     const val minSdk = 21
     const val nanohttpd = "2.3.1"
-    const val navigation = "2.3.0-alpha03"
+    const val navigation = "2.3.0-alpha05"
     const val material = "1.2.0-alpha05"
     const val recyclerView = "1.1.0"
     const val supportLibrary = "1.1.0"
