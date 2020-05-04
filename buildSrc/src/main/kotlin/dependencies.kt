@@ -71,8 +71,8 @@ object Dependencies {
     )
 
     val test = mapOf(
-        "junit" to "junit:junit:4.12",
-        "mockito" to "org.mockito:mockito-core:1.10.19"
+        "junit" to "org.junit.jupiter:junit-jupiter:5.6.2",
+        "mockito" to "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     )
 
 }

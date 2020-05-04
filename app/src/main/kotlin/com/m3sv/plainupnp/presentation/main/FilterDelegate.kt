@@ -9,15 +9,20 @@ import kotlinx.coroutines.flow.asFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+interface FilterDelegate {
+    val state: Flow<Consumable<String>>
+    suspend fun filter(text: String)
+}
+
 @ExperimentalCoroutinesApi
 @Singleton
-class FilterDelegate @Inject constructor() {
+class Filter @Inject constructor() : FilterDelegate {
 
     private val _state = BroadcastChannel<Consumable<String>>(BUFFERED)
 
-    val state: Flow<Consumable<String>> = _state.asFlow()
+    override val state: Flow<Consumable<String>> = _state.asFlow()
 
-    suspend fun filter(text: String) {
+    override suspend fun filter(text: String) {
         _state.send(Consumable(text))
     }
 }

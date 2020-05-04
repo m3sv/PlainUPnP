@@ -21,6 +21,9 @@ dependencies {
 
     implementation Dependencies.coroutines.core
 
+    testImplementation Dependencies.test.junit
+    testImplementation Dependencies.test.mockito
+
     implementation project(':app')
     implementation project(':common')
     implementation project(':upnp')
