@@ -1,7 +1,5 @@
-<p align="center"><img src="https://github.com/m3sv/PlainUPnP/blob/master/app/src/main/web_background.png"></p>
+# PlainUPnP
 
-
-<h2 align="center"><b>PlainUPnP</b></h2>
 <a href="https://play.google.com/store/apps/details?id=com.m3sv.plainupnp">
   <img alt="Android app on Google Play" src="https://play.google.com/intl/en_gb/badges/images/badge_new.png" />
 </a> 
@@ -16,9 +14,9 @@ Browse UPnP media sources and stream media content to a selected UPnP device or 
 Compatible with UPnP/DLNA Smart TV.
 
 Features: 
-* Simple and easy to use interface
-* UPnP content streaming
+* Simple and easy to use
+* UPnP/DLNA streaming
 * Dark/Light theme
-* Launching UPnP content locally
+* Play locally
 
 This is a rewrite of trishika's [DroidUPnP](https://github.com/trishika/DroidUPnP), original project can be found [here](https://github.com/trishika/DroidUPnP).
