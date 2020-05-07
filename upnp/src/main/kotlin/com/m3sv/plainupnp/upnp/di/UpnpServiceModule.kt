@@ -14,7 +14,6 @@ object UpnpServiceModule {
     @Provides
     @JvmStatic
     @Singleton
-    fun provideUpnpService(
-        context: Context
-    ): UpnpService = AndroidUpnpServiceImpl(context, PlainUpnpServiceConfiguration())
+    fun provideUpnpService(context: Context): UpnpService =
+        AndroidUpnpServiceImpl(context, PlainUpnpServiceConfiguration())
 }
