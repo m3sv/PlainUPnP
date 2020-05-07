@@ -159,13 +159,13 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         val didl = DIDLContent()
 
         // Get container first
-        for (c in container.containers)
+        for (c in LinkedHashSet(container.containers))
             didl.addContainer(c)
 
         Timber.d("List item...")
 
         // Then get item
-        for (i in container.items)
+        for (i in LinkedHashSet(container.items))
             didl.addItem(i)
 
         Timber.d("Return result...")
