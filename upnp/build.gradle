@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 dependencies {
     implementation Dependencies.androidx.coreKtx
     implementation Dependencies.androidx.material
+    implementation Dependencies.androidx.preference
 
     implementation Dependencies.coroutines.core
     implementation Dependencies.kotlin
@@ -18,8 +19,9 @@ dependencies {
     kapt Dependencies.dagger.compiler
     compileOnly Dependencies.javaxCdi
 
-    implementation project(":common")
-
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
+
+    implementation project(":common")
+
 }

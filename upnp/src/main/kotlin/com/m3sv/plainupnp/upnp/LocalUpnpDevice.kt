@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp
 
 import android.content.Context
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
 import org.fourthline.cling.model.DefaultServiceManager

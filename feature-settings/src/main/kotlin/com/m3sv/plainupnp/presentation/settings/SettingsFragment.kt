@@ -123,7 +123,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
         private const val CONTACT_US = "contact_us"
 
         private const val EMAIL = "m3sv.dev@gmail.com"
-
         private const val GITHUB_LINK = "https://github.com/m3sv/PlainUPnP"
         private const val PRIVACY_POLICY_LINK =
             "https://www.freeprivacypolicy.com/privacy/view/bf0284b77ca1af94b405030efd47d254"

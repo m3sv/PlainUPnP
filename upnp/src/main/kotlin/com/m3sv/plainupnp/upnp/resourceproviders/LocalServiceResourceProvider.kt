@@ -3,15 +3,13 @@ package com.m3sv.plainupnp.upnp.resourceproviders
 import android.content.Context
 import android.content.pm.PackageManager
 import com.m3sv.plainupnp.upnp.R
-import com.m3sv.plainupnp.upnp.getSettingContentDirectoryName
 import timber.log.Timber
 import javax.inject.Inject
-
 
 class LocalServiceResourceProvider @Inject constructor(private val context: Context) {
     val appName: String = context.getString(R.string.app_name)
     val appUrl: String = context.getString(R.string.app_url)
-    val settingContentDirectoryName = getSettingContentDirectoryName(context)
+    val settingContentDirectoryName: String = android.os.Build.MODEL
 
     // TODO have different model number for different flavors
     val modelNumber = context.getString(R.string.model_number)

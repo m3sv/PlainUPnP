@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.upnp
 
 import android.content.Context
 import android.net.wifi.WifiManager
-import android.preference.PreferenceManager
 import timber.log.Timber
 import java.net.*
 
@@ -13,10 +12,6 @@ const val CONTENT_DIRECTORY_IMAGE = "pref_contentDirectoryService_image"
 const val CONTENT_DIRECTORY_NAME = "pref_contentDirectoryService_name"
 
 const val PORT = 8192
-
-fun getSettingContentDirectoryName(context: Context): String =
-    PreferenceManager.getDefaultSharedPreferences(context)
-        .getString(CONTENT_DIRECTORY_NAME, android.os.Build.MODEL) ?: android.os.Build.MODEL
 
 private fun getLocalIpAddressFromIntf(intfName: String): InetAddress? {
     try {
