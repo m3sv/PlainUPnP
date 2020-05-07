@@ -20,6 +20,7 @@ import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.ControlsSheetState
 import com.m3sv.plainupnp.presentation.home.databinding.HomeFragmentBinding
 import kotlinx.coroutines.launch
+import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import javax.inject.Inject
 
 class HomeFragment : BaseFragment() {
@@ -154,6 +155,7 @@ class HomeFragment : BaseFragment() {
             setHasFixedSize(true)
             layoutManager = recyclerLayoutManager
             adapter = contentAdapter
+            FastScrollerBuilder(this).useMd2Style().build()
         }
     }
 

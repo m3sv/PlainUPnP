@@ -34,6 +34,8 @@ object Dependencies {
     const val timber = "com.jakewharton.timber:timber:4.7.1"
     const val glide = "com.github.bumptech.glide:glide:4.11.0"
     const val javaxCdi = "javax.enterprise:cdi-api:2.0.SP1"
+    const val fastScroll = "me.zhanghai.android.fastscroll:library:1.1.3"
+
     val androidx = mapOf(
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",
         "cardView" to "androidx.cardview:cardview:${Versions.cardView}",

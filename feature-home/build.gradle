@@ -11,9 +11,10 @@ dependencies {
     implementation Dependencies.androidx.lifecycle.extensions
     implementation Dependencies.androidx.lifecycle.liveDataKtx
     implementation Dependencies.androidx.lifecycle.viewModelKtx
-
     implementation Dependencies.androidx.navigation.fragment
     implementation Dependencies.androidx.navigation.ui
+
+    implementation Dependencies.fastScroll
 
     implementation Dependencies.dagger.core
     compileOnly Dependencies.dagger.annotation
