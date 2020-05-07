@@ -28,6 +28,12 @@
             android:icon="@drawable/ic_video"
             android:key="@string/enable_video_container_key"
             android:title="@string/share_videos" />
+
+        <SwitchPreference
+            android:defaultValue="@bool/default_enable_thumbnails"
+            android:icon="@drawable/ic_thumbnail"
+            android:key="@string/enable_thumbnails_key"
+            android:title="@string/enable_thumbnails" />
     </com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory>
 
     <com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory android:title="@string/about">
