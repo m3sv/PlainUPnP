@@ -9,13 +9,12 @@ import javax.inject.Singleton
 
 
 @Module
-object
-AppModule {
+object AppModule {
 
     @Provides
     @JvmStatic
     @Singleton
     fun provideSharedPreferences(context: Context): SharedPreferences =
         PreferenceManager.getDefaultSharedPreferences(context)
-    
+
 }
