@@ -1,4 +1,4 @@
-apply from: "../scripts/android-dynamic-feature.gradle"
+apply from: "../scripts/android-library.gradle"
 apply plugin: 'kotlin-kapt'
 
 android {
@@ -24,7 +24,6 @@ dependencies {
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
 
-    implementation project(':app')
     implementation project(':common')
     implementation project(':upnp')
 }

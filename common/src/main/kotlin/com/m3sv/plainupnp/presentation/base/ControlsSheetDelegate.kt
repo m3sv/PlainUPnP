@@ -15,7 +15,8 @@ enum class ControlsSheetState {
 }
 
 @Singleton
-class ControlsSheetDelegate @Inject constructor() : ShowDismissListener {
+class ControlsSheetDelegate @Inject constructor() :
+    ShowDismissListener {
 
     private val _state = MutableLiveData<ControlsSheetState>()
 

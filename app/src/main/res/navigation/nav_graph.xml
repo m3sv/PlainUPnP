@@ -9,7 +9,6 @@
         android:id="@+id/home_fragment"
         android:name="com.m3sv.plainupnp.presentation.home.HomeFragment"
         android:label="HomeFragment"
-        app:moduleName="feature_home"
         tools:layout="@layout/home_fragment">
         <action
             android:id="@+id/action_mainFragment_to_settingsFragment"

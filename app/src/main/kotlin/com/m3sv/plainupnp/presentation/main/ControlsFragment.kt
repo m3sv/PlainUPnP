@@ -45,7 +45,8 @@ class ControlsFragment : BaseFragment() {
 
     private lateinit var contentDirectoriesAdapter: SimpleArrayAdapter<SpinnerItem>
 
-    private val bottomSheetCallback: BottomSheetCallback = BottomSheetCallback()
+    private val bottomSheetCallback: BottomSheetCallback =
+        BottomSheetCallback()
 
     private val behavior by lazy(NONE) {
         BottomSheetBehavior.from(binding.backgroundContainer)
@@ -314,7 +315,12 @@ class ControlsFragment : BaseFragment() {
     }
 
     private fun List<SpinnerItem>.addEmptyItem() =
-        this.toMutableList().apply { add(0, SpinnerItem("Empty item")) }.toList()
+        this.toMutableList().apply {
+            add(
+                0,
+                SpinnerItem("Empty item")
+            )
+        }.toList()
 
     companion object {
         private const val RENDERERS_ADAPTER_KEY = "renderers"

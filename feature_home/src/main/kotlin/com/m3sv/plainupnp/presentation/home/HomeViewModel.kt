@@ -3,10 +3,10 @@ package com.m3sv.plainupnp.presentation.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import com.m3sv.plainupnp.common.Consumable
+import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.common.Mapper
 import com.m3sv.plainupnp.common.utils.enforce
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
-import com.m3sv.plainupnp.presentation.main.FilterDelegate
 import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.Destination
 import com.m3sv.plainupnp.upnp.UpnpDirectory
@@ -15,7 +15,6 @@ import com.m3sv.plainupnp.upnp.usecase.ObserveUpnpStateUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-
 
 @ExperimentalCoroutinesApi
 class HomeViewModel @Inject constructor(

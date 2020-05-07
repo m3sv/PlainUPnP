@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter
 import com.m3sv.plainupnp.common.StatefulComponent
 
 
-class SimpleArrayAdapter<T : Parcelable> private constructor(
+class SimpleArrayAdapter<T : Parcelable> constructor(
     context: Context,
     private val key: String
 ) : ArrayAdapter<T>(context, android.R.layout.simple_list_item_1), StatefulComponent {
@@ -37,10 +37,11 @@ class SimpleArrayAdapter<T : Parcelable> private constructor(
     }
 
     companion object {
-        internal inline fun <reified T : Parcelable> init(
+        inline fun <reified T : Parcelable> init(
             context: Context,
             key: String
-        ): SimpleArrayAdapter<T> = SimpleArrayAdapter(context, key)
+        ): SimpleArrayAdapter<T> =
+            SimpleArrayAdapter(context, key)
     }
 }
 

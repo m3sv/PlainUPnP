@@ -30,7 +30,7 @@ android {
         jvmTarget = "1.8"
     }
 
-    dynamicFeatures = [":feature_home", ":feature_settings"]
+    dynamicFeatures = [":feature_settings"]
 }
 
 dependencies {
@@ -71,6 +71,7 @@ dependencies {
 
     implementation project(':common')
     implementation project(':upnp')
+    implementation project(':feature_home')
 }
 
 detekt {

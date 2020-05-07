@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.ShutdownNotifier
+import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
@@ -31,13 +32,25 @@ class MainViewModel @Inject constructor(
     val renderers =
         upnpManager
             .renderers
-            .map { renderers -> renderers.map { SpinnerItem(it.device.friendlyName) } }
+            .map { renderers ->
+                renderers.map {
+                    SpinnerItem(
+                        it.device.friendlyName
+                    )
+                }
+            }
             .asLiveData()
 
     val contentDirectories =
         upnpManager
             .contentDirectories
-            .map { directories -> directories.map { SpinnerItem(it.device.friendlyName) } }
+            .map { directories ->
+                directories.map {
+                    SpinnerItem(
+                        it.device.friendlyName
+                    )
+                }
+            }
             .asLiveData()
 
     override fun intention(intention: MainIntention) {

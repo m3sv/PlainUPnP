@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.presentation.home
 
-import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
 import com.m3sv.plainupnp.upnp.didl.*
 import javax.inject.Inject

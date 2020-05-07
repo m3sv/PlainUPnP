@@ -2,8 +2,8 @@ package com.m3sv.plainupnp.di
 
 import com.m3sv.plainupnp.ShutdownNotifier
 import com.m3sv.plainupnp.ShutdownNotifierImpl
-import com.m3sv.plainupnp.presentation.main.Filter
-import com.m3sv.plainupnp.presentation.main.FilterDelegate
+import com.m3sv.plainupnp.common.Filter
+import com.m3sv.plainupnp.common.FilterDelegate
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

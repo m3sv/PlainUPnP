@@ -3,10 +3,9 @@ package com.m3sv.plainupnp.presentation.home
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
-import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ItemsDiffCallback
-import com.m3sv.plainupnp.databinding.FolderItemBinding
-import com.m3sv.plainupnp.databinding.MediaItemBinding
+import com.m3sv.plainupnp.presentation.home.databinding.FolderItemBinding
+import com.m3sv.plainupnp.presentation.home.databinding.MediaItemBinding
 import java.util.*
 
 class GalleryContentAdapter(

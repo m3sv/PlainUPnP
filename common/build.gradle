@@ -3,9 +3,15 @@ apply from: '../scripts/cling.gradle'
 
 dependencies {
     implementation Dependencies.coroutines.core
+    implementation Dependencies.androidx.lifecycle.extensions
     implementation Dependencies.androidx.material
 
+    implementation Dependencies.androidx.preference
+
+    implementation Dependencies.dagger.core
     compileOnly Dependencies.dagger.annotation
+    kapt Dependencies.dagger.compiler
+
 
     implementation Dependencies.timber
 }

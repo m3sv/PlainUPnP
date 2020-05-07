@@ -1,18 +1,16 @@
 package com.m3sv.plainupnp.presentation.home
 
-import com.m3sv.plainupnp.di.AppComponent
-import dagger.Component
+import dagger.Subcomponent
 
 @HomeScope
-@Component(
-    dependencies = [AppComponent::class],
+@Subcomponent(
     modules = [HomeFragmentModule::class]
 )
 interface HomeComponent {
 
-    @Component.Factory
+    @Subcomponent.Factory
     interface Factory {
-        fun create(appComponent: AppComponent): HomeComponent
+        fun create(): HomeComponent
     }
 
     fun inject(homeFragment: HomeFragment)

@@ -10,8 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.m3sv.plainupnp.App
-import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.utils.disappear
 import com.m3sv.plainupnp.common.utils.hide
 import com.m3sv.plainupnp.common.utils.show
@@ -57,10 +55,7 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun inject() {
-        DaggerHomeComponent
-            .factory()
-            .create((requireActivity().applicationContext as App).appComponent)
-            .inject(this)
+        (requireContext().applicationContext as HomeComponentProvider).homeComponent.inject(this)
     }
 
     override fun onCreateView(

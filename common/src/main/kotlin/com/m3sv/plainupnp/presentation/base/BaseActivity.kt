@@ -13,7 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProviders
-import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.common.R
 import com.m3sv.plainupnp.di.ViewModelFactory
 import javax.inject.Inject
 

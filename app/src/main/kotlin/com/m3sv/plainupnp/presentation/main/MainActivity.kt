@@ -170,8 +170,16 @@ class MainActivity : BaseActivity(),
 
     private fun animateBottomDrawChanges() {
         with(controlsFragment) {
-            addOnStateChangedAction(TriggerOnceStateAction(this@MainActivity::animateChevronArrow))
-            addOnStateChangedAction(ChangeSettingsMenuStateAction(this@MainActivity::replaceAppBarMenu))
+            addOnStateChangedAction(
+                TriggerOnceStateAction(
+                    this@MainActivity::animateChevronArrow
+                )
+            )
+            addOnStateChangedAction(
+                ChangeSettingsMenuStateAction(
+                    this@MainActivity::replaceAppBarMenu
+                )
+            )
         }
     }
 
@@ -229,7 +237,7 @@ class MainActivity : BaseActivity(),
 
     private fun inject() {
         mainActivitySubComponent =
-            (applicationContext as App).appComponent.mainActivitySubComponent().create()
+            (applicationContext as App).appComponent.mainSubcomponent().create()
         mainActivitySubComponent.inject(this)
     }
 
