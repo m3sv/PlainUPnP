@@ -31,3 +31,5 @@
 -keep class javax.servlet.** { *; }
 
 -keepattributes Annotation, InnerClasses, Signature
+
+-keepnames class com.m3sv.plainupnp.presentation.main.ControlsFragment
