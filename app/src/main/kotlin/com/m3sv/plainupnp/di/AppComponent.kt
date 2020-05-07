@@ -15,7 +15,6 @@ import javax.inject.Singleton
 @Singleton
 @Component(
     modules = [
-        SubComponentsModule::class,
         AppModule::class,
         UpnpBindersModule::class,
         BinderModule::class
