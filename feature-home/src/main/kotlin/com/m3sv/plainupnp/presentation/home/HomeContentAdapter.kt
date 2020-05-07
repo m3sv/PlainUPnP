@@ -3,12 +3,16 @@ package com.m3sv.plainupnp.presentation.home
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
+import com.bumptech.glide.RequestManager
 import com.m3sv.plainupnp.common.ItemsDiffCallback
+import com.m3sv.plainupnp.common.ShowThumbnailsUseCase
 import com.m3sv.plainupnp.presentation.home.databinding.FolderItemBinding
 import com.m3sv.plainupnp.presentation.home.databinding.MediaItemBinding
 import java.util.*
 
 class GalleryContentAdapter(
+    private val glide: RequestManager,
+    private val showThumbnails: ShowThumbnailsUseCase,
     private val onItemClickListener: OnItemClickListener
 ) : BaseAdapter<ContentItem>(diffCallback) {
 
@@ -39,12 +43,11 @@ class GalleryContentAdapter(
 
     override fun onBindViewHolder(holder: ItemViewHolder<ViewBinding>, position: Int) {
         val item = items[position]
-
         holder.bind(item)
 
         when (item.type) {
-            ContentType.FOLDER -> loadDirectory(holder, item)
-            else -> loadData(holder, item)
+            ContentType.FOLDER -> loadDirectory(holder)
+            else -> loadData(holder)
         }
     }
 
@@ -57,23 +60,27 @@ class GalleryContentAdapter(
         filterWithDiff { it.name.toLowerCase(Locale.getDefault()).contains(text) }
     }
 
-    private fun loadData(
-        holder: ItemViewHolder<ViewBinding>,
-        contentItem: ContentItem
-    ) {
+    private fun loadData(holder: ItemViewHolder<ViewBinding>) {
         with(holder.extractBinding<MediaItemBinding>()) {
-            thumbnail.setImageResource(contentItem.icon)
-            title.text = contentItem.name
+            when (holder.item.type) {
+                ContentType.IMAGE,
+                ContentType.VIDEO -> {
+                    if (showThumbnails()) {
+                        glide.load(holder.item.uri).into(thumbnail)
+                    } else {
+                        thumbnail.setImageResource(holder.item.icon)
+                    }
+                }
+                else -> thumbnail.setImageResource(holder.item.icon)
+            }
+            title.text = holder.item.name
         }
     }
 
-    private fun loadDirectory(
-        holder: ItemViewHolder<*>,
-        contentItem: ContentItem
-    ) {
+    private fun loadDirectory(holder: ItemViewHolder<*>) {
         with(holder.extractBinding<FolderItemBinding>()) {
             thumbnail.setImageResource(R.drawable.ic_folder)
-            title.text = contentItem.name
+            title.text = holder.item.name
         }
     }
 

@@ -10,13 +10,13 @@ open class ItemViewHolder<out T : ViewBinding>(
     onItemClickListener: OnItemClickListener
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    private lateinit var contentItem: ContentItem
+    lateinit var item: ContentItem
 
     init {
         binding.root.setOnClickListener { onItemClickListener(adapterPosition) }
     }
 
     fun bind(contentItem: ContentItem) {
-        this.contentItem = contentItem
+        this.item = contentItem
     }
 }

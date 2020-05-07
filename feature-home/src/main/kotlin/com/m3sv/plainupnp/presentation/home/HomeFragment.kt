@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
+import com.m3sv.plainupnp.common.ShowThumbnailsUseCase
 import com.m3sv.plainupnp.common.utils.disappear
 import com.m3sv.plainupnp.common.utils.hide
 import com.m3sv.plainupnp.common.utils.show
@@ -24,6 +26,9 @@ class HomeFragment : BaseFragment() {
 
     @Inject
     lateinit var controlsSheetDelegate: ControlsSheetDelegate
+
+    @Inject
+    lateinit var showThumbnailsUseCase: ShowThumbnailsUseCase
 
     private lateinit var viewModel: HomeViewModel
 
@@ -139,9 +144,10 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun initRecyclerView() {
-        contentAdapter = GalleryContentAdapter { position ->
-            viewModel.intention(HomeIntention.ItemClick(position))
-        }
+        contentAdapter =
+            GalleryContentAdapter(Glide.with(this), showThumbnailsUseCase) { position ->
+                viewModel.intention(HomeIntention.ItemClick(position))
+            }
 
         recyclerLayoutManager = LinearLayoutManager(requireContext())
         binding.content.run {
