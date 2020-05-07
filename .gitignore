@@ -17,3 +17,8 @@ captures/*
 playstore/
 
 *.iml
+
+build/
+.gradle/
+
+app/google-services.json
