@@ -66,7 +66,7 @@ dependencies {
 
     implementation project(':common')
     implementation project(':upnp')
-    implementation project(':feature_home')
+    implementation project(':feature-home')
     implementation project(':feature_settings')
 }
 
