@@ -64,7 +64,6 @@ class GalleryContentAdapter(
         with(holder.extractBinding<MediaItemBinding>()) {
             thumbnail.setImageResource(contentItem.icon)
             title.text = contentItem.name
-            contentType.setImageResource(contentItem.icon)
         }
     }
 
@@ -73,8 +72,8 @@ class GalleryContentAdapter(
         contentItem: ContentItem
     ) {
         with(holder.extractBinding<FolderItemBinding>()) {
-            title.text = contentItem.name
             thumbnail.setImageResource(R.drawable.ic_folder)
+            title.text = contentItem.name
         }
     }
 
