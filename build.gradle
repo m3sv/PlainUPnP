@@ -30,9 +30,6 @@ allprojects {
         mavenCentral()
         mavenLocal()
         maven { url 'https://jitpack.io' }
-        maven {
-            url "https://ci.android.com/builds/submitted/6155760/androidx_snapshot/latest/repository/"
-        }
     }
 }
 
