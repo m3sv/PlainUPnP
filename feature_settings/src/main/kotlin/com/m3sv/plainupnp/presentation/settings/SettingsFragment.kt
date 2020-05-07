@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import com.m3sv.plainupnp.di.AppComponentProvider
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import javax.inject.Inject
 
@@ -33,9 +32,8 @@ class SettingsFragment : PreferenceFragmentCompat(),
     }
 
     private fun inject() {
-        DaggerSettingsComponent
-            .factory()
-            .create((requireActivity().applicationContext as AppComponentProvider).appComponent)
+        (requireContext().applicationContext as SettingsComponentProvider)
+            .settingsComponent
             .inject(this)
     }
 

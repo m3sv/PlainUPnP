@@ -29,13 +29,9 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
-    dynamicFeatures = [":feature_settings"]
 }
 
 dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-
     implementation Dependencies.androidx.appCompat
     implementation Dependencies.androidx.material
     implementation Dependencies.androidx.recyclerView
@@ -72,6 +68,7 @@ dependencies {
     implementation project(':common')
     implementation project(':upnp')
     implementation project(':feature_home')
+    implementation project(':feature_settings')
 }
 
 detekt {

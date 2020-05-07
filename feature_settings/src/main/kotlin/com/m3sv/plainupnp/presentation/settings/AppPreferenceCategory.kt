@@ -6,7 +6,6 @@ import android.widget.TextView
 import androidx.core.widget.TextViewCompat
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceViewHolder
-import com.m3sv.plainupnp.R
 
 class AppPreferenceCategory : PreferenceCategory {
     constructor(
