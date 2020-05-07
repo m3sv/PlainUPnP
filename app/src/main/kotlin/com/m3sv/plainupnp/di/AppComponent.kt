@@ -7,12 +7,10 @@ import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.main.FilterDelegate
 import com.m3sv.plainupnp.upnp.UpnpStateStore
 import com.m3sv.plainupnp.upnp.di.UpnpBindersModule
-import com.m3sv.plainupnp.upnp.di.UpnpServiceModule
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
-
 
 @Singleton
 @Component(
@@ -20,7 +18,6 @@ import javax.inject.Singleton
         SubComponentsModule::class,
         AppModule::class,
         UpnpBindersModule::class,
-        UpnpServiceModule::class,
         BinderModule::class
     ]
 )
