@@ -3,7 +3,6 @@ package com.m3sv.plainupnp
 import android.app.Application
 import android.os.StrictMode
 import com.m3sv.plainupnp.di.AppComponent
-import com.m3sv.plainupnp.di.ApplicationProviderModule
 import com.m3sv.plainupnp.di.DaggerAppComponent
 import com.m3sv.plainupnp.upnp.MediaServer
 import kotlinx.coroutines.Dispatchers
@@ -19,9 +18,8 @@ class App : Application() {
         super.onCreate()
 
         appComponent = DaggerAppComponent
-            .builder()
-            .applicationProviderModule(ApplicationProviderModule(this))
-            .build()
+            .factory()
+            .create(this)
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
