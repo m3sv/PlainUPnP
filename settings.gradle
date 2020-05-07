@@ -1,7 +1,7 @@
 include ':app',
         ':common',
         ':feature-home',
-        ':feature_settings',
+        ':feature-settings',
         ':upnp'
 
 
