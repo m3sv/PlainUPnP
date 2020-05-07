@@ -46,7 +46,6 @@ dependencies {
 
     implementation Dependencies.androidx.navigation.fragment
     implementation Dependencies.androidx.navigation.ui
-    implementation Dependencies.androidx.navigation.dynamicFeatures
 
     implementation Dependencies.coroutines.core
 

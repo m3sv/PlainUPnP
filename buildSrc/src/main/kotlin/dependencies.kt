@@ -48,8 +48,7 @@ object Dependencies {
         ),
         "navigation" to mapOf(
             "fragment" to "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}",
-            "ui" to "androidx.navigation:navigation-ui-ktx:${Versions.navigation}",
-            "dynamicFeatures" to "androidx.navigation:navigation-dynamic-features-fragment:${Versions.navigation}"
+            "ui" to "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
         ),
         "preference" to "androidx.preference:preference:${Versions.supportLibrary}",
         "recyclerView" to "androidx.recyclerview:recyclerview:${Versions.recyclerView}"
