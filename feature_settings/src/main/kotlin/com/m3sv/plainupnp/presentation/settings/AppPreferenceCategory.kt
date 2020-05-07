@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.preference
+package com.m3sv.plainupnp.presentation.settings
 
 import android.content.Context
 import android.util.AttributeSet
