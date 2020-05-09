@@ -1,6 +1,5 @@
 apply from: '../scripts/android-library.gradle'
 apply from: '../scripts/cling.gradle'
-apply plugin: 'kotlin-kapt'
 
 dependencies {
     implementation Dependencies.androidx.coreKtx

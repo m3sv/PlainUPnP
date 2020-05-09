@@ -36,7 +36,6 @@ import org.fourthline.cling.transport.spi.NetworkAddressFactory;
 import org.fourthline.cling.transport.spi.SOAPActionProcessor;
 import org.fourthline.cling.transport.spi.StreamClient;
 import org.fourthline.cling.transport.spi.StreamServer;
-import org.seamless.xml.DlnaSaxParser;
 
 /**
  * Configuration settings for deployment on Android.
