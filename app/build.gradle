@@ -61,8 +61,10 @@ dependencies {
     implementation Dependencies.nanohttpd.core
     implementation Dependencies.nanohttpd.webserver
 
+    testImplementation Dependencies.coroutines.test
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
+    testImplementation Dependencies.androidx.coreTesting
 
     implementation project(':common')
     implementation project(':upnp')

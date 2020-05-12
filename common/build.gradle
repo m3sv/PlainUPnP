@@ -12,6 +12,5 @@ dependencies {
     compileOnly Dependencies.dagger.annotation
     kapt Dependencies.dagger.compiler
 
-
     implementation Dependencies.timber
 }

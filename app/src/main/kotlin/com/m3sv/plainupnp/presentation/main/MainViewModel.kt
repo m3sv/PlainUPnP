@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.ShutdownNotifier
 import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.presentation.base.BaseViewModel
-import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -16,6 +15,8 @@ class MainViewModel @Inject constructor(
     private val upnpManager: UpnpManager,
     private val volumeManager: BufferedVolumeManager,
     private val filterDelegate: FilterDelegate,
+    // TODO research why Dagger doesn't like Kotlin generic, use concrete implementation for now
+    private val deviceDisplayMapper: DeviceDisplayMapper,
     shutdownNotifier: ShutdownNotifier
 ) : BaseViewModel<MainIntention>() {
 
@@ -29,41 +30,28 @@ class MainViewModel @Inject constructor(
         .upnpRendererState
         .asLiveData()
 
-    val renderers =
-        upnpManager
-            .renderers
-            .map { renderers ->
-                renderers.map {
-                    SpinnerItem(
-                        it.device.friendlyName
-                    )
-                }
-            }
-            .asLiveData()
+    val renderers = upnpManager
+        .renderers
+        .map { renderers -> deviceDisplayMapper.map(renderers) }
+        .asLiveData()
 
-    val contentDirectories =
-        upnpManager
-            .contentDirectories
-            .map { directories ->
-                directories.map {
-                    SpinnerItem(
-                        it.device.friendlyName
-                    )
-                }
-            }
-            .asLiveData()
+    val contentDirectories = upnpManager
+        .contentDirectories
+        .map { directories -> deviceDisplayMapper.map(directories) }
+        .asLiveData()
 
     override fun intention(intention: MainIntention) {
         viewModelScope.launch {
-            when (intention) {
-                is MainIntention.ResumeUpnp -> upnpManager.resumeRendererUpdate()
-                is MainIntention.PauseUpnp -> upnpManager.pauseRendererUpdate()
-                is MainIntention.MoveTo -> upnpManager.moveTo(intention.progress)
-                is MainIntention.SelectContentDirectory ->
-                    upnpManager.selectContentDirectory(intention.position)
-                is MainIntention.SelectRenderer -> upnpManager.selectRenderer(intention.position)
-                is MainIntention.PlayerButtonClick -> handleButtonClick(intention.button)
-                is MainIntention.Filter -> filterText(intention.text)
+            with(upnpManager) {
+                when (intention) {
+                    is MainIntention.ResumeUpnp -> resumeRendererUpdate()
+                    is MainIntention.PauseUpnp -> pauseRendererUpdate()
+                    is MainIntention.MoveTo -> moveTo(intention.progress)
+                    is MainIntention.SelectContentDirectory -> selectContentDirectory(intention.position)
+                    is MainIntention.SelectRenderer -> selectRenderer(intention.position)
+                    is MainIntention.PlayerButtonClick -> handleButtonClick(intention.button)
+                    is MainIntention.Filter -> filterText(intention.text)
+                }
             }
         }
     }
