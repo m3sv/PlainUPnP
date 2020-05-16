@@ -14,9 +14,10 @@ import kotlin.coroutines.suspendCoroutine
 class StopAction @Inject constructor(
     service: UpnpService,
     serviceFinder: RendererServiceFinder
-) : RenderingAction(service, serviceFinder) {
+) : AvAction(service, serviceFinder) {
+
     suspend operator fun invoke() = suspendCoroutine<Boolean> { continuation ->
-        executeRenderingAction {
+        executeAVAction {
             object : Stop(this) {
                 override fun success(invocation: ActionInvocation<out Service<*, *>>?) {
                     continuation.resume(true)
@@ -33,4 +34,5 @@ class StopAction @Inject constructor(
             }
         }
     }
+
 }

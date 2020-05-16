@@ -44,9 +44,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             with(upnpManager) {
                 when (intention) {
-                    is MainIntention.ResumeUpnp -> resumeRendererUpdate()
-                    is MainIntention.PauseUpnp -> pauseRendererUpdate()
-                    is MainIntention.MoveTo -> moveTo(intention.progress)
+                    is MainIntention.MoveTo -> seekTo(intention.progress)
                     is MainIntention.SelectContentDirectory -> selectContentDirectory(intention.position)
                     is MainIntention.SelectRenderer -> selectRenderer(intention.position)
                     is MainIntention.PlayerButtonClick -> handleButtonClick(intention.button)

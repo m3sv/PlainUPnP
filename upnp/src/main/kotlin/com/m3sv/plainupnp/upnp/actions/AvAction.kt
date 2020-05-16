@@ -12,8 +12,7 @@ abstract class AvAction(
     private val serviceFinder: RendererServiceFinder
 ) {
     protected fun executeAVAction(callback: Service<*, *>.() -> ActionCallback) {
-        serviceFinder
-            .findService(UDAServiceType("AVTransport"))
+        serviceFinder.findService(UDAServiceType("AVTransport"))
             ?.let { service ->
                 try {
                     upnpService.controlPoint.execute(callback(service))

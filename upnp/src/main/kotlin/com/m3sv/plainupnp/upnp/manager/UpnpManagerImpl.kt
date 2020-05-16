@@ -4,24 +4,24 @@ package com.m3sv.plainupnp.upnp.manager
 import com.m3sv.plainupnp.common.utils.formatTime
 import com.m3sv.plainupnp.common.utils.throttle
 import com.m3sv.plainupnp.data.upnp.*
+import com.m3sv.plainupnp.data.upnp.EmptyUpnpRendererState.durationSeconds
 import com.m3sv.plainupnp.upnp.*
-import com.m3sv.plainupnp.upnp.actions.PauseAction
-import com.m3sv.plainupnp.upnp.actions.PlayAction
-import com.m3sv.plainupnp.upnp.actions.StopAction
-import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
+import com.m3sv.plainupnp.upnp.actions.*
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
-import com.m3sv.plainupnp.upnp.didl.ClingImageItem
-import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
+import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
+import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import org.fourthline.cling.support.model.item.*
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoroutinesApi
 class UpnpManagerImpl @Inject constructor(
@@ -33,20 +33,15 @@ class UpnpManagerImpl @Inject constructor(
     private val stop: StopAction,
     private val pause: PauseAction,
     private val play: PlayAction,
+    private val setUri: SetUriAction,
+    private val seekTo: SeekAction,
     upnpNavigator: UpnpNavigator
 ) : UpnpManager,
-    CoroutineScope,
     UpnpNavigator by upnpNavigator {
-
-    override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
 
     private val upnpInnerStateChannel = BroadcastChannel<UpnpRendererState>(Channel.CONFLATED)
 
     override val upnpRendererState: Flow<UpnpRendererState> = upnpInnerStateChannel.asFlow()
-
-    private var upnpInnerState: UpnpInnerState? = null
-
-    private var rendererCommand: RendererCommand? = null
 
     private var isLocal: Boolean = false
 
@@ -57,7 +52,7 @@ class UpnpManagerImpl @Inject constructor(
     private val renderItem: BroadcastChannel<RenderItem> = BroadcastChannel(1)
 
     init {
-        launch {
+        GlobalScope.launch {
             renderItem
                 .openSubscription()
                 .throttle(scope = this)
@@ -103,142 +98,110 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private fun renderItem(item: RenderItem) {
-        launch {
-            renderItem.send(item)
-        }
+    private suspend fun renderItem(item: RenderItem) {
+        renderItem.send(item)
     }
 
     private var currentRendererState: UpnpRendererState? = null
 
-    private fun render(item: RenderItem) {
-        launch {
-            stop()
-        }
-
-        rendererCommand?.pause()
-
-        next = item.position + 1
-        previous = item.position - 1
-
+    private suspend fun render(renderItem: RenderItem) {
         if (isLocal) {
-            launchLocallyUseCase.execute(item)
+            launchLocallyUseCase.execute(renderItem)
             return
         }
 
-        upnpInnerState = with(item.item) {
-            val type = when (this) {
-                is ClingAudioItem -> UpnpItemType.AUDIO
-                is ClingImageItem -> UpnpItemType.IMAGE
-                is ClingVideoItem -> UpnpItemType.VIDEO
-                else -> UpnpItemType.UNKNOWN
-            }
+        next = renderItem.position + 1
+        previous = renderItem.position - 1
 
-            UpnpInnerState(id, uri, type)
-        }.also { innerState ->
-            launch {
-                innerState.flow.collect { state ->
-                    currentRendererState = state
-                    upnpInnerStateChannel.offer(state)
-                }
-            }
-
-            rendererCommand = serviceController
-                .createRendererCommand(innerState)
-                ?.apply {
-                    if (item.item !is ClingImageItem)
-                        resume()
-                    launchItem(item.item)
-                }
-
-            currentRendererState = null
+        val didlItem = (renderItem.didlItem as ClingDIDLItem).didlObject as Item
+        val uri = renderItem.didlItem.uri ?: return
+        val type = when (didlItem) {
+            is AudioItem -> "audioItem"
+            is VideoItem -> "videoItem"
+            is ImageItem -> "imageItem"
+            is PlaylistItem -> "playlistItem"
+            is TextItem -> "textItem"
+            else -> return
         }
+
+        // TODO genre && artURI
+        val trackMetadata = with(didlItem) {
+            TrackMetadata(
+                id,
+                title,
+                creator,
+                "",
+                "",
+                firstResource.value,
+                "object.item.$type"
+            )
+        }
+
+        setUri(uri, trackMetadata)
+        play()
     }
 
-    override fun playNext() {
-        launch {
-            stateStore.peekState()?.let { state ->
-                if (state is ContentState.Success
-                    && next in state.upnpDirectory.content.indices
-                    && state.upnpDirectory.content[next].didlObject is DIDLItem
-                ) {
-                    renderItem(
-                        RenderItem(
-                            state.upnpDirectory.content[next].didlObject as DIDLItem,
-                            next
-                        )
+    override suspend fun playNext() {
+        stateStore.peekState()?.let { state ->
+            if (state is ContentState.Success
+                && next in state.upnpDirectory.content.indices
+                && state.upnpDirectory.content[next].didlObject is DIDLItem
+            ) {
+                renderItem(
+                    RenderItem(
+                        state.upnpDirectory.content[next].didlObject as DIDLItem,
+                        next
                     )
-                }
+                )
             }
         }
     }
 
-    override fun playPrevious() {
-        launch {
-            stateStore.peekState()?.let { state ->
-                if (state is ContentState.Success
-                    && previous in state.upnpDirectory.content.indices
-                    && state.upnpDirectory.content[previous].didlObject is DIDLItem
-                ) {
-                    renderItem(
-                        RenderItem(
-                            state.upnpDirectory.content[previous].didlObject as DIDLItem,
-                            previous
-                        )
+    override suspend fun playPrevious() {
+        stateStore.peekState()?.let { state ->
+            if (state is ContentState.Success
+                && previous in state.upnpDirectory.content.indices
+                && state.upnpDirectory.content[previous].didlObject is DIDLItem
+            ) {
+                renderItem(
+                    RenderItem(
+                        state.upnpDirectory.content[previous].didlObject as DIDLItem,
+                        previous
                     )
+                )
+            }
+        }
+    }
+
+
+    override suspend fun pausePlayback() {
+        pause()
+    }
+
+    override suspend fun stopPlayback() {
+        stop()
+    }
+
+    override suspend fun resumePlayback() {
+        play()
+    }
+
+    override suspend fun seekTo(progress: Int) {
+        seekTo(formatTime(MAX_VOLUME_PROGRESS, progress, durationSeconds))
+    }
+
+    override suspend fun itemClick(position: Int) {
+        stateStore.peekState()?.let { state ->
+            when (state) {
+                is ContentState.Success -> handleClick(position, state.upnpDirectory.content)
+                is ContentState.Loading -> {
+                    // no-op
                 }
             }
         }
     }
 
-    override fun resumeRendererUpdate() {
-        Timber.v("Resume renderer update")
-        rendererCommand?.resume()
-    }
-
-    override fun pauseRendererUpdate() {
-        Timber.v("Pause renderer update")
-        rendererCommand?.pause()
-    }
-
-    override fun pausePlayback() {
-        launch { pause() }
-    }
-
-    override fun stopPlayback() {
-        launch { stop() }
-    }
-
-    override fun resumePlayback() {
-        launch {
-            play()
-        }
-    }
-
-    override fun moveTo(progress: Int) {
-        upnpInnerState?.run {
-            rendererCommand?.commandSeek(formatTime(MAX_VOLUME_PROGRESS, progress, durationSeconds))
-        }
-    }
-
-    override fun dispose() {
-        coroutineContext.cancel()
-    }
-
-    override fun itemClick(position: Int) {
-        launch {
-            stateStore.peekState()?.let { state ->
-                when (state) {
-                    is ContentState.Success -> handleClick(position, state.upnpDirectory.content)
-                    is ContentState.Loading -> {
-                        // no-op
-                    }
-                }
-            }
-        }
-    }
-
-    private fun handleClick(position: Int, content: List<DIDLObjectDisplay>) {
+    private suspend fun handleClick(position: Int, content: List<DIDLObjectDisplay>) {
         if (position in content.indices) {
             val item = content[position]
 
@@ -260,7 +223,7 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    override fun togglePlayback() {
+    override suspend fun togglePlayback() {
         currentRendererState?.state?.let { state ->
             when (state) {
                 UpnpRendererState.State.PLAY -> pausePlayback()
@@ -278,7 +241,7 @@ class UpnpManagerImpl @Inject constructor(
 }
 
 data class RenderItem(
-    val item: DIDLItem,
+    val didlItem: DIDLItem,
     val position: Int
 )
 

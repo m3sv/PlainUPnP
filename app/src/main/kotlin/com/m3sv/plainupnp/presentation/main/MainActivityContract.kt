@@ -14,6 +14,4 @@ sealed class MainIntention {
     data class SelectContentDirectory(val position: Int) : MainIntention()
     data class MoveTo(val progress: Int) : MainIntention()
     data class Filter(val text: String) : MainIntention()
-    object ResumeUpnp : MainIntention()
-    object PauseUpnp : MainIntention()
 }
