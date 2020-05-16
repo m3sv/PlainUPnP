@@ -12,9 +12,9 @@ import javax.inject.Inject
 
 class LaunchLocallyUseCase @Inject constructor(private val context: Context) {
     fun execute(item: RenderItem) {
-        val uri = item.item.uri
+        val uri = item.didlItem.uri
         if (uri != null) {
-            val contentType = when (item.item) {
+            val contentType = when (item.didlItem) {
                 is ClingAudioItem -> "audio/*"
                 is ClingImageItem -> "image/*"
                 is ClingVideoItem -> "video/*"

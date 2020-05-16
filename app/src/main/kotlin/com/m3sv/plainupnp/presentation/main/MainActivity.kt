@@ -87,16 +87,6 @@ class MainActivity : BaseActivity(),
         setSupportActionBar(binding.bottomBar)
     }
 
-    override fun onStart() {
-        super.onStart()
-        viewModel.intention(MainIntention.ResumeUpnp)
-    }
-
-    override fun onStop() {
-        viewModel.intention(MainIntention.PauseUpnp)
-        super.onStop()
-    }
-
     private fun observeState() {
         viewModel.volume.observe(this) { volume ->
             volumeIndicator.volume = volume

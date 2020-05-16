@@ -10,17 +10,14 @@ interface UpnpManager : UpnpNavigator {
     val contentDirectories: Flow<List<DeviceDisplay>>
     val upnpRendererState: Flow<UpnpRendererState>
 
-    fun resumeRendererUpdate()
-    fun pauseRendererUpdate()
     fun selectContentDirectory(position: Int)
     fun selectRenderer(position: Int)
-    fun itemClick(position: Int)
-    fun resumePlayback()
-    fun pausePlayback()
-    fun togglePlayback()
-    fun stopPlayback()
-    fun playNext()
-    fun playPrevious()
-    fun moveTo(progress: Int)
-    fun dispose()
+    suspend fun itemClick(position: Int)
+    suspend fun resumePlayback()
+    suspend fun pausePlayback()
+    suspend fun togglePlayback()
+    suspend fun stopPlayback()
+    suspend fun playNext()
+    suspend fun playPrevious()
+    suspend fun seekTo(progress: Int)
 }
