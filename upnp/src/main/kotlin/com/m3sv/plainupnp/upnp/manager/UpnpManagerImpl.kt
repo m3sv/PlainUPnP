@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.upnp.manager
 
 
 import com.m3sv.plainupnp.common.utils.formatTime
-import com.m3sv.plainupnp.common.utils.throttle
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.data.upnp.EmptyUpnpRendererState.durationSeconds
 import com.m3sv.plainupnp.upnp.*
@@ -12,13 +11,10 @@ import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.launch
 import org.fourthline.cling.support.model.item.*
 import timber.log.Timber
 import javax.inject.Inject
@@ -45,22 +41,7 @@ class UpnpManagerImpl @Inject constructor(
 
     private var isLocal: Boolean = false
 
-    private var next: Int = -1
-
-    private var previous: Int = -1
-
-    private val renderItem: BroadcastChannel<RenderItem> = BroadcastChannel(1)
-
-    init {
-        GlobalScope.launch {
-            renderItem
-                .openSubscription()
-                .throttle(scope = this)
-                .collect { renderItem ->
-                    render(renderItem)
-                }
-        }
-    }
+    private var currentPlayingIndex = -1
 
     override val contentDirectories: Flow<List<DeviceDisplay>> = contentDirectory.subscribe()
 
@@ -99,22 +80,14 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     private suspend fun renderItem(item: RenderItem) {
-        renderItem.send(item)
-    }
-
-    private var currentRendererState: UpnpRendererState? = null
-
-    private suspend fun render(renderItem: RenderItem) {
         if (isLocal) {
-            launchLocallyUseCase.execute(renderItem)
+            launchLocallyUseCase.execute(item)
             return
         }
 
-        next = renderItem.position + 1
-        previous = renderItem.position - 1
+        val didlItem = (item.didlItem as ClingDIDLItem).didlObject as Item
+        val uri = item.didlItem.uri ?: return
 
-        val didlItem = (renderItem.didlItem as ClingDIDLItem).didlObject as Item
-        val uri = renderItem.didlItem.uri ?: return
         val type = when (didlItem) {
             is AudioItem -> "audioItem"
             is VideoItem -> "videoItem"
@@ -142,37 +115,14 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override suspend fun playNext() {
-        stateStore.peekState()?.let { state ->
-            if (state is ContentState.Success
-                && next in state.upnpDirectory.content.indices
-                && state.upnpDirectory.content[next].didlObject is DIDLItem
-            ) {
-                renderItem(
-                    RenderItem(
-                        state.upnpDirectory.content[next].didlObject as DIDLItem,
-                        next
-                    )
-                )
-            }
-        }
+        val newPosition = currentPlayingIndex + 1
+        itemClick(newPosition)
     }
 
     override suspend fun playPrevious() {
-        stateStore.peekState()?.let { state ->
-            if (state is ContentState.Success
-                && previous in state.upnpDirectory.content.indices
-                && state.upnpDirectory.content[previous].didlObject is DIDLItem
-            ) {
-                renderItem(
-                    RenderItem(
-                        state.upnpDirectory.content[previous].didlObject as DIDLItem,
-                        previous
-                    )
-                )
-            }
-        }
+        val newPosition = currentPlayingIndex - 1
+        itemClick(newPosition)
     }
-
 
     override suspend fun pausePlayback() {
         pause()
@@ -191,6 +141,8 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override suspend fun itemClick(position: Int) {
+        currentPlayingIndex = position
+
         stateStore.peekState()?.let { state ->
             when (state) {
                 is ContentState.Success -> handleClick(position, state.upnpDirectory.content)
@@ -224,15 +176,7 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override suspend fun togglePlayback() {
-        currentRendererState?.state?.let { state ->
-            when (state) {
-                UpnpRendererState.State.PLAY -> pausePlayback()
-                UpnpRendererState.State.PAUSE -> resumePlayback()
-                UpnpRendererState.State.STOP -> resumePlayback()
-                UpnpRendererState.State.INITIALIZING,
-                UpnpRendererState.State.FINISHED -> Unit
-            }
-        }
+
     }
 
     private companion object {
