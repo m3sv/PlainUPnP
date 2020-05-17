@@ -16,7 +16,6 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import org.fourthline.cling.support.model.item.*
-import timber.log.Timber
 import javax.inject.Inject
 
 @ExperimentalCoroutinesApi
@@ -49,7 +48,6 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun selectContentDirectory(position: Int) {
         if (position !in contentDirectory.currentContentDirectories.indices) {
-            Timber.d("Content directory position is outside of bounds, ignore")
             navigateTo(Destination.Empty)
             serviceController.selectedContentDirectory = null
             return
@@ -65,16 +63,15 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun selectRenderer(position: Int) {
         if (position !in renderer.currentRenderers.indices) {
-            Timber.d("Renderer position is outside of bounds, ignore")
+            serviceController.selectedRenderer = null
             return
         }
 
         val renderer = renderer.currentRenderers[position].device
 
-        if (renderer is LocalDevice) {
-            isLocal = true
-        } else {
-            isLocal = false
+        isLocal = renderer is LocalDevice
+
+        if (!isLocal) {
             serviceController.selectedRenderer = renderer
         }
     }

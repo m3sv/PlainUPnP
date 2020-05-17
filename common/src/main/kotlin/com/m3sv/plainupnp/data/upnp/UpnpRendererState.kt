@@ -14,10 +14,6 @@ interface UpnpRendererState {
 
     var state: State
 
-    var volume: Int
-
-    var isMute: Boolean
-
     val remainingDuration: String
 
     val duration: String
