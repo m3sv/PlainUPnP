@@ -26,6 +26,7 @@ import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
+import org.fourthline.cling.support.model.TransportState
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
 
@@ -203,7 +204,8 @@ class ControlsFragment : BaseFragment() {
         if (rendererState == null) return
 
         val isProgressEnabled = when (rendererState.state) {
-            UpnpRendererState.State.PLAY, UpnpRendererState.State.PAUSE -> true
+            TransportState.PLAYING,
+            TransportState.PAUSED_PLAYBACK -> true
             else -> false
         }
 
@@ -335,10 +337,13 @@ class ControlsFragment : BaseFragment() {
 
 private val UpnpRendererState.icon: Int
     inline get() = when (state) {
-        UpnpRendererState.State.STOP -> R.drawable.ic_play_arrow
-        UpnpRendererState.State.PLAY -> R.drawable.ic_pause
-        UpnpRendererState.State.PAUSE -> R.drawable.ic_play_arrow
-        UpnpRendererState.State.INITIALIZING -> R.drawable.ic_play_arrow
-        UpnpRendererState.State.FINISHED -> R.drawable.ic_play_arrow
+        TransportState.PLAYING -> R.drawable.ic_pause
+        TransportState.STOPPED,
+        TransportState.TRANSITIONING,
+        TransportState.PAUSED_PLAYBACK,
+        TransportState.PAUSED_RECORDING,
+        TransportState.RECORDING,
+        TransportState.NO_MEDIA_PRESENT,
+        TransportState.CUSTOM -> R.drawable.ic_play_arrow
     }
 
