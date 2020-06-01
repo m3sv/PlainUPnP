@@ -14,12 +14,15 @@ import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import org.fourthline.cling.model.meta.Service
 import org.fourthline.cling.support.model.PositionInfo
 import org.fourthline.cling.support.model.TransportState
 import org.fourthline.cling.support.model.item.*
 import timber.log.Timber
+import java.time.Duration
 import java.util.concurrent.Executors
 import javax.inject.Inject
+import kotlin.math.abs
 
 @ExperimentalCoroutinesApi
 class UpnpManagerImpl @Inject constructor(
@@ -35,6 +38,7 @@ class UpnpManagerImpl @Inject constructor(
     private val seekTo: SeekAction,
     private val getTransportInfo: GetTransportInfoAction,
     private val getPositionInfo: GetPositionInfoAction,
+    private val avServiceFinder: AvServiceFinder,
     upnpNavigator: UpnpNavigator
 ) : UpnpManager,
     UpnpNavigator by upnpNavigator {
@@ -115,30 +119,28 @@ class UpnpManagerImpl @Inject constructor(
             )
         }
 
-        setUri(uri, trackMetadata)
-        play()
+        executeWithAvService {
+            setUri(this, uri, trackMetadata)
+            play(this)
 
-        if (didlItem is AudioItem || didlItem is VideoItem) {
-            with(didlItem) {
-                launchUpdate(
-                    id = id,
-                    uri = uri,
-                    type = when (this) {
-                        is AudioItem -> UpnpItemType.AUDIO
-                        is ImageItem -> UpnpItemType.IMAGE
-                        is VideoItem -> UpnpItemType.VIDEO
-                        else -> UpnpItemType.UNKNOWN
-                    },
-                    title = title,
-                    artist = creator
-                )
+            if (didlItem is AudioItem || didlItem is VideoItem) {
+                with(didlItem) {
+                    launchUpdate(
+                        id = id,
+                        uri = uri,
+                        type = when (this) {
+                            is AudioItem -> UpnpItemType.AUDIO
+                            is ImageItem -> UpnpItemType.IMAGE
+                            is VideoItem -> UpnpItemType.VIDEO
+                            else -> UpnpItemType.UNKNOWN
+                        },
+                        title = title,
+                        artist = creator
+                    )
+                }
             }
-        } else {
-            cancelUpdateJob()
         }
     }
-
-    private var updateJob: Job? = null
 
     private var currentDuration: Long = 0L
 
@@ -146,62 +148,59 @@ class UpnpManagerImpl @Inject constructor(
 
     private var isPaused = false
 
+    private var updateJob: Job? = null
+
     private suspend fun launchUpdate(
         id: String,
         uri: String?,
         type: UpnpItemType,
         title: String,
         artist: String?
-    ) = withContext(Dispatchers.IO) {
-        cancelUpdateJob()
+    ) {
+        withContext(Dispatchers.IO) {
+            updateJob?.cancel()
+            executeWithAvService {
+                updateJob = launch(updateDispatcher) {
+                    while (isActive) {
+                        delay(500)
 
-        updateJob = launch(updateDispatcher) {
-            while (true) {
-                if (!pauseUpdate) {
-                    val transportInfo = async { getTransportInfo() }
-                    val positionInfo = async { getPositionInfo() }
+                        val transportInfo = getTransportInfo(this@executeWithAvService)
+                        val positionInfo = getPositionInfo(this@executeWithAvService)
 
-                    val transportResult = transportInfo.await()
-                    val positionResult = positionInfo.await()
+                        if (transportInfo == null || positionInfo == null) {
+                            break
+                        }
 
-                    if (transportResult == null || positionResult == null) {
-                        break
+                        isPaused =
+                            transportInfo.currentTransportState == TransportState.PAUSED_PLAYBACK
+
+                        val state = UpnpRendererState(
+                            id = id,
+                            uri = uri,
+                            type = type,
+                            state = transportInfo.currentTransportState,
+                            remainingDuration = positionInfo.remainingDuration,
+                            duration = positionInfo.duration,
+                            position = positionInfo.position,
+                            elapsedPercent = positionInfo.elapsedPercent,
+                            durationSeconds = positionInfo.trackDurationSeconds,
+                            title = title,
+                            artist = artist ?: ""
+                        )
+
+                        currentDuration = positionInfo.trackDurationSeconds
+
+                        if (!pauseUpdate)
+                            upnpInnerStateChannel.offer(state)
+
+                        Timber.d("Got new state: $state")
+
+                        if (transportInfo.currentTransportState == TransportState.STOPPED)
+                            break
                     }
-
-                    isPaused =
-                        transportResult.currentTransportState == TransportState.PAUSED_PLAYBACK
-
-                    val state = UpnpRendererState(
-                        id,
-                        uri,
-                        type,
-                        transportResult.currentTransportState,
-                        positionResult.remainingDuration,
-                        positionResult.duration,
-                        positionResult.position,
-                        positionResult.elapsedPercent,
-                        positionResult.trackDurationSeconds,
-                        title,
-                        artist ?: ""
-                    )
-
-                    currentDuration = positionResult.trackDurationSeconds
-
-                    upnpInnerStateChannel.offer(state)
-
-                    Timber.d("Got new state: $state")
-
-                    if (transportResult.currentTransportState == TransportState.STOPPED)
-                        break
-
-                    delay(500)
                 }
             }
         }
-    }
-
-    private fun cancelUpdateJob() {
-        updateJob?.cancel()
     }
 
     override suspend fun playNext() {
@@ -215,22 +214,25 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override suspend fun pausePlayback() {
-        pause()
+        executeWithAvService { pause(this) }
     }
 
     override suspend fun stopPlayback() {
-        stop()
+        executeWithAvService { stop(this) }
     }
 
     override suspend fun resumePlayback() {
-        play()
+        executeWithAvService { play(this) }
     }
 
     override suspend fun seekTo(progress: Int) {
-        pauseUpdate = true
-        seekTo(formatTime(MAX_VOLUME_PROGRESS, progress, currentDuration))
-        delay(1000)
-        pauseUpdate = false
+        executeWithAvService {
+            pauseUpdate = true
+
+            seekTo(this, formatTime(MAX_VOLUME_PROGRESS, progress, currentDuration))
+            delay(1000)
+            pauseUpdate = false
+        }
     }
 
     override suspend fun itemClick(position: Int) {
@@ -269,43 +271,73 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override suspend fun togglePlayback() {
-        if (isPaused) {
-            play()
-        } else {
-            pause()
+        executeWithAvService {
+            if (isPaused) {
+                play(this)
+            } else {
+                pause(this)
+            }
         }
     }
 
     private companion object {
         private const val MAX_VOLUME_PROGRESS = 100
     }
+
+    private inline fun executeWithAvService(block: Service<*, *>.() -> Unit) {
+        val avService = avServiceFinder.getService()
+        if (avService != null) {
+            block(avService)
+        }
+    }
 }
 
 private inline val PositionInfo.remainingDuration: String
     get() {
-        val t: Long = trackRemainingSeconds
-        val h = t / 3600
-        val m = (t - h * 3600) / 60
-        val s = t - h * 3600 - m * 60
-        return "-" + formatTime(h.toInt(), m.toInt(), s)
+        val duration = Duration.ofSeconds(trackRemainingSeconds)
+        val seconds = duration.seconds
+        val absSeconds = abs(seconds)
+        val positive = "%d:%02d:%02d".format(
+            absSeconds / 3600,
+            (absSeconds % 3600) / 60,
+            absSeconds % 60
+        )
+
+        val sign = if (seconds < 0) "-" else ""
+
+        return "$sign$positive"
     }
 
 private inline val PositionInfo.duration: String
     get() {
-        val t = trackDurationSeconds
-        val h = t / 3600
-        val m = (t - h * 3600) / 60
-        val s = t - h * 3600 - m * 60
-        return formatTime(h.toInt(), m.toInt(), s)
+        val duration = Duration.ofSeconds(trackDurationSeconds)
+        val seconds = duration.seconds
+        val absSeconds = abs(seconds)
+        val positive = "%d:%02d:%02d".format(
+            absSeconds / 3600,
+            (absSeconds % 3600) / 60,
+            absSeconds % 60
+        )
+
+        val sign = if (seconds < 0) "-" else ""
+
+        return "$sign$positive"
     }
 
 private inline val PositionInfo.position: String
     get() {
-        val t = trackElapsedSeconds
-        val h = t / 3600
-        val m = (t - h * 3600) / 60
-        val s = t - h * 3600 - m * 60
-        return formatTime(h.toInt(), m.toInt(), s)
+        val duration = Duration.ofSeconds(trackElapsedSeconds)
+        val seconds = duration.seconds
+        val absSeconds = abs(seconds)
+        val positive = "%d:%02d:%02d".format(
+            absSeconds / 3600,
+            (absSeconds % 3600) / 60,
+            absSeconds % 60
+        )
+
+        val sign = if (seconds < 0) "-" else ""
+
+        return "$sign$positive"
     }
 
 data class RenderItem(

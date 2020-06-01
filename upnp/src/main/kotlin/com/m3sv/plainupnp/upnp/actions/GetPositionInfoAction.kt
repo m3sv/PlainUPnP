@@ -1,7 +1,6 @@
 package com.m3sv.plainupnp.upnp.actions
 
-import com.m3sv.plainupnp.upnp.RendererServiceFinder
-import org.fourthline.cling.UpnpService
+import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
@@ -12,33 +11,29 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class GetPositionInfoAction @Inject constructor(
-    upnpService: UpnpService,
-    serviceFinder: RendererServiceFinder
-) : AvAction(upnpService, serviceFinder) {
+class GetPositionInfoAction @Inject constructor(controlPoint: ControlPoint) :
+    AvAction<Unit, PositionInfo?>(controlPoint) {
 
-    suspend operator fun invoke() =
-        suspendCoroutine<PositionInfo?> { continuation ->
-            executeAVAction {
-                object : GetPositionInfo(this) {
-
-                    override fun received(
-                        invocation: ActionInvocation<out Service<*, *>>?,
-                        positionInfo: PositionInfo?
-                    ) {
-                        continuation.resume(positionInfo)
-                    }
-
-                    override fun failure(
-                        p0: ActionInvocation<out Service<*, *>>?,
-                        p1: UpnpResponse?,
-                        p2: String?
-                    ) {
-                        Timber.e("Failed to set URI")
-                        continuation.resumeWith(Result.failure(IllegalStateException("Failed to get position info")))
-                    }
+    override suspend fun invoke(service: Service<*, *>, vararg arguments: Unit): PositionInfo? =
+        suspendCoroutine { continuation ->
+            Timber.tag(tag).d("Get position info")
+            executeAVAction(object : GetPositionInfo(service) {
+                override fun received(
+                    invocation: ActionInvocation<out Service<*, *>>?,
+                    positionInfo: PositionInfo?
+                ) {
+                    Timber.tag(tag).d("Received position info")
+                    continuation.resume(positionInfo)
                 }
-            }
-        }
 
+                override fun failure(
+                    p0: ActionInvocation<out Service<*, *>>?,
+                    p1: UpnpResponse?,
+                    p2: String?
+                ) {
+                    Timber.tag(tag).e("Failed to get position info")
+                    continuation.resume(null)
+                }
+            })
+        }
 }
