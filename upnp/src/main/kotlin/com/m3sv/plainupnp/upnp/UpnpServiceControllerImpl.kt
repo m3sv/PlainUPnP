@@ -71,9 +71,7 @@ class UpnpServiceControllerImpl @Inject constructor(private val upnpService: Upn
         }
 
     override fun findService(type: ServiceType): Service<*, *>? =
-        selectedRenderer?.let { clingDevice ->
-            (clingDevice as CDevice).device?.findService(type)
-        }
+        selectedRenderer?.let { clingDevice -> (clingDevice as CDevice).device?.findService(type) }
 
     private fun UpnpService.addListenerSafe(registryListener: RegistryListener) {
         registry?.run {

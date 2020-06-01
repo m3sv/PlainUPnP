@@ -5,11 +5,12 @@ import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import com.m3sv.plainupnp.upnp.filters.CallableRendererFilter
 import org.fourthline.cling.UpnpService
 
-class RendererDiscovery(controller: UpnpServiceController, upnpService: UpnpService) :
-    DeviceDiscovery(controller, upnpService = upnpService) {
+class RendererDiscovery(
+    controller: UpnpServiceController,
+    upnpService: UpnpService
+) : DeviceDiscovery(controller, upnpService = upnpService) {
 
-    override val callableFilter: CallableFilter =
-        CallableRendererFilter()
+    override val callableFilter: CallableFilter = CallableRendererFilter()
 
     override fun isSelected(device: UpnpDevice): Boolean =
         controller.selectedRenderer?.equals(controller.selectedRenderer) ?: false

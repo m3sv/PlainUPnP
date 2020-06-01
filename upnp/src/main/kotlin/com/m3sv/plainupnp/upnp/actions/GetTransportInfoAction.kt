@@ -1,7 +1,6 @@
 package com.m3sv.plainupnp.upnp.actions
 
-import com.m3sv.plainupnp.upnp.RendererServiceFinder
-import org.fourthline.cling.UpnpService
+import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
@@ -12,33 +11,33 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class GetTransportInfoAction @Inject constructor(
-    upnpService: UpnpService,
-    serviceFinder: RendererServiceFinder
-) : AvAction(upnpService, serviceFinder) {
+class GetTransportInfoAction @Inject constructor(controlPoint: ControlPoint) :
+    AvAction<Unit, TransportInfo?>(controlPoint) {
 
-    suspend operator fun invoke() =
-        suspendCoroutine<TransportInfo?> { continuation ->
-            executeAVAction {
-                object : GetTransportInfo(this) {
-
-                    override fun received(
-                        invocation: ActionInvocation<out Service<*, *>>?,
-                        transportInfo: TransportInfo?
-                    ) {
-                        continuation.resume(transportInfo)
-                    }
-
-                    override fun failure(
-                        p0: ActionInvocation<out Service<*, *>>?,
-                        p1: UpnpResponse?,
-                        p2: String?
-                    ) {
-                        Timber.e("Failed to set URI")
-                        continuation.resumeWith(Result.failure(IllegalStateException("Failed to get position info")))
-                    }
+    override suspend operator fun invoke(
+        service: Service<*, *>,
+        vararg arguments: Unit
+    ): TransportInfo? =
+        suspendCoroutine { continuation ->
+            Timber.tag(tag).d("Get transport info")
+            executeAVAction(object : GetTransportInfo(service) {
+                override fun received(
+                    invocation: ActionInvocation<out Service<*, *>>?,
+                    transportInfo: TransportInfo?
+                ) {
+                    Timber.tag(tag).d("Received transport info")
+                    continuation.resume(transportInfo)
                 }
-            }
-        }
 
+                override fun failure(
+                    p0: ActionInvocation<out Service<*, *>>?,
+                    p1: UpnpResponse?,
+                    p2: String?
+                ) {
+                    Timber.tag(tag).e("Failed to get transport info")
+                    continuation.resume(null)
+                }
+            })
+        }
 }
+

@@ -2,6 +2,7 @@ dependencies {
     implementation('org.fourthline.cling:cling:2.1.1')
     implementation('org.fourthline.cling:cling-support:2.1.1')
     implementation('org.seamless:seamless-xml:1.1.1')
-    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: Versions.jetty
-    implementation group: 'org.eclipse.jetty', name: 'jetty-servlet', version: Versions.jetty
+    implementation("org.eclipse.jetty:jetty-client:${Versions.jetty}")
+    implementation("org.eclipse.jetty:jetty-server:${Versions.jetty}")
+    implementation("org.eclipse.jetty:jetty-servlet:${Versions.jetty}")
 }

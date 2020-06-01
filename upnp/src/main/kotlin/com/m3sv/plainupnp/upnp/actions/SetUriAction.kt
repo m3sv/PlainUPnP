@@ -1,8 +1,7 @@
 package com.m3sv.plainupnp.upnp.actions
 
-import com.m3sv.plainupnp.upnp.RendererServiceFinder
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
-import org.fourthline.cling.UpnpService
+import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
@@ -12,17 +11,26 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class SetUriAction @Inject constructor(
-    upnpService: UpnpService,
-    serviceFinder: RendererServiceFinder
-) : AvAction(upnpService, serviceFinder) {
+class SetUriAction @Inject constructor(controlPoint: ControlPoint) :
+    AvAction<String, Boolean>(controlPoint) {
 
-    suspend operator fun invoke(uri: String?, trackMetadata: TrackMetadata) =
-        suspendCoroutine<Boolean> { continuation ->
-            executeAVAction {
-                object : SetAVTransportURI(this, uri, trackMetadata.xml) {
+    suspend operator fun invoke(
+        service: Service<*, *>,
+        uri: String,
+        trackMetadata: TrackMetadata
+    ): Boolean = invoke(service, uri, trackMetadata.xml)
+
+    override suspend operator fun invoke(
+        service: Service<*, *>,
+        vararg arguments: String
+    ): Boolean =
+        suspendCoroutine { continuation ->
+            Timber.tag(tag).d("Set uri: ${arguments[0]}")
+            executeAVAction(
+                object : SetAVTransportURI(service, arguments[0], arguments[1]) {
 
                     override fun success(invocation: ActionInvocation<out Service<*, *>>?) {
+                        Timber.tag(tag).d("Set uri: ${arguments[0]} success")
                         continuation.resume(true)
                     }
 
@@ -31,11 +39,10 @@ class SetUriAction @Inject constructor(
                         p1: UpnpResponse?,
                         p2: String?
                     ) {
-                        Timber.e("Failed to set URI")
+                        Timber.tag(tag).e("Failed to set uri: ${arguments[0]}")
                         continuation.resume(false)
                     }
                 }
-            }
+            )
         }
-
 }

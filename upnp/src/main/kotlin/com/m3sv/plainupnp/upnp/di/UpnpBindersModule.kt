@@ -10,6 +10,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import org.fourthline.cling.UpnpService
+import org.fourthline.cling.controlpoint.ControlPoint
 import javax.inject.Singleton
 
 @Module
@@ -45,5 +46,12 @@ abstract class UpnpBindersModule {
         @Singleton
         fun provideUpnpService(context: Context): UpnpService =
             AndroidUpnpServiceImpl(context, PlainUpnpServiceConfiguration())
+
+        @Provides
+        @JvmStatic
+        @Singleton
+        fun provideControlPoint(upnpService: UpnpService): ControlPoint {
+            return upnpService.controlPoint
+        }
     }
 }
