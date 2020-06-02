@@ -41,7 +41,7 @@ class HomeFragment : BaseFragment() {
 
     private val handleBackPressedCallback = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() {
-            viewModel.intention(HomeIntention.BackPress)
+            viewModel.backPress()
         }
     }
 
@@ -146,9 +146,7 @@ class HomeFragment : BaseFragment() {
 
     private fun initRecyclerView() {
         contentAdapter =
-            GalleryContentAdapter(Glide.with(this), showThumbnailsUseCase) { position ->
-                viewModel.intention(HomeIntention.ItemClick(position))
-            }
+            GalleryContentAdapter(Glide.with(this), showThumbnailsUseCase, viewModel::itemClick)
 
         recyclerLayoutManager = LinearLayoutManager(requireContext())
         binding.content.run {

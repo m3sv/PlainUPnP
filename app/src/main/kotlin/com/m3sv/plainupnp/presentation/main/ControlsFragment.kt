@@ -112,19 +112,19 @@ class ControlsFragment : BaseFragment() {
             progress.isEnabled = false
 
             next.setOnClickListener {
-                viewModel.intention(MainIntention.PlayerButtonClick(PlayerButton.NEXT))
+                viewModel.playerButtonClick(PlayerButton.NEXT)
             }
 
             previous.setOnClickListener {
-                viewModel.intention(MainIntention.PlayerButtonClick(PlayerButton.PREVIOUS))
+                viewModel.playerButtonClick(PlayerButton.PREVIOUS)
             }
 
             play.setOnClickListener {
-                viewModel.intention(MainIntention.PlayerButtonClick(PlayerButton.PLAY))
+                viewModel.playerButtonClick(PlayerButton.PLAY)
             }
 
             progress.setOnSeekBarChangeListener(onSeekBarChangeListener { progress ->
-                viewModel.intention(MainIntention.MoveTo(progress))
+                viewModel.moveTo(progress)
             })
 
             scrimView.setOnClickListener { close() }
@@ -132,14 +132,14 @@ class ControlsFragment : BaseFragment() {
             with(pickers.mainContentDevicePicker) {
                 setAdapter(contentDirectoriesAdapter)
                 setOnItemClickListener { _, _, position, _ ->
-                    viewModel.intention(MainIntention.SelectContentDirectory(position - 1))
+                    viewModel.selectContentDirectory(position - 1)
                 }
             }
 
             with(pickers.mainRendererDevicePicker) {
                 setAdapter(rendererAdapter)
                 setOnItemClickListener { _, _, position, _ ->
-                    viewModel.intention(MainIntention.SelectRenderer(position - 1))
+                    viewModel.selectRenderer(position - 1)
                 }
             }
         }

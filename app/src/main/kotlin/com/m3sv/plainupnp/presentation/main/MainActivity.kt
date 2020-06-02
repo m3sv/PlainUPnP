@@ -147,12 +147,12 @@ class MainActivity : BaseActivity(),
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
         KeyEvent.KEYCODE_VOLUME_UP -> {
-            viewModel.intention(MainIntention.PlayerButtonClick(PlayerButton.RAISE_VOLUME))
+            viewModel.playerButtonClick(PlayerButton.RAISE_VOLUME)
             true
         }
 
         KeyEvent.KEYCODE_VOLUME_DOWN -> {
-            viewModel.intention(MainIntention.PlayerButtonClick(PlayerButton.LOWER_VOLUME))
+            viewModel.playerButtonClick(PlayerButton.LOWER_VOLUME)
             true
         }
         else -> super.onKeyDown(keyCode, event)
@@ -266,7 +266,7 @@ class MainActivity : BaseActivity(),
             override fun onQueryTextSubmit(query: String): Boolean = false
 
             override fun onQueryTextChange(newText: String): Boolean {
-                viewModel.intention(MainIntention.Filter(newText))
+                viewModel.filterText(newText)
                 return true
             }
         })
