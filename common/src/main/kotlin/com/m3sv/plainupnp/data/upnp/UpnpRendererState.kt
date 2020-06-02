@@ -7,11 +7,11 @@ data class UpnpRendererState(
     val uri: String?,
     val type: UpnpItemType,
     var state: TransportState,
-    val remainingDuration: String,
-    val duration: String,
-    val position: String,
-    val elapsedPercent: Int,
-    val durationSeconds: Long,
+    val remainingDuration: String?,
+    val duration: String?,
+    val position: String?,
+    val elapsedPercent: Int?,
+    val durationSeconds: Long?,
     val title: String,
-    val artist: String
+    val artist: String?
 )

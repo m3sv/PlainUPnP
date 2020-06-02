@@ -59,8 +59,6 @@
 
     <include
         android:id="@+id/empty_home_view"
-        layout="@layout/empty_home_view"
-        android:visibility="gone"
-        tools:visibility="visible" />
+        layout="@layout/empty_home_view" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
