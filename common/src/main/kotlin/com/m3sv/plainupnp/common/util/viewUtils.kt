@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.common.utils
+package com.m3sv.plainupnp.common.util
 
 import android.content.Context
 import android.view.View

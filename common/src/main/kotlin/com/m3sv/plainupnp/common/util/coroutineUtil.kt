@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.common.utils
+package com.m3sv.plainupnp.common.util
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ReceiveChannel

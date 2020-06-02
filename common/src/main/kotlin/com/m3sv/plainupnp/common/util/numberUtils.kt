@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.common.utils
+package com.m3sv.plainupnp.common.util
 
 /**
  * Coerce the receiving Float between inputMin and inputMax and linearly interpolate to the

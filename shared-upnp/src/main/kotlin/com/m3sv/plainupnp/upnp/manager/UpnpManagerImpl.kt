@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp.manager
 
 
-import com.m3sv.plainupnp.common.utils.formatTime
+import com.m3sv.plainupnp.common.util.formatTime
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.actions.*

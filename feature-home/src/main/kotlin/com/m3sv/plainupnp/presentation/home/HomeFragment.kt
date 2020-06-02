@@ -12,9 +12,9 @@ import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.m3sv.plainupnp.common.ShowThumbnailsUseCase
-import com.m3sv.plainupnp.common.utils.disappear
-import com.m3sv.plainupnp.common.utils.hide
-import com.m3sv.plainupnp.common.utils.show
+import com.m3sv.plainupnp.common.util.disappear
+import com.m3sv.plainupnp.common.util.hide
+import com.m3sv.plainupnp.common.util.show
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.ControlsSheetState

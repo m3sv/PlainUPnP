@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.common.utils
+package com.m3sv.plainupnp.common.util
 
 /**
  * @param duration in seconds

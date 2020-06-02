@@ -26,7 +26,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 import android.content.ContentResolver
 import android.os.Build
 import android.provider.MediaStore
-import com.m3sv.plainupnp.common.utils.isQ
+import com.m3sv.plainupnp.common.util.isQ
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container

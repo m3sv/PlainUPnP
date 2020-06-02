@@ -3,7 +3,7 @@ package com.m3sv.plainupnp.common
 import android.view.View
 import androidx.annotation.FloatRange
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.m3sv.plainupnp.common.utils.normalize
+import com.m3sv.plainupnp.common.util.normalize
 
 interface OnSlideAction {
     /**
