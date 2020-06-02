@@ -4,69 +4,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="16dp"
     android:layout_marginTop="16dp"
-    android:layout_marginEnd="16dp"
     android:layout_marginBottom="?actionBarSize"
     android:baselineAligned="false"
+    android:orientation="horizontal"
     app:layout_constraintTop_toBottomOf="@+id/handle"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
-    <LinearLayout
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/main_content_device_picker_container"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center">
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="4dp"
+        android:layout_weight="1">
 
-        <ImageView
-            android:id="@+id/content_directory_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            app:srcCompat="@drawable/ic_content_directory" />
-
-        <Spinner
+        <AutoCompleteTextView
             android:id="@+id/main_content_device_picker"
             android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:minHeight="@dimen/media_controls_sheet_spinner_height_min"
-            app:layout_constraintEnd_toStartOf="@+id/renderer_icon"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/content_directory_icon"
-            app:layout_constraintTop_toBottomOf="@id/handle"
-            app:layout_constraintVertical_bias="0.0"
-            tools:listitem="@android:layout/simple_spinner_item" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/renderer_icon"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
-            app:layout_constraintBottom_toBottomOf="@+id/main_content_device_picker"
-            app:layout_constraintEnd_toStartOf="@+id/main_renderer_device_picker"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/main_content_device_picker"
-            app:layout_constraintTop_toTopOf="@+id/main_content_device_picker"
-            app:srcCompat="@drawable/ic_renderer" />
+            android:drawableStart="@drawable/ic_content_directory"
+            android:drawablePadding="4dp"
+            android:editable="false"
+            android:focusable="false"
+            android:includeFontPadding="true"
+            android:inputType="none"
+            android:singleLine="true"
+            tools:text="hello" />
 
-        <Spinner
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/main_renderer_picker_container"
+        android:layout_width="0dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="1">
+
+        <AutoCompleteTextView
             android:id="@+id/main_renderer_device_picker"
             android:layout_width="match_parent"
-            android:layout_height="36dp"
-            android:minHeight="@dimen/media_controls_sheet_spinner_height_min"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/renderer_icon"
-            app:layout_constraintTop_toBottomOf="@id/handle"
-            app:layout_constraintVertical_bias="0.0"
-            tools:listitem="@android:layout/simple_spinner_item" />
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_renderer"
+            android:drawablePadding="4dp"
+            android:editable="false"
+            android:focusable="false"
+            android:inputType="none"
+            android:singleLine="true"
+            tools:text="hello" />
 
-    </LinearLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 </LinearLayout>

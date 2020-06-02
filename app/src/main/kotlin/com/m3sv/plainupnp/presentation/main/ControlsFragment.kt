@@ -62,6 +62,7 @@ class ControlsFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
         viewModel = getViewModel()
+        initAdapters()
     }
 
     override fun onCreateView(
@@ -75,7 +76,6 @@ class ControlsFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initAdapters(view)
 
         if (savedInstanceState != null) {
             restorePreviousState(savedInstanceState)
@@ -91,6 +91,20 @@ class ControlsFragment : BaseFragment() {
             if (isHidden) {
                 controlsSheetDelegate.onDismiss()
                 alphaHideAnimator.start()
+            }
+        })
+
+        addOnSlideAction(object : OnSlideAction {
+            override fun onSlide(sheet: View, slideOffset: Float) {
+                val slideAlpha = 1 - slideOffset
+
+                with(binding.pickers.root) {
+                    alpha = slideAlpha
+                    visibility = if (slideAlpha != 0f) View.VISIBLE else View.INVISIBLE
+                    isClickable = isVisible
+                }
+
+                binding.art.alpha = slideOffset
             }
         })
 
@@ -115,20 +129,18 @@ class ControlsFragment : BaseFragment() {
 
             scrimView.setOnClickListener { close() }
 
-            with(pickers.mainRendererDevicePicker) {
-                adapter = rendererAdapter
-                onItemSelectedListener =
-                    onItemSelectedListener { position ->
-                        viewModel.intention(MainIntention.SelectRenderer(position - 1))
-                    }
+            with(pickers.mainContentDevicePicker) {
+                setAdapter(contentDirectoriesAdapter)
+                setOnItemClickListener { _, _, position, _ ->
+                    viewModel.intention(MainIntention.SelectContentDirectory(position - 1))
+                }
             }
 
-            with(pickers.mainContentDevicePicker) {
-                adapter = contentDirectoriesAdapter
-                onItemSelectedListener =
-                    onItemSelectedListener { position ->
-                        viewModel.intention(MainIntention.SelectContentDirectory(position - 1))
-                    }
+            with(pickers.mainRendererDevicePicker) {
+                setAdapter(rendererAdapter)
+                setOnItemClickListener { _, _, position, _ ->
+                    viewModel.intention(MainIntention.SelectRenderer(position - 1))
+                }
             }
         }
 
@@ -195,9 +207,9 @@ class ControlsFragment : BaseFragment() {
         contentDirectoriesAdapter.setNewItems(items.addEmptyItem())
     }
 
-    private fun initAdapters(view: View) {
-        rendererAdapter = SimpleArrayAdapter.init(view.context, RENDERERS_ADAPTER_KEY)
-        contentDirectoriesAdapter = SimpleArrayAdapter.init(view.context, CONTENT_ADAPTER_KEY)
+    private fun initAdapters() {
+        rendererAdapter = SimpleArrayAdapter.init(requireContext(), RENDERERS_ADAPTER_KEY)
+        contentDirectoriesAdapter = SimpleArrayAdapter.init(requireContext(), CONTENT_ADAPTER_KEY)
     }
 
     private fun handleRendererState(rendererState: UpnpRendererState?) {
@@ -209,22 +221,20 @@ class ControlsFragment : BaseFragment() {
             else -> false
         }
 
-        setProgress(rendererState.elapsedPercent, isProgressEnabled)
-        setPlayIcon(rendererState.icon)
-        setTitle(rendererState.title)
+        rendererState.elapsedPercent?.let(::setProgress)
+
+        with(binding) {
+            progress.isEnabled = isProgressEnabled
+            play.setImageResource(rendererState.icon)
+            title.text = rendererState.title
+            played.text = rendererState.position
+            duration.text = rendererState.duration
+        }
 
         when (rendererState.type) {
             UpnpItemType.AUDIO -> setThumbnail(R.drawable.ic_media_placeholder)
             else -> rendererState.uri?.let(::setThumbnail)
         }
-    }
-
-    private fun setPlayIcon(@DrawableRes icon: Int) {
-        binding.play.setImageResource(icon)
-    }
-
-    private fun setTitle(text: String) {
-        binding.title.text = text
     }
 
     private fun setThumbnail(url: String) {
@@ -235,14 +245,12 @@ class ControlsFragment : BaseFragment() {
         binding.art.setImageResource(resource)
     }
 
-    private fun setProgress(progress: Int, isEnabled: Boolean) {
+    private fun setProgress(progress: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             binding.progress.setProgress(progress, true)
         } else {
             binding.progress.progress = progress
         }
-
-        binding.progress.isEnabled = isEnabled
     }
 
     private val alphaAnimator: ObjectAnimator by lazy {

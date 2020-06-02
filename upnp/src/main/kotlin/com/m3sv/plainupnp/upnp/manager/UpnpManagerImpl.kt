@@ -138,6 +138,14 @@ class UpnpManagerImpl @Inject constructor(
                         artist = creator
                     )
                 }
+            } else {
+                with(didlItem) {
+                    showImageInfo(
+                        id = id,
+                        uri = uri,
+                        title = title
+                    )
+                }
             }
         }
     }
@@ -201,6 +209,28 @@ class UpnpManagerImpl @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun showImageInfo(
+        id: String,
+        uri: String,
+        title: String
+    ) {
+        val state = UpnpRendererState(
+            id = id,
+            uri = uri,
+            type = UpnpItemType.IMAGE,
+            state = TransportState.STOPPED,
+            remainingDuration = null,
+            duration = null,
+            position = null,
+            elapsedPercent = null,
+            durationSeconds = null,
+            title = title,
+            artist = null
+        )
+
+        upnpInnerStateChannel.offer(state)
     }
 
     override suspend fun playNext() {

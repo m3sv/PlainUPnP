@@ -26,7 +26,8 @@
         android:fillViewport="true"
         app:behavior_hideable="true"
         app:behavior_peekHeight="@dimen/media_controls_sheet_peek_height"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+        tools:behavior_peekHeight="1000dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -55,12 +56,32 @@
                 android:layout_height="0dp"
                 android:layout_margin="@dimen/media_controls_sheet_art_margin"
                 android:scaleType="centerCrop"
-                android:src="@drawable/ic_media_placeholder"
+                android:src="@color/colorPrimary"
                 app:layout_constraintBottom_toTopOf="@+id/progress"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/pickers"
+                app:layout_constraintTop_toTopOf="parent"
                 app:shapeAppearanceOverlay="@style/RoundedImageView" />
+
+            <TextView
+                android:id="@+id/played"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:layout_constraintBottom_toBottomOf="@id/progress"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/progress"
+                tools:text="00:00:00" />
+
+            <TextView
+                android:id="@+id/duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintBottom_toBottomOf="@id/progress"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/progress"
+                tools:text="00:00:00" />
 
             <SeekBar
                 android:id="@+id/progress"
@@ -72,8 +93,8 @@
                 android:progressTint="@color/colorPrimaryLight"
                 android:thumbTint="@color/colorPrimary"
                 app:layout_constraintBottom_toTopOf="@id/title"
-                app:layout_constraintEnd_toEndOf="@id/art"
-                app:layout_constraintStart_toStartOf="@id/art" />
+                app:layout_constraintEnd_toStartOf="@id/duration"
+                app:layout_constraintStart_toEndOf="@id/played" />
 
             <TextView
                 android:id="@+id/title"
@@ -133,6 +154,18 @@
                     app:layout_constraintTop_toTopOf="@+id/art"
                     app:srcCompat="@drawable/ic_skip_next" />
             </LinearLayout>
+
+            <!--            <ImageView-->
+            <!--                android:id="@+id/repeat_mode"-->
+            <!--                android:layout_width="32dp"-->
+            <!--                android:layout_height="32dp"-->
+            <!--                android:background="?selectableItemBackgroundBorderless"-->
+            <!--                android:enabled="false"-->
+            <!--                android:src="@drawable/ic_repeat_all"-->
+            <!--                app:layout_constraintBottom_toBottomOf="@+id/controls_container"-->
+            <!--                app:layout_constraintEnd_toEndOf="parent"-->
+            <!--                app:layout_constraintStart_toEndOf="@+id/controls_container"-->
+            <!--                app:layout_constraintTop_toBottomOf="@+id/title" />-->
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

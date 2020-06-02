@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.widget.ArrayAdapter
+import android.widget.Filter
 import com.m3sv.plainupnp.common.StatefulComponent
 
 
@@ -12,10 +13,6 @@ class SimpleArrayAdapter<T : Parcelable> constructor(
     context: Context,
     private val key: String
 ) : ArrayAdapter<T>(context, android.R.layout.simple_list_item_1), StatefulComponent {
-
-    init {
-        setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-    }
 
     private var items: ArrayList<out T> = ArrayList()
 
@@ -33,15 +30,22 @@ class SimpleArrayAdapter<T : Parcelable> constructor(
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        setNewItems(savedInstanceState.getParcelableArrayList(key) ?: listOf())
+        val restoredItems: List<T> = savedInstanceState.getParcelableArrayList(key) ?: listOf()
+        setNewItems(restoredItems)
     }
 
     companion object {
         inline fun <reified T : Parcelable> init(
             context: Context,
             key: String
-        ): SimpleArrayAdapter<T> =
-            SimpleArrayAdapter(context, key)
+        ): SimpleArrayAdapter<T> = SimpleArrayAdapter(context, key)
+    }
+
+    override fun getFilter(): Filter = object : Filter() {
+        override fun performFiltering(constraint: CharSequence?): FilterResults? = null
+
+        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+        }
     }
 }
 
