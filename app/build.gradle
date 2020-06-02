@@ -67,7 +67,7 @@ dependencies {
     testImplementation Dependencies.androidx.coreTesting
 
     implementation project(':common')
-    implementation project(':upnp')
+    implementation project(':shared-upnp')
     implementation project(':feature-home')
     implementation project(':feature-settings')
 }

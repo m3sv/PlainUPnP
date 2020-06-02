@@ -2,7 +2,7 @@ include ':app',
         ':common',
         ':feature-home',
         ':feature-settings',
-        ':upnp'
+        ':shared-upnp'
 
 
 

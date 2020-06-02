@@ -12,5 +12,5 @@ dependencies {
     compileOnly Dependencies.dagger.annotation
 
     implementation project(':common')
-    implementation project(':upnp')
+    implementation project(':shared-upnp')
 }
