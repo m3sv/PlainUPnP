@@ -11,7 +11,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.m3sv.plainupnp.common.ShowThumbnailsUseCase
 import com.m3sv.plainupnp.common.util.disappear
 import com.m3sv.plainupnp.common.util.hide
 import com.m3sv.plainupnp.common.util.show

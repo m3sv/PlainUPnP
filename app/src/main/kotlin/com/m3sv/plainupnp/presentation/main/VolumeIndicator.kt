@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.common
+package com.m3sv.plainupnp.presentation.main
 
 import android.app.Activity
 import android.content.Context
@@ -11,6 +11,7 @@ import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
+import com.m3sv.plainupnp.common.R
 import com.m3sv.plainupnp.common.databinding.VolumeIndicatorBinding
 
 class VolumeIndicator : FrameLayout {
@@ -54,7 +55,10 @@ class VolumeIndicator : FrameLayout {
     }
 
     init {
-        background = ContextCompat.getDrawable(context, R.drawable.bg_rounded_corners)
+        background = ContextCompat.getDrawable(
+            context,
+            R.drawable.bg_rounded_corners
+        )
     }
 
     var volume: Int = 0

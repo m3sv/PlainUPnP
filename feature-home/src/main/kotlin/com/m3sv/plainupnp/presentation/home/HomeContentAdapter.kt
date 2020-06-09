@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.RequestManager
 import com.m3sv.plainupnp.common.ItemsDiffCallback
-import com.m3sv.plainupnp.common.ShowThumbnailsUseCase
 import com.m3sv.plainupnp.presentation.home.databinding.FolderItemBinding
 import com.m3sv.plainupnp.presentation.home.databinding.MediaItemBinding
 import java.util.*

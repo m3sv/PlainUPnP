@@ -26,5 +26,4 @@ class BottomSheetCallback : BottomSheetBehavior.BottomSheetCallback() {
         onSlideActions.add(action)
     }
 
-
 }

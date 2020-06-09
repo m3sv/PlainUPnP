@@ -22,7 +22,6 @@ import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
-import com.m3sv.plainupnp.common.VolumeIndicator
 import com.m3sv.plainupnp.common.util.hideKeyboard
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.di.main.MainActivitySubComponent
@@ -64,7 +63,8 @@ class MainActivity : BaseActivity(),
             }
         }
 
-        volumeIndicator = VolumeIndicator(this)
+        volumeIndicator =
+            VolumeIndicator(this)
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

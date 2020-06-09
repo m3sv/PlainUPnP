@@ -1,7 +1,8 @@
-package com.m3sv.plainupnp.common
+package com.m3sv.plainupnp.presentation.home
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.m3sv.plainupnp.common.R
 import javax.inject.Inject
 
 class ShowThumbnailsUseCase @Inject constructor(
