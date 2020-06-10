@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.di.main
+package com.m3sv.plainupnp.presentation.main.di
 
 import androidx.lifecycle.ViewModel
 import com.m3sv.plainupnp.di.ViewModelKey

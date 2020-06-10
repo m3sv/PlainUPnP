@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.di.main
+package com.m3sv.plainupnp.presentation.main.di
 
 import com.m3sv.plainupnp.presentation.main.ControlsFragment
 import com.m3sv.plainupnp.presentation.main.MainActivity

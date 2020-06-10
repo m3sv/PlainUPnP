@@ -1,8 +1,8 @@
 package com.m3sv.plainupnp.di
 
 import android.content.Context
-import com.m3sv.plainupnp.di.main.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.home.HomeComponent
+import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.settings.SettingsComponent
 import com.m3sv.plainupnp.upnp.di.UpnpBindersModule
 import dagger.BindsInstance
