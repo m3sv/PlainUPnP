@@ -1,5 +1,7 @@
 # PlainUPnP
 
+![PlainUPnP CI](https://github.com/m3sv/PlainUPnP/workflows/PlainUPnP%20CI/badge.svg?branch=develop)
+
 <a href="https://play.google.com/store/apps/details?id=com.m3sv.plainupnp">
   <img alt="Android app on Google Play" src="https://play.google.com/intl/en_gb/badges/images/badge_new.png" />
 </a> 
