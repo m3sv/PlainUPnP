@@ -13,4 +13,6 @@ dependencies {
     kapt Dependencies.dagger.compiler
 
     implementation Dependencies.timber
+
+    implementation project(":shared-resources")
 }
