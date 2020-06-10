@@ -67,9 +67,10 @@ dependencies {
     testImplementation Dependencies.androidx.coreTesting
 
     implementation project(':common')
-    implementation project(':shared-upnp')
     implementation project(':feature-home')
     implementation project(':feature-settings')
+    implementation project(':shared-resources')
+    implementation project(':shared-upnp')
 }
 
 detekt {
