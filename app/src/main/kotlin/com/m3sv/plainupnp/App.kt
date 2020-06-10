@@ -3,24 +3,20 @@ package com.m3sv.plainupnp
 import android.app.Application
 import android.os.StrictMode
 import com.m3sv.plainupnp.di.AppComponent
-import com.m3sv.plainupnp.di.AppComponentProvider
 import com.m3sv.plainupnp.di.DaggerAppComponent
 import com.m3sv.plainupnp.presentation.home.HomeComponent
 import com.m3sv.plainupnp.presentation.home.HomeComponentProvider
 import com.m3sv.plainupnp.presentation.settings.SettingsComponent
 import com.m3sv.plainupnp.presentation.settings.SettingsComponentProvider
 import com.m3sv.plainupnp.upnp.MediaServer
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlin.concurrent.thread
 
 class App : Application(),
-    AppComponentProvider,
     HomeComponentProvider,
     SettingsComponentProvider {
 
-    override val appComponent: AppComponent by lazy {
+    val appComponent: AppComponent by lazy {
         DaggerAppComponent
             .factory()
             .create(this)
@@ -46,7 +42,7 @@ class App : Application(),
             )
         }
 
-        GlobalScope.launch(Dispatchers.IO) {
+        thread {
             MediaServer(this@App).apply { start() }
         }
     }
