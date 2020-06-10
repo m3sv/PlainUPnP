@@ -21,7 +21,6 @@ abstract class BinderModule {
         @Provides
         @Singleton
         fun bindShutdownNotifier(): ShutdownNotifier = ShutdownNotifierImpl
-
     }
 
 }
