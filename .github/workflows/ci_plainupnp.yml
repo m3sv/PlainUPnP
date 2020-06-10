@@ -1,4 +1,4 @@
-name: Android CI
+name: PlainUPnP CI
 
 on:
   push:
