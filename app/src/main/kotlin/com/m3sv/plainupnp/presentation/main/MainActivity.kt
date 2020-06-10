@@ -24,8 +24,8 @@ import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
 import com.m3sv.plainupnp.common.util.hideKeyboard
 import com.m3sv.plainupnp.databinding.MainActivityBinding
-import com.m3sv.plainupnp.di.main.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.base.BaseActivity
+import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
 import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import kotlin.LazyThreadSafetyMode.NONE
 
