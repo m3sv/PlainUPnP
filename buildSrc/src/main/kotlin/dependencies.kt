@@ -1,6 +1,6 @@
 object Versions {
     const val architectureComponents = "2.2.0"
-    const val buildTools = "29.0.0"
+    const val buildTools = "29.0.3"
     const val cardView = "1.0.0"
     const val cling = "3.0.0"
     const val compileSdk = 29
