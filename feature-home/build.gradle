@@ -2,7 +2,9 @@ apply from: "../scripts/android-library.gradle"
 apply plugin: 'kotlin-kapt'
 
 android {
-    viewBinding.enabled = true
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
