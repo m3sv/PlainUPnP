@@ -41,7 +41,7 @@ object Dependencies {
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",
         "cardView" to "androidx.cardview:cardview:${Versions.cardView}",
         "constraintLayout" to "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}",
-        "coreKtx" to "androidx.core:core-ktx:1.2.0",
+        "coreKtx" to "androidx.core:core-ktx:1.3.0",
         "coreTesting" to "androidx.arch.core:core-testing:${Versions.coreTesting}",
         "material" to "com.google.android.material:material:${Versions.material}",
         "lifecycle" to mapOf(
