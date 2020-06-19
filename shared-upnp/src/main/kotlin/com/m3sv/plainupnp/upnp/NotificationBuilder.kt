@@ -74,7 +74,7 @@ class NotificationBuilder(private val context: Context) {
         val notificationChannel = NotificationChannel(
             SERVER_NOTIFICATION_CHANNEL,
             context.getString(R.string.notification_channel_name),
-            NotificationManager.IMPORTANCE_HIGH
+            NotificationManager.IMPORTANCE_LOW
         ).apply {
             description = context.getString(R.string.notification_channel_description)
         }
