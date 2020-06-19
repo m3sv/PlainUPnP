@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.upnp.di
 
 import android.content.Context
 import com.m3sv.plainupnp.upnp.*
+import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import com.m3sv.plainupnp.upnp.manager.UpnpManagerImpl
 import com.m3sv.plainupnp.upnp.manager.UpnpVolumeManager
@@ -45,7 +46,10 @@ abstract class UpnpBindersModule {
         @JvmStatic
         @Singleton
         fun provideUpnpService(context: Context): UpnpService =
-            AndroidUpnpServiceImpl(context, PlainUpnpServiceConfiguration())
+            AndroidUpnpServiceImpl(
+                context,
+                PlainUpnpServiceConfiguration()
+            )
 
         @Provides
         @JvmStatic

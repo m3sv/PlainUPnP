@@ -1,9 +1,7 @@
-package com.m3sv.plainupnp.upnp
+package com.m3sv.plainupnp.upnp.android
 
 import android.content.Context
-import com.m3sv.plainupnp.upnp.android.AndroidRouter
-import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceConfiguration
-import com.m3sv.plainupnp.upnp.android.UpnpServiceImpl
+import com.m3sv.plainupnp.upnp.LocalUpnpDevice
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 
 class AndroidUpnpServiceImpl(
@@ -16,6 +14,7 @@ class AndroidUpnpServiceImpl(
             LocalServiceResourceProvider(context),
             context
         )
+
         registry.addDevice(localUpnpDevice)
         controlPoint.search()
     }
