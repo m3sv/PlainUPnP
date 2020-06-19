@@ -33,7 +33,6 @@ private fun getLocalIpAddressFromIntf(intfName: String): InetAddress? {
 
 @Throws(UnknownHostException::class)
 fun getLocalIpAddress(context: Context): InetAddress {
-    println("Context: $context")
     val wifiManager =
         context.applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
 

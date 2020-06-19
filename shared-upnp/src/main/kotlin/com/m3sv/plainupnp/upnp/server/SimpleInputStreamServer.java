@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp;
+package com.m3sv.plainupnp.upnp.server;
 
 import java.io.File;
 import java.io.FileDescriptor;

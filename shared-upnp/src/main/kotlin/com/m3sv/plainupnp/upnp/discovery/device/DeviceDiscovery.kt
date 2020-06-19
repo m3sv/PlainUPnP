@@ -21,11 +21,14 @@
  * along with DroidUPNP.  If not, see <http:></http:>//www.gnu.org/licenses/>.
  */
 
-package com.m3sv.plainupnp.upnp
+package com.m3sv.plainupnp.upnp.discovery.device
 
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
+import com.m3sv.plainupnp.upnp.CDevice
+import com.m3sv.plainupnp.upnp.RegistryListener
+import com.m3sv.plainupnp.upnp.UpnpServiceController
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import org.fourthline.cling.UpnpService
 import timber.log.Timber
@@ -42,7 +45,8 @@ abstract class DeviceDiscovery(
 
     private val observerList: CopyOnWriteArrayList<DeviceDiscoveryObserver> = CopyOnWriteArrayList()
 
-    inner class BrowsingRegistryListener : RegistryListener {
+    inner class BrowsingRegistryListener :
+        RegistryListener {
 
         override fun deviceAdded(device: UpnpDevice) {
             Timber.v("New device detected : %s", device.displayString)
