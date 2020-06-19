@@ -65,7 +65,7 @@ class GalleryContentAdapter(
                 ContentType.IMAGE,
                 ContentType.VIDEO -> {
                     if (showThumbnails()) {
-                        glide.load(holder.item.uri).into(thumbnail)
+                        glide.load(holder.item.itemUri).into(thumbnail)
                     } else {
                         thumbnail.setImageResource(holder.item.icon)
                     }
@@ -96,5 +96,5 @@ private class DiffCallback(
     newContentItems: List<ContentItem>
 ) : ItemsDiffCallback<ContentItem>(oldContentItems, newContentItems) {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
-        oldItems[oldItemPosition].uri == newItems[newItemPosition].uri
+        oldItems[oldItemPosition].itemUri == newItems[newItemPosition].itemUri
 }

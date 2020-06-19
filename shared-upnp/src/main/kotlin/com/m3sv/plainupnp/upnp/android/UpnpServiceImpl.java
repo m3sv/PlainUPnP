@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp.cling;
+package com.m3sv.plainupnp.upnp.android;
 
 import android.content.Context;
 
@@ -33,11 +33,8 @@ public class UpnpServiceImpl implements UpnpService {
         log.info("Using configuration: " + this.getConfiguration().getClass().getName());
         this.protocolFactory = this.createProtocolFactory();
         this.registry = this.createRegistry(this.protocolFactory);
-        RegistryListener[] var3 = registryListeners;
-        int var4 = registryListeners.length;
 
-        for (int var5 = 0; var5 < var4; ++var5) {
-            RegistryListener registryListener = var3[var5];
+        for (RegistryListener registryListener : registryListeners) {
             this.registry.addListener(registryListener);
         }
 
@@ -94,14 +91,12 @@ public class UpnpServiceImpl implements UpnpService {
     }
 
     protected void shutdown(boolean separateThread) {
-        Runnable shutdown = new Runnable() {
-            public void run() {
-                UpnpServiceImpl.log.info(">>> Shutting down UPnP service...");
-                UpnpServiceImpl.this.shutdownRegistry();
-                UpnpServiceImpl.this.shutdownRouter();
-                UpnpServiceImpl.this.shutdownConfiguration();
-                UpnpServiceImpl.log.info("<<< UPnP service shutdown completed");
-            }
+        Runnable shutdown = () -> {
+            UpnpServiceImpl.log.info(">>> Shutting down UPnP service...");
+            UpnpServiceImpl.this.shutdownRegistry();
+            UpnpServiceImpl.this.shutdownRouter();
+            UpnpServiceImpl.this.shutdownConfiguration();
+            UpnpServiceImpl.log.info("<<< UPnP service shutdown completed");
         };
         if (separateThread) {
             (new Thread(shutdown)).start();

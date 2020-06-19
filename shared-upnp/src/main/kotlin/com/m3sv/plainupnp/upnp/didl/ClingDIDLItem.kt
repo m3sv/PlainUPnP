@@ -24,12 +24,8 @@
 package com.m3sv.plainupnp.upnp.didl
 
 import com.m3sv.plainupnp.data.upnp.DIDLItem
-import com.m3sv.plainupnp.upnp.R
 import org.fourthline.cling.support.model.item.Item
 
 open class ClingDIDLItem(item: Item) : ClingDIDLObject(item), DIDLItem {
-
     override val uri: String? get() = didlObject.firstResource?.value
-
-    override val icon: Int = R.drawable.ic_file
 }
