@@ -14,8 +14,8 @@ class CDevice(val device: Device<*, *, *>?) : UpnpDevice {
 
     override val manufacturer: String = device?.details?.manufacturerDetails?.manufacturer ?: ""
 
-    override val manufacturerUrl: String = device?.details?.manufacturerDetails?.manufacturerURI?.toString()
-            ?: ""
+    override val manufacturerUrl: String =
+        device?.details?.manufacturerDetails?.manufacturerURI?.toString() ?: ""
 
     override val modelName: String = device?.details?.modelDetails?.modelName ?: ""
 
@@ -49,9 +49,9 @@ class CDevice(val device: Device<*, *, *>?) : UpnpDevice {
         }
 
     override fun equals(otherDevice: UpnpDevice?): Boolean =
-            device?.let {
-                it.identity.udn == (otherDevice as CDevice).device?.identity?.udn
-            } ?: false
+        device?.let {
+            it.identity.udn == (otherDevice as CDevice).device?.identity?.udn
+        } ?: false
 
 
     override fun printService() {
@@ -64,7 +64,7 @@ class CDevice(val device: Device<*, *, *>?) : UpnpDevice {
     }
 
     override fun asService(service: String): Boolean =
-            device?.findService(UDAServiceType(service)) != null
+        device?.findService(UDAServiceType(service)) != null
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

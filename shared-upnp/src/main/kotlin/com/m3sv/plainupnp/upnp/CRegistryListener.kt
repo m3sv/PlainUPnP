@@ -5,20 +5,8 @@ import org.fourthline.cling.model.meta.RemoteDevice
 import org.fourthline.cling.registry.DefaultRegistryListener
 import org.fourthline.cling.registry.Registry
 
-class CRegistryListener(private val registryListener: RegistryListener) : DefaultRegistryListener() {
-
-    /* Discovery performance optimization for very slow Android devices! */
-    override fun remoteDeviceDiscoveryStarted(registry: Registry?, device: RemoteDevice?) {
-        registryListener.deviceAdded(CDevice(device))
-    }
-
-    override fun remoteDeviceDiscoveryFailed(
-            registry: Registry?,
-            device: RemoteDevice?,
-            ex: Exception?
-    ) {
-        registryListener.deviceRemoved(CDevice(device))
-    }
+class CRegistryListener(private val registryListener: RegistryListener) :
+    DefaultRegistryListener() {
 
     /* End of optimization, you can remove the whole block if your Android handset is fast (>= 600 Mhz) */
     override fun remoteDeviceAdded(registry: Registry, device: RemoteDevice) {
