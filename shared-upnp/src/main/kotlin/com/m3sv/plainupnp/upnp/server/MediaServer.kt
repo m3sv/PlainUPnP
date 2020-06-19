@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp
+package com.m3sv.plainupnp.upnp.server
 
 import android.content.ContentUris
 import android.content.Context
@@ -6,6 +6,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
+import com.m3sv.plainupnp.upnp.ContentDirectoryService
+import com.m3sv.plainupnp.upnp.PORT
 import fi.iki.elonen.NanoHTTPD
 import timber.log.Timber
 import java.nio.charset.StandardCharsets
@@ -13,7 +15,10 @@ import javax.inject.Inject
 
 
 class MediaServer @Inject constructor(private val context: Context) :
-    SimpleInputStreamServer(null, PORT, listOf(), true) {
+    SimpleInputStreamServer(
+        null,
+        PORT, listOf(), true
+    ) {
 
     override fun serve(session: IHTTPSession): Response = try {
         val obj = getFileServerObject(session.uri)
@@ -74,7 +79,10 @@ class MediaServer @Inject constructor(private val context: Context) :
 
             context
                 .contentResolver
-                .query(contentUri, columns, WHERE_CLAUSE, whereVal, null)
+                .query(
+                    contentUri, columns,
+                    WHERE_CLAUSE, whereVal, null
+                )
                 ?.use { cursor ->
                     if (cursor.moveToFirst()) {
                         val fileId =
@@ -86,7 +94,11 @@ class MediaServer @Inject constructor(private val context: Context) :
                         val fileUri = ContentUris.withAppendedId(contentUri, fileId)
                         val inputStream = context.contentResolver.openFileDescriptor(fileUri, "r")
 
-                        return ServerObject(fileUri, mime, inputStream!!)
+                        return ServerObject(
+                            fileUri,
+                            mime,
+                            inputStream!!
+                        )
                     }
                 }
         } catch (e: Exception) {

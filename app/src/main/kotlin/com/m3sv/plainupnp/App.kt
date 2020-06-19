@@ -8,7 +8,7 @@ import com.m3sv.plainupnp.presentation.home.HomeComponent
 import com.m3sv.plainupnp.presentation.home.HomeComponentProvider
 import com.m3sv.plainupnp.presentation.settings.SettingsComponent
 import com.m3sv.plainupnp.presentation.settings.SettingsComponentProvider
-import com.m3sv.plainupnp.upnp.MediaServer
+import com.m3sv.plainupnp.upnp.server.MediaServer
 import timber.log.Timber
 import kotlin.concurrent.thread
 

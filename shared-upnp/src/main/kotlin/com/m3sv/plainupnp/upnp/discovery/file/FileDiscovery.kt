@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp.filediscovery
+package com.m3sv.plainupnp.upnp.discovery.file
 
 import java.util.*
 

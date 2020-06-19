@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp
+package com.m3sv.plainupnp.upnp.discovery.device
 
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
 

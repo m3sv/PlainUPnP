@@ -5,6 +5,7 @@ import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.LocalDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
+import com.m3sv.plainupnp.upnp.discovery.device.DeviceDiscoveryObserver
 import com.m3sv.plainupnp.upnp.resourceproviders.UpnpResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -26,7 +27,8 @@ class RendererDiscoveryObservable @Inject constructor(
 
     @ExperimentalCoroutinesApi
     fun observe() = callbackFlow<List<DeviceDisplay>> {
-        val callback = object : DeviceDiscoveryObserver {
+        val callback = object :
+            DeviceDiscoveryObserver {
             override fun addedDevice(event: UpnpDeviceEvent) {
                 handleEvent(event)
                 sendRenderers()

@@ -15,10 +15,6 @@ public class DlnaSaxParser extends SAXParser {
             factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
             factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
 
-            if (getSchemaSources() != null) {
-                factory.setSchema(createSchema(getSchemaSources()));
-            }
-
             XMLReader xmlReader = factory.newSAXParser().getXMLReader();
             xmlReader.setErrorHandler(getErrorHandler());
             return xmlReader;

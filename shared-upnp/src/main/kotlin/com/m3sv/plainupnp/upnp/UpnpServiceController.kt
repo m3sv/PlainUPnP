@@ -1,6 +1,8 @@
 package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
+import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscovery
+import com.m3sv.plainupnp.upnp.discovery.device.RendererDiscovery
 import org.fourthline.cling.model.meta.LocalDevice
 
 interface UpnpServiceController {

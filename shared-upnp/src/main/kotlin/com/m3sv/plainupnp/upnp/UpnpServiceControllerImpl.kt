@@ -1,6 +1,8 @@
 package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
+import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscovery
+import com.m3sv.plainupnp.upnp.discovery.device.RendererDiscovery
 import org.fourthline.cling.UpnpService
 import org.fourthline.cling.model.meta.LocalDevice
 import org.fourthline.cling.model.meta.Service
@@ -13,9 +15,16 @@ class UpnpServiceControllerImpl @Inject constructor(private val upnpService: Upn
     UpnpServiceController, RendererServiceFinder {
 
     override val contentDirectoryDiscovery: ContentDirectoryDiscovery =
-        ContentDirectoryDiscovery(this, upnpService)
+        ContentDirectoryDiscovery(
+            this,
+            upnpService
+        )
 
-    override val rendererDiscovery: RendererDiscovery = RendererDiscovery(this, upnpService)
+    override val rendererDiscovery: RendererDiscovery =
+        RendererDiscovery(
+            this,
+            upnpService
+        )
 
     override var selectedRenderer: UpnpDevice? = null
 
