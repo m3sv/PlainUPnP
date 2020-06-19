@@ -23,13 +23,7 @@
 
 package com.m3sv.plainupnp.upnp.didl
 
-
 import com.m3sv.plainupnp.data.upnp.DIDLContainer
-import com.m3sv.plainupnp.upnp.R
 import org.fourthline.cling.support.model.container.Container
 
-class ClingDIDLContainer(item: Container) : ClingDIDLObject(item),
-        DIDLContainer {
-
-    override val icon: Int = R.drawable.ic_action_collection
-}
+class ClingDIDLContainer(item: Container) : ClingDIDLObject(item), DIDLContainer

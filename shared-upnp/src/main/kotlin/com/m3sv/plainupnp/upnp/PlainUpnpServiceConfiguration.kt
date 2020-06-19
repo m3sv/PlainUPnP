@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.upnp
 
-import com.m3sv.plainupnp.upnp.cling.AndroidUpnpServiceConfiguration
+import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceConfiguration
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 

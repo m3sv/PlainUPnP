@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-package com.m3sv.plainupnp.upnp.cling;
+package com.m3sv.plainupnp.upnp.android;
 
 import org.fourthline.cling.transport.impl.NetworkAddressFactoryImpl;
 import org.fourthline.cling.transport.spi.InitializationException;
@@ -53,11 +53,10 @@ public class AndroidNetworkAddressFactory extends NetworkAddressFactoryImpl {
             // http://4thline.org/projects/mailinglists.html#nabble-td3011461
             String hostName = address.getHostAddress();
 
-            Field field0 = null;
-            Object target = null;
+            Field field0;
+            Object target;
 
             try {
-
                 try {
                     field0 = InetAddress.class.getDeclaredField("holder");
                     field0.setAccessible(true);
@@ -69,7 +68,7 @@ public class AndroidNetworkAddressFactory extends NetworkAddressFactoryImpl {
                     target = address;
                 }
 
-                if (field0 != null && target != null && hostName != null) {
+                if (hostName != null) {
                     field0.setAccessible(true);
                     field0.set(target, hostName);
                 } else {

@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp.cling;
+package com.m3sv.plainupnp.upnp.android;
 
 import org.seamless.xml.SAXParser;
 import org.xml.sax.XMLReader;

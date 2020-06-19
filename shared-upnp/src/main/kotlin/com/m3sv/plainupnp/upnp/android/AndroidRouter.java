@@ -13,7 +13,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-package com.m3sv.plainupnp.upnp.cling;
+package com.m3sv.plainupnp.upnp.android;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

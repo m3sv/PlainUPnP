@@ -7,43 +7,39 @@ import javax.inject.Inject
 class HomeContentMapper @Inject constructor() {
     fun map(items: List<DIDLObjectDisplay>): List<ContentItem> = items.map { item ->
         when (item.didlObject) {
-            is ClingDIDLContainer -> {
-                ContentItem(
-                    item.didlObject.id,
-                    item.title,
-                    ContentType.FOLDER,
-                    icon = R.drawable.ic_folder
-                )
-            }
+            is ClingDIDLContainer -> ContentItem(
+                itemUri = item.didlObject.id,
+                name = item.title,
+                type = ContentType.FOLDER,
+                icon = R.drawable.ic_folder,
+                iconUri = item.didlObject.icon
+            )
 
-            is ClingImageItem -> {
-                ContentItem(
-                    (item.didlObject as ClingDIDLItem).uri,
-                    item.title,
-                    ContentType.IMAGE,
-                    icon = R.drawable.ic_bordered_image
-                )
-            }
+            is ClingImageItem -> ContentItem(
+                itemUri = (item.didlObject as ClingDIDLItem).uri,
+                name = item.title,
+                type = ContentType.IMAGE,
+                icon = R.drawable.ic_bordered_image,
+                iconUri = item.didlObject.icon
+            )
 
-            is ClingVideoItem -> {
-                ContentItem(
-                    (item.didlObject as ClingDIDLItem).uri,
-                    item.title,
-                    ContentType.VIDEO,
-                    icon = R.drawable.ic_bordered_video
-                )
-            }
+            is ClingVideoItem -> ContentItem(
+                itemUri = (item.didlObject as ClingDIDLItem).uri,
+                name = item.title,
+                type = ContentType.VIDEO,
+                icon = R.drawable.ic_bordered_video,
+                iconUri = item.didlObject.icon
+            )
 
-            is ClingAudioItem -> {
-                ContentItem(
-                    (item.didlObject as ClingDIDLItem).uri,
-                    item.title,
-                    ContentType.AUDIO,
-                    icon = R.drawable.ic_bordered_music
-                )
-            }
+            is ClingAudioItem -> ContentItem(
+                itemUri = (item.didlObject as ClingDIDLItem).uri,
+                name = item.title,
+                type = ContentType.AUDIO,
+                icon = R.drawable.ic_bordered_music,
+                iconUri = item.didlObject.icon
+            )
 
-            else -> throw IllegalStateException("Unknown DIDLObject")
+            else -> error("Unknown DIDLObject")
         }
     }
 }
