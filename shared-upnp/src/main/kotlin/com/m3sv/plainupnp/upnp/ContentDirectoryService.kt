@@ -3,7 +3,7 @@ package com.m3sv.plainupnp.upnp
 import android.content.Context
 import android.content.SharedPreferences
 import android.provider.MediaStore
-import com.m3sv.plainupnp.upnp.discovery.FileHierarchyBuilder
+import com.m3sv.plainupnp.upnp.filediscovery.FileHierarchyBuilder
 import com.m3sv.plainupnp.upnp.mediacontainers.*
 import kotlinx.coroutines.*
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService

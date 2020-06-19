@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp.discovery
+package com.m3sv.plainupnp.upnp.filediscovery
 
 import android.content.ContentResolver
 import android.net.Uri
