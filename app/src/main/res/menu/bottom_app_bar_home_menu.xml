@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/menu_search"
-        android:title="@string/menu_item_search"
-        app:actionViewClass="androidx.appcompat.widget.SearchView"
-        app:showAsAction="ifRoom" />
+        android:title="@string/menu_item_search" />
+
+    <item
+        android:id="@+id/menu_settings"
+        android:title="@string/menu_item_settings" />
 </menu>

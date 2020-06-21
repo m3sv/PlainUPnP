@@ -9,29 +9,30 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.ROTATION
-import android.view.animation.AnimationUtils
-import android.view.inputmethod.EditorInfo
-import androidx.appcompat.widget.SearchView
+import android.view.inputmethod.InputMethodManager
+import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
-import com.google.android.material.bottomappbar.BottomAppBar
+import androidx.transition.TransitionManager
+import com.google.android.material.transition.MaterialFade
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
-import com.m3sv.plainupnp.common.ChangeSettingsMenuStateAction
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
-import com.m3sv.plainupnp.common.util.hideKeyboard
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
 import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import kotlin.LazyThreadSafetyMode.NONE
 
+private const val CHEVRON_ROTATION_ANGLE_KEY = "chevron_rotation_angle_key"
+private const val OPTIONS_MENU_KEY = "options_menu_key"
+private const val IS_SEARCH_CONTAINER_VISIBLE = "is_search_container_visible_key"
 
-class MainActivity : BaseActivity(),
-    NavController.OnDestinationChangedListener {
+class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener {
 
     lateinit var mainActivitySubComponent: MainActivitySubComponent
 
@@ -40,6 +41,8 @@ class MainActivity : BaseActivity(),
     private lateinit var viewModel: MainViewModel
 
     private lateinit var volumeIndicator: VolumeIndicator
+
+    private lateinit var inputMethodManager: InputMethodManager
 
     private var bottomBarMenu = R.menu.bottom_app_bar_home_menu
 
@@ -50,6 +53,7 @@ class MainActivity : BaseActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
         super.onCreate(savedInstanceState)
+        inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
 
         if (savedInstanceState == null) {
             val intent = Intent(this, PlainUpnpAndroidService::class.java).apply {
@@ -63,13 +67,11 @@ class MainActivity : BaseActivity(),
             }
         }
 
-        volumeIndicator =
-            VolumeIndicator(this)
+        volumeIndicator = VolumeIndicator(this)
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         viewModel = getViewModel()
-
         findNavController(R.id.nav_host_container).addOnDestinationChangedListener(this)
 
         observeState()
@@ -80,11 +82,40 @@ class MainActivity : BaseActivity(),
             with(savedInstanceState) {
                 restoreChevronState()
                 restoreMenu()
+                restoreSearchContainerVisibility()
             }
 
         animateBottomDrawChanges()
-        binding.controlsContainer.setOnClickListener { controlsFragment.toggle() }
+        binding.controlsContainer.setOnClickListener { view ->
+            hideSearchContainer(false)
+            view.postDelayed({ controlsFragment.toggle() }, 50)
+        }
         setSupportActionBar(binding.bottomBar)
+
+        binding.searchClose.setOnClickListener {
+            hideSearchContainer(true)
+        }
+
+        binding.searchInput.addTextChangedListener { text ->
+            if (text != null) viewModel.filterText(text.toString())
+        }
+    }
+
+    private fun hideSearchContainer(animate: Boolean) {
+        if (animate) {
+            val animationDuration = 150L
+            animateVisibilityChange(animationDuration)
+        }
+
+        with(binding) {
+            val currentFocus = currentFocus
+            if (inputMethodManager.isActive(searchInput) && currentFocus != null) {
+                inputMethodManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
+            }
+            searchInput.clearFocus()
+            searchContainer.visibility = View.INVISIBLE
+            searchInput.setText("")
+        }
     }
 
     private fun observeState() {
@@ -113,36 +144,46 @@ class MainActivity : BaseActivity(),
         return true
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu): Boolean {
-        setupSearchMenuItem(menu, true)
-        return true
-    }
-
-    private fun setupSearchMenuItem(menu: Menu, animate: Boolean) {
-        menu.findItem(R.id.menu_search)?.let { item ->
-            (item.actionView as SearchView).apply {
-                setSearchQueryListener()
-                disableSearchViewFullScreenEditing()
-                if (animate) animateAppear()
-            }
-        }
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_settings -> {
-                controlsFragment.close()
-                findNavController(R.id.nav_host_container).navigate(R.id.action_mainFragment_to_settingsFragment)
-            }
-            R.id.menu_search -> item.expandActionView()
+            R.id.menu_settings -> showSettings()
+            R.id.menu_search -> showSearch()
         }
         return true
+    }
+
+    private fun showSearch() {
+        controlsFragment.close()
+        val animationDuration = 150L
+        animateVisibilityChange(animationDuration)
+        with(binding.searchContainer) {
+            isVisible = true
+            postDelayed({
+                if (binding.searchInput.requestFocus()) {
+                    inputMethodManager.showSoftInput(binding.searchInput, 0)
+                }
+            }, animationDuration)
+        }
+    }
+
+    private fun animateVisibilityChange(animationDuration: Long) {
+        val materialFade = MaterialFade().apply {
+            duration = animationDuration
+        }
+        TransitionManager.beginDelayedTransition(binding.root, materialFade)
+    }
+
+    private fun showSettings() {
+        hideSearchContainer(false)
+        controlsFragment.close()
+        findNavController(R.id.nav_host_container).navigate(R.id.action_mainFragment_to_settingsFragment)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putFloat(CHEVRON_ROTATION_ANGLE_KEY, binding.bottomAppBarChevron.rotation)
         outState.putInt(OPTIONS_MENU_KEY, bottomBarMenu)
+        outState.putBoolean(IS_SEARCH_CONTAINER_VISIBLE, binding.searchContainer.isVisible)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
@@ -160,39 +201,7 @@ class MainActivity : BaseActivity(),
 
     private fun animateBottomDrawChanges() {
         with(controlsFragment) {
-            addOnStateChangedAction(
-                TriggerOnceStateAction(
-                    this@MainActivity::animateChevronArrow
-                )
-            )
-            addOnStateChangedAction(
-                ChangeSettingsMenuStateAction(
-                    this@MainActivity::replaceAppBarMenu
-                )
-            )
-        }
-    }
-
-    private fun replaceAppBarMenu(showSettings: Boolean) {
-        bottomBarMenu = if (showSettings) {
-            hideKeyboard()
-            R.menu.bottom_app_bar_settings_menu
-        } else {
-            R.menu.bottom_app_bar_home_menu
-        }
-
-        with(binding.bottomBar) {
-            clearSearchItemInput()
-            replaceMenu(bottomBarMenu)
-            setupSearchMenuItem(menu, false)
-        }
-    }
-
-    private fun BottomAppBar.clearSearchItemInput() {
-        menu.findItem(R.id.menu_search)?.let { item ->
-            (item.actionView as SearchView).apply {
-                setQuery("", true)
-            }
+            addOnStateChangedAction(TriggerOnceStateAction(this@MainActivity::animateChevronArrow))
         }
     }
 
@@ -261,28 +270,9 @@ class MainActivity : BaseActivity(),
         bottomBarMenu = getInt(OPTIONS_MENU_KEY, R.menu.bottom_app_bar_home_menu)
     }
 
-    private fun SearchView.setSearchQueryListener() {
-        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String): Boolean = false
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                viewModel.filterText(newText)
-                return true
-            }
-        })
+    private fun Bundle.restoreSearchContainerVisibility() {
+        val isSearchContainerVisible = getBoolean(IS_SEARCH_CONTAINER_VISIBLE, false)
+        binding.searchContainer.visibility =
+            if (isSearchContainerVisible) View.VISIBLE else View.INVISIBLE
     }
-
-    private companion object {
-        private const val CHEVRON_ROTATION_ANGLE_KEY = "chevron_rotation_angle_key"
-        private const val OPTIONS_MENU_KEY = "options_menu_key"
-    }
-}
-
-private fun SearchView.disableSearchViewFullScreenEditing() {
-    imeOptions = EditorInfo.IME_FLAG_NO_EXTRACT_UI or EditorInfo.IME_ACTION_SEARCH
-}
-
-private fun View.animateAppear() {
-    val anim = AnimationUtils.loadAnimation(context, R.anim.slide_up)
-    startAnimation(anim)
 }

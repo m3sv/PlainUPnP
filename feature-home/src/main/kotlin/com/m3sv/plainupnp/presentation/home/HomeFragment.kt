@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.m3sv.plainupnp.common.util.disappear
-import com.m3sv.plainupnp.common.util.hide
 import com.m3sv.plainupnp.common.util.show
 import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
@@ -100,19 +100,19 @@ class HomeFragment : BaseFragment() {
                             contentAdapter.setWithDiff(directory.content)
                             binding.name.text = directory.name
                             setBackPressedCallback(showExitDialogCallback)
-                            binding.emptyHomeView.root.hide()
+                            binding.emptyHomeView.root.isVisible = false
                         }
                         is Directory.SubDirectory -> {
                             contentAdapter.setWithDiff(directory.content)
                             binding.name.text = directory.parentName
                             setBackPressedCallback(handleBackPressedCallback)
-                            binding.emptyHomeView.root.hide()
+                            binding.emptyHomeView.root.isVisible = false
                         }
                         is Directory.None -> {
                             contentAdapter.setWithDiff(listOf())
                             binding.name.text = ""
                             setBackPressedCallback(showExitDialogCallback)
-                            binding.emptyHomeView.root.show()
+                            binding.emptyHomeView.root.isVisible = true
                         }
                     }
 
