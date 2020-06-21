@@ -328,7 +328,7 @@ class ControlsFragment : BaseFragment() {
         this.toMutableList().apply {
             add(
                 0,
-                SpinnerItem("Empty item")
+                SpinnerItem("")
             )
         }.toList()
 

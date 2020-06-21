@@ -13,10 +13,8 @@
         <action
             android:id="@+id/action_mainFragment_to_settingsFragment"
             app:destination="@id/settings_fragment"
-            app:enterAnim="@anim/slide_up"
-            app:exitAnim="@anim/slide_from_center_to_left"
-            app:popEnterAnim="@anim/slide_from_left_to_right"
-            app:popExitAnim="@anim/slide_down" />
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit" />
     </fragment>
 
     <fragment

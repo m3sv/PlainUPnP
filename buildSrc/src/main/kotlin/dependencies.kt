@@ -13,8 +13,8 @@ object Versions {
     const val kotlin = "1.3.71"
     const val minSdk = 21
     const val nanohttpd = "2.3.1"
-    const val navigation = "2.3.0-alpha05"
-    const val material = "1.2.0-alpha05"
+    const val navigation = "2.3.0-rc01"
+    const val material = "1.2.0-beta01"
     const val recyclerView = "1.1.0"
     const val supportLibrary = "1.1.0"
     const val targetSdk = 29
