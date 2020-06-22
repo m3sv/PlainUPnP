@@ -16,11 +16,9 @@ import org.fourthline.cling.transport.RouterException;
 import org.fourthline.cling.transport.RouterImpl;
 import org.seamless.util.Exceptions;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import timber.log.Timber;
 
 public class UpnpServiceImpl implements UpnpService {
-    private static Logger log = Logger.getLogger(UpnpServiceImpl.class.getName());
     protected final UpnpServiceConfiguration configuration;
     protected final ControlPoint controlPoint;
     protected final ProtocolFactory protocolFactory;
@@ -29,8 +27,8 @@ public class UpnpServiceImpl implements UpnpService {
 
     public UpnpServiceImpl(UpnpServiceConfiguration configuration, Context context, RegistryListener... registryListeners) {
         this.configuration = configuration;
-        log.info(">>> Starting UPnP service...");
-        log.info("Using configuration: " + this.getConfiguration().getClass().getName());
+        Timber.i(">>> Starting UPnP service...");
+        Timber.i("Using configuration: %s", this.getConfiguration().getClass().getName());
         this.protocolFactory = this.createProtocolFactory();
         this.registry = this.createRegistry(this.protocolFactory);
 
@@ -47,7 +45,7 @@ public class UpnpServiceImpl implements UpnpService {
         }
 
         this.controlPoint = this.createControlPoint(this.protocolFactory, this.registry);
-        log.info("<<< UPnP service started successfully");
+        Timber.i("<<< UPnP service started successfully");
     }
 
     protected ProtocolFactory createProtocolFactory() {
@@ -92,11 +90,11 @@ public class UpnpServiceImpl implements UpnpService {
 
     protected void shutdown(boolean separateThread) {
         Runnable shutdown = () -> {
-            UpnpServiceImpl.log.info(">>> Shutting down UPnP service...");
+            Timber.i(">>> Shutting down UPnP service...");
             UpnpServiceImpl.this.shutdownRegistry();
             UpnpServiceImpl.this.shutdownRouter();
             UpnpServiceImpl.this.shutdownConfiguration();
-            UpnpServiceImpl.log.info("<<< UPnP service shutdown completed");
+            Timber.i("<<< UPnP service shutdown completed");
         };
         if (separateThread) {
             (new Thread(shutdown)).start();
@@ -116,9 +114,9 @@ public class UpnpServiceImpl implements UpnpService {
         } catch (RouterException var3) {
             Throwable cause = Exceptions.unwrap(var3);
             if (cause instanceof InterruptedException) {
-                log.log(Level.INFO, "Router shutdown was interrupted: " + var3, cause);
+                Timber.e(cause, "Router shutdown was interrupted: %s", var3);
             } else {
-                log.log(Level.SEVERE, "Router error on shutdown: " + var3, cause);
+                Timber.e(cause, "Router error on shutdown: " + var3);
             }
         }
 

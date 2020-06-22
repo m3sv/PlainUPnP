@@ -95,7 +95,7 @@ class UpnpManagerImpl @Inject constructor(
 
         val didlItem = (item.didlItem as ClingDIDLItem).didlObject as Item
 
-        val uri = item.didlItem.uri ?: return
+        val uri = item.didlItem.didlObject.firstResource?.value ?: return
 
         val type = when (didlItem) {
             is AudioItem -> "audioItem"
@@ -278,11 +278,9 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private suspend fun handleClick(position: Int, content: List<DIDLObjectDisplay>) {
+    private suspend fun handleClick(position: Int, content: List<DIDLObject>) {
         if (position in content.indices) {
-            val item = content[position]
-
-            when (item.didlObject) {
+            when (val item = content[position]) {
                 is ClingDIDLContainer -> navigateTo(
                     Destination.Path(
                         item.didlObject.id,
@@ -292,7 +290,7 @@ class UpnpManagerImpl @Inject constructor(
 
                 else -> renderItem(
                     RenderItem(
-                        content[position].didlObject as DIDLItem,
+                        content[position] as DIDLItem,
                         position
                     )
                 )

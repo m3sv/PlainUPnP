@@ -59,7 +59,7 @@ public class AndroidRouter extends RouterImpl {
         super(configuration, protocolFactory);
 
         this.context = context;
-        this.wifiManager = ((WifiManager) context.getSystemService(Context.WIFI_SERVICE));
+        this.wifiManager = ((WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE));
         this.networkInfo = NetworkUtils.getConnectedNetworkInfo(context);
 
         // Only register for network connectivity changes if we are not running on emulator

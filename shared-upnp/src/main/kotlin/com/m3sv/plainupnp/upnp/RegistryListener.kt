@@ -7,4 +7,5 @@ interface RegistryListener {
     fun deviceAdded(device: UpnpDevice)
 
     fun deviceRemoved(device: UpnpDevice)
+
 }

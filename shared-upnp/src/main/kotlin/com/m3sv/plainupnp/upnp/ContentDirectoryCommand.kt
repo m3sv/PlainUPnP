@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.upnp
 
-import com.m3sv.plainupnp.data.upnp.DIDLObjectDisplay
+import com.m3sv.plainupnp.data.upnp.DIDLObject
 import com.m3sv.plainupnp.upnp.didl.*
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
@@ -16,7 +16,7 @@ import org.fourthline.cling.support.model.item.VideoItem
 import timber.log.Timber
 import java.util.concurrent.Future
 
-typealias ContentCallback = (List<DIDLObjectDisplay>?) -> Unit
+typealias ContentCallback = (List<DIDLObject>?) -> Unit
 
 class ContentDirectoryCommand(
     private val controlPoint: ControlPoint,
@@ -31,15 +31,15 @@ class ContentDirectoryCommand(
     private fun buildContentList(
         parent: String?,
         didl: DIDLContent
-    ): List<DIDLObjectDisplay> {
-        val result = mutableListOf<DIDLObjectDisplay>()
+    ): List<DIDLObject> {
+        val result = mutableListOf<DIDLObject>()
 
         if (parent != null) {
-            result.add(DIDLObjectDisplay(ClingDIDLParentContainer(parent)))
+            result.add(ClingDIDLParentContainer(parent))
         }
 
         for (item in didl.containers) {
-            result.add(DIDLObjectDisplay(ClingDIDLContainer(item)))
+            result.add(ClingDIDLContainer(item))
             Timber.v("Add container: %s", item.title)
         }
 
@@ -51,7 +51,7 @@ class ContentDirectoryCommand(
                 else -> ClingDIDLItem(item)
             }
 
-            result.add(DIDLObjectDisplay(clingItem))
+            result.add(clingItem)
         }
 
         return result
