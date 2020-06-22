@@ -26,7 +26,7 @@ class ContentDirectoryCommand(
         get() = if (controller.selectedContentDirectory == null)
             null
         else
-            (controller.selectedContentDirectory as CDevice).device?.findService(UDAServiceType("ContentDirectory"))
+            (controller.selectedContentDirectory as CDevice).device.findService(UDAServiceType("ContentDirectory"))
 
     private fun buildContentList(
         parent: String?,
