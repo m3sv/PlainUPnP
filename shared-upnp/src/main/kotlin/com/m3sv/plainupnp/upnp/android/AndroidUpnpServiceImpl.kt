@@ -16,7 +16,7 @@ class AndroidUpnpServiceImpl(
         )
 
         registry.addDevice(localUpnpDevice)
-        controlPoint.search()
+        controlPoint.search(30)
     }
 
     override fun shutdown() {

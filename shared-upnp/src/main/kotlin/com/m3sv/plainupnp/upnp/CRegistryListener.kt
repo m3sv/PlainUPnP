@@ -8,7 +8,6 @@ import org.fourthline.cling.registry.Registry
 class CRegistryListener(private val registryListener: RegistryListener) :
     DefaultRegistryListener() {
 
-    /* End of optimization, you can remove the whole block if your Android handset is fast (>= 600 Mhz) */
     override fun remoteDeviceAdded(registry: Registry, device: RemoteDevice) {
         registryListener.deviceAdded(CDevice(device))
     }

@@ -39,14 +39,13 @@ abstract class DeviceDiscovery(
     private val upnpService: UpnpService
 ) {
 
-    protected abstract val callableFilter: CallableFilter
-
     val browsingRegistryListener: BrowsingRegistryListener = BrowsingRegistryListener()
+
+    protected abstract val callableFilter: CallableFilter
 
     private val observerList: CopyOnWriteArrayList<DeviceDiscoveryObserver> = CopyOnWriteArrayList()
 
-    inner class BrowsingRegistryListener :
-        RegistryListener {
+    inner class BrowsingRegistryListener : RegistryListener {
 
         override fun deviceAdded(device: UpnpDevice) {
             Timber.v("New device detected : %s", device.displayString)
@@ -75,13 +74,11 @@ abstract class DeviceDiscovery(
         }
     }
 
-    fun hasObserver(o: DeviceDiscoveryObserver): Boolean = observerList.contains(o)
-
     fun addObserver(o: DeviceDiscoveryObserver) {
-        println(o)
         observerList.add(o)
 
-        upnpService.getFilteredDeviceList(callableFilter)
+        upnpService
+            .getFilteredDeviceList(callableFilter)
             .forEach { o.addedDevice(UpnpDeviceEvent.Added(it)) }
     }
 
@@ -105,7 +102,6 @@ abstract class DeviceDiscovery(
 
         return deviceList
     }
-
 
     private fun notifyAdded(device: UpnpDevice) {
         for (o in observerList)
