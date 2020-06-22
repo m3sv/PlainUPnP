@@ -2,11 +2,15 @@ package com.m3sv.plainupnp.upnp.manager
 
 
 import com.m3sv.plainupnp.common.util.formatTime
-import com.m3sv.plainupnp.data.upnp.*
+import com.m3sv.plainupnp.data.upnp.DeviceDisplay
+import com.m3sv.plainupnp.data.upnp.LocalDevice
+import com.m3sv.plainupnp.data.upnp.UpnpItemType
+import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.actions.*
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
+import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import kotlinx.coroutines.*
@@ -278,7 +282,7 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private suspend fun handleClick(position: Int, content: List<DIDLObject>) {
+    private suspend fun handleClick(position: Int, content: List<ClingDIDLObject>) {
         if (position in content.indices) {
             when (val item = content[position]) {
                 is ClingDIDLContainer -> navigateTo(
@@ -290,7 +294,7 @@ class UpnpManagerImpl @Inject constructor(
 
                 else -> renderItem(
                     RenderItem(
-                        content[position] as DIDLItem,
+                        content[position],
                         position
                     )
                 )
@@ -369,7 +373,7 @@ private inline val PositionInfo.position: String
     }
 
 data class RenderItem(
-    val didlItem: DIDLItem,
+    val didlItem: ClingDIDLObject,
     val position: Int
 )
 

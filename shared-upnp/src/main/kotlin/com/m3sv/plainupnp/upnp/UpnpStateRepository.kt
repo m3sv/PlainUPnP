@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.upnp
 
-import com.m3sv.plainupnp.data.upnp.DIDLObject
+import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
@@ -15,17 +15,17 @@ interface UpnpStateStore {
     suspend fun peekState(): ContentState?
 }
 
-sealed class UpnpDirectory(val content: List<DIDLObject>) {
+sealed class UpnpDirectory(val content: List<ClingDIDLObject>) {
     object None : UpnpDirectory(listOf())
 
     class Root(
         val name: String,
-        content: List<DIDLObject>
+        content: List<ClingDIDLObject>
     ) : UpnpDirectory(content)
 
     class SubUpnpDirectory(
         val parentName: String,
-        content: List<DIDLObject>
+        content: List<ClingDIDLObject>
     ) : UpnpDirectory(content)
 }
 

@@ -23,9 +23,8 @@
 
 package com.m3sv.plainupnp.upnp.didl
 
-import com.m3sv.plainupnp.data.upnp.DIDLItem
 import org.fourthline.cling.support.model.item.Item
 
-open class ClingDIDLItem(item: Item) : ClingDIDLObject(item), DIDLItem {
+open class ClingDIDLItem(item: Item) : ClingDIDLObject(item) {
     override val uri: String? get() = didlObject.firstResource?.value
 }
