@@ -43,11 +43,11 @@ class ContentDirectoryCommand(
         }
 
         for (item in didl.items) {
-            val clingItem: ClingDIDLItem = when (item) {
+            val clingItem: ClingDIDLObject = when (item) {
                 is VideoItem -> ClingVideoItem(item)
                 is AudioItem -> ClingAudioItem(item)
                 is ImageItem -> ClingImageItem(item)
-                else -> ClingDIDLItem(item)
+                else -> ClingDIDLObject(item)
             }
 
             result.add(clingItem)
