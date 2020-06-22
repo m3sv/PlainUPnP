@@ -9,7 +9,6 @@ import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.actions.*
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
-import com.m3sv.plainupnp.upnp.didl.ClingDIDLItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
@@ -97,7 +96,7 @@ class UpnpManagerImpl @Inject constructor(
             return
         }
 
-        val didlItem = (item.didlItem as ClingDIDLItem).didlObject as Item
+        val didlItem = item.didlItem.didlObject as Item
 
         val uri = item.didlItem.didlObject.firstResource?.value ?: return
 
