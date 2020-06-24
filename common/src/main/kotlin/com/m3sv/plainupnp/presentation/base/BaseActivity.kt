@@ -5,15 +5,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO
-import androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProviders
-import androidx.preference.PreferenceManager
-import com.m3sv.plainupnp.common.R
+import androidx.lifecycle.ViewModelProvider
 import com.m3sv.plainupnp.di.ViewModelFactory
 import javax.inject.Inject
 
@@ -23,14 +18,14 @@ abstract class BaseActivity : AppCompatActivity() {
     lateinit var viewModelFactory: ViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        if (PreferenceManager
-                .getDefaultSharedPreferences(this)
-                .getBoolean(getString(R.string.dark_theme_key), false)
-        ) {
-            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
-        }
+//        if (PreferenceManager
+//                .getDefaultSharedPreferences(this)
+//                .getBoolean(getString(R.string.dark_theme_key), false)
+//        ) {
+//            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_YES)
+//        } else {
+//            AppCompatDelegate.setDefaultNightMode(MODE_NIGHT_NO)
+//        }
 
         super.onCreate(savedInstanceState)
     }
@@ -52,7 +47,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     protected inline fun <reified T : ViewModel> getViewModel(): T =
-        ViewModelProviders.of(this, viewModelFactory).get(T::class.java)
+        ViewModelProvider(this, viewModelFactory).get(T::class.java)
 
     companion object {
         protected const val REQUEST_READ_EXTERNAL_STORAGE = 12345
