@@ -69,10 +69,8 @@ class UpnpManagerImpl @Inject constructor(
 
         val contentDirectory = contentDirectory.currentContentDirectories[position].device
 
-        if (contentDirectory != serviceController.selectedContentDirectory) {
-            serviceController.selectedContentDirectory = contentDirectory
-            navigateTo(Destination.Home)
-        }
+        serviceController.selectedContentDirectory = contentDirectory
+        navigateTo(Destination.Home)
     }
 
     override fun selectRenderer(position: Int) {
