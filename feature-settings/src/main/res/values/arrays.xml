@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="theme_entry_values">
+        <item>@string/light_theme_value</item>
+        <item>@string/dark_theme_value</item>
+        <item>@string/system_theme_value</item>
+        <item>@string/battery_saver_theme_value</item>
+    </string-array>
+    <string-array name="theme_entries">
+        <item>@string/light_theme_label</item>
+        <item>@string/dark_theme_label</item>
+        <item>@string/system_theme_label</item>
+        <item>@string/battery_saver_theme_label</item>
+    </string-array>
+</resources>

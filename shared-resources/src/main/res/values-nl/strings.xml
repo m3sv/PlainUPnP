@@ -8,7 +8,7 @@
     <string name="to_exit">Dubbeltik op de terugknop om af te sluiten</string>
     <string name="general_category">Algemeen</string>
     <string name="upnp_category">UPnP</string>
-    <string name="enable_dark_theme">Donker thema</string>
+    <string name="set_theme_label">Thema instellen</string>
     <string name="share_images">Beelden inschakelen</string>
     <string name="share_music">Muziek inschakelen</string>
     <string name="share_videos">Videos inschakelen</string>
@@ -43,4 +43,8 @@
     <string name="contact_us_title">Contacteer ons</string>
     <string name="contact_us_body">Functie ontbreekt? Stuur ons een e-mail!</string>
     <string name="control_volume">Regel het volume met knoppen</string>
+    <string name="dark_theme_label">Donker</string>
+    <string name="light_theme_label">Licht</string>
+    <string name="system_theme_label">Systeemgebaseerd</string>
+    <string name="battery_saver_theme_label">Donker op batterijbesparing</string>
 </resources>

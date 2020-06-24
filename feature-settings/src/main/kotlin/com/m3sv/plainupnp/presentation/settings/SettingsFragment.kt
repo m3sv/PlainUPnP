@@ -5,12 +5,13 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import com.m3sv.plainupnp.common.util.updateTheme
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import javax.inject.Inject
+import kotlin.LazyThreadSafetyMode.NONE
 
 
 class SettingsFragment : PreferenceFragmentCompat(),
@@ -51,17 +52,11 @@ class SettingsFragment : PreferenceFragmentCompat(),
         super.onPause()
     }
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        val darkThemeKey = getString(com.m3sv.plainupnp.common.R.string.dark_theme_key)
-        when (key) {
-            darkThemeKey -> {
-                val defaultNightMode = if (sharedPreferences.isDarkThemeSet(darkThemeKey))
-                    AppCompatDelegate.MODE_NIGHT_YES
-                else
-                    AppCompatDelegate.MODE_NIGHT_NO
+    private val setThemeKey by lazy(NONE) { getString(R.string.set_theme_key) }
 
-                AppCompatDelegate.setDefaultNightMode(defaultNightMode)
-            }
+    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
+        when (key) {
+            setThemeKey -> requireContext().updateTheme()
         }
     }
 
@@ -111,9 +106,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
             startActivity(this)
         }
     }
-
-    private fun SharedPreferences.isDarkThemeSet(darkThemeKey: String) =
-        getBoolean(darkThemeKey, false)
 
     private companion object {
         private const val VERSION = "version"
