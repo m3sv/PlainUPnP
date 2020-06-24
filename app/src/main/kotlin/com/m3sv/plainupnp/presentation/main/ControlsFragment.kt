@@ -132,14 +132,14 @@ class ControlsFragment : BaseFragment() {
             with(pickers.mainContentDevicePicker) {
                 setAdapter(contentDirectoriesAdapter)
                 setOnItemClickListener { _, _, position, _ ->
-                    viewModel.selectContentDirectory(position - 1)
+                    viewModel.selectContentDirectory(position)
                 }
             }
 
             with(pickers.mainRendererDevicePicker) {
                 setAdapter(rendererAdapter)
                 setOnItemClickListener { _, _, position, _ ->
-                    viewModel.selectRenderer(position - 1)
+                    viewModel.selectRenderer(position)
                 }
             }
         }
@@ -200,11 +200,11 @@ class ControlsFragment : BaseFragment() {
     }
 
     private fun setRenderers(items: List<SpinnerItem>) {
-        rendererAdapter.setNewItems(items.addEmptyItem())
+        rendererAdapter.setNewItems(items)
     }
 
     private fun setContentDirectories(items: List<SpinnerItem>) {
-        contentDirectoriesAdapter.setNewItems(items.addEmptyItem())
+        contentDirectoriesAdapter.setNewItems(items)
     }
 
     private fun initAdapters() {
