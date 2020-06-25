@@ -74,7 +74,7 @@
     <string name="notification_body">PlainUPnP Server is running in the background</string>
     <string name="shut_down">Shut down</string>
     <string name="start_here">Start here</string>
-    <string name="control_volume">Control volume with buttons</string>
+    <string name="control_volume">Control volume with side buttons</string>
     <string name="contact_us_title">Contact us</string>
     <string name="contact_us_body">Feature is missing? Send us an email!</string>
     <string name="dark_theme_label">Dark</string>

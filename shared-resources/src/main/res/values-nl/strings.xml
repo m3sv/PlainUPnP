@@ -42,7 +42,7 @@
     <string name="start_here">Begin hier</string>
     <string name="contact_us_title">Contacteer ons</string>
     <string name="contact_us_body">Functie ontbreekt? Stuur ons een e-mail!</string>
-    <string name="control_volume">Regel het volume met knoppen</string>
+    <string name="control_volume">Regel het volume met zijknoppen</string>
     <string name="dark_theme_label">Donker</string>
     <string name="light_theme_label">Licht</string>
     <string name="system_theme_label">Systeemgebaseerd</string>
