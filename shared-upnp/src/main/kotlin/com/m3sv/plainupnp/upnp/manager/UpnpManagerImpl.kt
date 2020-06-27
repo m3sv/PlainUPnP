@@ -94,12 +94,13 @@ class UpnpManagerImpl @Inject constructor(
 
         isLocal = renderer is LocalDevice
 
+        database.selectedDeviceQueries.insertSelectedDevice(
+            RENDERER_TYPE,
+            renderer.fullIdentity
+        )
+
         if (!isLocal) {
             serviceController.selectedRenderer = renderer
-            database.selectedDeviceQueries.insertSelectedDevice(
-                RENDERER_TYPE,
-                renderer.fullIdentity
-            )
         }
     }
 
