@@ -12,6 +12,7 @@ buildscript {
     dependencies {
         classpath ClasspathDependencies.androidTools
         classpath ClasspathDependencies.kotlinGradle
+        classpath ClasspathDependencies.sqlDelight
     }
 }
 

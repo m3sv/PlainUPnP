@@ -11,12 +11,13 @@ object Versions {
     const val detekt = "1.0.0"
     const val jetty = "8.2.0.v20160908"
     const val kotlin = "1.3.71"
+    const val material = "1.2.0-beta01"
     const val minSdk = 21
     const val nanohttpd = "2.3.1"
     const val navigation = "2.3.0-rc01"
-    const val material = "1.2.0-beta01"
     const val recyclerView = "1.1.0"
     const val supportLibrary = "1.1.0"
+    const val sqlDelight = "1.4.0"
     const val targetSdk = 29
     const val test = "1.2.0"
     const val versionCode = 59
@@ -26,6 +27,7 @@ object Versions {
 object ClasspathDependencies {
     const val androidTools = "com.android.tools.build:gradle:4.0.0"
     const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
+    const val sqlDelight = "com.squareup.sqldelight:gradle-plugin:${Versions.sqlDelight}"
 }
 
 object Dependencies {
@@ -34,6 +36,8 @@ object Dependencies {
     const val glide = "com.github.bumptech.glide:glide:4.11.0"
     const val javaxCdi = "javax.enterprise:cdi-api:2.0.SP1"
     const val fastScroll = "me.zhanghai.android.fastscroll:library:1.1.3"
+    const val sqlDelightAndroidDriver =
+        "com.squareup.sqldelight:android-driver:${Versions.sqlDelight}"
 
     val androidx = mapOf(
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",
@@ -76,5 +80,4 @@ object Dependencies {
         "junit" to "org.junit.jupiter:junit-jupiter:5.6.2",
         "mockito" to "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
     )
-
 }
