@@ -1,6 +1,7 @@
 package com.m3sv.plainupnp.upnp.discovery.device
 
 import com.m3sv.plainupnp.core.persistence.Database
+import com.m3sv.plainupnp.core.persistence.RENDERER_TYPE
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +30,7 @@ class ObserveRenderersUseCase @Inject constructor(
         val device = deviceDisplay.device
         return database
             .selectedDeviceQueries
-            .selectDeviceByIdentity(device.fullIdentity)
+            .selectDeviceByIdentity(RENDERER_TYPE, device.fullIdentity)
             .executeAsOneOrNull() != null
     }
 }

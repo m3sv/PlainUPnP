@@ -1,12 +1,14 @@
 CREATE TABLE selectedDevices (
-identity TEXT PRIMARY KEY NOT NULL);
+type INTEGER PRIMARY KEY NOT NULL,
+identity TEXT NOT NULL
+);
 
 selectAllDevices:
 SELECT * FROM selectedDevices;
 
 insertSelectedDevice:
-INSERT OR IGNORE INTO selectedDevices(identity) VALUES (?);
+REPLACE INTO selectedDevices(type, identity) VALUES (?, ?);
 
 selectDeviceByIdentity:
-SELECT * FROM selectedDevices WHERE identity = ?;
+SELECT * FROM selectedDevices WHERE type = ? AND identity = ?;
 

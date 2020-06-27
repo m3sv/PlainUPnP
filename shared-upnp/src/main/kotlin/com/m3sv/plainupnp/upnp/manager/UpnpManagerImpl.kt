@@ -2,7 +2,9 @@ package com.m3sv.plainupnp.upnp.manager
 
 
 import com.m3sv.plainupnp.common.util.formatTime
+import com.m3sv.plainupnp.core.persistence.CONTENT_DIRECTORY_TYPE
 import com.m3sv.plainupnp.core.persistence.Database
+import com.m3sv.plainupnp.core.persistence.RENDERER_TYPE
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.LocalDevice
 import com.m3sv.plainupnp.data.upnp.UpnpItemType
@@ -73,7 +75,10 @@ class UpnpManagerImpl @Inject constructor(
 
         val contentDirectory = contentDirectory.currentContentDirectories[position].device
 
-        database.selectedDeviceQueries.insertSelectedDevice(contentDirectory.fullIdentity)
+        database.selectedDeviceQueries.insertSelectedDevice(
+            CONTENT_DIRECTORY_TYPE,
+            contentDirectory.fullIdentity
+        )
 
         serviceController.selectedContentDirectory = contentDirectory
         navigateTo(Destination.Home)
@@ -91,7 +96,10 @@ class UpnpManagerImpl @Inject constructor(
 
         if (!isLocal) {
             serviceController.selectedRenderer = renderer
-            database.selectedDeviceQueries.insertSelectedDevice(renderer.fullIdentity)
+            database.selectedDeviceQueries.insertSelectedDevice(
+                RENDERER_TYPE,
+                renderer.fullIdentity
+            )
         }
     }
 

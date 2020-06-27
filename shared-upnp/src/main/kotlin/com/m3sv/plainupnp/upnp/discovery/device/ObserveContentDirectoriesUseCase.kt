@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.upnp.discovery.device
 
+import com.m3sv.plainupnp.core.persistence.CONTENT_DIRECTORY_TYPE
 import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
@@ -29,7 +30,7 @@ class ObserveContentDirectoriesUseCase @Inject constructor(
         val device = deviceDisplay.device
         return database
             .selectedDeviceQueries
-            .selectDeviceByIdentity(device.fullIdentity)
+            .selectDeviceByIdentity(CONTENT_DIRECTORY_TYPE, device.fullIdentity)
             .executeAsOneOrNull() != null
     }
 }
