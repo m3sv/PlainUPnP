@@ -26,8 +26,6 @@ object Versions {
 object ClasspathDependencies {
     const val androidTools = "com.android.tools.build:gradle:4.0.0"
     const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
-    const val navigationSafeArgs =
-        "androidx.navigation:navigation-safe-args-gradle-plugin:${Versions.navigation}"
 }
 
 object Dependencies {
