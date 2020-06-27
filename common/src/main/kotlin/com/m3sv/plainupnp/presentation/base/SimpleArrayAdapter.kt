@@ -1,6 +1,7 @@
 package com.m3sv.plainupnp.presentation.base
 
 import android.content.Context
+import android.database.DataSetObserver
 import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
@@ -11,10 +12,21 @@ import com.m3sv.plainupnp.common.StatefulComponent
 
 class SimpleArrayAdapter<T : Parcelable> constructor(
     context: Context,
-    private val key: String
+    private val key: String,
+    private val onDataSetChanged: () -> Unit
 ) : ArrayAdapter<T>(context, android.R.layout.simple_list_item_1), StatefulComponent {
 
     private var items: ArrayList<out T> = ArrayList()
+
+    private val observer = object : DataSetObserver() {
+        override fun onChanged() {
+            onDataSetChanged()
+        }
+    }
+
+    init {
+        registerDataSetObserver(observer)
+    }
 
     fun setNewItems(items: List<T>) {
         if (this.items != items) {
@@ -37,8 +49,13 @@ class SimpleArrayAdapter<T : Parcelable> constructor(
     companion object {
         inline fun <reified T : Parcelable> init(
             context: Context,
-            key: String
-        ): SimpleArrayAdapter<T> = SimpleArrayAdapter(context, key)
+            key: String,
+            noinline onDataSetChanged: () -> Unit
+        ): SimpleArrayAdapter<T> = SimpleArrayAdapter(
+            context = context,
+            key = key,
+            onDataSetChanged = onDataSetChanged
+        )
     }
 
     override fun getFilter(): Filter = object : Filter() {

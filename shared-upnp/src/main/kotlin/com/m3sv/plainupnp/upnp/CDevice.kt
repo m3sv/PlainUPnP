@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.upnp
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import org.fourthline.cling.model.meta.Device
+import org.fourthline.cling.model.meta.LocalDevice
 import org.fourthline.cling.model.types.UDAServiceType
 import timber.log.Timber
 
@@ -26,4 +27,8 @@ data class CDevice(val device: Device<*, *, *>) : UpnpDevice {
 
     override fun asService(service: String): Boolean =
         device.findService(UDAServiceType(service)) != null
+
+    override val identity: String = device.identity.udn.identifierString
+    override val fullIdentity: String = "${identity}:${displayString}:${friendlyName}"
+    override val isLocal: Boolean = device is LocalDevice
 }

@@ -22,5 +22,5 @@ dependencies {
     testImplementation Dependencies.test.mockito
 
     implementation project(":common")
-
+    implementation project(":core-persistence")
 }

@@ -6,6 +6,8 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.ShutdownNotifier
 import com.m3sv.plainupnp.common.FilterDelegate
+import com.m3sv.plainupnp.upnp.discovery.device.ObserveContentDirectoriesUseCase
+import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -17,6 +19,8 @@ class MainViewModel @Inject constructor(
     private val filterDelegate: FilterDelegate,
     // TODO research why Dagger doesn't like Kotlin generic, use concrete implementation for now
     private val deviceDisplayMapper: DeviceDisplayMapper,
+    observeContentDirectories: ObserveContentDirectoriesUseCase,
+    observeRenderersUseCase: ObserveRenderersUseCase,
     shutdownNotifier: ShutdownNotifier
 ) : ViewModel() {
 
@@ -30,14 +34,12 @@ class MainViewModel @Inject constructor(
         .upnpRendererState
         .asLiveData()
 
-    val renderers = upnpManager
-        .renderers
-        .map { renderers -> deviceDisplayMapper.map(renderers) }
+    val renderers = observeRenderersUseCase()
+        .map { bundle -> deviceDisplayMapper.map(bundle) }
         .asLiveData()
 
-    val contentDirectories = upnpManager
-        .contentDirectories
-        .map { directories -> deviceDisplayMapper.map(directories) }
+    val contentDirectories = observeContentDirectories()
+        .map { bundle -> deviceDisplayMapper.map(bundle) }
         .asLiveData()
 
     fun moveTo(progress: Int) {

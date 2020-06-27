@@ -1,0 +1,12 @@
+CREATE TABLE selectedDevices (
+identity TEXT PRIMARY KEY NOT NULL);
+
+selectAllDevices:
+SELECT * FROM selectedDevices;
+
+insertSelectedDevice:
+INSERT OR IGNORE INTO selectedDevices(identity) VALUES (?);
+
+selectDeviceByIdentity:
+SELECT * FROM selectedDevices WHERE identity = ?;
+

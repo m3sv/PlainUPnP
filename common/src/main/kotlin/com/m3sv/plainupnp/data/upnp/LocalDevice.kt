@@ -1,5 +1,7 @@
 package com.m3sv.plainupnp.data.upnp
 
+const val PLAINUPNP_LOCAL_DEVICE = "plainupnp-localdevice"
+
 class LocalDevice(
     override val displayString: String = "",
     override val friendlyName: String = "Play locally",
@@ -11,5 +13,9 @@ class LocalDevice(
     override fun printService() {
         // do nothing
     }
+
+    override val identity: String = PLAINUPNP_LOCAL_DEVICE
+    override val isLocal: Boolean = true
+    override val fullIdentity: String = "${identity}:${displayString}:${friendlyName}"
 }
 

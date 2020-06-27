@@ -199,17 +199,39 @@ class ControlsFragment : BaseFragment() {
         bottomSheetCallback.addOnSlideAction(action)
     }
 
-    private fun setRenderers(items: List<SpinnerItem>) {
-        rendererAdapter.setNewItems(items)
+    private fun setRenderers(bundle: SpinnerItemsBundle) {
+        selectedRendererIndex = bundle.selectedDeviceIndex
+        selectedRendererName = bundle.selectedDeviceName
+        rendererAdapter.setNewItems(bundle.devices)
     }
 
-    private fun setContentDirectories(items: List<SpinnerItem>) {
-        contentDirectoriesAdapter.setNewItems(items)
+    private fun setContentDirectories(bundle: SpinnerItemsBundle) {
+        selectedContentDirectoryIndex = bundle.selectedDeviceIndex
+        selectedContentDirectoryName = bundle.selectedDeviceName
+        contentDirectoriesAdapter.setNewItems(bundle.devices)
     }
+
+
+    private var selectedContentDirectoryName: String? = null
+    private var selectedContentDirectoryIndex: Int = -1
+
+    private var selectedRendererName: String? = null
+    private var selectedRendererIndex: Int = -1
 
     private fun initAdapters() {
-        rendererAdapter = SimpleArrayAdapter.init(requireContext(), RENDERERS_ADAPTER_KEY)
-        contentDirectoriesAdapter = SimpleArrayAdapter.init(requireContext(), CONTENT_ADAPTER_KEY)
+        rendererAdapter = SimpleArrayAdapter.init(requireContext(), RENDERERS_ADAPTER_KEY) {
+            if (selectedRendererIndex != -1 && selectedRendererName != null) {
+                binding.pickers.mainRendererDevicePicker.setText(selectedRendererName)
+                viewModel.selectRenderer(selectedRendererIndex)
+            }
+        }
+
+        contentDirectoriesAdapter = SimpleArrayAdapter.init(requireContext(), CONTENT_ADAPTER_KEY) {
+            if (selectedContentDirectoryIndex != -1 && selectedContentDirectoryName != null) {
+                binding.pickers.mainContentDevicePicker.setText(selectedContentDirectoryName)
+                viewModel.selectContentDirectory(selectedContentDirectoryIndex)
+            }
+        }
     }
 
     private fun handleRendererState(rendererState: UpnpRendererState?) {
@@ -323,14 +345,6 @@ class ControlsFragment : BaseFragment() {
     private fun restoreBackPressedCallbackState(savedInstanceState: Bundle) {
         onBackPressedCallback.isEnabled = savedInstanceState.getBoolean(BACK_PRESSED_CALLBACK_KEY)
     }
-
-    private fun List<SpinnerItem>.addEmptyItem() =
-        this.toMutableList().apply {
-            add(
-                0,
-                SpinnerItem("")
-            )
-        }.toList()
 
     companion object {
         private const val RENDERERS_ADAPTER_KEY = "renderers"

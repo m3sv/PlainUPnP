@@ -1,6 +1,7 @@
 apply from: "../scripts/android-application.gradle"
 apply from: "../scripts/cling.gradle"
 apply plugin: 'kotlin-kapt'
+apply plugin: 'com.squareup.sqldelight'
 
 android {
     packagingOptions {
@@ -60,12 +61,15 @@ dependencies {
     implementation Dependencies.nanohttpd.core
     implementation Dependencies.nanohttpd.webserver
 
+    implementation Dependencies.sqlDelightAndroidDriver
+
     testImplementation Dependencies.coroutines.test
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
     testImplementation Dependencies.androidx.coreTesting
 
     implementation project(':common')
+    implementation project(':core-persistence')
     implementation project(':feature-home')
     implementation project(':feature-settings')
     implementation project(':shared-resources')
