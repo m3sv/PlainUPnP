@@ -13,10 +13,12 @@ fun Context.updateTheme() {
     val systemBasedThemeKey = getString(R.string.system_theme_value)
     val batterySaverThemeKey = getString(R.string.battery_saver_theme_value)
 
-    val value = PreferenceManager.getDefaultSharedPreferences(this).getString(
-        setThemeKey,
-        systemBasedThemeKey
-    )
+    val value = PreferenceManager
+        .getDefaultSharedPreferences(this)
+        .getString(
+            setThemeKey,
+            systemBasedThemeKey
+        )
 
     val defaultNightMode = when (value) {
         darkThemeKey -> AppCompatDelegate.MODE_NIGHT_YES

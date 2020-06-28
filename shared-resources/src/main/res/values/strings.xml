@@ -9,7 +9,7 @@
     <string name="about_license" translatable="false">GPLv3</string>
     <string name="link_license" translatable="false">http://www.gnu.org/licenses/gpl-3.0.html</string>
     <string name="source_url" translatable="false">https://github.com/m3sv/PlainUPnP</string>
-    <string name="set_theme_key" translatable="false">dark_theme_enabled_key</string>
+    <string name="set_theme_key" translatable="false">set_theme_key</string>
     <string name="empty_content" translatable="false">-</string>
     <string name="udn" translatable="false">UDN</string>
     <string name="desc_xml" translatable="false">Description XML</string>

@@ -2,6 +2,7 @@ package com.m3sv.plainupnp
 
 import android.app.Application
 import android.os.StrictMode
+import com.m3sv.plainupnp.common.util.generateUdn
 import com.m3sv.plainupnp.common.util.updateTheme
 import com.m3sv.plainupnp.di.AppComponent
 import com.m3sv.plainupnp.di.DaggerAppComponent
@@ -29,10 +30,11 @@ class App : Application(),
     override val settingsComponent: SettingsComponent
         get() = appComponent.settingsSubcomponent().create()
 
-
     override fun onCreate() {
         super.onCreate()
         updateTheme()
+        generateUdn()
+
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
             StrictMode.setThreadPolicy(

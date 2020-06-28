@@ -2,14 +2,13 @@ package com.m3sv.plainupnp.upnp
 
 import android.content.Context
 import androidx.preference.PreferenceManager
+import com.m3sv.plainupnp.common.util.getUdn
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
 import org.fourthline.cling.model.DefaultServiceManager
 import org.fourthline.cling.model.meta.*
 import org.fourthline.cling.model.types.UDADeviceType
-import org.fourthline.cling.model.types.UDN
 import timber.log.Timber
-import java.util.*
 
 object LocalUpnpDevice {
     fun getLocalDevice(
@@ -52,8 +51,10 @@ object LocalUpnpDevice {
             iconInputStream
         )
 
+        val udn = context.getUdn() ?: error("Empty UDN")
+
         return LocalDevice(
-            DeviceIdentity(UDN.valueOf(UUID(0, 10).toString())),
+            DeviceIdentity(udn),
             type,
             details,
             icon,
@@ -61,17 +62,24 @@ object LocalUpnpDevice {
         )
     }
 
-    private fun getLocalService(context: Context) = getLocalService()
-        .apply {
-            manager = DefaultServiceManager(this, ContentDirectoryService::class.java).apply {
-                (implementation as ContentDirectoryService).let { service ->
-                    service.context = context
-                    service.baseURL = "${getLocalIpAddress(context).hostAddress}:$PORT"
-                    service.sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-                }
+    private fun getLocalService(context: Context): LocalService<ContentDirectoryService> {
+        val serviceBinder = AnnotationLocalServiceBinder()
+        val contentDirectoryService =
+            serviceBinder.read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>
+
+        val serviceManager = DefaultServiceManager(
+            contentDirectoryService,
+            ContentDirectoryService::class.java
+        ).apply {
+            (implementation as ContentDirectoryService).let { service ->
+                service.context = context
+                service.baseURL = "${getLocalIpAddress(context).hostAddress}:$PORT"
+                service.sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
             }
         }
 
-    private fun getLocalService() = (AnnotationLocalServiceBinder()
-        .read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>)
+        contentDirectoryService.manager = serviceManager
+
+        return contentDirectoryService
+    }
 }
