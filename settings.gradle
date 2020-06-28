@@ -1,3 +1,4 @@
+include ':core-persistence'
 include ':shared-resources'
 include ':app',
         ':common',

@@ -12,8 +12,7 @@ buildscript {
     dependencies {
         classpath ClasspathDependencies.androidTools
         classpath ClasspathDependencies.kotlinGradle
-        classpath ClasspathDependencies.navigationSafeArgs
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath ClasspathDependencies.sqlDelight
     }
 }
 

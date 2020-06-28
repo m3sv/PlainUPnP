@@ -1,9 +1,9 @@
-package com.m3sv.plainupnp.upnp
+package com.m3sv.plainupnp.upnp.discovery.device
 
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
-import com.m3sv.plainupnp.upnp.discovery.device.DeviceDiscoveryObserver
+import com.m3sv.plainupnp.upnp.UpnpServiceController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking

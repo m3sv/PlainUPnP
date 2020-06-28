@@ -2,6 +2,9 @@ package com.m3sv.plainupnp.upnp.manager
 
 
 import com.m3sv.plainupnp.common.util.formatTime
+import com.m3sv.plainupnp.core.persistence.CONTENT_DIRECTORY_TYPE
+import com.m3sv.plainupnp.core.persistence.Database
+import com.m3sv.plainupnp.core.persistence.RENDERER_TYPE
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.LocalDevice
 import com.m3sv.plainupnp.data.upnp.UpnpItemType
@@ -10,6 +13,8 @@ import com.m3sv.plainupnp.upnp.*
 import com.m3sv.plainupnp.upnp.actions.*
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
+import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscoveryObservable
+import com.m3sv.plainupnp.upnp.discovery.device.RendererDiscoveryObservable
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import kotlinx.coroutines.*
@@ -42,6 +47,7 @@ class UpnpManagerImpl @Inject constructor(
     private val getTransportInfo: GetTransportInfoAction,
     private val getPositionInfo: GetPositionInfoAction,
     private val avServiceFinder: AvServiceFinder,
+    private val database: Database,
     upnpNavigator: UpnpNavigator
 ) : UpnpManager,
     UpnpNavigator by upnpNavigator {
@@ -69,6 +75,11 @@ class UpnpManagerImpl @Inject constructor(
 
         val contentDirectory = contentDirectory.currentContentDirectories[position].device
 
+        database.selectedDeviceQueries.insertSelectedDevice(
+            CONTENT_DIRECTORY_TYPE,
+            contentDirectory.fullIdentity
+        )
+
         serviceController.selectedContentDirectory = contentDirectory
         navigateTo(Destination.Home)
     }
@@ -82,6 +93,11 @@ class UpnpManagerImpl @Inject constructor(
         val renderer = renderer.currentRenderers[position].device
 
         isLocal = renderer is LocalDevice
+
+        database.selectedDeviceQueries.insertSelectedDevice(
+            RENDERER_TYPE,
+            renderer.fullIdentity
+        )
 
         if (!isLocal) {
             serviceController.selectedRenderer = renderer
