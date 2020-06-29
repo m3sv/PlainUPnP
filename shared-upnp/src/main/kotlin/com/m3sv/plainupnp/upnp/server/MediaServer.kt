@@ -82,8 +82,7 @@ class MediaServer @Inject constructor(private val context: Context) :
                 .query(
                     contentUri, columns,
                     WHERE_CLAUSE, whereVal, null
-                )
-                ?.use { cursor ->
+                )?.use { cursor ->
                     if (cursor.moveToFirst()) {
                         val fileId =
                             cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))

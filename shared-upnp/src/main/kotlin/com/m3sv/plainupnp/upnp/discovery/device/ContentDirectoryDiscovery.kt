@@ -6,8 +6,10 @@ import com.m3sv.plainupnp.upnp.filters.CallableContentDirectoryFilter
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import org.fourthline.cling.UpnpService
 
-class ContentDirectoryDiscovery(controller: UpnpServiceController, upnpService: UpnpService) :
-    DeviceDiscovery(controller, upnpService = upnpService) {
+class ContentDirectoryDiscovery(
+    controller: UpnpServiceController,
+    upnpService: UpnpService
+) : DeviceDiscovery(controller, upnpService = upnpService) {
 
     override val callableFilter: CallableFilter =
         CallableContentDirectoryFilter()
@@ -24,7 +26,7 @@ class ContentDirectoryDiscovery(controller: UpnpServiceController, upnpService: 
     }
 
     override fun removed(device: UpnpDevice) {
-        if (controller.selectedContentDirectory != null && device.equals(controller.selectedContentDirectory))
+        if (controller.selectedContentDirectory == device)
             controller.selectedContentDirectory = null
     }
 }

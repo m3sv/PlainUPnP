@@ -3,45 +3,25 @@ package com.m3sv.plainupnp.upnp.trackmetadata
 import android.util.Xml
 import org.xml.sax.Attributes
 import org.xml.sax.InputSource
-import org.xml.sax.SAXException
 import org.xml.sax.XMLReader
 import org.xml.sax.helpers.DefaultHandler
 import org.xmlpull.v1.XmlSerializer
 import timber.log.Timber
 import java.io.StringReader
 import java.io.StringWriter
-import javax.xml.parsers.ParserConfigurationException
 import javax.xml.parsers.SAXParserFactory
 
 class TrackMetadata() {
 
     private var id: String? = null
-
-    var title: String? = null
-        private set
-
-    var artist: String? = null
-        private set
-
+    private var title: String? = null
+    private var artist: String? = null
     private var genre: String? = null
     private var artURI: String? = null
     private var res: String? = null
     private var itemClass: String? = null
-    private var xmlreader: XMLReader? = null
-    private val upnpItemHandler: UpnpItemHandler
-
-    init {
-        upnpItemHandler = UpnpItemHandler()
-        try {
-            xmlreader = initializeReader()
-        } catch (e: Exception) {
-            Timber.e(e)
-        }
-    }
-
-    constructor(xml: String?) : this() {
-        parseTrackMetadata(xml)
-    }
+    private var xmlreader: XMLReader = SAXParserFactory.newInstance().newSAXParser().xmlReader
+    private val upnpItemHandler: UpnpItemHandler = UpnpItemHandler()
 
     constructor(
         id: String?,
@@ -61,13 +41,6 @@ class TrackMetadata() {
         this.itemClass = itemClass
     }
 
-    @Throws(
-        ParserConfigurationException::class,
-        SAXException::class
-    )
-    private fun initializeReader(): XMLReader =
-        SAXParserFactory.newInstance().newSAXParser().xmlReader
-
     private fun parseTrackMetadata(xml: String?) {
         if (xml == null || xml == NOT_IMPLEMENTED) return
 
@@ -81,7 +54,6 @@ class TrackMetadata() {
                 Timber.w("XML : %s", xml)
             }
         }
-
     }
 
     //start a tag called "root"

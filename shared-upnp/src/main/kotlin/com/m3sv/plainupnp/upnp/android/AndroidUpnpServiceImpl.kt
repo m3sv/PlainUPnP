@@ -1,21 +1,17 @@
 package com.m3sv.plainupnp.upnp.android
 
 import android.content.Context
-import com.m3sv.plainupnp.upnp.LocalUpnpDevice
+import com.m3sv.plainupnp.upnp.getLocalDevice
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 
 class AndroidUpnpServiceImpl(
     context: Context,
-    androidUpnpServiceConfiguration: AndroidUpnpServiceConfiguration
-) : UpnpServiceImpl(androidUpnpServiceConfiguration, context) {
+    configuration: AndroidUpnpServiceConfiguration,
+    resourceProvider: LocalServiceResourceProvider
+) : UpnpServiceImpl(configuration, context) {
 
     init {
-        val localUpnpDevice = LocalUpnpDevice.getLocalDevice(
-            LocalServiceResourceProvider(context),
-            context
-        )
-
-        registry.addDevice(localUpnpDevice)
+        registry.addDevice(getLocalDevice(resourceProvider, context))
         controlPoint.search()
     }
 

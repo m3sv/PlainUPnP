@@ -25,7 +25,7 @@ class RendererDiscovery(
     }
 
     override fun removed(device: UpnpDevice) {
-        if (controller.selectedRenderer != null && device.equals(controller.selectedRenderer))
+        if (controller.selectedRenderer == device)
             controller.selectedRenderer = null
     }
 }

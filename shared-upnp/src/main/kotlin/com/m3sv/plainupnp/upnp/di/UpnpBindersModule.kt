@@ -7,6 +7,7 @@ import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import com.m3sv.plainupnp.upnp.manager.UpnpManagerImpl
 import com.m3sv.plainupnp.upnp.manager.UpnpVolumeManager
 import com.m3sv.plainupnp.upnp.manager.UpnpVolumeManagerImpl
+import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -45,16 +46,18 @@ abstract class UpnpBindersModule {
         @Provides
         @JvmStatic
         @Singleton
-        fun provideUpnpService(context: Context): UpnpService = AndroidUpnpServiceImpl(
+        fun provideUpnpService(
+            context: Context,
+            localServiceResourceProvider: LocalServiceResourceProvider
+        ): UpnpService = AndroidUpnpServiceImpl(
             context,
-            PlainUpnpServiceConfiguration()
+            PlainUpnpServiceConfiguration(),
+            localServiceResourceProvider
         )
 
         @Provides
         @JvmStatic
         @Singleton
-        fun provideControlPoint(upnpService: UpnpService): ControlPoint {
-            return upnpService.controlPoint
-        }
+        fun provideControlPoint(upnpService: UpnpService): ControlPoint = upnpService.controlPoint
     }
 }
