@@ -62,12 +62,6 @@ class UpnpManagerImpl @Inject constructor(
     private val updateDispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
 
     override fun selectContentDirectory(position: Int) {
-        if (position !in contentDirectory.currentContentDirectories.indices) {
-            navigateTo(Destination.Empty)
-            serviceController.selectedContentDirectory = null
-            return
-        }
-
         val contentDirectory = contentDirectory.currentContentDirectories[position].device
 
         database.selectedDeviceQueries.insertSelectedDevice(
@@ -80,11 +74,6 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override fun selectRenderer(position: Int) {
-        if (position !in renderer.currentRenderers.indices) {
-            serviceController.selectedRenderer = null
-            return
-        }
-
         val renderer = renderer.currentRenderers[position].device
 
         isLocal = renderer is LocalDevice
