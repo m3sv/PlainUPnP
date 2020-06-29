@@ -1,7 +1,7 @@
-package com.m3sv.plainupnp.upnp.actions
+package com.m3sv.plainupnp.upnp.actions.renderingcontrol
 
-import com.m3sv.plainupnp.upnp.RendererServiceFinder
-import org.fourthline.cling.UpnpService
+import com.m3sv.plainupnp.upnp.actions.Action
+import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
@@ -12,14 +12,20 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 
-class SetVolumeAction @Inject constructor(
-    service: UpnpService,
-    serviceFinder: RendererServiceFinder
-) : RenderingAction(service, serviceFinder) {
+class SetVolumeAction @Inject constructor(controlPoint: ControlPoint) :
+    Action<Unit, Unit>(controlPoint) {
 
-    suspend operator fun invoke(volume: Int) = suspendCoroutine<Int> { continuation ->
-        executeRenderingAction {
-            object : SetVolume(this, volume.toLong()) {
+    // Don't know what is happening here, but Kotlin compiler complains about this
+    // Put empty method here, figure out this later
+    override suspend fun invoke(service: Service<*, *>, vararg arguments: Unit) {
+        error("Use method with Int arguments")
+    }
+
+    suspend operator fun invoke(service: Service<*, *>, vararg arguments: Int): Int =
+        suspendCoroutine<Int> { continuation ->
+            val volume = arguments[0]
+
+            val action = object : SetVolume(service, volume.toLong()) {
                 override fun failure(
                     invocation: ActionInvocation<out Service<*, *>>?,
                     operation: UpnpResponse?,
@@ -34,7 +40,7 @@ class SetVolumeAction @Inject constructor(
                     continuation.resume(volume)
                 }
             }
-        }
-    }
 
+            controlPoint.execute(action)
+        }
 }

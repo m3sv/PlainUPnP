@@ -1,15 +1,18 @@
 package com.m3sv.plainupnp.upnp
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import com.m3sv.plainupnp.upnp.store.ContentState
+import com.m3sv.plainupnp.upnp.store.UpnpDirectory
+import com.m3sv.plainupnp.upnp.store.UpnpStateStore
+import org.fourthline.cling.model.meta.Service
 import java.util.*
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 interface UpnpNavigator {
-    fun navigateTo(destination: Destination)
+    fun navigateTo(
+        destination: Destination,
+        contentDirectoryCommand: ContentDirectoryCommand?,
+        contentDirectoryService: ClingService?
+    )
 }
 
 sealed class Destination {
@@ -24,27 +27,36 @@ data class BrowseToModel(
     val directoryName: String
 )
 
-class UpnpNavigatorImpl @Inject constructor(
-    private val serviceController: UpnpServiceController,
-    private val stateStore: UpnpStateStore
-) : UpnpNavigator, CoroutineScope {
-
-    override val coroutineContext: CoroutineContext = Dispatchers.Default + Job()
+class UpnpNavigatorImpl @Inject constructor(private val stateStore: UpnpStateStore) :
+    UpnpNavigator {
 
     private var directories = Stack<ContentState.Success>()
 
     private var currentState: ContentState.Success? = null
 
-    override fun navigateTo(destination: Destination) {
+    override fun navigateTo(
+        destination: Destination,
+        contentDirectoryCommand: ContentDirectoryCommand?,
+        contentDirectoryService: ClingService?
+    ) {
         when (destination) {
             is Destination.Home -> {
                 setContentState(ContentState.Loading)
-                browse(BrowseToModel(HOME_DIRECTORY_ID, HOME_DIRECTORY_NAME), clearBackStack = true)
+                browse(
+                    requireNotNull(contentDirectoryCommand),
+                    requireNotNull(contentDirectoryService).service,
+                    BrowseToModel(HOME_DIRECTORY_ID, HOME_DIRECTORY_NAME),
+                    clearBackStack = true
+                )
             }
 
             is Destination.Path -> {
                 setContentState(ContentState.Loading)
-                browse(BrowseToModel(destination.id, destination.directoryName))
+                browse(
+                    requireNotNull(contentDirectoryCommand),
+                    requireNotNull(contentDirectoryService).service,
+                    BrowseToModel(destination.id, destination.directoryName)
+                )
             }
 
             is Destination.Back -> {
@@ -59,8 +71,13 @@ class UpnpNavigatorImpl @Inject constructor(
         }
     }
 
-    private fun browse(model: BrowseToModel, clearBackStack: Boolean = false) {
-        serviceController.createContentDirectoryCommand()?.browse(model.id, null) { directories ->
+    private fun browse(
+        contentDirectoryCommand: ContentDirectoryCommand,
+        contentDirectoryService: Service<*, *>?,
+        model: BrowseToModel,
+        clearBackStack: Boolean = false
+    ) {
+        contentDirectoryCommand.browse(contentDirectoryService, model.id, null) { directories ->
             val directory = if (model.id == HOME_DIRECTORY_ID) {
                 UpnpDirectory.Root(HOME_DIRECTORY_NAME, directories ?: listOf())
             } else {
@@ -88,9 +105,7 @@ class UpnpNavigatorImpl @Inject constructor(
     }
 
     private fun setContentState(state: ContentState) {
-        launch {
-            stateStore.setState(state)
-        }
+        stateStore.setState(state)
     }
 
     private fun addCurrentStateToBackStack() {

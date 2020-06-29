@@ -27,7 +27,7 @@ class MainViewModel @Inject constructor(
     val shutdown: LiveData<Unit> = shutdownNotifier.flow.asLiveData()
 
     val volume = volumeManager
-        .observeVolume()
+        .volumeFlow
         .asLiveData()
 
     val upnpState = upnpManager

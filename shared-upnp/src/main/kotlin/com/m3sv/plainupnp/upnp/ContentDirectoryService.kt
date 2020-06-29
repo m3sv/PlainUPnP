@@ -5,6 +5,9 @@ import android.content.SharedPreferences
 import android.provider.MediaStore
 import com.m3sv.plainupnp.upnp.discovery.file.FileHierarchyBuilder
 import com.m3sv.plainupnp.upnp.mediacontainers.*
+import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_AUDIO
+import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_IMAGE
+import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_VIDEO
 import kotlinx.coroutines.*
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode

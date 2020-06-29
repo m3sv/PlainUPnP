@@ -2,16 +2,19 @@ package com.m3sv.plainupnp.upnp.discovery.device
 
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
+import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
-import com.m3sv.plainupnp.upnp.UpnpServiceController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.callbackFlow
+import timber.log.Timber
 import javax.inject.Inject
 
 
-class ContentDirectoryDiscoveryObservable @Inject constructor(private val controller: UpnpServiceController) {
+class ContentDirectoryDiscoveryObservable @Inject constructor(private val contentDirectoryDiscovery: ContentDirectoryDiscovery) {
+
+    var selectedContentDirectory: UpnpDevice? = null
 
     private val contentDirectories = LinkedHashSet<DeviceDisplay>()
 
@@ -19,7 +22,8 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(private val contro
         get() = contentDirectories.toList()
 
     @ExperimentalCoroutinesApi
-    fun subscribe() = callbackFlow<List<DeviceDisplay>> {
+    fun observe() = callbackFlow<List<DeviceDisplay>> {
+        contentDirectoryDiscovery.startObserving()
         val callback = object :
             DeviceDiscoveryObserver {
             override fun addedDevice(event: UpnpDeviceEvent) {
@@ -35,6 +39,7 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(private val contro
             private fun handleEvent(event: UpnpDeviceEvent) {
                 when (event) {
                     is UpnpDeviceEvent.Added -> {
+                        Timber.d("Content directory added: ${event.upnpDevice.displayString}")
                         contentDirectories += DeviceDisplay(
                             event.upnpDevice,
                             false,
@@ -43,6 +48,8 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(private val contro
                     }
 
                     is UpnpDeviceEvent.Removed -> {
+                        Timber.d("Content directory removed: ${event.upnpDevice.displayString}")
+
                         val device = DeviceDisplay(
                             event.upnpDevice,
                             false,
@@ -51,6 +58,9 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(private val contro
 
                         if (contentDirectories.contains(device))
                             contentDirectories -= device
+
+                        if (event.upnpDevice == selectedContentDirectory)
+                            selectedContentDirectory = null
                     }
                 }
             }
@@ -61,8 +71,8 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(private val contro
             }
         }
 
-        controller.contentDirectoryDiscovery.addObserver(callback)
+        contentDirectoryDiscovery.addObserver(callback)
 
-        awaitClose { controller.contentDirectoryDiscovery.removeObserver(callback) }
+        awaitClose { contentDirectoryDiscovery.removeObserver(callback) }
     }
 }

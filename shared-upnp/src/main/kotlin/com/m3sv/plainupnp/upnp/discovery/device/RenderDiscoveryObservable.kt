@@ -1,11 +1,7 @@
 package com.m3sv.plainupnp.upnp.discovery.device
 
 
-import com.m3sv.plainupnp.data.upnp.DeviceDisplay
-import com.m3sv.plainupnp.data.upnp.DeviceType
-import com.m3sv.plainupnp.data.upnp.LocalDevice
-import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
-import com.m3sv.plainupnp.upnp.UpnpServiceController
+import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.resourceproviders.UpnpResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
@@ -16,9 +12,11 @@ import javax.inject.Inject
 
 
 class RendererDiscoveryObservable @Inject constructor(
-    private val controller: UpnpServiceController,
+    private val rendererDiscovery: RendererDiscovery,
     upnpResourceProvider: UpnpResourceProvider
 ) {
+    var selectedRenderer: UpnpDevice? = null
+
     private val renderers =
         LinkedHashSet<DeviceDisplay>(listOf(DeviceDisplay(LocalDevice(upnpResourceProvider.playLocally))))
 
@@ -27,6 +25,7 @@ class RendererDiscoveryObservable @Inject constructor(
 
     @ExperimentalCoroutinesApi
     fun observe() = callbackFlow<List<DeviceDisplay>> {
+        rendererDiscovery.startObserving()
         val callback = object :
             DeviceDiscoveryObserver {
             override fun addedDevice(event: UpnpDeviceEvent) {
@@ -52,23 +51,28 @@ class RendererDiscoveryObservable @Inject constructor(
 
                     is UpnpDeviceEvent.Removed -> {
                         Timber.d("Renderer removed: ${event.upnpDevice.displayString}")
-                        renderers -= DeviceDisplay(
+                        val device = DeviceDisplay(
                             event.upnpDevice,
                             false,
                             DeviceType.RENDERER
                         )
+
+                        if (renderers.contains(device))
+                            renderers -= device
+
+                        if (event.upnpDevice == selectedRenderer)
+                            selectedRenderer = null
                     }
                 }
             }
 
             private fun sendRenderers() {
-                if (!isClosedForSend)
-                    sendBlocking(currentRenderers)
+                if (!isClosedForSend) sendBlocking(currentRenderers)
             }
         }
 
-        controller.rendererDiscovery.addObserver(callback)
+        rendererDiscovery.addObserver(callback)
         sendBlocking(currentRenderers)
-        awaitClose { controller.rendererDiscovery.removeObserver(callback) }
+        awaitClose { rendererDiscovery.removeObserver(callback) }
     }
 }

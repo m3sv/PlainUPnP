@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.presentation.main
 
-import com.m3sv.plainupnp.upnp.manager.UpnpVolumeManager
+import com.m3sv.plainupnp.upnp.volume.UpnpVolumeManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope

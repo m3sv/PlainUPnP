@@ -1,5 +1,6 @@
-package com.m3sv.plainupnp.upnp.actions
+package com.m3sv.plainupnp.upnp.actions.avtransport
 
+import com.m3sv.plainupnp.upnp.actions.Action
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -12,15 +13,18 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 class GetMediaInfoAction @Inject constructor(controlPoint: ControlPoint) :
-    AvAction<Unit, MediaInfo?>(controlPoint) {
+    Action<Unit, MediaInfo?>(controlPoint) {
 
-    override suspend operator fun invoke(
+    override suspend fun invoke(
         service: Service<*, *>,
         vararg arguments: Unit
     ): MediaInfo? =
         suspendCoroutine { continuation ->
+            val tag = "AV"
+
             Timber.tag(tag).d("Get media info")
-            executeAVAction(object : GetMediaInfo(service) {
+
+            val action = object : GetMediaInfo(service) {
                 override fun received(
                     invocation: ActionInvocation<out Service<*, *>>?,
                     mediaInfo: MediaInfo?
@@ -37,7 +41,8 @@ class GetMediaInfoAction @Inject constructor(controlPoint: ControlPoint) :
                     Timber.tag(tag).e("Failed to get media info")
                     continuation.resume(null)
                 }
-            })
-        }
+            }
 
+            controlPoint.execute(action)
+        }
 }

@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.upnp
+package com.m3sv.plainupnp.upnp.util
 
 import android.content.Context
 import android.net.wifi.WifiManager
@@ -64,7 +64,8 @@ fun getLocalIpAddress(context: Context): InetAddress {
             return inetAddress
         }
 
-        inetAddress = getLocalIpAddressFromIntf("usb0")
+        inetAddress =
+            getLocalIpAddressFromIntf("usb0")
         if (inetAddress != null) {
             Timber.d("Got an ip for interface usb0")
             return inetAddress

@@ -7,10 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.common.Mapper
-import com.m3sv.plainupnp.upnp.ContentState
 import com.m3sv.plainupnp.upnp.Destination
-import com.m3sv.plainupnp.upnp.UpnpDirectory
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
+import com.m3sv.plainupnp.upnp.store.ContentState
+import com.m3sv.plainupnp.upnp.store.UpnpDirectory
 import com.m3sv.plainupnp.upnp.usecase.ObserveUpnpStateUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.map
@@ -35,7 +35,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun backPress() {
-        manager.navigateTo(Destination.Back)
+        manager.navigateTo(Destination.Back, null, null)
     }
 
     val state: LiveData<HomeState> = observeUpnpStateUseCase

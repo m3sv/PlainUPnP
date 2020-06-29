@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.presentation.home
 
 import com.m3sv.plainupnp.common.Mapper
-import com.m3sv.plainupnp.upnp.UpnpDirectory
+import com.m3sv.plainupnp.upnp.store.UpnpDirectory
 import javax.inject.Inject
 
 class HomeUpnpDirectoryMapper @Inject constructor(private val homeContentMapper: HomeContentMapper) :

@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.preference.PreferenceManager
 import com.m3sv.plainupnp.common.util.getUdn
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
+import com.m3sv.plainupnp.upnp.util.PORT
+import com.m3sv.plainupnp.upnp.util.getLocalIpAddress
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
 import org.fourthline.cling.model.DefaultServiceManager
 import org.fourthline.cling.model.meta.*
@@ -72,7 +74,9 @@ private fun getLocalService(context: Context): LocalService<ContentDirectoryServ
     ).apply {
         (implementation as ContentDirectoryService).let { service ->
             service.context = context
-            service.baseURL = "${getLocalIpAddress(context).hostAddress}:$PORT"
+            service.baseURL = "${getLocalIpAddress(
+                context
+            ).hostAddress}:$PORT"
             service.sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
         }
     }

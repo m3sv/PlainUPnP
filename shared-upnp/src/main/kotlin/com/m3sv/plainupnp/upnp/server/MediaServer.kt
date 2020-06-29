@@ -7,7 +7,7 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
-import com.m3sv.plainupnp.upnp.PORT
+import com.m3sv.plainupnp.upnp.util.PORT
 import fi.iki.elonen.NanoHTTPD
 import timber.log.Timber
 import java.nio.charset.StandardCharsets

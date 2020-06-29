@@ -119,7 +119,7 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
     }
 
     private fun observeState() {
-        viewModel.volume.observe(this) { volume ->
+        viewModel.volume.observe(this) { volume: Int ->
             volumeIndicator.volume = volume
         }
 

@@ -12,12 +12,22 @@ class ObserveContentDirectoriesUseCase @Inject constructor(
     private val upnpManager: UpnpManager,
     private val database: Database
 ) {
+    private var foundCached: Boolean = false
+
     operator fun invoke(): Flow<DeviceDisplayBundle> = upnpManager
         .contentDirectories
         .map { devices ->
-            val deviceIndex = devices.indexOfFirst(::queryDatabaseForIdentity)
-            val deviceName: String? =
-                if (deviceIndex != -1) devices[deviceIndex].device.friendlyName else null
+            var deviceIndex = -1
+            var deviceName: String? = null
+
+            if (!foundCached) {
+                deviceIndex = devices.indexOfFirst(::queryDatabaseForIdentity)
+                deviceName = if (deviceIndex != -1) {
+                    foundCached = true
+                    devices[deviceIndex].device.friendlyName
+                } else
+                    null
+            }
 
             DeviceDisplayBundle(
                 devices,

@@ -5,7 +5,6 @@ import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
-import org.fourthline.cling.model.types.UDAServiceType
 import org.fourthline.cling.support.contentdirectory.callback.Browse
 import org.fourthline.cling.support.model.BrowseFlag
 import org.fourthline.cling.support.model.DIDLContent
@@ -18,15 +17,14 @@ import java.util.concurrent.Future
 typealias ContentCallback = (List<ClingDIDLObject>?) -> Unit
 
 class ContentDirectoryCommand(
-    private val controlPoint: ControlPoint,
-    private val controller: UpnpServiceController
+    private val controlPoint: ControlPoint
 ) {
-    private val contentDirectoryService: Service<*, *>?
-        get() = if (controller.selectedContentDirectory == null)
-            null
-        else
-            (controller.selectedContentDirectory as CDevice).device.findService(UDAServiceType("ContentDirectory"))
-
+    //    private val contentDirectoryService: Service<*, *>?
+//        get() = if (controller.selectedContentDirectory == null)
+//            null
+//        else
+//            (controller.selectedContentDirectory as CDevice).device.findService(UDAServiceType("ContentDirectory"))
+//
     private fun buildContentList(
         parent: String?,
         didl: DIDLContent
@@ -58,12 +56,13 @@ class ContentDirectoryCommand(
     }
 
     fun browse(
+        contentDirectoryService: Service<*, *>?,
         directoryID: String,
         parent: String?,
         callback: ContentCallback
-    ): Future<*>? = contentDirectoryService?.let {
+    ): Future<*>? {
         return controlPoint.execute(object : Browse(
-            it,
+            contentDirectoryService,
             directoryID,
             BrowseFlag.DIRECT_CHILDREN,
             "*",

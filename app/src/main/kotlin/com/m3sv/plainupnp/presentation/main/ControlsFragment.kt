@@ -211,7 +211,6 @@ class ControlsFragment : BaseFragment() {
         contentDirectoriesAdapter.setNewItems(bundle.devices)
     }
 
-
     private var selectedContentDirectoryName: String? = null
     private var selectedContentDirectoryIndex: Int = -1
 

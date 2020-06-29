@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp.usecase
 
-import com.m3sv.plainupnp.upnp.ContentState
-import com.m3sv.plainupnp.upnp.UpnpStateStore
+import com.m3sv.plainupnp.upnp.store.ContentState
+import com.m3sv.plainupnp.upnp.store.UpnpStateStore
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

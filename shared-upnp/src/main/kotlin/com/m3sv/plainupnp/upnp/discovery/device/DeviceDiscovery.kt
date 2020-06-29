@@ -27,19 +27,16 @@ package com.m3sv.plainupnp.upnp.discovery.device
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
 import com.m3sv.plainupnp.upnp.CDevice
+import com.m3sv.plainupnp.upnp.CRegistryListener
 import com.m3sv.plainupnp.upnp.RegistryListener
-import com.m3sv.plainupnp.upnp.UpnpServiceController
 import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import org.fourthline.cling.UpnpService
 import timber.log.Timber
 import java.util.concurrent.CopyOnWriteArrayList
 
-abstract class DeviceDiscovery(
-    protected val controller: UpnpServiceController,
-    private val upnpService: UpnpService
-) {
+abstract class DeviceDiscovery(val upnpService: UpnpService) {
 
-    val browsingRegistryListener: BrowsingRegistryListener = BrowsingRegistryListener()
+    private val browsingRegistryListener: BrowsingRegistryListener = BrowsingRegistryListener()
 
     protected abstract val callableFilter: CallableFilter
 
@@ -48,27 +45,17 @@ abstract class DeviceDiscovery(
     inner class BrowsingRegistryListener : RegistryListener {
 
         override fun deviceAdded(device: UpnpDevice) {
-            Timber.v("New device detected : %s", device.displayString)
+            Timber.v("Device added: %s", device.displayString)
 
             if (device.isFullyHydrated && filter(device)) {
-                if (isSelected(device)) {
-                    Timber.i("Reselect device to refresh it")
-                    select(device, true)
-                }
-
                 notifyAdded(device)
             }
         }
 
         override fun deviceRemoved(device: UpnpDevice) {
-            Timber.v("Device removed : %s", device.friendlyName)
+            Timber.v("Device removed: %s", device.friendlyName)
 
             if (filter(device)) {
-                if (isSelected(device)) {
-                    Timber.i("Selected device have been removed")
-                    removed(device)
-                }
-
                 notifyRemoved(device)
             }
         }
@@ -130,11 +117,27 @@ abstract class DeviceDiscovery(
         return false
     }
 
-    protected abstract fun isSelected(device: UpnpDevice): Boolean
+    fun startObserving() {
+        upnpService.addListenerSafe(browsingRegistryListener)
+    }
 
-    protected abstract fun select(device: UpnpDevice)
+    fun stopObserving() {
+        upnpService.removeListenerSafe(browsingRegistryListener)
+    }
 
-    protected abstract fun select(device: UpnpDevice, force: Boolean)
+    fun UpnpService.addListenerSafe(registryListener: RegistryListener) {
+        registry?.run {
+            // Get ready for future device advertisements
+            addListener(CRegistryListener(registryListener))
 
-    protected abstract fun removed(device: UpnpDevice)
+            // Now add all devices to the list we already know about
+            devices?.forEach {
+                registryListener.deviceAdded(CDevice(it))
+            }
+        }
+    }
+
+    fun UpnpService.removeListenerSafe(registryListener: RegistryListener) {
+        registry?.removeListener(CRegistryListener(registryListener))
+    }
 }
