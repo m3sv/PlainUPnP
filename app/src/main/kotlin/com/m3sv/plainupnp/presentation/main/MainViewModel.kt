@@ -42,6 +42,10 @@ class MainViewModel @Inject constructor(
         .map { bundle -> deviceDisplayMapper.map(bundle) }
         .asLiveData()
 
+    val errors = upnpManager
+        .actionErrors
+        .asLiveData()
+
     fun moveTo(progress: Int) {
         viewModelScope.launch {
             upnpManager.seekTo(progress)

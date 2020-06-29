@@ -5,5 +5,10 @@ import java.util.concurrent.atomic.AtomicReference
 class Consumable<T>(value: T? = null) {
     private val atomicReference = AtomicReference(value)
 
-    fun consume(): T? = atomicReference.getAndSet(null)
+    fun consume(block: (T) -> Unit) {
+        val value = atomicReference.getAndSet(null)
+        if (value != null) {
+            block(value)
+        }
+    }
 }

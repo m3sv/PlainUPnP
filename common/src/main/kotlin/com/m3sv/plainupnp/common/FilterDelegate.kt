@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 // TODO move to a separate module
 interface FilterDelegate {
-    val state: Flow<Consumable<String>>
+    val state: Flow<String>
     suspend fun filter(text: String)
 }
 
@@ -18,11 +18,11 @@ interface FilterDelegate {
 @Singleton
 class Filter @Inject constructor() : FilterDelegate {
 
-    private val _state = BroadcastChannel<Consumable<String>>(BUFFERED)
+    private val textChannel = BroadcastChannel<String>(BUFFERED)
 
-    override val state: Flow<Consumable<String>> = _state.asFlow()
+    override val state: Flow<String> = textChannel.asFlow()
 
     override suspend fun filter(text: String) {
-        _state.send(Consumable(text))
+        textChannel.send(text)
     }
 }

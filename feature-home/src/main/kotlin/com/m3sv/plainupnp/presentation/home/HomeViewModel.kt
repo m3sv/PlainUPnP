@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.common.Mapper
 import com.m3sv.plainupnp.upnp.Destination
@@ -26,7 +25,9 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     // TODO Filtering must be done in a separate use case, refactor this
-    val filterText: LiveData<Consumable<String>> = filterDelegate.state.asLiveData()
+    val filterText: LiveData<String> = filterDelegate
+        .state
+        .asLiveData()
 
     fun itemClick(position: Int) {
         viewModelScope.launch {

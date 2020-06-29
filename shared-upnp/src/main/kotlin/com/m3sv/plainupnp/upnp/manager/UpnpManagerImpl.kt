@@ -1,6 +1,7 @@
 package com.m3sv.plainupnp.upnp.manager
 
 
+import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.util.formatTime
 import com.m3sv.plainupnp.core.persistence.CONTENT_DIRECTORY_TYPE
 import com.m3sv.plainupnp.core.persistence.Database
@@ -72,7 +73,7 @@ class UpnpManagerImpl @Inject constructor(
 
     private val updateDispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
 
-    override val actionErrors: Flow<String> = errorReporter.errorFlow
+    override val actionErrors: Flow<Consumable<String>> = errorReporter.errorFlow
 
     override fun selectContentDirectory(position: Int) {
         val contentDirectory = contentDirectoryObservable.currentContentDirectories[position].device
@@ -84,7 +85,13 @@ class UpnpManagerImpl @Inject constructor(
 
         contentDirectoryObservable.selectedContentDirectory = contentDirectory
 
-        safeNavigateTo { command, service -> navigateTo(Destination.Home, command, service) }
+        safeNavigateTo(ErrorReason.BROWSE_FAILED) { command, service ->
+            navigateTo(
+                destination = Destination.Home,
+                contentDirectoryCommand = command,
+                contentDirectoryService = service
+            )
+        }
     }
 
     override fun selectRenderer(position: Int) {

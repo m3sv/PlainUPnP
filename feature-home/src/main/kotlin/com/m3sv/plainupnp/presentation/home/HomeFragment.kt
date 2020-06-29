@@ -121,11 +121,9 @@ class HomeFragment : BaseFragment() {
             }
         }
 
-        viewModel.filterText.observe(viewLifecycleOwner) { textConsumable ->
+        viewModel.filterText.observe(viewLifecycleOwner) { text ->
             lifecycleScope.launch {
-                textConsumable.consume()?.let { text ->
-                    contentAdapter.filter(text)
-                }
+                contentAdapter.filter(text)
             }
         }
     }

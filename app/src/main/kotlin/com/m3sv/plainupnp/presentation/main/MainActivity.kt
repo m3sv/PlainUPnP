@@ -18,6 +18,7 @@ import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
 import androidx.navigation.ui.NavigationUI
 import androidx.transition.TransitionManager
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFade
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
@@ -72,6 +73,16 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         setContentView(binding.root)
 
         viewModel = getViewModel()
+        viewModel
+            .errors
+            .observe(this) { consumable ->
+                consumable.consume { value ->
+                    MaterialAlertDialogBuilder(this)
+                        .setMessage(value)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
+            }
         findNavController(R.id.nav_host_container).addOnDestinationChangedListener(this)
 
         observeState()
@@ -86,6 +97,7 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             }
 
         animateBottomDrawChanges()
+
         binding.controlsContainer.setOnClickListener { view ->
             hideSearchContainer(false)
             view.postDelayed({ controlsFragment.toggle() }, 50)

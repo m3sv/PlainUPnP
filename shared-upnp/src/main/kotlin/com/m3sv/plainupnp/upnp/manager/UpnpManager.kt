@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.upnp.manager
 
+import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.upnp.UpnpNavigator
@@ -10,7 +11,7 @@ interface UpnpManager : UpnpNavigator, UpnpVolumeManager {
     val renderers: Flow<List<DeviceDisplay>>
     val contentDirectories: Flow<List<DeviceDisplay>>
     val upnpRendererState: Flow<UpnpRendererState>
-    val actionErrors: Flow<String>
+    val actionErrors: Flow<Consumable<String>>
 
     fun selectContentDirectory(position: Int)
     fun selectRenderer(position: Int)
