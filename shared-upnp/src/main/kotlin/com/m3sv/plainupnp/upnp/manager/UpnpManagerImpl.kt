@@ -49,6 +49,7 @@ class UpnpManagerImpl @Inject constructor(
     private val database: Database,
     private val upnpRepository: UpnpRepository,
     private val volumeRepository: VolumeRepository,
+    private val errorReporter: ErrorReporter,
     upnpNavigator: UpnpNavigator
 ) : UpnpManager,
     UpnpNavigator by upnpNavigator,
@@ -70,6 +71,8 @@ class UpnpManagerImpl @Inject constructor(
     override val renderers: Flow<List<DeviceDisplay>> = rendererDiscoveryObservable.observe()
 
     private val updateDispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+
+    override val actionErrors: Flow<String> = errorReporter.errorFlow
 
     override fun selectContentDirectory(position: Int) {
         val contentDirectory = contentDirectoryObservable.currentContentDirectories[position].device
@@ -370,31 +373,56 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private inline fun safeNavigateTo(block: (ContentDirectoryCommand, ClingService) -> Unit) {
+    private inline fun safeNavigateTo(
+        errorReason: ErrorReason? = null,
+        block: (ContentDirectoryCommand, ClingService) -> Unit
+    ) {
         val command = ContentDirectoryCommand(upnpService.controlPoint)
+
         contentDirectoryObservable.selectedContentDirectory?.let { selectedDevice ->
             val service: Service<*, *>? =
                 (selectedDevice as CDevice).device.findService(UDAServiceType("ContentDirectory"))
 
-            if (service != null) block(command, ClingService(service))
+            if (service != null && service.hasActions()) block(
+                command,
+                ClingService(service)
+            ) else
+                errorReason.report()
         }
     }
 
-    private inline fun safeAvAction(block: (Service<*, *>) -> Unit) {
+    private inline fun safeAvAction(
+        errorReason: ErrorReason? = null,
+        block: (Service<*, *>) -> Unit
+    ) {
         rendererDiscoveryObservable.selectedRenderer?.let { renderer ->
-            val service: Service<*, *> =
+            val service: Service<*, *>? =
                 (renderer as CDevice).device.findService(UDAServiceType("AVTransport"))
-            block(service)
+
+            if (service != null && service.hasActions())
+                block(service)
+            else
+                errorReason.report()
         }
     }
 
-    private inline fun <T> safeRcAction(block: (Service<*, *>) -> T): T? {
+    private inline fun <T> safeRcAction(
+        errorReason: ErrorReason? = null,
+        block: (Service<*, *>) -> T
+    ): T? {
         return rendererDiscoveryObservable.selectedRenderer?.let { renderer ->
-            val service: Service<*, *> =
+            val service: Service<*, *>? =
                 (renderer as CDevice).device.findService(UDAServiceType("RenderingControl"))
 
-            block(service)
+            if (service != null && service.hasActions()) block(service) else {
+                errorReason.report()
+                null
+            }
         }
+    }
+
+    private fun ErrorReason?.report() {
+        if (this != null) errorReporter.report(this)
     }
 }
 

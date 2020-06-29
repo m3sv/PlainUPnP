@@ -10,6 +10,7 @@ interface UpnpManager : UpnpNavigator, UpnpVolumeManager {
     val renderers: Flow<List<DeviceDisplay>>
     val contentDirectories: Flow<List<DeviceDisplay>>
     val upnpRendererState: Flow<UpnpRendererState>
+    val actionErrors: Flow<String>
 
     fun selectContentDirectory(position: Int)
     fun selectRenderer(position: Int)

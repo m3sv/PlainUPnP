@@ -47,4 +47,5 @@
     <string name="light_theme_label">Licht</string>
     <string name="system_theme_label">Systeemgebaseerd</string>
     <string name="battery_saver_theme_label">Donker op batterijbesparing</string>
+    <string name="browse_failed">Bladeren door inhoud is mislukt. Probeer het apparaat opnieuw te selecteren. Als dat niet helpt, herstart apparaat en app.</string>
 </resources>
