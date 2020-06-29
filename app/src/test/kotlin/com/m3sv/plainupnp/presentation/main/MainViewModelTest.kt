@@ -13,6 +13,7 @@ import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.setMain
 import org.junit.Assert.assertTrue
@@ -42,7 +43,7 @@ internal class MainViewModelTest {
         }
 
         volumeManager = mock {
-            on { observeVolume() } doReturn flowOf()
+            on { volumeFlow } doReturn flowOf()
         }
 
         filterDelegate = Filter()
@@ -64,7 +65,7 @@ internal class MainViewModelTest {
     }
 
     @Test
-    fun `given shutdown event when listening then deliver shutdown event`() {
+    fun `given shutdown event when listening then deliver shutdown event`() = runBlocking {
         val observer = TestObserver<Unit>()
         viewModel.shutdown.observeForever(observer)
 
