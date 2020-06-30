@@ -38,7 +38,7 @@ class HomeFragment : BaseFragment() {
 
     private lateinit var binding: HomeFragmentBinding
 
-    private val handleBackPressedCallback = object : OnBackPressedCallback(false) {
+    private val handleBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
             viewModel.backPress()
         }
@@ -74,8 +74,8 @@ class HomeFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        observeState()
         setBackPressedCallback(onBackPressedCallback)
+        observeState()
         initRecyclerView()
         restoreRecyclerState(savedInstanceState)
         observeControlsSheetState()
