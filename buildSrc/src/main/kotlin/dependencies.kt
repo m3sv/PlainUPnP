@@ -20,8 +20,8 @@ object Versions {
     const val sqlDelight = "1.4.0"
     const val targetSdk = 29
     const val test = "1.2.0"
-    const val versionCode = 61
-    const val versionName = "2.6.1"
+    const val versionCode = 62
+    const val versionName = "2.6.2"
 }
 
 object ClasspathDependencies {
