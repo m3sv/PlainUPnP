@@ -4,6 +4,7 @@
 
     <com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory android:title="@string/general_category">
         <ListPreference
+            android:defaultValue="@string/system_theme_value"
             android:entries="@array/theme_entries"
             android:entryValues="@array/theme_entry_values"
             android:icon="@drawable/ic_theme"
