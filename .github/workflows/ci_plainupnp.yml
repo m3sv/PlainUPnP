@@ -2,14 +2,12 @@ name: PlainUPnP CI
 
 on:
   push:
-    branches: [ develop, master ]
-  pull_request:
-    branches: [ develop, master ]
+    branches: [ develop, master, 'shortliving/**' ]
 
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -17,5 +15,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
-    - name: Build with Gradle
-      run: ./gradlew build
+    - name: Install bundler dependencies
+      run: bundler install
+    - name: Test
+      run: bundler exec fastlane test
+
