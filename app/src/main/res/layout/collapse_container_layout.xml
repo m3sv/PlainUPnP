@@ -4,21 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
     android:layout_marginTop="16dp"
+    android:layout_marginEnd="8dp"
     android:layout_marginBottom="?actionBarSize"
     android:baselineAligned="false"
-    android:orientation="horizontal"
+    android:orientation="vertical"
     app:layout_constraintTop_toBottomOf="@+id/handle"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/main_content_device_picker_container"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="4dp"
-        android:layout_weight="1">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <AutoCompleteTextView
             android:id="@+id/main_content_device_picker"
@@ -38,12 +37,9 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/main_renderer_picker_container"
-        android:layout_width="0dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="16dp"
-        android:layout_weight="1">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <AutoCompleteTextView
             android:id="@+id/main_renderer_device_picker"

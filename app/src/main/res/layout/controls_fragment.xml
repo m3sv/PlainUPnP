@@ -56,7 +56,6 @@
                 android:layout_height="0dp"
                 android:layout_margin="@dimen/media_controls_sheet_art_margin"
                 android:scaleType="centerCrop"
-                android:src="@color/colorPrimary"
                 app:layout_constraintBottom_toTopOf="@+id/progress"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
