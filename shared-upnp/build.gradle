@@ -5,18 +5,16 @@ dependencies {
     implementation Dependencies.androidx.coreKtx
     implementation Dependencies.androidx.material
     implementation Dependencies.androidx.preference
-
     implementation Dependencies.coroutines.core
-    implementation Dependencies.kotlin
-    implementation Dependencies.timber
-
-    implementation Dependencies.nanohttpd.core
-    implementation Dependencies.nanohttpd.webserver
-
     implementation Dependencies.dagger.core
     compileOnly Dependencies.dagger.annotation
     kapt Dependencies.dagger.compiler
     compileOnly Dependencies.javaxCdi
+    implementation Dependencies.kotlin
+    implementation Dependencies.nanohttpd.core
+    implementation Dependencies.nanohttpd.webserver
+    implementation Dependencies.okHttp
+    implementation Dependencies.timber
 
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
