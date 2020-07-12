@@ -8,8 +8,9 @@ object Versions {
     const val coroutines = "1.3.5"
     const val coreTesting = "2.1.0"
     const val dagger = "2.27"
+    const val hilt = "2.28-alpha"
     const val detekt = "1.0.0"
-    const val jetty = "8.2.0.v20160908"
+    const val jetty = "8.1.8.v20121106"
     const val kotlin = "1.3.71"
     const val material = "1.2.0-beta01"
     const val minSdk = 21
@@ -20,8 +21,8 @@ object Versions {
     const val sqlDelight = "1.4.0"
     const val targetSdk = 29
     const val test = "1.2.0"
-    const val versionCode = 62
-    const val versionName = "2.6.2"
+    const val versionCode = 63
+    const val versionName = "2.7.0"
 }
 
 object ClasspathDependencies {
@@ -31,13 +32,14 @@ object ClasspathDependencies {
 }
 
 object Dependencies {
-    const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
-    const val timber = "com.jakewharton.timber:timber:4.7.1"
-    const val glide = "com.github.bumptech.glide:glide:4.11.0"
     const val javaxCdi = "javax.enterprise:cdi-api:2.0.SP1"
+    const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
+    const val glide = "com.github.bumptech.glide:glide:4.11.0"
     const val fastScroll = "me.zhanghai.android.fastscroll:library:1.1.3"
+    const val okHttp = "com.squareup.okhttp3:okhttp:4.8.0"
     const val sqlDelightAndroidDriver =
         "com.squareup.sqldelight:android-driver:${Versions.sqlDelight}"
+    const val timber = "com.jakewharton.timber:timber:4.7.1"
 
     val androidx = mapOf(
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",

@@ -34,7 +34,6 @@ import org.fourthline.cling.model.types.UDAServiceType
 import org.fourthline.cling.support.model.TransportState
 import org.fourthline.cling.support.model.item.*
 import timber.log.Timber
-import java.util.concurrent.Executors
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -70,8 +69,6 @@ class UpnpManagerImpl @Inject constructor(
         contentDirectoryObservable.observe()
 
     override val renderers: Flow<List<DeviceDisplay>> = rendererDiscoveryObservable.observe()
-
-    private val updateDispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
 
     override val actionErrors: Flow<Consumable<String>> = errorReporter.errorFlow
 
@@ -197,7 +194,7 @@ class UpnpManagerImpl @Inject constructor(
         withContext(Dispatchers.IO) {
             stopUpdate()
             safeAvAction { service ->
-                updateJob = launch(updateDispatcher) {
+                updateJob = launch {
                     while (isActive) {
                         delay(500)
 

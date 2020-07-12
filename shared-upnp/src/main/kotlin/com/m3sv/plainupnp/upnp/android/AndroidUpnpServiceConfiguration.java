@@ -24,18 +24,21 @@ import org.fourthline.cling.binding.xml.ServiceDescriptorBinder;
 import org.fourthline.cling.binding.xml.UDA10ServiceDescriptorBinderSAXImpl;
 import org.fourthline.cling.model.Namespace;
 import org.fourthline.cling.model.ServerClientTokens;
+import org.fourthline.cling.registry.Registry;
 import org.fourthline.cling.transport.impl.AsyncServletStreamServerConfigurationImpl;
 import org.fourthline.cling.transport.impl.AsyncServletStreamServerImpl;
 import org.fourthline.cling.transport.impl.RecoveringGENAEventProcessorImpl;
 import org.fourthline.cling.transport.impl.RecoveringSOAPActionProcessorImpl;
 import org.fourthline.cling.transport.impl.jetty.JettyServletContainer;
+import org.fourthline.cling.transport.impl.jetty.OkHttpStreamClient;
 import org.fourthline.cling.transport.impl.jetty.StreamClientConfigurationImpl;
-import org.fourthline.cling.transport.impl.jetty.StreamClientImpl;
 import org.fourthline.cling.transport.spi.GENAEventProcessor;
 import org.fourthline.cling.transport.spi.NetworkAddressFactory;
 import org.fourthline.cling.transport.spi.SOAPActionProcessor;
 import org.fourthline.cling.transport.spi.StreamClient;
 import org.fourthline.cling.transport.spi.StreamServer;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Configuration settings for deployment on Android.
@@ -54,13 +57,15 @@ import org.fourthline.cling.transport.spi.StreamServer;
  * <code>org.xml.sax.driver</code> is set to  <code>org.xmlpull.v1.sax2.Driver</code>.
  * </p>
  * <p>
- * To preserve battery, the {@link org.fourthline.cling.registry.Registry} will only
+ * To preserve battery, the {@link Registry} will only
  * be maintained every 3 seconds.
  * </p>
  *
  * @author Christian Bauer
  */
 public class AndroidUpnpServiceConfiguration extends DefaultUpnpServiceConfiguration {
+
+    private final JettyServletContainer servletContainer;
 
     public AndroidUpnpServiceConfiguration() {
         this(0); // Ephemeral port
@@ -69,8 +74,7 @@ public class AndroidUpnpServiceConfiguration extends DefaultUpnpServiceConfigura
     public AndroidUpnpServiceConfiguration(int streamListenPort) {
         super(streamListenPort, false);
 
-        // This should be the default on Android 2.1 but it's not set by default
-        System.setProperty("org.xml.sax.driver", "org.xmlpull.v1.sax2.Driver");
+        servletContainer = JettyServletContainer.INSTANCE;
     }
 
     @Override
@@ -87,7 +91,7 @@ public class AndroidUpnpServiceConfiguration extends DefaultUpnpServiceConfigura
     @Override
     public StreamClient createStreamClient() {
         // Use Jetty
-        return new StreamClientImpl(
+        return new OkHttpStreamClient(new OkHttpClient.Builder().build(),
                 new StreamClientConfigurationImpl(getSyncProtocolExecutorService()) {
                     @Override
                     public String getUserAgentValue(int majorVersion, int minorVersion) {
@@ -108,7 +112,7 @@ public class AndroidUpnpServiceConfiguration extends DefaultUpnpServiceConfigura
         // Use Jetty, start/stop a new shared instance of JettyServletContainer
         return new AsyncServletStreamServerImpl(
                 new AsyncServletStreamServerConfigurationImpl(
-                        JettyServletContainer.INSTANCE,
+                        servletContainer,
                         networkAddressFactory.getStreamListenPort()
                 )
         );
@@ -136,7 +140,7 @@ public class AndroidUpnpServiceConfiguration extends DefaultUpnpServiceConfigura
 
     @Override
     public int getRegistryMaintenanceIntervalMillis() {
-        return 1000; // Preserve battery on Android, only run every 3 seconds
+        return 3000; // Preserve battery on Android, only run every 3 seconds
     }
 
 }

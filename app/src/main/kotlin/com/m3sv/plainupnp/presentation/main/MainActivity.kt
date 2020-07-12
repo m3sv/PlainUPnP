@@ -73,16 +73,6 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         setContentView(binding.root)
 
         viewModel = getViewModel()
-        viewModel
-            .errors
-            .observe(this) { consumable ->
-                consumable.consume { value ->
-                    MaterialAlertDialogBuilder(this)
-                        .setMessage(value)
-                        .setPositiveButton(android.R.string.ok, null)
-                        .show()
-                }
-            }
         findNavController(R.id.nav_host_container).addOnDestinationChangedListener(this)
 
         observeState()
@@ -138,6 +128,18 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         viewModel.shutdown.observe(this) {
             finishAndRemoveTask()
         }
+
+        viewModel
+            .errors
+            .observe(this) { consumable ->
+                consumable.consume { value ->
+                    MaterialAlertDialogBuilder(this)
+                        .setMessage(value)
+                        .setPositiveButton(android.R.string.ok, null)
+                        .show()
+                }
+            }
+
     }
 
     override fun onDestinationChanged(
