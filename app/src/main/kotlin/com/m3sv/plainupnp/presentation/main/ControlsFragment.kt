@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.ALPHA
+import android.view.View.*
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
@@ -29,6 +29,9 @@ import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import org.fourthline.cling.support.model.TransportState
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
+
+private const val PICKERS_VISIBILITY = "pickers_visibility_key"
+private const val CONTROLS_VISIBILITY = "controls_visibility_key"
 
 class ControlsFragment : BaseFragment() {
 
@@ -100,11 +103,16 @@ class ControlsFragment : BaseFragment() {
 
                 with(binding.pickers.root) {
                     alpha = slideAlpha
-                    visibility = if (slideAlpha != 0f) View.VISIBLE else View.INVISIBLE
+                    visibility = if (slideAlpha != 0f) VISIBLE else INVISIBLE
                     isClickable = isVisible
                 }
 
-                binding.art.alpha = slideOffset
+
+                binding.controlsGroup.visibility = if (slideOffset > .75) {
+                    VISIBLE
+                } else {
+                    INVISIBLE
+                }
             }
         })
 
@@ -167,7 +175,15 @@ class ControlsFragment : BaseFragment() {
         restoreAdaptersState(savedInstanceState)
         restoreBehaviorState(savedInstanceState)
         restoreScrimViewState(savedInstanceState)
+        restoreControlsViewState(savedInstanceState)
         restoreBackPressedCallbackState(savedInstanceState)
+    }
+
+    private fun restoreControlsViewState(savedInstanceState: Bundle) {
+        with(binding) {
+            pickers.root.visibility = savedInstanceState.getInt(PICKERS_VISIBILITY, VISIBLE)
+            controlsGroup.visibility = savedInstanceState.getInt(CONTROLS_VISIBILITY, INVISIBLE)
+        }
     }
 
     fun toggle() {
@@ -294,6 +310,8 @@ class ControlsFragment : BaseFragment() {
         if (_binding != null) {
             saveBehaviorState(outState)
             saveScrimViewState(outState)
+            outState.putInt(PICKERS_VISIBILITY, binding.pickers.root.visibility)
+            outState.putInt(CONTROLS_VISIBILITY, binding.controlsGroup.visibility)
         }
     }
 

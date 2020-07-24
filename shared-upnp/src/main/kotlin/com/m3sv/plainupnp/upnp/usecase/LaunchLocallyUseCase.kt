@@ -11,7 +11,8 @@ import timber.log.Timber
 import javax.inject.Inject
 
 class LaunchLocallyUseCase @Inject constructor(private val context: Context) {
-    fun execute(item: RenderItem) {
+
+    suspend operator fun invoke(item: RenderItem) {
         val uri = item.didlItem.uri
         if (uri != null) {
             val contentType = when (item.didlItem) {
@@ -36,4 +37,5 @@ class LaunchLocallyUseCase @Inject constructor(private val context: Context) {
             }
         }
     }
+
 }

@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.upnp
 
+import com.m3sv.plainupnp.upnp.actions.BrowseAction
 import com.m3sv.plainupnp.upnp.actions.avtransport.*
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import org.fourthline.cling.model.meta.Service
@@ -12,7 +13,8 @@ class UpnpRepository @Inject constructor(
     private val setUriAction: SetUriAction,
     private val seekToAction: SeekAction,
     private val getTransportInfoAction: GetTransportInfoAction,
-    private val getPositionInfoAction: GetPositionInfoAction
+    private val getPositionInfoAction: GetPositionInfoAction,
+    private val browseAction: BrowseAction
 ) {
     suspend fun play(service: Service<*, *>) {
         playAction(service)
@@ -37,5 +39,10 @@ class UpnpRepository @Inject constructor(
     suspend fun getTransportInfo(service: Service<*, *>) = getTransportInfoAction(service)
 
     suspend fun getPositionInfo(service: Service<*, *>) = getPositionInfoAction(service)
+
+    suspend fun browse(
+        service: Service<*, *>,
+        directoryID: String
+    ) = browseAction(service, directoryID)
 
 }

@@ -1,10 +1,12 @@
+include ':app'
+include ':common'
 include ':core-persistence'
+include ':feature-home'
+include ':feature-onboarding'
+include ':feature-settings'
 include ':shared-resources'
-include ':app',
-        ':common',
-        ':feature-home',
-        ':feature-settings',
-        ':shared-upnp'
+include ':shared-upnp'
+
 
 
 

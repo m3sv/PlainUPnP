@@ -6,17 +6,14 @@ import com.m3sv.plainupnp.common.util.formatTime
 import com.m3sv.plainupnp.core.persistence.CONTENT_DIRECTORY_TYPE
 import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.core.persistence.RENDERER_TYPE
-import com.m3sv.plainupnp.data.upnp.DeviceDisplay
-import com.m3sv.plainupnp.data.upnp.LocalDevice
-import com.m3sv.plainupnp.data.upnp.UpnpItemType
-import com.m3sv.plainupnp.data.upnp.UpnpRendererState
-import com.m3sv.plainupnp.upnp.*
+import com.m3sv.plainupnp.data.upnp.*
+import com.m3sv.plainupnp.upnp.CDevice
+import com.m3sv.plainupnp.upnp.UpnpRepository
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.discovery.device.RendererDiscoveryObservable
-import com.m3sv.plainupnp.upnp.store.ContentState
-import com.m3sv.plainupnp.upnp.store.UpnpStateStore
+import com.m3sv.plainupnp.upnp.folder.FolderType
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import com.m3sv.plainupnp.upnp.util.duration
@@ -27,8 +24,9 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asFlow
-import org.fourthline.cling.UpnpService
 import org.fourthline.cling.model.meta.Service
 import org.fourthline.cling.model.types.UDAServiceType
 import org.fourthline.cling.support.model.TransportState
@@ -38,21 +36,18 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 private const val MAX_PROGRESS = 100
+private const val HOME_FOLDER_ID = "0"
 
 @ExperimentalCoroutinesApi
 class UpnpManagerImpl @Inject constructor(
-    private val upnpService: UpnpService,
     private val rendererDiscoveryObservable: RendererDiscoveryObservable,
     private val contentDirectoryObservable: ContentDirectoryDiscoveryObservable,
-    private val launchLocallyUseCase: LaunchLocallyUseCase,
-    private val stateStore: UpnpStateStore,
+    private val launchLocally: LaunchLocallyUseCase,
     private val database: Database,
     private val upnpRepository: UpnpRepository,
     private val volumeRepository: VolumeRepository,
-    private val errorReporter: ErrorReporter,
-    upnpNavigator: UpnpNavigator
+    private val errorReporter: ErrorReporter
 ) : UpnpManager,
-    UpnpNavigator by upnpNavigator,
     CoroutineScope {
 
     override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.IO
@@ -63,8 +58,6 @@ class UpnpManagerImpl @Inject constructor(
 
     private var isLocal: Boolean = false
 
-    private var currentPlayingIndex = -1
-
     override val contentDirectories: Flow<List<DeviceDisplay>> =
         contentDirectoryObservable.observe()
 
@@ -72,21 +65,26 @@ class UpnpManagerImpl @Inject constructor(
 
     override val actionErrors: Flow<Consumable<String>> = errorReporter.errorFlow
 
-    override fun selectContentDirectory(position: Int) {
-        val contentDirectory = contentDirectoryObservable.currentContentDirectories[position].device
+    private val folderChange: MutableStateFlow<Consumable<FolderType>> =
+        MutableStateFlow(Consumable())
 
-        database.selectedDeviceQueries.insertSelectedDevice(
-            CONTENT_DIRECTORY_TYPE,
-            contentDirectory.fullIdentity
-        )
+    override val folderChangeFlow: StateFlow<Consumable<FolderType>> = folderChange
+
+    override fun selectContentDirectory(position: Int) {
+        val contentDirectory = contentDirectoryObservable
+            .currentContentDirectories[position]
+            .device
+
+        saveSelectedContentDirectory(contentDirectory)
 
         contentDirectoryObservable.selectedContentDirectory = contentDirectory
 
-        safeNavigateTo(ErrorReason.BROWSE_FAILED) { command, service ->
-            navigateTo(
-                destination = Destination.Home,
-                contentDirectoryCommand = command,
-                contentDirectoryService = service
+        launch {
+            safeNavigateTo(
+                errorReason = ErrorReason.BROWSE_FAILED,
+                folderId = HOME_FOLDER_ID,
+                folderName = contentDirectory.friendlyName,
+                clearBackStack = true
             )
         }
     }
@@ -96,18 +94,13 @@ class UpnpManagerImpl @Inject constructor(
 
         isLocal = renderer is LocalDevice
 
-        database.selectedDeviceQueries.insertSelectedDevice(
-            RENDERER_TYPE,
-            renderer.fullIdentity
-        )
+        saveSelectedRenderer(renderer)
+
+        if (isLocal || renderer != rendererDiscoveryObservable.selectedRenderer)
+            stopUpdate()
 
         if (!isLocal) {
-            if (rendererDiscoveryObservable.selectedRenderer != renderer)
-                stopUpdate()
-
             rendererDiscoveryObservable.selectedRenderer = renderer
-        } else {
-            stopUpdate()
         }
     }
 
@@ -115,7 +108,7 @@ class UpnpManagerImpl @Inject constructor(
         stopUpdate()
 
         if (isLocal) {
-            launchLocallyUseCase.execute(item)
+            launchLocally(item)
             return
         }
 
@@ -146,8 +139,10 @@ class UpnpManagerImpl @Inject constructor(
         }
 
         safeAvAction { service ->
-            upnpRepository.setUri(service, uri, trackMetadata)
-            upnpRepository.play(service)
+            with(upnpRepository) {
+                setUri(service, uri, trackMetadata)
+                play(service)
+            }
         }
 
         if (didlItem is AudioItem || didlItem is VideoItem) {
@@ -192,7 +187,6 @@ class UpnpManagerImpl @Inject constructor(
         artist: String?
     ) {
         withContext(Dispatchers.IO) {
-            stopUpdate()
             safeAvAction { service ->
                 updateJob = launch {
                     while (isActive) {
@@ -224,8 +218,7 @@ class UpnpManagerImpl @Inject constructor(
 
                         currentDuration = positionInfo.trackDurationSeconds
 
-                        if (!pauseUpdate)
-                            upnpInnerStateChannel.offer(state)
+                        if (!pauseUpdate) upnpInnerStateChannel.offer(state)
 
                         Timber.d("Got new state: $state")
 
@@ -264,13 +257,19 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override fun playNext() {
-        val newPosition = currentPlayingIndex + 1
-        itemClick(newPosition)
+        launch {
+            if (mediaIterator.hasNext()) {
+                renderItem(RenderItem(mediaIterator.next()))
+            }
+        }
     }
 
     override fun playPrevious() {
-        val newPosition = currentPlayingIndex - 1
-        itemClick(newPosition)
+        launch {
+            if (mediaIterator.hasPrevious()) {
+                renderItem(RenderItem(mediaIterator.previous()))
+            }
+        }
     }
 
     override fun pausePlayback() {
@@ -295,7 +294,14 @@ class UpnpManagerImpl @Inject constructor(
         launch {
             safeAvAction { service ->
                 pauseUpdate = true
-                upnpRepository.seekTo(service, formatTime(MAX_PROGRESS, progress, currentDuration))
+                upnpRepository.seekTo(
+                    service = service,
+                    time = formatTime(
+                        max = MAX_PROGRESS,
+                        progress = progress,
+                        duration = currentDuration
+                    )
+                )
                 pauseUpdate = false
             }
         }
@@ -323,46 +329,23 @@ class UpnpManagerImpl @Inject constructor(
         volumeRepository.getVolume(service)
     } ?: 0
 
-    override fun itemClick(position: Int) {
+    override fun playItem(
+        clingDIDLObject: ClingDIDLObject,
+        listIterator: ListIterator<ClingDIDLObject>
+    ) {
         launch {
-            currentPlayingIndex = position
-
-            stateStore.getCurrentState()?.let { state ->
-                when (state) {
-                    is ContentState.Success -> handleClick(position, state.upnpDirectory.content)
-                    is ContentState.Loading -> {
-                        // no-op
-                    }
-                }
-            }
+            renderItem(RenderItem(clingDIDLObject))
+            mediaIterator = listIterator
         }
     }
 
-    private suspend fun handleClick(position: Int, content: List<ClingDIDLObject>) {
-        if (position in content.indices) {
-            when (val item = content[position]) {
-                is ClingDIDLContainer -> {
-                    safeNavigateTo { command, service ->
-                        val path = Destination.Path(
-                            item.didlObject.id,
-                            item.title
-                        )
-
-                        navigateTo(
-                            destination = path,
-                            contentDirectoryCommand = command,
-                            contentDirectoryService = service
-                        )
-                    }
-                }
-
-                else -> renderItem(
-                    RenderItem(
-                        content[position],
-                        position
-                    )
-                )
-            }
+    override fun navigateTo(container: ClingDIDLContainer) {
+        launch {
+            safeNavigateTo(
+                errorReason = ErrorReason.BROWSE_FAILED,
+                folderId = container.didlObject.id,
+                folderName = container.didlObject.title
+            )
         }
     }
 
@@ -377,20 +360,48 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private inline fun safeNavigateTo(
-        errorReason: ErrorReason? = null,
-        block: (ContentDirectoryCommand, ClingService) -> Unit
-    ) {
-        val command = ContentDirectoryCommand(upnpService.controlPoint)
+    private var currentContent = listOf<ClingDIDLObject>()
 
+    private var currentFolderName: String = ""
+
+    private var mediaIterator: ListIterator<ClingDIDLObject> =
+        emptyList<ClingDIDLObject>().listIterator()
+
+    override fun getCurrentFolderContents(): List<ClingDIDLObject> = currentContent
+
+    override fun getCurrentFolderName(): String = currentFolderName
+
+    private fun saveSelectedContentDirectory(contentDirectory: UpnpDevice) {
+        database
+            .selectedDeviceQueries
+            .insertSelectedDevice(CONTENT_DIRECTORY_TYPE, contentDirectory.fullIdentity)
+    }
+
+    private fun saveSelectedRenderer(renderer: UpnpDevice) {
+        database
+            .selectedDeviceQueries
+            .insertSelectedDevice(RENDERER_TYPE, renderer.fullIdentity)
+    }
+
+    private suspend inline fun safeNavigateTo(
+        errorReason: ErrorReason? = null,
+        folderId: String,
+        folderName: String,
+        clearBackStack: Boolean = false
+    ) {
         contentDirectoryObservable.selectedContentDirectory?.let { selectedDevice ->
             val service: Service<*, *>? =
                 (selectedDevice as CDevice).device.findService(UDAServiceType("ContentDirectory"))
 
-            if (service != null && service.hasActions()) block(
-                command,
-                ClingService(service)
-            ) else
+            if (service != null && service.hasActions()) {
+                currentContent = upnpRepository.browse(service, folderId)
+                currentFolderName = folderName
+
+                folderChange.value = if (clearBackStack)
+                    Consumable(FolderType.ROOT)
+                else
+                    Consumable(FolderType.SUBFOLDER)
+            } else
                 errorReason.report()
         }
     }
@@ -418,7 +429,9 @@ class UpnpManagerImpl @Inject constructor(
             val service: Service<*, *>? =
                 (renderer as CDevice).device.findService(UDAServiceType("RenderingControl"))
 
-            if (service != null && service.hasActions()) block(service) else {
+            if (service != null && service.hasActions())
+                block(service)
+            else {
                 errorReason.report()
                 null
             }
@@ -430,8 +443,5 @@ class UpnpManagerImpl @Inject constructor(
     }
 }
 
-data class RenderItem(
-    val didlItem: ClingDIDLObject,
-    val position: Int
-)
+inline class RenderItem(val didlItem: ClingDIDLObject)
 

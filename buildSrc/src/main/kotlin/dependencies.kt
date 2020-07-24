@@ -5,7 +5,7 @@ object Versions {
     const val cling = "3.0.0"
     const val compileSdk = 29
     const val constraintLayout = "2.0.0-beta7"
-    const val coroutines = "1.3.5"
+    const val coroutines = "1.3.7"
     const val coreTesting = "2.1.0"
     const val dagger = "2.27"
     const val hilt = "2.28-alpha"
@@ -26,7 +26,7 @@ object Versions {
 }
 
 object ClasspathDependencies {
-    const val androidTools = "com.android.tools.build:gradle:4.0.0"
+    const val androidTools = "com.android.tools.build:gradle:4.0.1"
     const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
     const val sqlDelight = "com.squareup.sqldelight:gradle-plugin:${Versions.sqlDelight}"
 }
