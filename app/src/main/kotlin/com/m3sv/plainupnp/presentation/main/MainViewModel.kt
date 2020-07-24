@@ -46,6 +46,10 @@ class MainViewModel @Inject constructor(
         .actionErrors
         .asLiveData()
 
+    val changeFolder = upnpManager
+        .folderChangeFlow
+        .asLiveData()
+
     fun moveTo(progress: Int) {
         viewModelScope.launch {
             upnpManager.seekTo(progress)

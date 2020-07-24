@@ -6,8 +6,7 @@ import javax.inject.Inject
 class HomeContentMapper @Inject constructor() {
     fun map(items: List<ClingDIDLObject>): List<ContentItem> = items.map { item ->
         when (item) {
-            is ClingDIDLContainer,
-            is ClingDIDLParentContainer -> ContentItem(
+            is ClingDIDLContainer -> ContentItem(
                 itemUri = item.id,
                 name = item.title,
                 type = ContentType.FOLDER,

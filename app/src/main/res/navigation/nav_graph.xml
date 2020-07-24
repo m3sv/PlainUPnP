@@ -3,18 +3,80 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/home_fragment">
+    app:startDestination="@id/onboarding_fragment">
 
     <fragment
-        android:id="@+id/home_fragment"
+        android:id="@+id/onboarding_fragment"
+        android:name="com.m3sv.plainupnp.presentation.onboarding.OnboardingFragment"
+        android:label="OnboardingFragment"
+        tools:layout="@layout/onboarding_fragment">
+        <action
+            android:id="@+id/to_root"
+            app:destination="@id/root_fragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popUpTo="@id/onboarding_fragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/root_fragment"
         android:name="com.m3sv.plainupnp.presentation.home.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/home_fragment">
+
         <action
-            android:id="@+id/action_mainFragment_to_settingsFragment"
+            android:id="@+id/to_settings"
             app:destination="@id/settings_fragment"
             app:enterAnim="@anim/fragment_open_enter"
-            app:exitAnim="@anim/fragment_open_exit" />
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter" />
+
+        <action
+            android:id="@+id/to_root"
+            app:destination="@id/root_fragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popUpTo="@id/root_fragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/to_sub"
+            app:destination="@id/sub_folder_fragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/sub_folder_fragment"
+        android:name="com.m3sv.plainupnp.presentation.home.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/home_fragment">
+
+        <action
+            android:id="@+id/to_settings"
+            app:destination="@id/settings_fragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter" />
+
+        <action
+            android:id="@+id/to_root"
+            app:destination="@id/root_fragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter"
+            app:popUpTo="@id/root_fragment"
+            app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/to_sub"
+            app:destination="@id/sub_folder_fragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_close_exit"
+            app:popEnterAnim="@anim/fragment_open_enter" />
     </fragment>
 
     <fragment

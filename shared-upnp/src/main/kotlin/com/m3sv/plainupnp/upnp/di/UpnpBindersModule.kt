@@ -2,14 +2,10 @@ package com.m3sv.plainupnp.upnp.di
 
 import android.content.Context
 import com.m3sv.plainupnp.upnp.PlainUpnpServiceConfiguration
-import com.m3sv.plainupnp.upnp.UpnpNavigator
-import com.m3sv.plainupnp.upnp.UpnpNavigatorImpl
 import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import com.m3sv.plainupnp.upnp.manager.UpnpManagerImpl
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
-import com.m3sv.plainupnp.upnp.store.UpnpStateStore
-import com.m3sv.plainupnp.upnp.store.UpnpStateStoreImpl
 import com.m3sv.plainupnp.upnp.volume.UpnpVolumeManager
 import dagger.Binds
 import dagger.Module
@@ -27,15 +23,7 @@ abstract class UpnpBindersModule {
 
     @Binds
     @Singleton
-    abstract fun bindUpnpStore(upnpStateStoreImpl: UpnpStateStoreImpl): UpnpStateStore
-
-    @Binds
-    @Singleton
     abstract fun bindUpnpManager(upnpManagerImpl: UpnpManagerImpl): UpnpManager
-
-    @Binds
-    @Singleton
-    abstract fun bindUpnpNavigator(upnpNavigator: UpnpNavigatorImpl): UpnpNavigator
 
     companion object {
         @Provides

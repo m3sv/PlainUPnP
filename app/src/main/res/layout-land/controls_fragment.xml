@@ -50,19 +50,24 @@
                 android:id="@+id/pickers"
                 layout="@layout/collapse_container_layout" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/controls_group"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:visibility="invisible"
+                app:constraint_referenced_ids="art, played, played, duration, progress, title, controls_container" />
+
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/art"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="32dp"
-                android:layout_marginEnd="32dp"
-                android:layout_marginBottom="16dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_media_placeholder"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/pickers"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0"
                 app:shapeAppearanceOverlay="@style/RoundedImageView" />
 

@@ -71,6 +71,7 @@ dependencies {
     implementation project(':common')
     implementation project(':core-persistence')
     implementation project(':feature-home')
+    implementation project(':feature-onboarding')
     implementation project(':feature-settings')
     implementation project(':shared-resources')
     implementation project(':shared-upnp')

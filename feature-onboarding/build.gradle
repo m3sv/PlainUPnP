@@ -1,0 +1,17 @@
+apply from: "../scripts/android-library.gradle"
+
+android {
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    implementation Dependencies.androidx.constraintLayout
+    implementation Dependencies.coroutines.core
+
+    testImplementation Dependencies.test.junit
+    testImplementation Dependencies.test.mockito
+
+    implementation project(':common')
+}
