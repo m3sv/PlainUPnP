@@ -5,13 +5,11 @@ import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class Folder(val name: String, val contents: List<ContentItem>)
 
-@ExperimentalCoroutinesApi
 class HomeViewModel @Inject constructor(
     private val manager: UpnpManager,
     private val homeContentMapper: HomeContentMapper,

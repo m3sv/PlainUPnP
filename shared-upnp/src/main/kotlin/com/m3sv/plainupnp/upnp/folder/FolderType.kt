@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.upnp.folder
 
-enum class FolderType {
-    ROOT, SUBFOLDER
+sealed class FolderType(val name: String) {
+    class Root(name: String) : FolderType(name)
+    class SubFolder(name: String) : FolderType(name)
 }

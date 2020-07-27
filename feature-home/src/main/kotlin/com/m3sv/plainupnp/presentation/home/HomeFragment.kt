@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -60,13 +59,8 @@ class HomeFragment : BaseFragment() {
 
     private fun observeState() {
         viewModel.currentFolderContents.observe(viewLifecycleOwner) { folder ->
-            binding.name.text = folder.name
             contentAdapter.setWithDiff(folder.contents)
-
-            with(binding) {
-                emptyHomeView.root.isVisible = false
-                progress.disappear()
-            }
+            binding.progress.disappear()
         }
 
         viewModel.filterText.observe(viewLifecycleOwner) { text ->

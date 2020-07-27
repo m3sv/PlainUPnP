@@ -11,4 +11,6 @@ class Consumable<T>(value: T? = null) {
             block(value)
         }
     }
+
+    fun peek(): T? = atomicReference.get()
 }

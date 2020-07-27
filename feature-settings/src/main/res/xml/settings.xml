@@ -17,7 +17,6 @@
         <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"
             android:icon="@drawable/ic_image"
-
             android:key="@string/enable_image_container_key"
             android:title="@string/share_images" />
 
