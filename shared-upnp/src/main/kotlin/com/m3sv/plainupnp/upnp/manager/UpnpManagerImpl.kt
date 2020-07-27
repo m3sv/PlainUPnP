@@ -398,9 +398,9 @@ class UpnpManagerImpl @Inject constructor(
                 currentFolderName = folderName
 
                 folderChange.value = if (clearBackStack)
-                    Consumable(FolderType.ROOT)
+                    Consumable(FolderType.Root(currentFolderName))
                 else
-                    Consumable(FolderType.SUBFOLDER)
+                    Consumable(FolderType.SubFolder(currentFolderName))
             } else
                 errorReason.report()
         }

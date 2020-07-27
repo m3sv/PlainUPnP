@@ -1,16 +1,15 @@
 package com.m3sv.plainupnp.presentation.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.m3sv.plainupnp.ShutdownNotifier
 import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveContentDirectoriesUseCase
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
+import com.m3sv.plainupnp.upnp.folder.FolderType
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
@@ -46,8 +45,28 @@ class MainViewModel @Inject constructor(
         .actionErrors
         .asLiveData()
 
+    private val folderStructure: Deque<String> = LinkedList<String>()
+
+    private val mutableNavigationState = MutableLiveData<List<String>>()
+
+    val navigationState: LiveData<List<String>> = mutableNavigationState
+
     val changeFolder = upnpManager
         .folderChangeFlow
+        .map { consumable ->
+            when (val value = consumable.peek()) {
+                is FolderType.Root -> with(folderStructure) {
+                    clear()
+                    add(value.name)
+                }
+
+                is FolderType.SubFolder -> folderStructure.add(value.name)
+            }
+
+            updateNavigationUi()
+
+            consumable
+        }
         .asLiveData()
 
     fun moveTo(progress: Int) {
@@ -78,5 +97,14 @@ class MainViewModel @Inject constructor(
 
     fun filterText(text: String) {
         viewModelScope.launch { filterDelegate.filter(text) }
+    }
+
+    fun navigateBack() {
+        folderStructure.pollLast()
+        updateNavigationUi()
+    }
+
+    private fun updateNavigationUi() {
+        mutableNavigationState.postValue(folderStructure.toList())
     }
 }

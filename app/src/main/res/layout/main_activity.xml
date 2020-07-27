@@ -5,6 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".presentation.main.MainActivity">
 
+    <com.m3sv.plainupnp.presentation.main.NavigationStrip
+        android:id="@+id/navigation_strip"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp" />
+
     <fragment
         android:id="@+id/nav_host_container"
         android:name="androidx.navigation.fragment.NavHostFragment"

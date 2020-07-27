@@ -1,55 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="?actionBarSize"
-    android:clickable="false"
-    android:focusable="false">
-
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?android:colorBackground"
-        android:gravity="center"
-        app:liftOnScroll="true">
-
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:contentInsetStart="0dp">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:ellipsize="end"
-                    android:maxWidth="200dp"
-                    android:maxLines="1"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
-                    tools:text="Hello World" />
-            </FrameLayout>
-        </androidx.appcompat.widget.Toolbar>
-
-    </com.google.android.material.appbar.AppBarLayout>
+    android:layout_marginTop="?actionBarSize"
+    android:layout_marginBottom="?actionBarSize">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/appbar"
         android:clipToPadding="false"
         android:scrollbars="none"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:listitem="@layout/media_item" />
 
     <ProgressBar
@@ -65,8 +28,4 @@
         android:visibility="gone"
         tools:visibility="visible" />
 
-    <include
-        android:id="@+id/empty_home_view"
-        layout="@layout/empty_home_view" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</FrameLayout>

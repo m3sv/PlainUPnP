@@ -151,11 +151,15 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             .observe(this) { consumable ->
                 consumable.consume { folderType ->
                     when (folderType) {
-                        FolderType.ROOT -> navigateToRootFolder()
-                        FolderType.SUBFOLDER -> navigateToSubfolder()
+                        is FolderType.Root -> navigateToRootFolder()
+                        is FolderType.SubFolder -> navigateToSubfolder()
                     }
                 }
             }
+
+        viewModel
+            .navigationState
+            .observe(this, binding.navigationStrip::replaceItems)
     }
 
     private fun navigateToSubfolder() {
@@ -177,8 +181,8 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
     ) {
         when (destination.id) {
             R.id.root_fragment,
-            R.id.sub_folder_fragment -> setupBottomAppBarForHome()
-            R.id.settings_fragment -> setupBottomAppBarForSettings()
+            R.id.sub_folder_fragment -> contentDestination()
+            R.id.settings_fragment -> settingsDestination()
         }
     }
 
@@ -280,20 +284,24 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             .also { component -> component.inject(this) }
     }
 
-    private fun setupBottomAppBarForHome() {
-        showAppBarWithAnimation()
+    private fun contentDestination() {
+        with(binding) {
+            bottomBar.performShow()
+            with(navigationStrip) {
+                clearAnimation()
+                animate().alpha(1f)
+            }
+        }
     }
 
-    private fun setupBottomAppBarForSettings() {
-        hideAppBar()
-    }
-
-    private fun showAppBarWithAnimation() {
-        binding.bottomBar.performShow()
-    }
-
-    private fun hideAppBar() {
-        binding.bottomBar.performHide()
+    private fun settingsDestination() {
+        with(binding) {
+            bottomBar.performHide()
+            with(navigationStrip) {
+                clearAnimation()
+                animate().alpha(0f)
+            }
+        }
     }
 
     private fun Bundle.restoreChevronState() {
@@ -316,7 +324,12 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             when (currentDestination?.id) {
                 R.id.onboarding_fragment,
                 R.id.root_fragment -> showExitConfirmationDialog()
+                R.id.sub_folder_fragment -> {
+                    viewModel.navigateBack()
+                    super.onBackPressed()
+                }
                 else -> super.onBackPressed()
+
             }
         }
     }
