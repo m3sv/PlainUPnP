@@ -45,7 +45,7 @@ class GalleryContentAdapter(
         holder.bind(item)
 
         when (item.type) {
-            ContentType.FOLDER -> loadDirectory(holder)
+            ContentType.FOLDER -> loadFolder(holder)
             else -> loadData(holder)
         }
     }
@@ -76,7 +76,7 @@ class GalleryContentAdapter(
         }
     }
 
-    private fun loadDirectory(holder: ItemViewHolder<*>) {
+    private fun loadFolder(holder: ItemViewHolder<*>) {
         with(holder.extractBinding<FolderItemBinding>()) {
             thumbnail.setImageResource(R.drawable.ic_folder)
             title.text = holder.item.name
