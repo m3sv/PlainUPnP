@@ -37,8 +37,14 @@ import kotlin.coroutines.CoroutineContext
 
 private const val MAX_PROGRESS = 100
 private const val HOME_FOLDER_ID = "0"
+private const val AV_TRANSPORT = "AVTransport"
+private const val RENDERING_CONTROL = "RenderingControl"
+private const val CONTENT_DIRECTORY = "ContentDirectory"
 
-@ExperimentalCoroutinesApi
+@OptIn(
+    ExperimentalCoroutinesApi::class,
+    FlowPreview::class
+)
 class UpnpManagerImpl @Inject constructor(
     private val rendererDiscoveryObservable: RendererDiscoveryObservable,
     private val contentDirectoryObservable: ContentDirectoryDiscoveryObservable,
@@ -391,7 +397,7 @@ class UpnpManagerImpl @Inject constructor(
     ) {
         contentDirectoryObservable.selectedContentDirectory?.let { selectedDevice ->
             val service: Service<*, *>? =
-                (selectedDevice as CDevice).device.findService(UDAServiceType("ContentDirectory"))
+                (selectedDevice as CDevice).device.findService(UDAServiceType(CONTENT_DIRECTORY))
 
             if (service != null && service.hasActions()) {
                 currentContent = upnpRepository.browse(service, folderId)
@@ -412,7 +418,7 @@ class UpnpManagerImpl @Inject constructor(
     ) {
         rendererDiscoveryObservable.selectedRenderer?.let { renderer ->
             val service: Service<*, *>? =
-                (renderer as CDevice).device.findService(UDAServiceType("AVTransport"))
+                (renderer as CDevice).device.findService(UDAServiceType(AV_TRANSPORT))
 
             if (service != null && service.hasActions())
                 block(service)
@@ -427,7 +433,7 @@ class UpnpManagerImpl @Inject constructor(
     ): T? {
         return rendererDiscoveryObservable.selectedRenderer?.let { renderer ->
             val service: Service<*, *>? =
-                (renderer as CDevice).device.findService(UDAServiceType("RenderingControl"))
+                (renderer as CDevice).device.findService(UDAServiceType(RENDERING_CONTROL))
 
             if (service != null && service.hasActions())
                 block(service)
