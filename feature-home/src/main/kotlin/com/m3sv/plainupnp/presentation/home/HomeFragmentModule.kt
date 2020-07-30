@@ -18,5 +18,5 @@ interface HomeFragmentModule {
     fun bindHomeFragmentViewModel(homeViewModel: HomeViewModel): ViewModel
 
     @Binds
-    fun bindHomeDirectoryBinder(homeUpnpDirectoryMapper: HomeUpnpDirectoryMapper): Mapper<UpnpDirectory, Directory>
+    fun bindHomeDirectoryBinder(homeUpnpDirectoryMapper: HomeUpnpDirectoryMapper): Mapper<UpnpDirectory, UpnpFolder>
 }
