@@ -8,6 +8,9 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.size
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.upnp.folder.FolderType
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.flow.asFlow
 
 class NavigationStrip : HorizontalScrollView {
     constructor(context: Context?) : super(context)
@@ -25,7 +28,7 @@ class NavigationStrip : HorizontalScrollView {
         defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
 
-    private lateinit var contentLayout: LinearLayout
+    private val contentLayout: LinearLayout
 
     init {
         isHorizontalScrollBarEnabled = false
@@ -33,15 +36,20 @@ class NavigationStrip : HorizontalScrollView {
         contentLayout = LinearLayout(context).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
-
         }
 
         addView(contentLayout)
     }
 
-    fun addItem(name: String) {
+    private val clickChannel = BroadcastChannel<FolderType>(1)
+
+    val clickFlow = clickChannel.asFlow()
+
+    fun addItem(folder: FolderType) {
         val item = TextView(context).apply {
-            text = name
+            text = folder.title
+            tag = folder.folderId
+
             layoutParams = MarginLayoutParams(
                 LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -59,6 +67,10 @@ class NavigationStrip : HorizontalScrollView {
                 0
             )
             gravity = Gravity.CENTER
+
+            setOnClickListener {
+                clickChannel.offer(folder)
+            }
         }
 
         contentLayout.addView(item)
@@ -68,23 +80,16 @@ class NavigationStrip : HorizontalScrollView {
         contentLayout.removeAllViews()
     }
 
-    fun replaceItems(names: List<String>) {
+    fun replaceItems(names: List<FolderType>) {
         clearItems()
         addItems(names)
-    }
 
-    fun replaceItems(vararg names: String) {
-        clearItems()
-        addItems(*names)
-    }
-
-    fun addItems(vararg names: String) {
-        for (name in names) {
-            addItem(name)
+        post {
+            smoothScrollTo(width, 0)
         }
     }
 
-    fun addItems(names: List<String>) {
+    fun addItems(names: List<FolderType>) {
         for (name in names) {
             addItem(name)
         }

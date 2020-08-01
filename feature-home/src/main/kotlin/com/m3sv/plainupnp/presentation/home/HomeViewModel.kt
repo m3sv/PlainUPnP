@@ -53,7 +53,13 @@ class HomeViewModel @Inject constructor(
                 manager.playItem(mediaItem, media.listIterator(mediaPosition))
             }
             // we're in the folder zone
-            else -> manager.navigateTo(folders[clickPosition])
+            else -> {
+                val folder = folders[clickPosition]
+                manager.navigateTo(
+                    folderId = folder.id,
+                    title = folder.title
+                )
+            }
         }
     }
 

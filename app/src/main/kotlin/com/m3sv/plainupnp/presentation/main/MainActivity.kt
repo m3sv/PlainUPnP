@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -28,6 +29,8 @@ import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
 import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.folder.FolderType
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import kotlin.LazyThreadSafetyMode.NONE
 
 private const val CHEVRON_ROTATION_ANGLE_KEY = "chevron_rotation_angle_key"
@@ -103,6 +106,20 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         binding.searchInput.addTextChangedListener { text ->
             if (text != null) viewModel.filterText(text.toString())
         }
+
+        lifecycleScope.launch {
+            binding.navigationStrip.clickFlow.collect { folder ->
+                navigateToFolder(folder)
+            }
+        }
+    }
+
+    // TODO remove this when geniuses from Google figure out how to deal with cyclic navigation and popBackStack
+    private fun navigateToFolder(folder: FolderType) {
+        if (folder is FolderType.Root)
+            viewModel.navigateTo(folder.folderId, folder.title)
+        else
+            handleBackPressed()
     }
 
     private fun hideSearchContainer(animate: Boolean) {
@@ -160,6 +177,14 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         viewModel
             .navigationState
             .observe(this, binding.navigationStrip::replaceItems)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
+        KeyEvent.KEYCODE_DEL -> {
+            handleBackPressed()
+            true
+        }
+        else -> super.onKeyUp(keyCode, event)
     }
 
     private fun navigateToSubfolder() {
@@ -320,6 +345,10 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
     }
 
     override fun onBackPressed() {
+        handleBackPressed()
+    }
+
+    private fun handleBackPressed() {
         withNavController {
             when (currentDestination?.id) {
                 R.id.onboarding_fragment,

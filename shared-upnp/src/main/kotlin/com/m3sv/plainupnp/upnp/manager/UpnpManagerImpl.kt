@@ -9,7 +9,6 @@ import com.m3sv.plainupnp.core.persistence.RENDERER_TYPE
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.CDevice
 import com.m3sv.plainupnp.upnp.UpnpRepository
-import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.discovery.device.RendererDiscoveryObservable
@@ -32,11 +31,12 @@ import org.fourthline.cling.model.types.UDAServiceType
 import org.fourthline.cling.support.model.TransportState
 import org.fourthline.cling.support.model.item.*
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 private const val MAX_PROGRESS = 100
-private const val HOME_FOLDER_ID = "0"
+private const val ROOT_FOLDER_ID = "0"
 private const val AV_TRANSPORT = "AVTransport"
 private const val RENDERING_CONTROL = "RenderingControl"
 private const val CONTENT_DIRECTORY = "ContentDirectory"
@@ -76,6 +76,12 @@ class UpnpManagerImpl @Inject constructor(
 
     override val folderChangeFlow: StateFlow<Consumable<FolderType>> = folderChange
 
+    private val mutableFolderStructure = MutableStateFlow<List<FolderType>>(listOf())
+
+    override val folderStructureFlow: Flow<List<FolderType>> = mutableFolderStructure
+
+    private val folderStructure: Deque<FolderType> = LinkedList<FolderType>()
+
     override fun selectContentDirectory(position: Int) {
         val contentDirectory = contentDirectoryObservable
             .currentContentDirectories[position]
@@ -88,9 +94,8 @@ class UpnpManagerImpl @Inject constructor(
         launch {
             safeNavigateTo(
                 errorReason = ErrorReason.BROWSE_FAILED,
-                folderId = HOME_FOLDER_ID,
-                folderName = contentDirectory.friendlyName,
-                clearBackStack = true
+                folderId = ROOT_FOLDER_ID,
+                folderName = contentDirectory.friendlyName
             )
         }
     }
@@ -345,14 +350,23 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    override fun navigateTo(container: ClingDIDLContainer) {
+    override fun navigateTo(folderId: String, title: String) {
         launch {
             safeNavigateTo(
                 errorReason = ErrorReason.BROWSE_FAILED,
-                folderId = container.didlObject.id,
-                folderName = container.didlObject.title
+                folderId = folderId,
+                folderName = title
             )
         }
+    }
+
+    override fun navigateBack() {
+        folderStructure.pollLast()
+        updateFolderStructure()
+    }
+
+    private fun updateFolderStructure() {
+        mutableFolderStructure.value = folderStructure.toList()
     }
 
     override fun togglePlayback() {
@@ -392,8 +406,7 @@ class UpnpManagerImpl @Inject constructor(
     private suspend inline fun safeNavigateTo(
         errorReason: ErrorReason? = null,
         folderId: String,
-        folderName: String,
-        clearBackStack: Boolean = false
+        folderName: String
     ) {
         contentDirectoryObservable.selectedContentDirectory?.let { selectedDevice ->
             val service: Service<*, *>? =
@@ -403,10 +416,18 @@ class UpnpManagerImpl @Inject constructor(
                 currentContent = upnpRepository.browse(service, folderId)
                 currentFolderName = folderName
 
-                folderChange.value = if (clearBackStack)
-                    Consumable(FolderType.Root(currentFolderName))
-                else
-                    Consumable(FolderType.SubFolder(currentFolderName))
+                val folder = when (folderId) {
+                    ROOT_FOLDER_ID -> {
+                        folderStructure.clear()
+                        FolderType.Root(folderId, currentFolderName)
+                    }
+                    else -> FolderType.SubFolder(folderId, currentFolderName)
+                }
+
+                folderStructure.add(folder)
+
+                folderChange.value = Consumable(folder)
+                updateFolderStructure()
             } else
                 errorReason.report()
         }
