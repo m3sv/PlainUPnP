@@ -12,7 +12,7 @@ data class Folder(val name: String, val contents: List<ContentItem>)
 
 class HomeViewModel @Inject constructor(
     private val manager: UpnpManager,
-    private val homeContentMapper: HomeContentMapper,
+    private val clingContentMapper: ClingContentMapper,
     filterDelegate: FilterDelegate
 ) : ViewModel() {
 
@@ -72,7 +72,7 @@ class HomeViewModel @Inject constructor(
 
         val folder = Folder(
             name = folderName,
-            contents = homeContentMapper.map(folderContents)
+            contents = clingContentMapper.map(folderContents)
         )
 
         _currentFolderContents.postValue(folder)

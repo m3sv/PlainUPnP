@@ -3,7 +3,7 @@ package com.m3sv.plainupnp.presentation.home
 import com.m3sv.plainupnp.upnp.didl.*
 import javax.inject.Inject
 
-class HomeContentMapper @Inject constructor() {
+class ClingContentMapper @Inject constructor() {
     fun map(items: List<ClingDIDLObject>): List<ContentItem> = items.map { item ->
         when (item) {
             is ClingDIDLContainer -> ContentItem(
