@@ -28,6 +28,7 @@ dependencies {
 
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
+    testImplementation Dependencies.test.mockitoInline
 
     implementation project(':common')
     implementation project(':shared-upnp')
