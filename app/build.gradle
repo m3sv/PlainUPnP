@@ -43,24 +43,17 @@ dependencies {
     implementation Dependencies.androidx.lifecycle.viewModelKtx
     implementation Dependencies.androidx.lifecycle.lifecycleKtx
     implementation Dependencies.androidx.lifecycle.liveDataKtx
-
     implementation Dependencies.androidx.navigation.fragment
     implementation Dependencies.androidx.navigation.ui
-
     implementation Dependencies.coroutines.core
-
     implementation Dependencies.dagger.core
     compileOnly Dependencies.dagger.annotation
     kapt Dependencies.dagger.compiler
-
     implementation Dependencies.kotlin
     implementation Dependencies.timber
-
     implementation Dependencies.glide
-
     implementation Dependencies.nanohttpd.core
     implementation Dependencies.nanohttpd.webserver
-
     implementation Dependencies.sqlDelightAndroidDriver
 
     testImplementation Dependencies.coroutines.test
@@ -70,10 +63,10 @@ dependencies {
 
     implementation project(':common')
     implementation project(':core-persistence')
+    implementation project(':core-resources')
     implementation project(':feature-home')
     implementation project(':feature-onboarding')
     implementation project(':feature-settings')
-    implementation project(':shared-resources')
     implementation project(':shared-upnp')
 }
 

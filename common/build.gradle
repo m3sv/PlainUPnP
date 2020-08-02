@@ -17,5 +17,5 @@ dependencies {
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
 
-    implementation project(":shared-resources")
+    implementation project(":core-resources")
 }
