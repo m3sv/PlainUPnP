@@ -13,7 +13,7 @@ class UpnpDirectoryMapper @Inject constructor(private val clingContentMapper: Cl
             clingContentMapper.map(input.content)
         )
 
-        is UpnpDirectory.SubUpnpDirectory -> UpnpFolder.SubFolder(
+        is UpnpDirectory.SubDirectory -> UpnpFolder.SubFolder(
             input.parentName,
             clingContentMapper.map(input.content)
         )

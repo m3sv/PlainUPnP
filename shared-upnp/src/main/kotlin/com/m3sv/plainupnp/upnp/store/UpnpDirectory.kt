@@ -10,7 +10,7 @@ sealed class UpnpDirectory(val content: List<ClingDIDLObject>) {
         content: List<ClingDIDLObject>
     ) : UpnpDirectory(content)
 
-    class SubUpnpDirectory(
+    class SubDirectory(
         val parentName: String,
         content: List<ClingDIDLObject>
     ) : UpnpDirectory(content)
