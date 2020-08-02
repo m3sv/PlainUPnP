@@ -40,6 +40,7 @@ object Dependencies {
     const val sqlDelightAndroidDriver =
         "com.squareup.sqldelight:android-driver:${Versions.sqlDelight}"
     const val timber = "com.jakewharton.timber:timber:4.7.1"
+    const val coreLibraryDesugaring = "com.android.tools:desugar_jdk_libs:1.0.10"
 
     val androidx = mapOf(
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",
