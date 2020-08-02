@@ -4,7 +4,7 @@ import com.m3sv.plainupnp.common.Mapper
 import com.m3sv.plainupnp.upnp.store.UpnpDirectory
 import javax.inject.Inject
 
-class HomeUpnpDirectoryMapper @Inject constructor(private val homeContentMapper: HomeContentMapper) :
+class UpnpDirectoryMapper @Inject constructor(private val homeContentMapper: HomeContentMapper) :
     Mapper<UpnpDirectory, UpnpFolder> {
 
     override fun map(input: UpnpDirectory): UpnpFolder = when (input) {
