@@ -14,5 +14,8 @@ dependencies {
 
     implementation Dependencies.timber
 
+    testImplementation Dependencies.test.junit
+    testImplementation Dependencies.test.mockito
+
     implementation project(":shared-resources")
 }
