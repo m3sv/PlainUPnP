@@ -21,7 +21,8 @@ internal class TimeUtilTest {
 
     @Test
     fun `format time to proper format negative input`() {
-        val actual = formatTime(-100, -250, -12121)
+        val actual =
+            formatTime(-100, -250, -12121)
         assertEquals(DEFAULT_DURATION, actual)
     }
 
