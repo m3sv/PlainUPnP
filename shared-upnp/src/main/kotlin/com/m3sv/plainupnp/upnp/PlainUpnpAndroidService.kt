@@ -4,7 +4,6 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationManagerCompat
-import com.m3sv.plainupnp.ShutdownNotifierImpl
 import kotlin.system.exitProcess
 
 class PlainUpnpAndroidService : Service() {
@@ -18,7 +17,6 @@ class PlainUpnpAndroidService : Service() {
 
         when (intent?.action) {
             NotificationBuilder.ACTION_EXIT -> {
-                ShutdownNotifierImpl.shutdown()
                 stopForeground(false)
                 notificationManager.cancelAll()
                 stopSelf(startId)

@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.m3sv.plainupnp.ShutdownNotifier
 import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveContentDirectoriesUseCase
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
@@ -21,11 +20,8 @@ class MainViewModel @Inject constructor(
     // TODO research why Dagger doesn't like Kotlin generic, use concrete implementation for now
     private val deviceDisplayMapper: DeviceDisplayMapper,
     observeContentDirectories: ObserveContentDirectoriesUseCase,
-    observeRenderersUseCase: ObserveRenderersUseCase,
-    shutdownNotifier: ShutdownNotifier
+    observeRenderersUseCase: ObserveRenderersUseCase
 ) : ViewModel() {
-
-    val shutdown: LiveData<Unit> = shutdownNotifier.flow.asLiveData()
 
     val volume = volumeManager
         .volumeFlow

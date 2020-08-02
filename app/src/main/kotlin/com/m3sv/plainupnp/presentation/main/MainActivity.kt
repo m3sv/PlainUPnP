@@ -147,12 +147,6 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             }
 
         viewModel
-            .shutdown
-            .observe(this) {
-                finishAndRemoveTask()
-            }
-
-        viewModel
             .errors
             .observe(this) { consumable ->
                 consumable.consume { value ->
