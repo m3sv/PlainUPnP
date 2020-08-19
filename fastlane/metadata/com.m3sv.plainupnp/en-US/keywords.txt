@@ -1,6 +1,0 @@
-PlainUPnP
-UPnP
-DLNA
-UPnP Server
-DLNA Server
-Server

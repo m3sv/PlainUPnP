@@ -1,1 +1,0 @@
-PlainUPnP — use your device as a UPnP/DLNA server!

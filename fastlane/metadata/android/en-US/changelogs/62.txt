@@ -1,0 +1,1 @@
+Fix issue with broken back navigation, set system theme as default.

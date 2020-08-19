@@ -8,9 +8,23 @@ android {
         exclude 'META-INF/beans.xml'
     }
 
+    def isDeploy = System.getenv('IS_DEPLOY')
+
+    if (isDeploy)
+        signingConfigs {
+            release {
+                keyAlias System.getenv('KEY_ALIAS')
+                keyPassword System.getenv('KEY_PASSWORD')
+                storeFile file(System.getenv('STORE_FILE'))
+                storePassword System.getenv('STORE_PASSWORD')
+            }
+        }
+
     buildTypes {
         release {
             minifyEnabled true
+            if (isDeploy)
+                signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
