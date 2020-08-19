@@ -1,11 +1,11 @@
 PlainUPnP — use your device as a UPnP/DLNA server!
 
 The application allows you to stream videos, music and photos to your Smart TV/Android TV.
-Browse media sources and stream media content to a selected device or play locally.
+Browse media sources and stream media content to a selected device or play locally. 
 
 Compatible with UPnP/DLNA, Smart TV, Android TV.
 
-Features:
+Features: 
 🠊 Simple and easy to use interface
 🠊 Media content streaming
 🠊 Dark/Light theme
@@ -13,5 +13,5 @@ Features:
 🠊 UPnP server
 🠊 Browse content
 
-The application is open-source, you can find the source code here:
+The application is open-source, you can find the source code here: 
 https://github.com/m3sv/PlainUPnP
