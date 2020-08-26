@@ -1,7 +1,6 @@
 package com.m3sv.plainupnp.presentation.home
 
 import androidx.lifecycle.ViewModel
-import com.m3sv.plainupnp.common.Mapper
 import com.m3sv.plainupnp.di.ViewModelKey
 import com.m3sv.plainupnp.upnp.store.UpnpDirectory
 import dagger.Binds
@@ -18,5 +17,5 @@ interface HomeFragmentModule {
     fun bindHomeFragmentViewModel(homeViewModel: HomeViewModel): ViewModel
 
     @Binds
-    fun bindHomeDirectoryBinder(upnpDirectoryMapper: UpnpDirectoryMapper): Mapper<UpnpDirectory, UpnpFolder>
+    fun bindHomeDirectoryBinder(upnpDirectoryMapper: UpnpDirectoryMapper): (UpnpDirectory) -> UpnpFolder
 }

@@ -1,13 +1,12 @@
 package com.m3sv.plainupnp.presentation.home
 
-import com.m3sv.plainupnp.common.Mapper
 import com.m3sv.plainupnp.upnp.store.UpnpDirectory
 import javax.inject.Inject
 
 class UpnpDirectoryMapper @Inject constructor(private val clingContentMapper: ClingContentMapper) :
-    Mapper<UpnpDirectory, UpnpFolder> {
+        (UpnpDirectory) -> UpnpFolder {
 
-    override fun map(input: UpnpDirectory): UpnpFolder = when (input) {
+    override fun invoke(input: UpnpDirectory): UpnpFolder = when (input) {
         is UpnpDirectory.Root -> UpnpFolder.Root(
             input.name,
             clingContentMapper.map(input.content)
@@ -20,4 +19,5 @@ class UpnpDirectoryMapper @Inject constructor(private val clingContentMapper: Cl
 
         is UpnpDirectory.None -> UpnpFolder.None
     }
+
 }

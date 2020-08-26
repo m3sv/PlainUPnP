@@ -17,7 +17,6 @@ class MainViewModel @Inject constructor(
     private val upnpManager: UpnpManager,
     private val volumeManager: BufferedVolumeManager,
     private val filterDelegate: FilterDelegate,
-    // TODO research why Dagger doesn't like Kotlin generic, use concrete implementation for now
     private val deviceDisplayMapper: DeviceDisplayMapper,
     observeContentDirectories: ObserveContentDirectoriesUseCase,
     observeRenderersUseCase: ObserveRenderersUseCase
@@ -32,11 +31,11 @@ class MainViewModel @Inject constructor(
         .asLiveData()
 
     val renderers = observeRenderersUseCase()
-        .map { bundle -> deviceDisplayMapper.map(bundle) }
+        .map { bundle -> deviceDisplayMapper(bundle) }
         .asLiveData()
 
     val contentDirectories = observeContentDirectories()
-        .map { bundle -> deviceDisplayMapper.map(bundle) }
+        .map { bundle -> deviceDisplayMapper(bundle) }
         .asLiveData()
 
     val errors = upnpManager
@@ -51,8 +50,8 @@ class MainViewModel @Inject constructor(
         .folderChangeFlow
         .asLiveData()
 
-    fun navigateTo(folderId: String, title: String) {
-        upnpManager.navigateTo(folderId, title)
+    fun openFolder(folderId: String, title: String) {
+        upnpManager.openFolder(folderId, title)
     }
 
     fun moveTo(progress: Int) {

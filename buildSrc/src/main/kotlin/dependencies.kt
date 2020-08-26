@@ -5,7 +5,7 @@ object Versions {
     const val cling = "2.1.9"
     const val compileSdk = 29
     const val constraintLayout = "2.0.0-rc1"
-    const val coroutines = "1.3.7"
+    const val coroutines = "1.3.9"
     const val coreTesting = "2.1.0"
     const val dagger = "2.27"
     const val detekt = "1.0.0"

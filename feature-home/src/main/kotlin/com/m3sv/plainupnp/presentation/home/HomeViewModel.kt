@@ -55,7 +55,7 @@ class HomeViewModel @Inject constructor(
             // we're in the folder zone
             else -> {
                 val folder = folders[clickPosition]
-                manager.navigateTo(
+                manager.openFolder(
                     folderId = folder.id,
                     title = folder.title
                 )

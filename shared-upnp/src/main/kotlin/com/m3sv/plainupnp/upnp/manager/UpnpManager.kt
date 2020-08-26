@@ -26,7 +26,7 @@ interface UpnpManager : UpnpVolumeManager, PlaybackManager {
         listIterator: ListIterator<ClingDIDLObject>
     )
 
-    fun navigateTo(folderId: String, title: String)
+    fun openFolder(folderId: String, title: String)
     fun navigateBack()
     fun seekTo(progress: Int)
     fun getCurrentFolderContents(): List<ClingDIDLObject>

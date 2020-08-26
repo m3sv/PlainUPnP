@@ -350,7 +350,7 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    override fun navigateTo(folderId: String, title: String) {
+    override fun openFolder(folderId: String, title: String) {
         launch {
             safeNavigateTo(
                 errorReason = ErrorReason.BROWSE_FAILED,

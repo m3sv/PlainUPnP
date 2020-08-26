@@ -14,7 +14,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.observe
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.findNavController
@@ -97,6 +96,7 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             hideSearchContainer(false)
             view.postDelayed({ controlsFragment.toggle() }, 50)
         }
+
         setSupportActionBar(binding.bottomBar)
 
         binding.searchClose.setOnClickListener {
@@ -117,7 +117,7 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
     // TODO remove this when geniuses from Google figure out how to deal with cyclic navigation and popBackStack
     private fun navigateToFolder(folder: FolderType) {
         if (folder is FolderType.Root)
-            viewModel.navigateTo(folder.folderId, folder.title)
+            viewModel.openFolder(folder.folderId, folder.title)
         else
             handleBackPressed()
     }

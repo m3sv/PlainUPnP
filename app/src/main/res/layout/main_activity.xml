@@ -105,4 +105,12 @@
                 android:textAppearance="@style/TextAppearance.MaterialComponents.Button" />
         </LinearLayout>
     </com.google.android.material.bottomappbar.BottomAppBar>
+
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/loading_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
