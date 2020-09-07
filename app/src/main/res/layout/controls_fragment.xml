@@ -25,7 +25,6 @@
         android:layout_height="match_parent"
         android:fillViewport="true"
         app:behavior_hideable="true"
-        app:behavior_peekHeight="@dimen/media_controls_sheet_peek_height"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
         tools:behavior_peekHeight="1000dp">
 

@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.presentation.main.di
 
-import com.m3sv.plainupnp.presentation.main.ControlsFragment
 import com.m3sv.plainupnp.presentation.main.MainActivity
+import com.m3sv.plainupnp.presentation.main.controls.ControlsFragment
 import dagger.Subcomponent
 
 @Subcomponent(modules = [MainActivityModule::class])

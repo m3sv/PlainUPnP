@@ -4,11 +4,12 @@ import androidx.lifecycle.*
 import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
+import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class Folder(val name: String, val contents: List<ContentItem>)
+data class FolderContents(val name: String, val contents: List<ContentItem>)
 
 class HomeViewModel @Inject constructor(
     private val manager: UpnpManager,
@@ -16,9 +17,9 @@ class HomeViewModel @Inject constructor(
     filterDelegate: FilterDelegate
 ) : ViewModel() {
 
-    private val _currentFolderContents = MutableLiveData<Folder>()
+    private val _currentFolderContents = MutableLiveData<FolderContents>()
 
-    val currentFolderContents: LiveData<Folder> = _currentFolderContents
+    val currentFolderContents: LiveData<FolderContents> = _currentFolderContents
 
     private var folderName: String = ""
 
@@ -47,7 +48,7 @@ class HomeViewModel @Inject constructor(
     private fun handleFolderOrMediaClick(clickPosition: Int) {
         when {
             // we're in the media zone
-            clickPosition > folders.size -> {
+            clickPosition >= folders.size -> {
                 val mediaPosition = clickPosition - folders.size
                 val mediaItem = media[mediaPosition]
                 manager.playItem(mediaItem, media.listIterator(mediaPosition))
@@ -55,10 +56,7 @@ class HomeViewModel @Inject constructor(
             // we're in the folder zone
             else -> {
                 val folder = folders[clickPosition]
-                manager.openFolder(
-                    folderId = folder.id,
-                    title = folder.title
-                )
+                manager.openFolder(Folder.SubFolder(folder.id, folder.title))
             }
         }
     }
@@ -70,7 +68,7 @@ class HomeViewModel @Inject constructor(
         folders = folderContents.filterIsInstance<ClingDIDLContainer>()
         media = folderContents.filter { it !is ClingDIDLContainer }
 
-        val folder = Folder(
+        val folder = FolderContents(
             name = folderName,
             contents = clingContentMapper.map(folderContents)
         )

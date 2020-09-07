@@ -4,7 +4,6 @@ import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.callbackFlow
@@ -21,9 +20,9 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(private val conten
     val currentContentDirectories: List<DeviceDisplay>
         get() = contentDirectories.toList()
 
-    @ExperimentalCoroutinesApi
-    fun observe() = callbackFlow<List<DeviceDisplay>> {
+    operator fun invoke() = callbackFlow<List<DeviceDisplay>> {
         contentDirectoryDiscovery.startObserving()
+
         val callback = object :
             DeviceDiscoveryObserver {
             override fun addedDevice(event: UpnpDeviceEvent) {

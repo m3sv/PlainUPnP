@@ -2,7 +2,8 @@ package com.m3sv.plainupnp.common
 
 import java.util.concurrent.atomic.AtomicReference
 
-class Consumable<T>(value: T? = null) {
+class Consumable<T>(private val value: T? = null) {
+
     private val atomicReference = AtomicReference(value)
 
     fun consume(block: (T) -> Unit) {
@@ -12,5 +13,5 @@ class Consumable<T>(value: T? = null) {
         }
     }
 
-    fun peek(): T? = atomicReference.get()
+    fun peek(): T? = value
 }

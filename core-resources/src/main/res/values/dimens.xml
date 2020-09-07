@@ -3,7 +3,6 @@
     <dimen name="media_controls_size">56dp</dimen>
     <dimen name="media_controls_sheet_art_margin">8dp</dimen>
     <dimen name="media_controls_sheet_corner_radius">16dp</dimen>
-    <dimen name="media_controls_sheet_peek_height">136dp</dimen>
     <dimen name="media_controls_sheet_spinner_height_min">32dp</dimen>
     <dimen name="media_controls_sheet_top_padding">4dp</dimen>
     <dimen name="media_item_height">56dp</dimen>

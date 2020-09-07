@@ -5,24 +5,21 @@
     android:layout_height="match_parent"
     tools:context=".presentation.main.MainActivity">
 
-    <com.m3sv.plainupnp.presentation.main.NavigationStrip
+    <com.m3sv.plainupnp.presentation.main.navigationstrip.NavigationStrip
         android:id="@+id/navigation_strip"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize"
         android:paddingStart="8dp"
         android:paddingEnd="8dp" />
 
-    <fragment
+    <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_container"
-        android:name="androidx.navigation.fragment.NavHostFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:defaultNavHost="true"
-        app:navGraph="@navigation/nav_graph" />
+        android:layout_height="match_parent" />
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/bottom_nav_drawer"
-        android:name="com.m3sv.plainupnp.presentation.main.ControlsFragment"
+        android:name="com.m3sv.plainupnp.presentation.main.controls.ControlsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="?actionBarSize" />

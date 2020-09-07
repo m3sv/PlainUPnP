@@ -1,42 +1,44 @@
 package com.m3sv.plainupnp.presentation.main
 
 import android.animation.ObjectAnimator
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.ROTATION
-import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
-import androidx.navigation.NavDestination
-import androidx.navigation.findNavController
 import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.transition.MaterialFade
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
+import com.m3sv.plainupnp.common.util.inputMethodManager
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
+import com.m3sv.plainupnp.presentation.home.HomeFragment
+import com.m3sv.plainupnp.presentation.main.controls.ControlsFragment
 import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
-import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
-import com.m3sv.plainupnp.upnp.folder.FolderType
+import com.m3sv.plainupnp.presentation.onboarding.OnboardingFragment
+import com.m3sv.plainupnp.presentation.settings.SettingsFragment
+import com.m3sv.plainupnp.upnp.folder.Folder
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.LazyThreadSafetyMode.NONE
+import kotlin.properties.Delegates
 
 private const val CHEVRON_ROTATION_ANGLE_KEY = "chevron_rotation_angle_key"
-private const val OPTIONS_MENU_KEY = "options_menu_key"
 private const val IS_SEARCH_CONTAINER_VISIBLE = "is_search_container_visible_key"
+private const val ARE_CONTROLS_VISIBLE = "are_controls_visible"
 
-class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener {
+class MainActivity : BaseActivity() {
 
     lateinit var mainActivitySubComponent: MainActivitySubComponent
 
@@ -44,11 +46,7 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
 
     private lateinit var viewModel: MainViewModel
 
-    private lateinit var volumeIndicator: VolumeIndicator
-
-    private lateinit var inputMethodManager: InputMethodManager
-
-    private var bottomBarMenu = R.menu.bottom_app_bar_home_menu
+    private val volumeIndicator: VolumeIndicator by lazy(NONE) { VolumeIndicator(this) }
 
     private val controlsFragment: ControlsFragment by lazy(NONE) {
         (supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment)
@@ -57,75 +55,81 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
         super.onCreate(savedInstanceState)
-        inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        inflateView()
 
-        if (savedInstanceState == null) {
-            val intent = Intent(this, PlainUpnpAndroidService::class.java).apply {
-                action = PlainUpnpAndroidService.START_SERVICE
+        if (savedInstanceState != null) {
+            Handler().post {
+                with(savedInstanceState) {
+                    restoreChevronState()
+                    restoreSearchContainerVisibility()
+                    restoreControlsVisibility()
+                }
             }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent)
-            } else {
-                startService(intent)
-            }
+        } else {
+            addFragment(OnboardingFragment())
         }
 
-        volumeIndicator = VolumeIndicator(this)
-        binding = MainActivityBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        viewModel = getViewModel()
-        withNavController {
-            addOnDestinationChangedListener(this@MainActivity)
-        }
-
-        observeState()
         requestReadStoragePermission()
 
-        if (savedInstanceState != null)
-            with(savedInstanceState) {
-                restoreChevronState()
-                restoreMenu()
-                restoreSearchContainerVisibility()
-            }
+        viewModel = getViewModel()
 
+        observeState()
         animateBottomDrawChanges()
 
-        binding.controlsContainer.setOnClickListener { view ->
-            hideSearchContainer(false)
-            view.postDelayed({ controlsFragment.toggle() }, 50)
-        }
+        with(binding) {
+            controlsContainer.setOnClickListener { view ->
+                hideSearchContainer(false)
+                view.postDelayed({ controlsFragment.toggle() }, 50)
+            }
+            setSupportActionBar(bottomBar)
 
-        setSupportActionBar(binding.bottomBar)
+            searchClose.setOnClickListener {
+                hideSearchContainer(true)
+            }
 
-        binding.searchClose.setOnClickListener {
-            hideSearchContainer(true)
-        }
+            searchInput.addTextChangedListener { if (it != null) viewModel.filterText(it.toString()) }
 
-        binding.searchInput.addTextChangedListener { text ->
-            if (text != null) viewModel.filterText(text.toString())
-        }
-
-        lifecycleScope.launch {
-            binding.navigationStrip.clickFlow.collect { folder ->
-                navigateToFolder(folder)
+            lifecycleScope.launch {
+                navigationStrip.clickFlow.collect { folder ->
+                    navigateToFolder(folder)
+                }
             }
         }
     }
 
-    // TODO remove this when geniuses from Google figure out how to deal with cyclic navigation and popBackStack
-    private fun navigateToFolder(folder: FolderType) {
-        if (folder is FolderType.Root)
-            viewModel.openFolder(folder.folderId, folder.title)
-        else
-            handleBackPressed()
+    private fun inflateView() {
+        binding = MainActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+    }
+
+    private fun addFragment(fragment: Fragment) {
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.nav_host_container, fragment)
+            .commit()
+    }
+
+    private fun replaceFragment(fragment: Fragment, tag: String, addToBackStack: Boolean = false) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.nav_host_container, fragment, tag)
+            .apply {
+                if (addToBackStack) {
+                    addToBackStack(tag)
+                }
+            }.commit()
+    }
+
+    private fun navigateToFolder(folder: Folder) {
+        when (folder) {
+            is Folder.Root -> viewModel.navigate(MainRoute.ToFolder(folder))
+            is Folder.SubFolder -> viewModel.navigate(MainRoute.BackTo(folder))
+        }
     }
 
     private fun hideSearchContainer(animate: Boolean) {
         if (animate) {
-            val animationDuration = 150L
-            animateVisibilityChange(animationDuration)
+            animateVisibilityChange()
         }
 
         with(binding) {
@@ -142,9 +146,7 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
     private fun observeState() {
         viewModel
             .volume
-            .observe(this) { volume: Int ->
-                volumeIndicator.volume = volume
-            }
+            .observe(this) { volume: Int -> volumeIndicator.volume = volume }
 
         viewModel
             .errors
@@ -159,18 +161,48 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
 
         viewModel
             .changeFolder
-            .observe(this) { consumable ->
-                consumable.consume { folderType ->
+            .observe(this) { changeEvent ->
+                areControlsVisible = true
+
+                changeEvent.consume { folderType ->
                     when (folderType) {
-                        is FolderType.Root -> navigateToRootFolder()
-                        is FolderType.SubFolder -> navigateToSubfolder()
+                        is Folder.Root -> {
+                            supportFragmentManager.popBackStack(
+                                null,
+                                POP_BACK_STACK_INCLUSIVE
+                            )
+                            replaceFragment(HomeFragment(), folderType.id)
+                        }
+
+                        is Folder.SubFolder -> replaceFragment(
+                            HomeFragment(),
+                            folderType.id,
+                            true
+                        )
                     }
                 }
             }
 
         viewModel
-            .navigationState
-            .observe(this, binding.navigationStrip::replaceItems)
+            .navigationStrip
+            .observe(this) { folders -> binding.navigationStrip.replaceItems(folders) }
+
+        viewModel.navigation.observe(this) { navigationEvent ->
+            navigationEvent.consume { route ->
+                when (route) {
+                    is MainRoute.Settings -> {
+                        areControlsVisible = false
+                        controlsFragment.close()
+                        replaceFragment(SettingsFragment(), "settings", true)
+                    }
+                    is MainRoute.BackTo -> {
+                        supportFragmentManager.popBackStack(route.folder?.id, 0)
+                        areControlsVisible = true
+                    }
+                    is MainRoute.ToFolder -> Unit
+                }
+            }
+        }
     }
 
     override fun onKeyUp(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
@@ -181,38 +213,35 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         else -> super.onKeyUp(keyCode, event)
     }
 
-    private fun navigateToSubfolder() {
-        withNavController {
-            navigate(R.id.to_sub)
-        }
-    }
-
-    private fun navigateToRootFolder() {
-        withNavController {
-            navigate(R.id.to_root)
-        }
-    }
-
-    override fun onDestinationChanged(
-        controller: NavController,
-        destination: NavDestination,
-        arguments: Bundle?
-    ) {
-        when (destination.id) {
-            R.id.root_fragment,
-            R.id.sub_folder_fragment -> contentDestination()
-            R.id.settings_fragment -> settingsDestination()
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(bottomBarMenu, menu)
+        menuInflater.inflate(R.menu.bottom_app_bar_home_menu, menu)
         return true
+    }
+
+    private var areControlsVisible: Boolean by Delegates.observable(true) { _, _, visible ->
+        if (visible) {
+            with(binding) {
+                bottomBar.performShow()
+                with(navigationStrip) {
+                    clearAnimation()
+                    animate().alpha(1f)
+                }
+            }
+        } else {
+            hideSearchContainer(false)
+            with(binding) {
+                bottomBar.performHide()
+                with(navigationStrip) {
+                    clearAnimation()
+                    animate().alpha(0f)
+                }
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_settings -> showSettings()
+            R.id.menu_settings -> viewModel.navigate(MainRoute.Settings)
             R.id.menu_search -> showSearch()
         }
         return true
@@ -232,26 +261,20 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         }
     }
 
-    private fun animateVisibilityChange(animationDuration: Long) {
+    private fun animateVisibilityChange(animationDuration: Long = 150L) {
         val materialFade = MaterialFade().apply {
             duration = animationDuration
         }
         TransitionManager.beginDelayedTransition(binding.root, materialFade)
     }
 
-    private fun showSettings() {
-        hideSearchContainer(false)
-        controlsFragment.close()
-        withNavController {
-            navigate(R.id.to_settings)
-        }
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
+        with(outState) {
+            putFloat(CHEVRON_ROTATION_ANGLE_KEY, binding.bottomAppBarChevron.rotation)
+            putBoolean(IS_SEARCH_CONTAINER_VISIBLE, binding.searchContainer.isVisible)
+            putBoolean(ARE_CONTROLS_VISIBLE, areControlsVisible)
+        }
         super.onSaveInstanceState(outState)
-        outState.putFloat(CHEVRON_ROTATION_ANGLE_KEY, binding.bottomAppBarChevron.rotation)
-        outState.putInt(OPTIONS_MENU_KEY, bottomBarMenu)
-        outState.putBoolean(IS_SEARCH_CONTAINER_VISIBLE, binding.searchContainer.isVisible)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
@@ -268,9 +291,7 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
     }
 
     private fun animateBottomDrawChanges() {
-        with(controlsFragment) {
-            addOnStateChangedAction(TriggerOnceStateAction(this@MainActivity::animateChevronArrow))
-        }
+        controlsFragment.addOnStateChangedAction(TriggerOnceStateAction(this@MainActivity::animateChevronArrow))
     }
 
     private val arrowUpAnimator by lazy(mode = NONE) {
@@ -303,32 +324,8 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             .also { component -> component.inject(this) }
     }
 
-    private fun contentDestination() {
-        with(binding) {
-            bottomBar.performShow()
-            with(navigationStrip) {
-                clearAnimation()
-                animate().alpha(1f)
-            }
-        }
-    }
-
-    private fun settingsDestination() {
-        with(binding) {
-            bottomBar.performHide()
-            with(navigationStrip) {
-                clearAnimation()
-                animate().alpha(0f)
-            }
-        }
-    }
-
     private fun Bundle.restoreChevronState() {
         binding.bottomAppBarChevron.rotation = getFloat(CHEVRON_ROTATION_ANGLE_KEY, 0f)
-    }
-
-    private fun Bundle.restoreMenu() {
-        bottomBarMenu = getInt(OPTIONS_MENU_KEY, R.menu.bottom_app_bar_home_menu)
     }
 
     private fun Bundle.restoreSearchContainerVisibility() {
@@ -338,22 +335,18 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
             .visibility = if (isSearchContainerVisible) View.VISIBLE else View.INVISIBLE
     }
 
+    private fun Bundle.restoreControlsVisibility() {
+        areControlsVisible = getBoolean(ARE_CONTROLS_VISIBLE, false)
+    }
+
     override fun onBackPressed() {
         handleBackPressed()
     }
 
     private fun handleBackPressed() {
-        withNavController {
-            when (currentDestination?.id) {
-                R.id.onboarding_fragment,
-                R.id.root_fragment -> showExitConfirmationDialog()
-                R.id.sub_folder_fragment -> {
-                    viewModel.navigateBack()
-                    super.onBackPressed()
-                }
-                else -> super.onBackPressed()
-
-            }
+        when (supportFragmentManager.backStackEntryCount) {
+            0 -> showExitConfirmationDialog()
+            else -> viewModel.navigate(MainRoute.BackTo(null))
         }
     }
 
@@ -361,14 +354,8 @@ class MainActivity : BaseActivity(), NavController.OnDestinationChangedListener 
         AlertDialog.Builder(this)
             .setTitle(getString(R.string.dialog_exit_title))
             .setMessage(getString(R.string.dialog_exit_body))
-            .setPositiveButton(getString(R.string.exit)) { _, _ ->
-                finishAndRemoveTask()
-            }
+            .setPositiveButton(getString(R.string.exit)) { _, _ -> finishAndRemoveTask() }
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             .show()
-    }
-
-    private fun withNavController(block: NavController.() -> Unit) {
-        block(findNavController(R.id.nav_host_container))
     }
 }

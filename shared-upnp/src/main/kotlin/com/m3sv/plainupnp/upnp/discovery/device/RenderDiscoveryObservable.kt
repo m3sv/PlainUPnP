@@ -3,7 +3,6 @@ package com.m3sv.plainupnp.upnp.discovery.device
 
 import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.resourceproviders.UpnpResourceProvider
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.callbackFlow
@@ -23,9 +22,9 @@ class RendererDiscoveryObservable @Inject constructor(
     val currentRenderers: List<DeviceDisplay>
         get() = renderers.toList()
 
-    @ExperimentalCoroutinesApi
-    fun observe() = callbackFlow<List<DeviceDisplay>> {
+    operator fun invoke() = callbackFlow {
         rendererDiscovery.startObserving()
+
         val callback = object :
             DeviceDiscoveryObserver {
             override fun addedDevice(event: UpnpDeviceEvent) {
@@ -75,4 +74,5 @@ class RendererDiscoveryObservable @Inject constructor(
         sendBlocking(currentRenderers)
         awaitClose { rendererDiscovery.removeObserver(callback) }
     }
+
 }

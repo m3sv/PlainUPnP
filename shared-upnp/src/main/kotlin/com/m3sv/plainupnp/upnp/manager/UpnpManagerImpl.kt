@@ -12,7 +12,7 @@ import com.m3sv.plainupnp.upnp.UpnpRepository
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.discovery.device.RendererDiscoveryObservable
-import com.m3sv.plainupnp.upnp.folder.FolderType
+import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import com.m3sv.plainupnp.upnp.util.duration
@@ -23,15 +23,12 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asFlow
 import org.fourthline.cling.model.meta.Service
 import org.fourthline.cling.model.types.UDAServiceType
 import org.fourthline.cling.support.model.TransportState
 import org.fourthline.cling.support.model.item.*
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
@@ -41,10 +38,6 @@ private const val AV_TRANSPORT = "AVTransport"
 private const val RENDERING_CONTROL = "RenderingControl"
 private const val CONTENT_DIRECTORY = "ContentDirectory"
 
-@OptIn(
-    ExperimentalCoroutinesApi::class,
-    FlowPreview::class
-)
 class UpnpManagerImpl @Inject constructor(
     private val rendererDiscoveryObservable: RendererDiscoveryObservable,
     private val contentDirectoryObservable: ContentDirectoryDiscoveryObservable,
@@ -58,29 +51,16 @@ class UpnpManagerImpl @Inject constructor(
 
     override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.IO
 
-    private val upnpInnerStateChannel = BroadcastChannel<UpnpRendererState>(Channel.CONFLATED)
-
-    override val upnpRendererState: Flow<UpnpRendererState> = upnpInnerStateChannel.asFlow()
-
     private var isLocal: Boolean = false
 
-    override val contentDirectories: Flow<List<DeviceDisplay>> =
-        contentDirectoryObservable.observe()
-
-    override val renderers: Flow<List<DeviceDisplay>> = rendererDiscoveryObservable.observe()
-
+    private val upnpInnerStateChannel = BroadcastChannel<UpnpRendererState>(Channel.CONFLATED)
+    override val upnpRendererState: Flow<UpnpRendererState> = upnpInnerStateChannel.asFlow()
+    override val contentDirectories: Flow<List<DeviceDisplay>> = contentDirectoryObservable()
+    override val renderers: Flow<List<DeviceDisplay>> = rendererDiscoveryObservable()
     override val actionErrors: Flow<Consumable<String>> = errorReporter.errorFlow
 
-    private val folderChange: MutableStateFlow<Consumable<FolderType>> =
-        MutableStateFlow(Consumable())
-
-    override val folderChangeFlow: StateFlow<Consumable<FolderType>> = folderChange
-
-    private val mutableFolderStructure = MutableStateFlow<List<FolderType>>(listOf())
-
-    override val folderStructureFlow: Flow<List<FolderType>> = mutableFolderStructure
-
-    private val folderStructure: Deque<FolderType> = LinkedList<FolderType>()
+    private val folderChange: BroadcastChannel<Folder> = BroadcastChannel(1)
+    override val folderChangeFlow: Flow<Folder> = folderChange.asFlow()
 
     override fun selectContentDirectory(position: Int) {
         val contentDirectory = contentDirectoryObservable
@@ -350,23 +330,14 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    override fun openFolder(folderId: String, title: String) {
+    override fun openFolder(folder: Folder) {
         launch {
             safeNavigateTo(
                 errorReason = ErrorReason.BROWSE_FAILED,
-                folderId = folderId,
-                folderName = title
+                folderId = folder.id,
+                folderName = folder.title
             )
         }
-    }
-
-    override fun navigateBack() {
-        folderStructure.pollLast()
-        updateFolderStructure()
-    }
-
-    private fun updateFolderStructure() {
-        mutableFolderStructure.value = folderStructure.toList()
     }
 
     override fun togglePlayback() {
@@ -417,17 +388,11 @@ class UpnpManagerImpl @Inject constructor(
                 currentFolderName = folderName
 
                 val folder = when (folderId) {
-                    ROOT_FOLDER_ID -> {
-                        folderStructure.clear()
-                        FolderType.Root(folderId, currentFolderName)
-                    }
-                    else -> FolderType.SubFolder(folderId, currentFolderName)
+                    ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName)
+                    else -> Folder.SubFolder(folderId, currentFolderName)
                 }
 
-                folderStructure.add(folder)
-
-                folderChange.value = Consumable(folder)
-                updateFolderStructure()
+                folderChange.offer(folder)
             } else
                 errorReason.report()
         }

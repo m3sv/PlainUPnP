@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.common
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +13,6 @@ interface FilterDelegate {
     suspend fun filter(text: String)
 }
 
-@ExperimentalCoroutinesApi
 @Singleton
 class Filter @Inject constructor() : FilterDelegate {
 

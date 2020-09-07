@@ -1,13 +1,15 @@
-package com.m3sv.plainupnp.presentation.main
+package com.m3sv.plainupnp.presentation.main.controls
 
 import android.animation.ObjectAnimator
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.observe
@@ -26,6 +28,10 @@ import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
+import com.m3sv.plainupnp.presentation.main.MainActivity
+import com.m3sv.plainupnp.presentation.main.MainViewModel
+import com.m3sv.plainupnp.presentation.main.PlayerButton
+import com.m3sv.plainupnp.presentation.main.SpinnerItemsBundle
 import org.fourthline.cling.support.model.TransportState
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
@@ -86,6 +92,17 @@ class ControlsFragment : BaseFragment() {
             behavior.state = BottomSheetBehavior.STATE_HIDDEN
         }
 
+        view.viewTreeObserver.addOnGlobalLayoutListener(object :
+            ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                view.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                behavior.peekHeight = binding.pickers.root.bottom + TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    8f,
+                    resources.displayMetrics
+                ).toInt()
+            }
+        })
         behavior.addBottomSheetCallback(bottomSheetCallback)
 
         addOnStateChangedAction(TriggerOnceStateAction { isHidden ->

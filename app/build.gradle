@@ -39,10 +39,6 @@ android {
         test.java.srcDirs += 'src/test/kotlin'
         androidTest.java.srcDirs += 'src/androidTest/kotlin'
     }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
 }
 
 dependencies {
@@ -51,14 +47,13 @@ dependencies {
     implementation Dependencies.androidx.recyclerView
     implementation Dependencies.androidx.cardView
     implementation Dependencies.androidx.constraintLayout
+    implementation Dependencies.androidx.coreKtx
     implementation Dependencies.androidx.preference
     implementation Dependencies.androidx.lifecycle.extensions
     implementation Dependencies.androidx.lifecycle.liveDataKtx
     implementation Dependencies.androidx.lifecycle.viewModelKtx
     implementation Dependencies.androidx.lifecycle.lifecycleKtx
     implementation Dependencies.androidx.lifecycle.liveDataKtx
-    implementation Dependencies.androidx.navigation.fragment
-    implementation Dependencies.androidx.navigation.ui
     implementation Dependencies.coroutines.core
     implementation Dependencies.dagger.core
     compileOnly Dependencies.dagger.annotation

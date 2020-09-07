@@ -15,7 +15,6 @@ object Versions {
     const val material = "1.2.0"
     const val minSdk = 21
     const val nanohttpd = "2.3.1"
-    const val navigation = "2.3.0"
     const val recyclerView = "1.1.0"
     const val supportLibrary = "1.1.0"
     const val sqlDelight = "1.4.0"
@@ -46,7 +45,7 @@ object Dependencies {
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",
         "cardView" to "androidx.cardview:cardview:${Versions.cardView}",
         "constraintLayout" to "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}",
-        "coreKtx" to "androidx.core:core-ktx:1.3.0",
+        "coreKtx" to "androidx.core:core-ktx:1.3.1",
         "coreTesting" to "androidx.arch.core:core-testing:${Versions.coreTesting}",
         "material" to "com.google.android.material:material:${Versions.material}",
         "lifecycle" to mapOf(
@@ -54,10 +53,6 @@ object Dependencies {
             "liveDataKtx" to "androidx.lifecycle:lifecycle-livedata-ktx:${Versions.architectureComponents}",
             "viewModelKtx" to "androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.architectureComponents}",
             "lifecycleKtx" to "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.architectureComponents}"
-        ),
-        "navigation" to mapOf(
-            "fragment" to "androidx.navigation:navigation-fragment-ktx:${Versions.navigation}",
-            "ui" to "androidx.navigation:navigation-ui-ktx:${Versions.navigation}"
         ),
         "preference" to "androidx.preference:preference:${Versions.supportLibrary}",
         "recyclerView" to "androidx.recyclerview:recyclerview:${Versions.recyclerView}"
