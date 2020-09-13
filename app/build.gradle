@@ -42,33 +42,28 @@ android {
 }
 
 dependencies {
+    compileOnly Dependencies.dagger.annotation
+
     implementation Dependencies.androidx.appCompat
-    implementation Dependencies.androidx.material
-    implementation Dependencies.androidx.recyclerView
     implementation Dependencies.androidx.cardView
     implementation Dependencies.androidx.constraintLayout
     implementation Dependencies.androidx.coreKtx
-    implementation Dependencies.androidx.preference
     implementation Dependencies.androidx.lifecycle.extensions
-    implementation Dependencies.androidx.lifecycle.liveDataKtx
-    implementation Dependencies.androidx.lifecycle.viewModelKtx
     implementation Dependencies.androidx.lifecycle.lifecycleKtx
     implementation Dependencies.androidx.lifecycle.liveDataKtx
+    implementation Dependencies.androidx.lifecycle.liveDataKtx
+    implementation Dependencies.androidx.lifecycle.viewModelKtx
+    implementation Dependencies.androidx.material
+    implementation Dependencies.androidx.preference
+    implementation Dependencies.androidx.recyclerView
     implementation Dependencies.coroutines.core
     implementation Dependencies.dagger.core
-    compileOnly Dependencies.dagger.annotation
-    kapt Dependencies.dagger.compiler
-    implementation Dependencies.kotlin
-    implementation Dependencies.timber
     implementation Dependencies.glide
+    implementation Dependencies.kotlin
     implementation Dependencies.nanohttpd.core
     implementation Dependencies.nanohttpd.webserver
     implementation Dependencies.sqlDelightAndroidDriver
-
-    testImplementation Dependencies.coroutines.test
-    testImplementation Dependencies.test.junit
-    testImplementation Dependencies.test.mockito
-    testImplementation Dependencies.androidx.coreTesting
+    implementation Dependencies.timber
 
     implementation project(':common')
     implementation project(':core-persistence')
@@ -77,6 +72,13 @@ dependencies {
     implementation project(':feature-onboarding')
     implementation project(':feature-settings')
     implementation project(':shared-upnp')
+
+    kapt Dependencies.dagger.compiler
+
+    testImplementation Dependencies.androidx.coreTesting
+    testImplementation Dependencies.coroutines.test
+    testImplementation Dependencies.test.junit
+    testImplementation Dependencies.test.mockito
 }
 
 detekt {
