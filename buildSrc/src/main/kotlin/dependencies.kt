@@ -11,7 +11,7 @@ object Versions {
     const val detekt = "1.0.0"
     const val hilt = "2.28-alpha"
     const val jetty = "8.1.8.v20121106"
-    const val kotlin = "1.4.0"
+    const val kotlin = "1.4.10"
     const val okHttp = "4.9.0"
     const val material = "1.2.0"
     const val minSdk = 21
