@@ -2,20 +2,19 @@ apply from: '../scripts/android-library.gradle'
 apply from: '../scripts/cling.gradle'
 
 dependencies {
-    implementation Dependencies.coroutines.core
+    compileOnly Dependencies.dagger.annotation
+
     implementation Dependencies.androidx.lifecycle.extensions
     implementation Dependencies.androidx.material
-
     implementation Dependencies.androidx.preference
-
+    implementation Dependencies.coroutines.core
     implementation Dependencies.dagger.core
-    compileOnly Dependencies.dagger.annotation
-    kapt Dependencies.dagger.compiler
-
     implementation Dependencies.timber
+
+    implementation project(":core-resources")
+
+    kapt Dependencies.dagger.compiler
 
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
-
-    implementation project(":core-resources")
 }
