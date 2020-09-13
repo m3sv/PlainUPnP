@@ -14,7 +14,7 @@ dependencies {
     implementation Dependencies.kotlin
     implementation Dependencies.nanohttpd.core
     implementation Dependencies.nanohttpd.webserver
-    implementation Dependencies.okHttp
+    implementation Dependencies.okHttp.core
     implementation Dependencies.timber
 
     testImplementation Dependencies.test.junit

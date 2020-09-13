@@ -38,6 +38,8 @@ import org.fourthline.cling.transport.spi.SOAPActionProcessor;
 import org.fourthline.cling.transport.spi.StreamClient;
 import org.fourthline.cling.transport.spi.StreamServer;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 
 /**
@@ -91,7 +93,12 @@ public class AndroidUpnpServiceConfiguration extends DefaultUpnpServiceConfigura
     @Override
     public StreamClient createStreamClient() {
         // Use Jetty
-        return new OkHttpStreamClient(new OkHttpClient.Builder().build(),
+        return new OkHttpStreamClient(
+                new OkHttpClient
+                        .Builder()
+                        .readTimeout(3, TimeUnit.MINUTES)
+                        .writeTimeout(3, TimeUnit.MINUTES)
+                        .build(),
                 new StreamClientConfigurationImpl(getSyncProtocolExecutorService()) {
                     @Override
                     public String getUserAgentValue(int majorVersion, int minorVersion) {

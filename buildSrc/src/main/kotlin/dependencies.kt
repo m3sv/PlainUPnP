@@ -2,7 +2,7 @@ object Versions {
     const val architectureComponents = "2.2.0"
     const val buildTools = "29.0.3"
     const val cardView = "1.0.0"
-    const val cling = "2.1.9"
+    const val cling = "2.2.0"
     const val compileSdk = 29
     const val constraintLayout = "2.0.0-rc1"
     const val coroutines = "1.3.9"
@@ -12,6 +12,7 @@ object Versions {
     const val hilt = "2.28-alpha"
     const val jetty = "8.1.8.v20121106"
     const val kotlin = "1.4.0"
+    const val okHttp = "4.9.0"
     const val material = "1.2.0"
     const val minSdk = 21
     const val nanohttpd = "2.3.1"
@@ -20,8 +21,8 @@ object Versions {
     const val sqlDelight = "1.4.0"
     const val targetSdk = 29
     const val test = "1.2.0"
-    const val versionCode = 64
-    const val versionName = "2.7.0"
+    const val versionCode = 65
+    const val versionName = "2.8.0"
 }
 
 object ClasspathDependencies {
@@ -35,7 +36,11 @@ object Dependencies {
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
     const val glide = "com.github.bumptech.glide:glide:4.11.0"
     const val fastScroll = "me.zhanghai.android.fastscroll:library:1.1.3"
-    const val okHttp = "com.squareup.okhttp3:okhttp:4.8.0"
+
+    val okHttp = mapOf(
+        "core" to "com.squareup.okhttp3:okhttp:${Versions.okHttp}"
+    )
+
     const val sqlDelightAndroidDriver =
         "com.squareup.sqldelight:android-driver:${Versions.sqlDelight}"
     const val timber = "com.jakewharton.timber:timber:4.7.1"
