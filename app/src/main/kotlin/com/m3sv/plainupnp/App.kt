@@ -1,8 +1,6 @@
 package com.m3sv.plainupnp
 
 import android.app.Application
-import android.content.Intent
-import android.os.Build
 import android.os.StrictMode
 import com.m3sv.plainupnp.common.util.generateUdn
 import com.m3sv.plainupnp.common.util.updateTheme
@@ -12,7 +10,6 @@ import com.m3sv.plainupnp.presentation.home.HomeComponent
 import com.m3sv.plainupnp.presentation.home.HomeComponentProvider
 import com.m3sv.plainupnp.presentation.settings.SettingsComponent
 import com.m3sv.plainupnp.presentation.settings.SettingsComponentProvider
-import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.server.MediaServer
 import timber.log.Timber
 import kotlin.concurrent.thread
@@ -47,16 +44,6 @@ class App : Application(),
                     .detectAll()
                     .build()
             )
-        }
-
-        val intent = Intent(this, PlainUpnpAndroidService::class.java).apply {
-            action = PlainUpnpAndroidService.START_SERVICE
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
         }
 
         thread {

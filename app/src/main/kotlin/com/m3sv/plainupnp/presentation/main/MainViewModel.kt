@@ -6,6 +6,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.FilterDelegate
+import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveContentDirectoriesUseCase
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
 import com.m3sv.plainupnp.upnp.folder.Folder
@@ -32,6 +33,10 @@ class MainViewModel @Inject constructor(
     observeContentDirectories: ObserveContentDirectoriesUseCase,
     observeRenderersUseCase: ObserveRenderersUseCase,
 ) : ViewModel() {
+
+    val finishFlow = PlainUpnpAndroidService
+        .finishFlow
+        .asLiveData()
 
     val volume = volumeManager
         .volumeFlow

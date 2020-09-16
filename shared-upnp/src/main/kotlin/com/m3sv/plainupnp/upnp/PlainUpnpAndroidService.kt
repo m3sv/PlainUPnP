@@ -4,7 +4,9 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationManagerCompat
-import kotlin.system.exitProcess
+import kotlinx.coroutines.channels.BroadcastChannel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
 
 class PlainUpnpAndroidService : Service() {
 
@@ -20,7 +22,7 @@ class PlainUpnpAndroidService : Service() {
                 stopForeground(false)
                 notificationManager.cancelAll()
                 stopSelf(startId)
-                exitProcess(0)
+                finishChannel.offer(Unit)
             }
 
             START_SERVICE -> {
@@ -45,5 +47,9 @@ class PlainUpnpAndroidService : Service() {
 
     companion object {
         const val START_SERVICE = "START_UPNP_SERVICE"
+
+        private val finishChannel = BroadcastChannel<Unit>(1)
+
+        val finishFlow: Flow<Unit> = finishChannel.asFlow()
     }
 }

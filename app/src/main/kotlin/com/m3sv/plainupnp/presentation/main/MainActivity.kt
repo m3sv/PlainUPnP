@@ -1,6 +1,8 @@
 package com.m3sv.plainupnp.presentation.main
 
 import android.animation.ObjectAnimator
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.KeyEvent
@@ -28,6 +30,7 @@ import com.m3sv.plainupnp.presentation.main.controls.ControlsFragment
 import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingFragment
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
+import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.folder.Folder
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -66,6 +69,16 @@ class MainActivity : BaseActivity() {
                 }
             }
         } else {
+            val intent = Intent(this, PlainUpnpAndroidService::class.java).apply {
+                action = PlainUpnpAndroidService.START_SERVICE
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent)
+            } else {
+                startService(intent)
+            }
+
             addFragment(OnboardingFragment())
         }
 
@@ -144,6 +157,12 @@ class MainActivity : BaseActivity() {
     }
 
     private fun observeState() {
+        viewModel
+            .finishFlow
+            .observe(this) {
+                finishAndRemoveTask()
+            }
+
         viewModel
             .volume
             .observe(this) { volume: Int -> volumeIndicator.volume = volume }
