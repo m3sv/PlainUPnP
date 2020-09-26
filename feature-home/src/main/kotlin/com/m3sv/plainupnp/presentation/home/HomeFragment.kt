@@ -42,18 +42,20 @@ class HomeFragment : BaseFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        binding = HomeFragmentBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+        savedInstanceState: Bundle?,
+    ): View? = HomeFragmentBinding.inflate(
+        inflater,
+        container,
+        false
+    ).apply {
+        binding = this
+    }.root
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeState()
         initRecyclerView()
-
-        if (savedInstanceState != null) restoreRecyclerState(savedInstanceState)
     }
 
     private fun observeState() {
@@ -69,41 +71,20 @@ class HomeFragment : BaseFragment() {
         }
     }
 
-    /**
-     * This can be triggered before [onCreateView] is finished,
-     * so we check if binding was initialized before trying to save it's state
-     */
-    override fun onSaveInstanceState(outState: Bundle) {
-        if (this::binding.isInitialized)
-            outState.putParcelable(
-                RECYCLER_STATE,
-                binding.content.layoutManager?.onSaveInstanceState()
-            )
-        super.onSaveInstanceState(outState)
-    }
-
     private fun initRecyclerView() {
-        contentAdapter =
-            GalleryContentAdapter(
-                glide = Glide.with(this),
-                showThumbnails = showThumbnailsUseCase,
-                onItemClickListener = viewModel::itemClick
-            )
+        contentAdapter = GalleryContentAdapter(
+            glide = Glide.with(this),
+            showThumbnails = showThumbnailsUseCase,
+            onItemClickListener = viewModel::itemClick
+        )
 
         recyclerLayoutManager = LinearLayoutManager(requireContext())
+
         with(binding.content) {
             setHasFixedSize(true)
             layoutManager = recyclerLayoutManager
             adapter = contentAdapter
             FastScrollerBuilder(this).useMd2Style().build()
         }
-    }
-
-    private fun restoreRecyclerState(bundle: Bundle) {
-        recyclerLayoutManager.onRestoreInstanceState(bundle.getParcelable(RECYCLER_STATE))
-    }
-
-    companion object {
-        private const val RECYCLER_STATE = "recycler_state_key"
     }
 }
