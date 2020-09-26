@@ -10,7 +10,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.ROTATION
-import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -370,7 +369,7 @@ class MainActivity : BaseActivity() {
     }
 
     private fun showExitConfirmationDialog() {
-        AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder(this)
             .setTitle(getString(R.string.dialog_exit_title))
             .setMessage(getString(R.string.dialog_exit_body))
             .setPositiveButton(getString(R.string.exit)) { _, _ -> finishAndRemoveTask() }
