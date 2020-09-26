@@ -1,0 +1,22 @@
+apply from: "../scripts/android-library.gradle"
+apply plugin: 'kotlin-kapt'
+
+android {
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    implementation Dependencies.androidx.constraintLayout
+    implementation Dependencies.androidx.lifecycle.extensions
+    implementation Dependencies.androidx.lifecycle.lifecycleKtx
+    implementation Dependencies.androidx.lifecycle.liveDataKtx
+    implementation Dependencies.androidx.lifecycle.viewModelKtx
+    implementation Dependencies.coroutines.core
+    implementation Dependencies.glide
+
+    testImplementation Dependencies.test.junit
+    testImplementation Dependencies.test.mockito
+    testImplementation Dependencies.test.mockitoInline
+}

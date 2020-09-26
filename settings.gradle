@@ -3,10 +3,7 @@ include ':common'
 include ':core-persistence'
 include ':core-resources'
 include ':feature-home'
+include ':feature-in-app-player'
 include ':feature-onboarding'
 include ':feature-settings'
 include ':shared-upnp'
-
-
-
-
