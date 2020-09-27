@@ -23,6 +23,7 @@ import com.m3sv.plainupnp.common.util.inputMethodManager
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.home.HomeFragment
+import com.m3sv.plainupnp.presentation.inappplayer.ImageFragment
 import com.m3sv.plainupnp.presentation.main.controls.ControlsFragment
 import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingFragment
@@ -212,6 +213,9 @@ class MainActivity : BaseActivity() {
                         areControlsVisible = true
                     }
                     is MainRoute.ToFolder -> Unit
+                    is MainRoute.ShowImage -> replaceFragment(ImageFragment.newInstance(route.url),
+                        "",
+                        true)
                 }
             }
         }

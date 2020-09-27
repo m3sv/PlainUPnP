@@ -17,6 +17,8 @@ dependencies {
     implementation Dependencies.coroutines.core
     implementation Dependencies.glide
 
+    implementation Dependencies.photoView
+
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
     testImplementation Dependencies.test.mockitoInline
