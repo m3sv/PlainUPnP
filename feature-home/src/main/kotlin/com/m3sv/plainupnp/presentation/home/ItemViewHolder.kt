@@ -7,7 +7,7 @@ typealias OnItemClickListener = (Int) -> Unit
 
 open class ItemViewHolder<out T : ViewBinding>(
     val binding: T,
-    onItemClickListener: OnItemClickListener
+    onItemClickListener: OnItemClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
 
     lateinit var item: ContentItem

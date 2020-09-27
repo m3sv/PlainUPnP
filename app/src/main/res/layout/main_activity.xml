@@ -5,17 +5,24 @@
     android:layout_height="match_parent"
     tools:context=".presentation.main.MainActivity">
 
-    <com.m3sv.plainupnp.presentation.main.navigationstrip.NavigationStrip
-        android:id="@+id/navigation_strip"
+    <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/motion_container"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layoutDescription="@xml/main_scene">
 
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/nav_host_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <com.m3sv.plainupnp.presentation.main.navigationstrip.NavigationStrip
+            android:id="@+id/navigation_strip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/nav_host_container"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
+    </androidx.constraintlayout.motion.widget.MotionLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/bottom_nav_drawer"

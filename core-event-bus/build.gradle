@@ -1,0 +1,5 @@
+apply from: "../scripts/kotlin-library.gradle"
+
+dependencies {
+    implementation Dependencies.coroutines.core
+}

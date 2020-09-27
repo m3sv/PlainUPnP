@@ -4,7 +4,7 @@ object Versions {
     const val cardView = "1.0.0"
     const val cling = "2.2.0"
     const val compileSdk = 29
-    const val constraintLayout = "2.0.0-rc1"
+    const val constraintLayout = "2.0.0"
     const val coroutines = "1.3.9"
     const val coreTesting = "2.1.0"
     const val dagger = "2.27"
@@ -50,7 +50,6 @@ object Dependencies {
         "appCompat" to "androidx.appcompat:appcompat:${Versions.supportLibrary}",
         "cardView" to "androidx.cardview:cardview:${Versions.cardView}",
         "constraintLayout" to "androidx.constraintlayout:constraintlayout:${Versions.constraintLayout}",
-        "coreKtx" to "androidx.core:core-ktx:1.3.1",
         "coreTesting" to "androidx.arch.core:core-testing:${Versions.coreTesting}",
         "material" to "com.google.android.material:material:${Versions.material}",
         "lifecycle" to mapOf(
@@ -61,6 +60,10 @@ object Dependencies {
         ),
         "preference" to "androidx.preference:preference:${Versions.supportLibrary}",
         "recyclerView" to "androidx.recyclerview:recyclerview:${Versions.recyclerView}"
+    )
+
+    val ktx = mapOf(
+        "core" to "androidx.core:core-ktx:1.3.1"
     )
 
     val coroutines = mapOf(

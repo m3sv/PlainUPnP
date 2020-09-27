@@ -32,7 +32,7 @@ class HomeFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         viewModel = getViewModel()
         if (savedInstanceState == null)
-            viewModel.requestCurrentFolderContents()
+            viewModel.refreshFolderContents()
     }
 
     private fun inject() {

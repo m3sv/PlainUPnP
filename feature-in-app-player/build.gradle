@@ -8,6 +8,7 @@ android {
 }
 
 dependencies {
+    implementation Dependencies.ktx.core
     implementation Dependencies.androidx.constraintLayout
     implementation Dependencies.androidx.lifecycle.extensions
     implementation Dependencies.androidx.lifecycle.lifecycleKtx

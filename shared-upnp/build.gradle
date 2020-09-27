@@ -6,7 +6,7 @@ dependencies {
     compileOnly Dependencies.dagger.annotation
     compileOnly Dependencies.javaxCdi
 
-    implementation Dependencies.androidx.coreKtx
+    implementation Dependencies.ktx.core
     implementation Dependencies.androidx.material
     implementation Dependencies.androidx.preference
     implementation Dependencies.coroutines.core

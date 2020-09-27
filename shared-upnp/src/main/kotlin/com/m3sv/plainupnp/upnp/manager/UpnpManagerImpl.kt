@@ -38,6 +38,11 @@ private const val AV_TRANSPORT = "AVTransport"
 private const val RENDERING_CONTROL = "RenderingControl"
 private const val CONTENT_DIRECTORY = "ContentDirectory"
 
+data class PlayItem(
+    val clingDIDLObject: ClingDIDLObject,
+    val listIterator: ListIterator<ClingDIDLObject>,
+)
+
 class UpnpManagerImpl @Inject constructor(
     private val rendererDiscoveryObservable: RendererDiscoveryObservable,
     private val contentDirectoryObservable: ContentDirectoryDiscoveryObservable,
@@ -45,7 +50,7 @@ class UpnpManagerImpl @Inject constructor(
     private val database: Database,
     private val upnpRepository: UpnpRepository,
     private val volumeRepository: VolumeRepository,
-    private val errorReporter: ErrorReporter
+    private val errorReporter: ErrorReporter,
 ) : UpnpManager,
     CoroutineScope {
 
@@ -175,7 +180,7 @@ class UpnpManagerImpl @Inject constructor(
         uri: String?,
         type: UpnpItemType,
         title: String,
-        artist: String?
+        artist: String?,
     ) {
         withContext(Dispatchers.IO) {
             safeAvAction { service ->
@@ -228,7 +233,7 @@ class UpnpManagerImpl @Inject constructor(
     private fun showImageInfo(
         id: String,
         uri: String,
-        title: String
+        title: String,
     ) {
         val state = UpnpRendererState(
             id = id,
@@ -321,12 +326,11 @@ class UpnpManagerImpl @Inject constructor(
     } ?: 0
 
     override fun playItem(
-        clingDIDLObject: ClingDIDLObject,
-        listIterator: ListIterator<ClingDIDLObject>
+        playItem: PlayItem,
     ) {
         launch {
-            renderItem(RenderItem(clingDIDLObject))
-            mediaIterator = listIterator
+            renderItem(RenderItem(playItem.clingDIDLObject))
+            mediaIterator = playItem.listIterator
         }
     }
 
@@ -377,7 +381,7 @@ class UpnpManagerImpl @Inject constructor(
     private suspend inline fun safeNavigateTo(
         errorReason: ErrorReason? = null,
         folderId: String,
-        folderName: String
+        folderName: String,
     ) {
         contentDirectoryObservable.selectedContentDirectory?.let { selectedDevice ->
             val service: Service<*, *>? =
@@ -400,7 +404,7 @@ class UpnpManagerImpl @Inject constructor(
 
     private inline fun safeAvAction(
         errorReason: ErrorReason? = null,
-        block: (Service<*, *>) -> Unit
+        block: (Service<*, *>) -> Unit,
     ) {
         rendererDiscoveryObservable.selectedRenderer?.let { renderer ->
             val service: Service<*, *>? =
@@ -415,7 +419,7 @@ class UpnpManagerImpl @Inject constructor(
 
     private inline fun <T> safeRcAction(
         errorReason: ErrorReason? = null,
-        block: (Service<*, *>) -> T
+        block: (Service<*, *>) -> T,
     ): T? {
         return rendererDiscoveryObservable.selectedRenderer?.let { renderer ->
             val service: Service<*, *>? =

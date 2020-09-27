@@ -47,7 +47,7 @@ dependencies {
     implementation Dependencies.androidx.appCompat
     implementation Dependencies.androidx.cardView
     implementation Dependencies.androidx.constraintLayout
-    implementation Dependencies.androidx.coreKtx
+    implementation Dependencies.ktx.core
     implementation Dependencies.androidx.lifecycle.extensions
     implementation Dependencies.androidx.lifecycle.lifecycleKtx
     implementation Dependencies.androidx.lifecycle.liveDataKtx
@@ -67,10 +67,12 @@ dependencies {
 
     implementation project(':common')
     implementation project(':core-persistence')
+    implementation project(':core-event-bus')
     implementation project(':core-resources')
     implementation project(':feature-home')
     implementation project(':feature-onboarding')
     implementation project(':feature-settings')
+    implementation project(':feature-in-app-player')
     implementation project(':shared-upnp')
 
     kapt Dependencies.dagger.compiler

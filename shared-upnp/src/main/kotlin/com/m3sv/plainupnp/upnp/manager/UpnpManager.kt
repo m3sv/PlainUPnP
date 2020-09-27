@@ -21,10 +21,7 @@ interface UpnpManager : UpnpVolumeManager, PlaybackManager {
     fun selectRenderer(position: Int)
 
     // TODO Split Object into Media and Folder
-    fun playItem(
-        clingDIDLObject: ClingDIDLObject,
-        listIterator: ListIterator<ClingDIDLObject>,
-    )
+    fun playItem(playItem: PlayItem)
 
     fun openFolder(folder: Folder)
     fun seekTo(progress: Int)

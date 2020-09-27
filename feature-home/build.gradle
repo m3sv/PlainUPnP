@@ -23,6 +23,8 @@ dependencies {
 
     implementation project(':common')
     implementation project(':shared-upnp')
+    implementation project(':feature-in-app-player')
+    implementation project(':core-event-bus')
 
     kapt Dependencies.dagger.compiler
 

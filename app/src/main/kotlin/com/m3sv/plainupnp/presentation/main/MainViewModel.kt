@@ -6,22 +6,29 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.FilterDelegate
+import com.m3sv.plainupnp.core.eventbus.subscribe
+import com.m3sv.plainupnp.presentation.home.FolderClick
+import com.m3sv.plainupnp.presentation.home.MediaItemClick
 import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveContentDirectoriesUseCase
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
 import com.m3sv.plainupnp.upnp.folder.Folder
+import com.m3sv.plainupnp.upnp.manager.PlayItem
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed class MainRoute {
+    object Initial : MainRoute()
     object Settings : MainRoute()
     data class BackTo(val folder: Folder?) : MainRoute()
     data class ToFolder(val folder: Folder) : MainRoute()
+    data class ShowImage(val url: String) : MainRoute()
 }
 
 class MainViewModel @Inject constructor(
@@ -33,6 +40,22 @@ class MainViewModel @Inject constructor(
     observeContentDirectories: ObserveContentDirectoriesUseCase,
     observeRenderersUseCase: ObserveRenderersUseCase,
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            subscribe<MediaItemClick>()
+                .map { it.data as PlayItem }
+                .collect { playItem -> upnpManager.playItem(playItem) }
+        }
+
+        viewModelScope.launch {
+            subscribe<FolderClick>()
+                .collect { event ->
+                    val folder = event.data as Folder
+                    navigationChannel.offer(MainRoute.ToFolder(folder))
+                }
+        }
+    }
 
     val finishFlow = PlainUpnpAndroidService
         .finishFlow
@@ -71,27 +94,31 @@ class MainViewModel @Inject constructor(
 
     val navigation: LiveData<Consumable<MainRoute>> = navigationChannel
         .asFlow()
-        .scan<MainRoute, Consumable<MainRoute>>(Consumable()) { current, next ->
-            when (next) {
-                is MainRoute.Settings -> Unit
-                is MainRoute.BackTo -> handleNavigateBack(current.peek(), next)
-                is MainRoute.ToFolder -> upnpManager.openFolder(next.folder)
-            }
-
-            Consumable(next)
-        }
-        .asLiveData()
-
-    private fun handleNavigateBack(previous: MainRoute?, next: MainRoute) {
-        when (previous) {
-            is MainRoute.Settings -> Unit
-            else -> {
-                if (next is MainRoute.BackTo) {
-                    folderManager.backTo(next.folder)
+        .scan<MainRoute, MainRoute>(MainRoute.Initial) { previous, next ->
+            when (previous) {
+                is MainRoute.Initial -> {
+                    when (next) {
+                        is MainRoute.ToFolder -> next.apply { upnpManager.openFolder(folder) }
+                        else -> next
+                    }
                 }
+                is MainRoute.Settings -> next
+                is MainRoute.BackTo -> when (next) {
+                    is MainRoute.ToFolder -> next.apply { upnpManager.openFolder(folder) }
+                    is MainRoute.BackTo -> next.apply { folderManager.backTo(folder) }
+                    else -> next
+                }
+                is MainRoute.ToFolder -> when (next) {
+                    is MainRoute.ToFolder -> next.apply { upnpManager.openFolder(folder) }
+                    is MainRoute.BackTo -> next.apply { folderManager.backTo(folder) }
+                    else -> next
+                }
+                is MainRoute.ShowImage -> next
             }
+
         }
-    }
+        .map { Consumable(it) }
+        .asLiveData()
 
     fun moveTo(progress: Int) {
         viewModelScope.launch {

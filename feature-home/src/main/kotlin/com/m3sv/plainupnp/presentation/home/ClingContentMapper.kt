@@ -14,21 +14,21 @@ class ClingContentMapper @Inject constructor() {
             )
 
             is ClingImageItem -> ContentItem(
-                itemUri = item.uri,
+                itemUri = requireNotNull(item.uri),
                 name = item.title,
                 type = ContentType.IMAGE,
                 icon = R.drawable.ic_bordered_image
             )
 
             is ClingVideoItem -> ContentItem(
-                itemUri = item.uri,
+                itemUri = requireNotNull(item.uri),
                 name = item.title,
                 type = ContentType.VIDEO,
                 icon = R.drawable.ic_bordered_video
             )
 
             is ClingAudioItem -> ContentItem(
-                itemUri = item.uri,
+                itemUri = requireNotNull(item.uri),
                 name = item.title,
                 type = ContentType.AUDIO,
                 icon = R.drawable.ic_bordered_music

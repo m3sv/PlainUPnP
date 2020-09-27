@@ -15,9 +15,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
 import androidx.lifecycle.lifecycleScope
-import androidx.transition.TransitionManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.transition.MaterialFade
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
@@ -90,13 +88,13 @@ class MainActivity : BaseActivity() {
 
         with(binding) {
             controlsContainer.setOnClickListener { view ->
-                hideSearchContainer(false)
+                hideSearchContainer()
                 view.postDelayed({ controlsFragment.toggle() }, 50)
             }
             setSupportActionBar(bottomBar)
 
             searchClose.setOnClickListener {
-                hideSearchContainer(true)
+                hideSearchContainer()
             }
 
             searchInput.addTextChangedListener { if (it != null) viewModel.filterText(it.toString()) }
@@ -139,11 +137,7 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    private fun hideSearchContainer(animate: Boolean) {
-        if (animate) {
-            animateVisibilityChange()
-        }
-
+    private fun hideSearchContainer() {
         with(binding) {
             val currentFocus = currentFocus
             if (inputMethodManager.isActive(searchInput) && currentFocus != null) {
@@ -240,19 +234,13 @@ class MainActivity : BaseActivity() {
         if (visible) {
             with(binding) {
                 bottomBar.performShow()
-                with(navigationStrip) {
-                    clearAnimation()
-                    animate().alpha(1f)
-                }
+                binding.motionContainer.transitionToStart()
             }
         } else {
-            hideSearchContainer(false)
+            hideSearchContainer()
             with(binding) {
                 bottomBar.performHide()
-                with(navigationStrip) {
-                    clearAnimation()
-                    animate().alpha(0f)
-                }
+                binding.motionContainer.transitionToEnd()
             }
         }
     }
@@ -268,7 +256,6 @@ class MainActivity : BaseActivity() {
     private fun showSearch() {
         controlsFragment.close()
         val animationDuration = 150L
-        animateVisibilityChange(animationDuration)
         with(binding.searchContainer) {
             isVisible = true
             postDelayed({
@@ -277,13 +264,6 @@ class MainActivity : BaseActivity() {
                 }
             }, animationDuration)
         }
-    }
-
-    private fun animateVisibilityChange(animationDuration: Long = 150L) {
-        val materialFade = MaterialFade().apply {
-            duration = animationDuration
-        }
-        TransitionManager.beginDelayedTransition(binding.root, materialFade)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -1,3 +1,4 @@
+include ':core-event-bus'
 include ':app'
 include ':common'
 include ':core-persistence'
