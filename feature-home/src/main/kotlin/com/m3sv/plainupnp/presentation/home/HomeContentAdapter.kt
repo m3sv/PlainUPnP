@@ -12,14 +12,15 @@ import java.util.*
 class GalleryContentAdapter(
     private val glide: RequestManager,
     private val showThumbnails: ShowThumbnailsUseCase,
-    private val onItemClickListener: OnItemClickListener
+    private val onItemClickListener: OnItemClickListener,
+    private val onLongItemClickListener: OnItemClickListener,
 ) : BaseAdapter<ContentItem>(diffCallback) {
 
     override fun getItemViewType(position: Int): Int = items[position].type.ordinal
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
+        viewType: Int,
     ): ItemViewHolder<ViewBinding> = when (ContentType.values()[viewType]) {
         ContentType.FOLDER -> ItemViewHolder(
             binding = FolderItemBinding.inflate(
@@ -27,7 +28,8 @@ class GalleryContentAdapter(
                 parent,
                 false
             ) as ViewBinding,
-            onItemClickListener = onItemClickListener
+            onItemClickListener = onItemClickListener,
+            onLongItemClickListener = onLongItemClickListener
         )
 
         else -> ItemViewHolder(
@@ -36,7 +38,8 @@ class GalleryContentAdapter(
                 parent,
                 false
             ),
-            onItemClickListener = onItemClickListener
+            onItemClickListener = onItemClickListener,
+            onLongItemClickListener = onLongItemClickListener
         )
     }
 
@@ -63,7 +66,8 @@ class GalleryContentAdapter(
         with(holder.extractBinding<MediaItemBinding>()) {
             when (holder.item.type) {
                 ContentType.IMAGE,
-                ContentType.VIDEO -> {
+                ContentType.VIDEO,
+                -> {
                     if (showThumbnails()) {
                         glide.load(holder.item.itemUri).into(thumbnail)
                     } else {
@@ -93,7 +97,7 @@ class GalleryContentAdapter(
 
 private class DiffCallback(
     oldContentItems: List<ContentItem>,
-    newContentItems: List<ContentItem>
+    newContentItems: List<ContentItem>,
 ) : ItemsDiffCallback<ContentItem>(oldContentItems, newContentItems) {
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
         oldItems[oldItemPosition].itemUri == newItems[newItemPosition].itemUri

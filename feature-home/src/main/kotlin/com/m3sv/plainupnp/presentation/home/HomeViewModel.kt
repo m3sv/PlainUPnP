@@ -42,6 +42,19 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun itemLongClick(clickPosition: Int) {
+        viewModelScope.launch {
+            when {
+                folders.isEmpty() && media.isEmpty() -> return@launch
+                folders.isEmpty() -> post(
+                    MediaItemClick(PlayItem(
+                        media[clickPosition],
+                        media.listIterator(clickPosition))))
+                else -> handleFolderOrMediaClick(clickPosition)
+            }
+        }
+    }
+
     private fun handleFolderOrMediaClick(clickPosition: Int) {
         when {
             // we're in the media zone

@@ -75,7 +75,8 @@ class HomeFragment : BaseFragment() {
         contentAdapter = GalleryContentAdapter(
             glide = Glide.with(this),
             showThumbnails = showThumbnailsUseCase,
-            onItemClickListener = viewModel::itemClick
+            onItemClickListener = viewModel::itemClick,
+            onLongItemClickListener = viewModel::itemLongClick
         )
 
         recyclerLayoutManager = LinearLayoutManager(requireContext())
