@@ -8,15 +8,15 @@ android {
 }
 
 dependencies {
-    implementation Dependencies.ktx.core
     implementation Dependencies.androidx.constraintLayout
     implementation Dependencies.androidx.lifecycle.extensions
     implementation Dependencies.androidx.lifecycle.lifecycleKtx
     implementation Dependencies.androidx.lifecycle.liveDataKtx
     implementation Dependencies.androidx.lifecycle.viewModelKtx
     implementation Dependencies.coroutines.core
+    implementation Dependencies.exoPlayer
     implementation Dependencies.glide
-
+    implementation Dependencies.ktx.core
     implementation Dependencies.photoView
 
     testImplementation Dependencies.test.junit

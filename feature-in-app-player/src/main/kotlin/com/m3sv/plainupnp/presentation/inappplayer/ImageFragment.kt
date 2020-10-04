@@ -6,10 +6,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.m3sv.plainupnp.presentation.inappplayer.databinding.ImageFragmentBinding
+import kotlin.LazyThreadSafetyMode.NONE
 
 class ImageFragment : Fragment(R.layout.image_fragment) {
 
-    private val binding: ImageFragmentBinding by lazy { ImageFragmentBinding.bind(requireView()) }
+    private val binding by lazy(NONE) { ImageFragmentBinding.bind(requireView()) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Glide.with(this)

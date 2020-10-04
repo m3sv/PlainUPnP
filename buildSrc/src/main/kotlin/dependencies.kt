@@ -37,6 +37,7 @@ object Dependencies {
     const val glide = "com.github.bumptech.glide:glide:4.11.0"
     const val fastScroll = "me.zhanghai.android.fastscroll:library:1.1.3"
     const val photoView = "com.github.chrisbanes:PhotoView:2.0.0"
+    const val exoPlayer = "com.google.android.exoplayer:exoplayer:2.12.0"
 
     val okHttp = mapOf(
         "core" to "com.squareup.okhttp3:okhttp:${Versions.okHttp}"

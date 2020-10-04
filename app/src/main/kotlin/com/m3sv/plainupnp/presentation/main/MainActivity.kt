@@ -26,6 +26,7 @@ import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
 import com.m3sv.plainupnp.presentation.home.HomeFragment
 import com.m3sv.plainupnp.presentation.inappplayer.ImageFragment
+import com.m3sv.plainupnp.presentation.inappplayer.PlayerFragment
 import com.m3sv.plainupnp.presentation.main.controls.ControlsFragment
 import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingFragment
@@ -121,7 +122,11 @@ class MainActivity : BaseActivity() {
             .commit()
     }
 
-    private fun replaceFragment(fragment: Fragment, tag: String, addToBackStack: Boolean = false) {
+    private fun replaceFragment(
+        fragment: Fragment,
+        tag: String? = null,
+        addToBackStack: Boolean = false,
+    ) {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.nav_host_container, fragment, tag)
@@ -206,7 +211,7 @@ class MainActivity : BaseActivity() {
                 when (route) {
                     is MainRoute.Settings -> {
                         areControlsVisible = false
-                        replaceFragment(SettingsFragment(), "settings", true)
+                        replaceFragment(SettingsFragment(), addToBackStack = true)
                     }
                     is MainRoute.Back -> {
                         supportFragmentManager.popBackStack(route.folder?.id, 0)
@@ -216,11 +221,18 @@ class MainActivity : BaseActivity() {
                     is MainRoute.PreviewImage -> {
                         areControlsVisible = false
                         replaceFragment(ImageFragment.newInstance(route.url),
-                            "",
-                            true)
+                            addToBackStack = true)
                     }
-                    is MainRoute.PreviewVideo -> TODO()
-                    is MainRoute.PreviewAudio -> TODO()
+                    is MainRoute.PreviewVideo -> {
+                        areControlsVisible = false
+                        replaceFragment(PlayerFragment.newInstance(route.url),
+                            addToBackStack = true)
+                    }
+                    is MainRoute.PreviewAudio -> {
+                        areControlsVisible = false
+                        replaceFragment(PlayerFragment.newInstance(route.url),
+                            addToBackStack = true)
+                    }
                     is MainRoute.Initial -> doNothing
                 }.exhaustive
             }
