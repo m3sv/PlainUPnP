@@ -6,7 +6,6 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.filterIsInstance
 
 abstract class Event(
-    val name: String,
     val data: Any?,
 )
 

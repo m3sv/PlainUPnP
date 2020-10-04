@@ -9,7 +9,11 @@ import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.core.eventbus.subscribe
 import com.m3sv.plainupnp.presentation.home.FolderClick
 import com.m3sv.plainupnp.presentation.home.MediaItemClick
+import com.m3sv.plainupnp.presentation.home.MediaItemLongClick
 import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
+import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
+import com.m3sv.plainupnp.upnp.didl.ClingImageItem
+import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveContentDirectoriesUseCase
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
 import com.m3sv.plainupnp.upnp.folder.Folder
@@ -26,9 +30,11 @@ import javax.inject.Inject
 sealed class MainRoute {
     object Initial : MainRoute()
     object Settings : MainRoute()
-    data class BackTo(val folder: Folder?) : MainRoute()
+    data class Back(val folder: Folder?) : MainRoute()
     data class ToFolder(val folder: Folder) : MainRoute()
-    data class ShowImage(val url: String) : MainRoute()
+    data class PreviewImage(val url: String) : MainRoute()
+    data class PreviewVideo(val url: String) : MainRoute()
+    data class PreviewAudio(val url: String) : MainRoute()
 }
 
 class MainViewModel @Inject constructor(
@@ -45,14 +51,27 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             subscribe<MediaItemClick>()
                 .map { it.data as PlayItem }
-                .collect { playItem -> upnpManager.playItem(playItem) }
+                .collect { item -> upnpManager.playItem(item) }
         }
 
         viewModelScope.launch {
             subscribe<FolderClick>()
-                .collect { event ->
-                    val folder = event.data as Folder
-                    navigationChannel.offer(MainRoute.ToFolder(folder))
+                .map { it.data as Folder }
+                .collect { folder -> navigate(MainRoute.ToFolder(folder)) }
+        }
+
+        viewModelScope.launch {
+            subscribe<MediaItemLongClick>()
+                .map { it.data as PlayItem }
+                .collect { item ->
+                    val route: MainRoute = when (item.clingDIDLObject) {
+                        is ClingImageItem -> MainRoute.PreviewImage(requireNotNull(item.clingDIDLObject.uri))
+                        is ClingVideoItem -> MainRoute.PreviewVideo(requireNotNull(item.clingDIDLObject.uri))
+                        is ClingAudioItem -> MainRoute.PreviewAudio(requireNotNull(item.clingDIDLObject.uri))
+                        else -> error("Unknown media type")
+                    }
+
+                    navigate(route)
                 }
         }
     }
@@ -103,17 +122,20 @@ class MainViewModel @Inject constructor(
                     }
                 }
                 is MainRoute.Settings -> next
-                is MainRoute.BackTo -> when (next) {
+                is MainRoute.Back -> when (next) {
                     is MainRoute.ToFolder -> next.apply { upnpManager.openFolder(folder) }
-                    is MainRoute.BackTo -> next.apply { folderManager.backTo(folder) }
+                    is MainRoute.Back -> next.apply { folderManager.backTo(folder) }
                     else -> next
                 }
                 is MainRoute.ToFolder -> when (next) {
                     is MainRoute.ToFolder -> next.apply { upnpManager.openFolder(folder) }
-                    is MainRoute.BackTo -> next.apply { folderManager.backTo(folder) }
+                    is MainRoute.Back -> next.apply { folderManager.backTo(folder) }
                     else -> next
                 }
-                is MainRoute.ShowImage -> next
+                is MainRoute.PreviewImage,
+                is MainRoute.PreviewAudio,
+                is MainRoute.PreviewVideo,
+                -> next
             }
 
         }

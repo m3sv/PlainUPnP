@@ -1,9 +1,7 @@
 package com.m3sv.plainupnp.presentation.inappplayer
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -11,14 +9,7 @@ import com.m3sv.plainupnp.presentation.inappplayer.databinding.ImageFragmentBind
 
 class ImageFragment : Fragment(R.layout.image_fragment) {
 
-    lateinit var binding: ImageFragmentBinding
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? = super.onCreateView(inflater, container, savedInstanceState)
-        ?.apply { binding = ImageFragmentBinding.bind(this) }
+    private val binding: ImageFragmentBinding by lazy { ImageFragmentBinding.bind(requireView()) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         Glide.with(this)

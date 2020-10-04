@@ -31,41 +31,53 @@ class HomeViewModel @Inject constructor(
 
     fun itemClick(clickPosition: Int) {
         viewModelScope.launch {
-            when {
-                folders.isEmpty() && media.isEmpty() -> return@launch
-                folders.isEmpty() -> post(
-                    MediaItemClick(PlayItem(
-                        media[clickPosition],
-                        media.listIterator(clickPosition))))
-                else -> handleFolderOrMediaClick(clickPosition)
-            }
+            handleClick(clickPosition, false)
         }
     }
 
     fun itemLongClick(clickPosition: Int) {
         viewModelScope.launch {
-            when {
-                folders.isEmpty() && media.isEmpty() -> return@launch
-                folders.isEmpty() -> post(
-                    MediaItemClick(PlayItem(
-                        media[clickPosition],
-                        media.listIterator(clickPosition))))
-                else -> handleFolderOrMediaClick(clickPosition)
-            }
+            handleClick(clickPosition, true)
         }
     }
 
-    private fun handleFolderOrMediaClick(clickPosition: Int) {
+    private fun handleClick(clickPosition: Int, isLongClick: Boolean) {
+        when {
+            folders.isEmpty() && media.isEmpty() -> return
+            folders.isEmpty() -> {
+                val event = if (isLongClick) {
+                    MediaItemLongClick(PlayItem(
+                        media[clickPosition],
+                        media.listIterator(clickPosition)))
+                } else {
+                    MediaItemClick(PlayItem(
+                        media[clickPosition],
+                        media.listIterator(clickPosition)))
+                }
+                post(event)
+            }
+            else -> handleFolderOrMediaClick(clickPosition, isLongClick)
+        }
+    }
+
+    private fun handleFolderOrMediaClick(clickPosition: Int, isLongClick: Boolean) {
         when {
             // we're in the media zone
             clickPosition >= folders.size -> {
                 val mediaPosition = clickPosition - folders.size
                 val mediaItem = media[mediaPosition]
 
-                post(MediaItemClick(PlayItem(
-                    mediaItem,
-                    media.listIterator(mediaPosition)))
-                )
+                val event = if (isLongClick) {
+                    MediaItemLongClick(PlayItem(
+                        mediaItem,
+                        media.listIterator(mediaPosition)))
+                } else {
+                    MediaItemClick(PlayItem(
+                        mediaItem,
+                        media.listIterator(mediaPosition)))
+                }
+                post(event)
+
             }
             // we're in the folder zone
             else -> {

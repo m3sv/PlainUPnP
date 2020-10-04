@@ -19,6 +19,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
+import com.m3sv.plainupnp.common.util.doNothing
+import com.m3sv.plainupnp.common.util.exhaustive
 import com.m3sv.plainupnp.common.util.inputMethodManager
 import com.m3sv.plainupnp.databinding.MainActivityBinding
 import com.m3sv.plainupnp.presentation.base.BaseActivity
@@ -88,11 +90,12 @@ class MainActivity : BaseActivity() {
         animateBottomDrawChanges()
 
         with(binding) {
+            setSupportActionBar(bottomBar)
+
             controlsContainer.setOnClickListener { view ->
                 hideSearchContainer()
                 view.postDelayed({ controlsFragment.toggle() }, 50)
             }
-            setSupportActionBar(bottomBar)
 
             searchClose.setOnClickListener {
                 hideSearchContainer()
@@ -101,9 +104,7 @@ class MainActivity : BaseActivity() {
             searchInput.addTextChangedListener { if (it != null) viewModel.filterText(it.toString()) }
 
             lifecycleScope.launch {
-                navigationStrip.clickFlow.collect { folder ->
-                    navigateToFolder(folder)
-                }
+                navigationStrip.clickFlow.collect { folder -> navigateToFolder(folder) }
             }
         }
     }
@@ -134,7 +135,7 @@ class MainActivity : BaseActivity() {
     private fun navigateToFolder(folder: Folder) {
         when (folder) {
             is Folder.Root -> viewModel.navigate(MainRoute.ToFolder(folder))
-            is Folder.SubFolder -> viewModel.navigate(MainRoute.BackTo(folder))
+            is Folder.SubFolder -> viewModel.navigate(MainRoute.Back(folder))
         }
     }
 
@@ -205,18 +206,23 @@ class MainActivity : BaseActivity() {
                 when (route) {
                     is MainRoute.Settings -> {
                         areControlsVisible = false
-                        controlsFragment.close()
                         replaceFragment(SettingsFragment(), "settings", true)
                     }
-                    is MainRoute.BackTo -> {
+                    is MainRoute.Back -> {
                         supportFragmentManager.popBackStack(route.folder?.id, 0)
                         areControlsVisible = true
                     }
-                    is MainRoute.ToFolder -> Unit
-                    is MainRoute.ShowImage -> replaceFragment(ImageFragment.newInstance(route.url),
-                        "",
-                        true)
-                }
+                    is MainRoute.ToFolder -> doNothing
+                    is MainRoute.PreviewImage -> {
+                        areControlsVisible = false
+                        replaceFragment(ImageFragment.newInstance(route.url),
+                            "",
+                            true)
+                    }
+                    is MainRoute.PreviewVideo -> TODO()
+                    is MainRoute.PreviewAudio -> TODO()
+                    is MainRoute.Initial -> doNothing
+                }.exhaustive
             }
         }
     }
@@ -243,6 +249,7 @@ class MainActivity : BaseActivity() {
         } else {
             hideSearchContainer()
             with(binding) {
+                controlsFragment.close()
                 bottomBar.performHide()
                 binding.motionContainer.transitionToEnd()
             }
@@ -348,7 +355,7 @@ class MainActivity : BaseActivity() {
     private fun handleBackPressed() {
         when (supportFragmentManager.backStackEntryCount) {
             0 -> showExitConfirmationDialog()
-            else -> viewModel.navigate(MainRoute.BackTo(null))
+            else -> viewModel.navigate(MainRoute.Back(null))
         }
     }
 
