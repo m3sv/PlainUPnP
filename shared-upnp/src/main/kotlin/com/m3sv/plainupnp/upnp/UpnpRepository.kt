@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp
 
-import com.m3sv.plainupnp.upnp.actions.BrowseAction
 import com.m3sv.plainupnp.upnp.actions.avtransport.*
+import com.m3sv.plainupnp.upnp.actions.misc.BrowseAction
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import org.fourthline.cling.model.meta.Service
 import javax.inject.Inject

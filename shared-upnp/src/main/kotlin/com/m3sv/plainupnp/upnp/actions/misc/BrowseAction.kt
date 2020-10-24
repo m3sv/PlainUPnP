@@ -1,5 +1,6 @@
-package com.m3sv.plainupnp.upnp.actions
+package com.m3sv.plainupnp.upnp.actions.misc
 
+import com.m3sv.plainupnp.upnp.actions.Action
 import com.m3sv.plainupnp.upnp.didl.*
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
