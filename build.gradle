@@ -16,16 +16,6 @@ buildscript {
     }
 }
 
-plugins {
-    id 'io.gitlab.arturbosch.detekt' version "1.0.0"
-}
-
-detekt {
-    toolVersion = Versions.detekt
-    input = files("src/main/kotlin")
-    filters = ".*/resources/.*,.*/build/.*"
-}
-
 allprojects {
     repositories {
         google()
@@ -34,11 +24,34 @@ allprojects {
         mavenLocal()
         maven { url 'https://jitpack.io' }
     }
+
+    plugins.withType(com.android.build.gradle.BasePlugin).configureEach { plugin ->
+        plugin.extension.compileOptions {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach { task ->
+        task.sourceCompatibility = JavaVersion.VERSION_1_8
+        task.targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompile).configureEach { task ->
+        task.kotlinOptions {
+            jvmTarget = "1.8"
+        }
+    }
+
+    tasks.withType(org.jetbrains.kotlin.gradle.dsl.KotlinCompile).configureEach { task ->
+        task.kotlinOptions {
+            freeCompilerArgs += [
+                    '-Xopt-in=kotlinx.coroutines.ExperimentalCoroutinesApi',
+                    '-Xopt-in=kotlinx.coroutines.ObsoleteCoroutinesApi',
+                    '-Xopt-in=kotlin.time.ExperimentalTime',
+                    '-Xopt-in=kotlinx.coroutines.FlowPreview'
+            ]
+        }
+    }
 }
-
-task clean(type: Delete) {
-    delete rootProject.buildDir
-}
-
-
 

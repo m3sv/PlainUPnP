@@ -82,9 +82,3 @@ dependencies {
     testImplementation Dependencies.test.junit
     testImplementation Dependencies.test.mockito
 }
-
-detekt {
-    toolVersion = "1.0.0"
-    input = files("src/main/java")
-    filters = ".*/resources/.*,.*/build/.*"
-}
