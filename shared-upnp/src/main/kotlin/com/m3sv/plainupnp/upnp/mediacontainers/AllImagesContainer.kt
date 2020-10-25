@@ -43,7 +43,7 @@ class AllImagesContainer(
 
     private val uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-    override fun getChildCount(): Int? = contentResolver.query(
+    override fun getChildCount(): Int = contentResolver.query(
         uri,
         CHILD_COUNT_COLUMNS,
         null,

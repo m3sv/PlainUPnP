@@ -53,9 +53,7 @@ class AllVideoContainer(
             null,
             null,
             null
-        ).use { cursor ->
-            return cursor?.count ?: 0
-        }
+        )?.use { it.count } ?: 0
 
     override fun getContainers(): List<Container> {
         val columns = arrayOf(
