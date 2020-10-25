@@ -1,5 +1,5 @@
 apply plugin: 'kotlin'
 
 dependencies {
-    implementation Dependencies.kotlin
+    implementation deps.kotlin
 }

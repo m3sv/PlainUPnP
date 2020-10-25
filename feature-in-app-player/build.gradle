@@ -8,18 +8,18 @@ android {
 }
 
 dependencies {
-    implementation Dependencies.androidx.constraintLayout
-    implementation Dependencies.androidx.lifecycle.extensions
-    implementation Dependencies.androidx.lifecycle.lifecycleKtx
-    implementation Dependencies.androidx.lifecycle.liveDataKtx
-    implementation Dependencies.androidx.lifecycle.viewModelKtx
-    implementation Dependencies.coroutines.core
-    implementation Dependencies.exoPlayer
-    implementation Dependencies.glide
-    implementation Dependencies.ktx.core
-    implementation Dependencies.photoView
+    implementation deps.androidx.constraintLayout
+    implementation deps.androidx.lifecycle.extensions
+    implementation deps.androidx.lifecycle.lifecycleKtx
+    implementation deps.androidx.lifecycle.liveDataKtx
+    implementation deps.androidx.lifecycle.viewModelKtx
+    implementation deps.coroutines.core
+    implementation deps.exoPlayer
+    implementation deps.glide
+    implementation deps.ktx.core
+    implementation deps.photoView
 
-    testImplementation Dependencies.test.junit
-    testImplementation Dependencies.test.mockito
-    testImplementation Dependencies.test.mockitoInline
+    testImplementation deps.test.junit
+    testImplementation deps.test.mockito
+    testImplementation deps.test.mockitoInline
 }

@@ -2,5 +2,5 @@ apply from: "../scripts/android-library.gradle"
 apply plugin: 'com.squareup.sqldelight'
 
 dependencies {
-    implementation Dependencies.kotlin
+    implementation deps.kotlin
 }

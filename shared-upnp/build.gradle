@@ -3,25 +3,25 @@ apply from: '../scripts/cling.gradle'
 apply plugin: 'kotlin-android-extensions'
 
 dependencies {
-    compileOnly Dependencies.dagger.annotation
-    compileOnly Dependencies.javaxCdi
+    compileOnly deps.dagger.annotation
+    compileOnly deps.javaxCdi
 
-    implementation Dependencies.ktx.core
-    implementation Dependencies.androidx.material
-    implementation Dependencies.androidx.preference
-    implementation Dependencies.coroutines.core
-    implementation Dependencies.dagger.core
-    implementation Dependencies.kotlin
-    implementation Dependencies.nanohttpd.core
-    implementation Dependencies.nanohttpd.webserver
-    implementation Dependencies.okHttp.core
-    implementation Dependencies.timber
+    implementation deps.ktx.core
+    implementation deps.androidx.material
+    implementation deps.androidx.preference
+    implementation deps.coroutines.core
+    implementation deps.dagger.core
+    implementation deps.kotlin
+    implementation deps.nanohttpd.core
+    implementation deps.nanohttpd.webserver
+    implementation deps.okHttp
+    implementation deps.timber
 
     implementation project(":common")
     implementation project(":core-persistence")
 
-    kapt Dependencies.dagger.compiler
+    kapt deps.dagger.compiler
 
-    testImplementation Dependencies.test.junit
-    testImplementation Dependencies.test.mockito
+    testImplementation deps.test.junit
+    testImplementation deps.test.mockito
 }

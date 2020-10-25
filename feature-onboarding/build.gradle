@@ -7,11 +7,11 @@ android {
 }
 
 dependencies {
-    implementation Dependencies.androidx.constraintLayout
-    implementation Dependencies.coroutines.core
+    implementation deps.androidx.constraintLayout
+    implementation deps.coroutines.core
 
     implementation project(':common')
 
-    testImplementation Dependencies.test.junit
-    testImplementation Dependencies.test.mockito
+    testImplementation deps.test.junit
+    testImplementation deps.test.mockito
 }
