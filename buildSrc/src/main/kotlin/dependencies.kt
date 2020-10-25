@@ -25,12 +25,6 @@ object Versions {
     const val versionName = "2.8.2"
 }
 
-object ClasspathDependencies {
-    const val androidTools = "com.android.tools.build:gradle:4.0.1"
-    const val kotlinGradle = "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
-    const val sqlDelight = "com.squareup.sqldelight:gradle-plugin:${Versions.sqlDelight}"
-}
-
 object Dependencies {
     const val javaxCdi = "javax.enterprise:cdi-api:2.0.SP1"
     const val kotlin = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${Versions.kotlin}"
