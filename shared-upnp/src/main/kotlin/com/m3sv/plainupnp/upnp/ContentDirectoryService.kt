@@ -216,10 +216,9 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 addContainer(container)
                 containerRegistry[IMAGE_BY_FOLDER] = container
 
-                FileHierarchyBuilder().populate(
+                val result = FileHierarchyBuilder().populate(
                     contentResolver = context.contentResolver,
                     baseContainer = container,
-                    containerRegistry = containerRegistry,
                     uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     column = ImageDirectoryContainer.IMAGE_DATA_PATH
                 ) { id: String,
@@ -238,6 +237,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         contentResolver = context.contentResolver
                     )
                 }
+
+                containerRegistry.putAll(result)
             }
         }
 
@@ -298,10 +299,9 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 addContainer(container)
                 containerRegistry[AUDIO_BY_FOLDER] = container
 
-                FileHierarchyBuilder().populate(
+                val result = FileHierarchyBuilder().populate(
                     contentResolver = context.contentResolver,
                     baseContainer = container,
-                    containerRegistry = containerRegistry,
                     uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     column = AudioDirectoryContainer.AUDIO_DATA_PATH
                 ) { id: String,
@@ -320,6 +320,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         contentResolver = context.contentResolver
                     )
                 }
+
+                containerRegistry.putAll(result)
             }
         }
 
@@ -353,10 +355,9 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 addContainer(container)
                 containerRegistry[VIDEO_BY_FOLDER] = container
 
-                FileHierarchyBuilder().populate(
+                val result = FileHierarchyBuilder().populate(
                     contentResolver = context.contentResolver,
                     baseContainer = container,
-                    containerRegistry = containerRegistry,
                     uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                     column = VideoDirectoryContainer.VIDEO_DATA_PATH
                 ) { id: String,
@@ -375,6 +376,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                         contentResolver = context.contentResolver
                     )
                 }
+
+                containerRegistry.putAll(result)
             }
         }
 

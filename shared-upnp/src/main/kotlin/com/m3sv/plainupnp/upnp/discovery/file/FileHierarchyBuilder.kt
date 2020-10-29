@@ -15,14 +15,15 @@ class FileHierarchyBuilder {
 
     private val fileTree = FileTree(FileHierarchyExtractor())
 
+    private val registry = mutableMapOf<Int, BaseContainer>()
+
     fun populate(
         contentResolver: ContentResolver,
         baseContainer: BaseContainer,
-        containerRegistry: MutableMap<Int, BaseContainer>,
         column: String,
         uri: Uri,
         containerBuilder: ContainerBuilder
-    ) {
+    ): Map<Int, BaseContainer> {
         contentResolver.query(
             uri,
             arrayOf(column),
@@ -45,16 +46,16 @@ class FileHierarchyBuilder {
             traverseTree(
                 baseContainer = baseContainer,
                 rootContainer = root,
-                containerRegistry = containerRegistry,
                 containerBuilder = containerBuilder
             )
         }
+
+        return registry
     }
 
     private fun traverseTree(
         baseContainer: BaseContainer,
         rootContainer: FolderContainer,
-        containerRegistry: MutableMap<Int, BaseContainer>,
         containerBuilder: ContainerBuilder
     ) {
         val id = "${rootContainer.name}${rootContainer.id}".hashCode()
@@ -67,27 +68,27 @@ class FileHierarchyBuilder {
         )
 
         baseContainer.addContainer(newContainer)
-        containerRegistry[id] = newContainer
+
+        registry[id] = newContainer
 
         rootContainer.children.forEach {
-            val value = it.value
+            when (val value = it.value) {
+                is FolderContainer -> traverseTree(newContainer, value, containerBuilder)
 
-            if (value is FolderContainer)
-                traverseTree(newContainer, value, containerRegistry, containerBuilder)
+                is FolderLeaf -> {
+                    val leafId = "${value.name}${value.id}".hashCode()
 
-            if (value is FolderLeaf) {
-                val leafId = "${value.name}${value.id}".hashCode()
+                    val leafContainer =
+                        containerBuilder(
+                            leafId.toString(),
+                            id.toString(),
+                            it.key,
+                            value.path
+                        )
 
-                val leafContainer =
-                    containerBuilder(
-                        leafId.toString(),
-                        id.toString(),
-                        it.key,
-                        value.path
-                    )
-
-                newContainer.addContainer(leafContainer)
-                containerRegistry[leafId] = leafContainer
+                    newContainer.addContainer(leafContainer)
+                    registry[leafId] = leafContainer
+                }
             }
         }
     }
