@@ -44,7 +44,7 @@ class FileHierarchyBuilder {
         fileTree.fileFolderRoots.forEach { root ->
             traverseTree(
                 baseContainer = baseContainer,
-                container = root,
+                rootContainer = root,
                 containerRegistry = containerRegistry,
                 containerBuilder = containerBuilder
             )
@@ -53,23 +53,23 @@ class FileHierarchyBuilder {
 
     private fun traverseTree(
         baseContainer: BaseContainer,
-        container: FolderContainer,
+        rootContainer: FolderContainer,
         containerRegistry: MutableMap<Int, BaseContainer>,
         containerBuilder: ContainerBuilder
     ) {
-        val id = "${container.name}${container.id}".hashCode()
+        val id = "${rootContainer.name}${rootContainer.id}".hashCode()
 
         val newContainer = containerBuilder(
             id.toString(),
             null,
-            container.name,
-            container.path
+            rootContainer.name,
+            rootContainer.path
         )
 
         baseContainer.addContainer(newContainer)
         containerRegistry[id] = newContainer
 
-        container.children.forEach {
+        rootContainer.children.forEach {
             val value = it.value
 
             if (value is FolderContainer)
