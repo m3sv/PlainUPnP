@@ -218,7 +218,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                 val result = FileHierarchyBuilder().populate(
                     contentResolver = context.contentResolver,
-                    baseContainer = container,
+                    parentContainer = container,
                     uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     column = ImageDirectoryContainer.IMAGE_DATA_PATH
                 ) { id: String,
@@ -301,7 +301,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                 val result = FileHierarchyBuilder().populate(
                     contentResolver = context.contentResolver,
-                    baseContainer = container,
+                    parentContainer = container,
                     uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     column = AudioDirectoryContainer.AUDIO_DATA_PATH
                 ) { id: String,
@@ -357,7 +357,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                 val result = FileHierarchyBuilder().populate(
                     contentResolver = context.contentResolver,
-                    baseContainer = container,
+                    parentContainer = container,
                     uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                     column = VideoDirectoryContainer.VIDEO_DATA_PATH
                 ) { id: String,

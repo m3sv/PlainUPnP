@@ -19,7 +19,7 @@ class FileHierarchyBuilder {
 
     fun populate(
         contentResolver: ContentResolver,
-        baseContainer: BaseContainer,
+        parentContainer: BaseContainer,
         column: String,
         uri: Uri,
         containerBuilder: ContainerBuilder
@@ -44,7 +44,7 @@ class FileHierarchyBuilder {
 
         fileTree.fileFolderRoots.forEach { root ->
             traverseTree(
-                baseContainer = baseContainer,
+                parentContainer = parentContainer,
                 rootContainer = root,
                 containerBuilder = containerBuilder
             )
@@ -54,7 +54,7 @@ class FileHierarchyBuilder {
     }
 
     private fun traverseTree(
-        baseContainer: BaseContainer,
+        parentContainer: BaseContainer,
         rootContainer: FolderContainer,
         containerBuilder: ContainerBuilder
     ) {
@@ -67,7 +67,7 @@ class FileHierarchyBuilder {
             rootContainer.path
         )
 
-        baseContainer.addContainer(newContainer)
+        parentContainer.addContainer(newContainer)
 
         registry[id] = newContainer
 
