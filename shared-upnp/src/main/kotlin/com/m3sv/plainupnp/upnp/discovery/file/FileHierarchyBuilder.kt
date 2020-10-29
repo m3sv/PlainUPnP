@@ -18,7 +18,7 @@ class FileHierarchyBuilder {
     fun populate(
         contentResolver: ContentResolver,
         baseContainer: BaseContainer,
-        containerRegistry: MutableMap<Int, BaseContainer?>,
+        containerRegistry: MutableMap<Int, BaseContainer>,
         column: String,
         uri: Uri,
         containerBuilder: ContainerBuilder
@@ -54,7 +54,7 @@ class FileHierarchyBuilder {
     private fun traverseTree(
         baseContainer: BaseContainer,
         container: FolderContainer,
-        containerRegistry: MutableMap<Int, BaseContainer?>,
+        containerRegistry: MutableMap<Int, BaseContainer>,
         containerBuilder: ContainerBuilder
     ) {
         val id = "${container.name}${container.id}".hashCode()

@@ -30,7 +30,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     private val appName by lazy(NONE) { context.getString(R.string.app_name) }
 
-    private val containerRegistry: MutableMap<Int, BaseContainer?> = mutableMapOf()
+    private val containerRegistry: MutableMap<Int, BaseContainer> = mutableMapOf()
 
     override fun browse(
         objectID: String,
@@ -44,25 +44,28 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             var root = -1
             val subtype = mutableListOf<Int>()
 
-            for (s in objectID.split(SEPARATOR)) {
-                val i = Integer.parseInt(s)
-                if (root == -1) {
-                    root = i
-                    if (root != ROOT_ID
-                        && root != VIDEO_ID
-                        && root != AUDIO_ID
-                        && root != IMAGE_ID
-                        && root !in containerRegistry.keys
-                    ) {
-                        throw ContentDirectoryException(
-                            ContentDirectoryErrorCode.NO_SUCH_OBJECT,
-                            "Invalid type!"
-                        )
+            objectID
+                .split(SEPARATOR)
+                .map(Integer::parseInt)
+                .forEach {
+                    if (root == -1) {
+                        root = it
+
+                        if (root != ROOT_ID
+                            && root != VIDEO_ID
+                            && root != AUDIO_ID
+                            && root != IMAGE_ID
+                            && root !in containerRegistry.keys
+                        ) {
+                            throw ContentDirectoryException(
+                                ContentDirectoryErrorCode.NO_SUCH_OBJECT,
+                                "Invalid type!"
+                            )
+                        }
+                    } else {
+                        subtype.add(it)
                     }
-                } else {
-                    subtype.add(i)
                 }
-            }
 
             Timber.d("Browsing type $root")
             if (containerRegistry[ROOT_ID] == null) {
@@ -78,19 +81,19 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
             val jobs = mutableListOf<Job>()
 
-            if (containerRegistry[IMAGE_ID] == null && isImagesEnabled) {
+            if (isImagesEnabled && containerRegistry[IMAGE_ID] == null) {
                 jobs += launch(Dispatchers.IO) {
                     containerRegistry[IMAGE_ID] = getRootImagesContainer(rootContainer)
                 }
             }
 
-            if (containerRegistry[AUDIO_ID] == null && isAudioEnabled) {
+            if (isAudioEnabled && containerRegistry[AUDIO_ID] == null) {
                 jobs += launch(Dispatchers.IO) {
                     containerRegistry[AUDIO_ID] = getRootAudioContainer(rootContainer)
                 }
             }
 
-            if (containerRegistry[VIDEO_ID] == null && isVideoEnabled) {
+            if (isVideoEnabled && containerRegistry[VIDEO_ID] == null) {
                 jobs += launch(Dispatchers.IO) {
                     containerRegistry[VIDEO_ID] = getRootVideoContainer(rootContainer)
                 }
@@ -110,7 +113,15 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                             val parentId = "$AUDIO_ID$SEPARATOR${subtype[0]}"
                             Timber.d("Listing album of artist $artistId")
 
-                            getArtistContainer(artistId, parentId)
+                            AlbumContainer(
+                                artistId,
+                                parentId,
+                                "",
+                                appName,
+                                baseURL,
+                                context.contentResolver,
+                                artistId = artistId
+                            )
                         }
                         subtype.size == 2 && subtype[0] == ALL_ALBUMS -> {
                             val albumId = subtype[1].toString()
@@ -152,23 +163,18 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     private fun getBrowseResult(container: BaseContainer): BrowseResult {
         Timber.d("List container...")
-        val didl = DIDLContent()
 
-        // Get container first
-        for (c in LinkedHashSet(container.containers))
-            didl.addContainer(c)
-
-        Timber.d("List item...")
-
-        // Then get item
-        for (i in LinkedHashSet(container.items))
-            didl.addItem(i)
-
-        Timber.d("Return result...")
+        val didl = DIDLContent().apply {
+            listOf(
+                LinkedHashSet(container.containers),
+                LinkedHashSet(container.items)
+            ).flatten().forEach { addObject(it) }
+        }
 
         val count = didl.count
 
         Timber.d("Child count: $count")
+
         val answer: String
 
         try {
@@ -177,12 +183,127 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             throw ContentDirectoryException(ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString())
         }
 
-        Timber.d("Answer: $answer")
-
         return BrowseResult(answer, count, count)
     }
 
-    private fun getRootVideoContainer(rootContainer: BaseContainer): BaseContainer? =
+    private fun getRootImagesContainer(rootContainer: BaseContainer): BaseContainer =
+        Container(
+            IMAGE_ID.toString(),
+            ROOT_ID.toString(),
+            context.getString(R.string.images),
+            appName
+        ).apply {
+            rootContainer.addContainer(this)
+
+            AllImagesContainer(
+                id = ALL_IMAGE.toString(),
+                parentID = IMAGE_ID.toString(),
+                title = context.getString(R.string.all),
+                creator = appName,
+                baseUrl = baseURL,
+                contentResolver = context.contentResolver
+            ).apply {
+                addContainer(this)
+                containerRegistry[ALL_IMAGE] = this
+            }
+
+            FileHierarchyBuilder().populate(
+                contentResolver = context.contentResolver,
+                baseContainer = this,
+                containerRegistry = containerRegistry,
+                uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                column = ImageDirectoryContainer.IMAGE_DATA_PATH
+            ) { id: String,
+                parentId: String?,
+                containerName: String,
+                path: String
+                ->
+
+                ImageDirectoryContainer(
+                    id = id,
+                    parentID = parentId ?: VIDEO_ID.toString(),
+                    title = containerName,
+                    creator = appName,
+                    baseUrl = baseURL,
+                    directory = ContentDirectory(path),
+                    contentResolver = context.contentResolver
+                )
+            }
+        }
+
+    private fun getRootAudioContainer(rootContainer: BaseContainer): BaseContainer =
+        Container(
+            AUDIO_ID.toString(),
+            ROOT_ID.toString(),
+            context.getString(R.string.audio),
+            appName
+        ).apply {
+            rootContainer.addContainer(this)
+
+            AllAudioContainer(
+                ALL_AUDIO.toString(),
+                AUDIO_ID.toString(),
+                context.getString(R.string.all),
+                appName,
+                baseUrl = baseURL,
+                contentResolver = context.contentResolver,
+                albumId = null,
+                artist = null
+            ).apply {
+                containerRegistry[ALL_AUDIO] = this
+                addContainer(this)
+            }
+
+            ArtistContainer(
+                ALL_ARTISTS.toString(),
+                AUDIO_ID.toString(),
+                context.getString(R.string.artist),
+                appName,
+                baseURL,
+                context.contentResolver
+            ).apply {
+                containerRegistry[ALL_ARTISTS] = this
+                addContainer(this)
+            }
+
+            AlbumContainer(
+                ALL_ALBUMS.toString(),
+                AUDIO_ID.toString(),
+                context.getString(R.string.album),
+                appName,
+                baseURL,
+                context.contentResolver,
+                null
+            ).apply {
+                containerRegistry[ALL_ALBUMS] = this
+                addContainer(this)
+            }
+
+            FileHierarchyBuilder().populate(
+                contentResolver = context.contentResolver,
+                baseContainer = this,
+                containerRegistry = containerRegistry,
+                uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                column = AudioDirectoryContainer.AUDIO_DATA_PATH
+            ) { id: String,
+                parentId: String?,
+                containerName: String,
+                path: String
+                ->
+
+                AudioDirectoryContainer(
+                    id = id,
+                    parentID = parentId ?: AUDIO_ID.toString(),
+                    title = containerName,
+                    creator = appName,
+                    baseUrl = baseURL,
+                    directory = ContentDirectory(path),
+                    contentResolver = context.contentResolver
+                )
+            }
+        }
+
+    private fun getRootVideoContainer(rootContainer: BaseContainer): BaseContainer =
         Container(
             VIDEO_ID.toString(),
             ROOT_ID.toString(),
@@ -190,7 +311,14 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             appName
         ).apply {
             rootContainer.addContainer(this)
-            val allVideosContainer = getAllVideosContainer()
+            val allVideosContainer = AllVideoContainer(
+                ALL_VIDEO.toString(),
+                VIDEO_ID.toString(),
+                context.getString(R.string.all),
+                appName,
+                baseURL,
+                contentResolver = context.contentResolver
+            )
             addContainer(allVideosContainer)
             containerRegistry[ALL_VIDEO] = allVideosContainer
 
@@ -218,88 +346,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             }
         }
 
-    private fun getRootAudioContainer(rootContainer: BaseContainer): BaseContainer? =
-        Container(
-            AUDIO_ID.toString(),
-            ROOT_ID.toString(),
-            context.getString(R.string.audio),
-            appName
-        ).apply {
-            rootContainer.addContainer(this)
-
-            val allAudioContainer = getAllAudioContainer()
-            containerRegistry[ALL_AUDIO] = allAudioContainer
-
-            val allArtistsContainer = getAllArtistsContainer()
-            containerRegistry[ALL_ARTISTS] = allArtistsContainer
-
-            val allAlbumsContainer = getAllAlbumsContainer()
-            containerRegistry[ALL_ALBUMS] = allAlbumsContainer
-
-            addContainer(allAudioContainer)
-            addContainer(allArtistsContainer)
-            addContainer(allAlbumsContainer)
-
-            FileHierarchyBuilder().populate(
-                contentResolver = context.contentResolver,
-                baseContainer = this,
-                containerRegistry = containerRegistry,
-                uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                column = AudioDirectoryContainer.AUDIO_DATA_PATH
-            ) { id: String,
-                parentId: String?,
-                containerName: String,
-                path: String
-                ->
-
-                AudioDirectoryContainer(
-                    id = id,
-                    parentID = parentId ?: AUDIO_ID.toString(),
-                    title = containerName,
-                    creator = appName,
-                    baseUrl = baseURL,
-                    directory = ContentDirectory(path),
-                    contentResolver = context.contentResolver
-                )
-            }
-        }
-
-    private fun getRootImagesContainer(rootContainer: BaseContainer): BaseContainer? =
-        Container(
-            IMAGE_ID.toString(),
-            ROOT_ID.toString(),
-            context.getString(R.string.images),
-            appName
-        ).apply {
-            rootContainer.addContainer(this)
-            val allImagesContainer = getAllImagesContainer()
-            addContainer(allImagesContainer)
-            containerRegistry[ALL_IMAGE] = allImagesContainer
-
-            FileHierarchyBuilder().populate(
-                contentResolver = context.contentResolver,
-                baseContainer = this,
-                containerRegistry = containerRegistry,
-                uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                column = ImageDirectoryContainer.IMAGE_DATA_PATH
-            ) { id: String,
-                parentId: String?,
-                containerName: String,
-                path: String
-                ->
-
-                ImageDirectoryContainer(
-                    id = id,
-                    parentID = parentId ?: VIDEO_ID.toString(),
-                    title = containerName,
-                    creator = appName,
-                    baseUrl = baseURL,
-                    directory = ContentDirectory(path),
-                    contentResolver = context.contentResolver
-                )
-            }
-        }
-
     private fun getAlbumContainer(
         albumId: String,
         parentId: String
@@ -313,72 +359,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         albumId = albumId,
         artist = null
     )
-
-    private fun getArtistContainer(
-        artistId: String,
-        parentId: String
-    ): AlbumContainer = AlbumContainer(
-        artistId,
-        parentId,
-        "",
-        appName,
-        baseURL,
-        context.contentResolver,
-        artistId = artistId
-    )
-
-    private fun getAllVideosContainer(): BaseContainer =
-        AllVideoContainer(
-            ALL_VIDEO.toString(),
-            VIDEO_ID.toString(),
-            context.getString(R.string.all),
-            appName,
-            baseURL,
-            contentResolver = context.contentResolver
-        )
-
-    private fun getAllAudioContainer(): BaseContainer =
-        AllAudioContainer(
-            ALL_AUDIO.toString(),
-            AUDIO_ID.toString(),
-            context.getString(R.string.all),
-            appName,
-            baseUrl = baseURL,
-            contentResolver = context.contentResolver,
-            albumId = null,
-            artist = null
-        )
-
-    private fun getAllAlbumsContainer(): AlbumContainer =
-        AlbumContainer(
-            ALL_ALBUMS.toString(),
-            AUDIO_ID.toString(),
-            context.getString(R.string.album),
-            appName,
-            baseURL,
-            context.contentResolver,
-            null
-        )
-
-    private fun getAllArtistsContainer(): ArtistContainer =
-        ArtistContainer(
-            ALL_ARTISTS.toString(),
-            AUDIO_ID.toString(),
-            context.getString(R.string.artist),
-            appName,
-            baseURL,
-            context.contentResolver
-        )
-
-    private fun getAllImagesContainer(): AllImagesContainer =
-        AllImagesContainer(
-            id = ALL_IMAGE.toString(),
-            parentID = IMAGE_ID.toString(),
-            title = context.getString(R.string.all),
-            creator = appName,
-            baseUrl = baseURL,
-            contentResolver = context.contentResolver
-        )
 
     private val isImagesEnabled
         get() = sharedPref.getBoolean(CONTENT_DIRECTORY_IMAGE, true)
