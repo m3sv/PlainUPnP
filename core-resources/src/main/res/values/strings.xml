@@ -82,4 +82,5 @@
     <string name="system_theme_label">System-based</string>
     <string name="battery_saver_theme_label">Dark on battery saver</string>
     <string name="browse_failed">Browsing content failed, try re-selecting the device. If that doesn\'t help restart device and app.</string>
+    <string name="by_folder">By folder</string>
 </resources>
