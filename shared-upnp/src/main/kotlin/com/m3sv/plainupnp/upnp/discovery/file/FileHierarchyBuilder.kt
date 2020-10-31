@@ -5,7 +5,6 @@ import android.net.Uri
 import com.m3sv.plainupnp.upnp.mediacontainers.BaseContainer
 
 typealias ContainerBuilder = (
-    id: String,
     parentId: String?,
     containerName: String,
     path: String
@@ -14,15 +13,13 @@ typealias ContainerBuilder = (
 class FileHierarchyBuilder {
     private val fileTree = FileTree(FileHierarchyExtractor())
 
-    private val registry = mutableMapOf<Int, BaseContainer>()
-
     fun populate(
         contentResolver: ContentResolver,
         parentContainer: BaseContainer,
         column: String,
         uri: Uri,
-        containerBuilder: ContainerBuilder
-    ): Map<Int, BaseContainer> {
+        containerBuilder: ContainerBuilder,
+    ) {
         contentResolver.query(
             uri,
             arrayOf(column),
@@ -31,6 +28,7 @@ class FileHierarchyBuilder {
             null
         )?.use { cursor ->
             val pathColumn = cursor.getColumnIndexOrThrow(column)
+
             while (cursor.moveToNext()) {
                 var path = cursor.getString(pathColumn)
 
@@ -46,52 +44,41 @@ class FileHierarchyBuilder {
             }
         }
 
-        fileTree.fileFolderRoots.forEach { root ->
+        fileTree.fileFolderRoots.forEach { folderRoot ->
             traverseTree(
                 parentContainer = parentContainer,
-                rootContainer = root,
+                folderRoot = folderRoot,
                 containerBuilder = containerBuilder
             )
         }
-
-        return registry
     }
 
     private fun traverseTree(
         parentContainer: BaseContainer,
-        rootContainer: FolderContainer,
-        containerBuilder: ContainerBuilder
+        folderRoot: FolderContainer,
+        containerBuilder: ContainerBuilder,
     ) {
-        val id = "${rootContainer.name}${rootContainer.id}".hashCode()
-
         val newContainer = containerBuilder(
-            id.toString(),
             null,
-            rootContainer.name,
-            rootContainer.path
+            folderRoot.name,
+            folderRoot.path
         )
 
         parentContainer.addContainer(newContainer)
 
-        registry[id] = newContainer
-
-        rootContainer.children.forEach {
+        folderRoot.children.forEach {
             when (val value = it.value) {
                 is FolderContainer -> traverseTree(newContainer, value, containerBuilder)
 
                 is FolderLeaf -> {
-                    val leafId = "${value.name}${value.id}".hashCode()
-
                     val leafContainer =
                         containerBuilder(
-                            leafId.toString(),
-                            id.toString(),
+                            newContainer.id.split("$").last(),
                             it.key,
                             value.path
                         )
 
                     newContainer.addContainer(leafContainer)
-                    registry[leafId] = leafContainer
                 }
             }
         }

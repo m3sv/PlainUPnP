@@ -35,12 +35,12 @@ import org.seamless.util.MimeType
 
 class VideoDirectoryContainer(
     id: String,
-    parentID: String,
+    parentID: String?,
     title: String,
     creator: String,
     private val baseUrl: String,
     private val directory: ContentDirectory,
-    private val contentResolver: ContentResolver
+    private val contentResolver: ContentResolver,
 ) : BaseContainer(
     id,
     parentID,

@@ -38,7 +38,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         filter: String,
         firstResult: Long,
         maxResults: Long,
-        orderby: Array<SortCriterion>
+        orderby: Array<SortCriterion>,
     ): BrowseResult = runBlocking {
         try {
             var root = -1
@@ -216,27 +216,30 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 addContainer(container)
                 container.addToRegistry(IMAGE_BY_FOLDER)
 
+                var initialId = 1_000_000
+
                 FileHierarchyBuilder().populate(
                     contentResolver = context.contentResolver,
                     parentContainer = container,
                     uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     column = ImageDirectoryContainer.IMAGE_DATA_PATH
-                ) { id: String,
-                    parentId: String?,
-                    containerName: String,
-                    path: String
+                ) {
+                        parentId: String?,
+                        containerName: String,
+                        path: String,
                     ->
+                    val id = initialId++
 
                     ImageDirectoryContainer(
-                        id = id,
-                        parentID = parentId ?: VIDEO_ID.toString(),
+                        id = id.toString(),
+                        parentID = parentId ?: IMAGE_BY_FOLDER.toString(),
                         title = containerName,
                         creator = appName,
                         baseUrl = baseURL,
                         directory = ContentDirectory(path),
                         contentResolver = context.contentResolver
-                    )
-                }.addToRegistry()
+                    ).addToRegistry(id)
+                }
             }
         }
 
@@ -297,27 +300,30 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 addContainer(container)
                 container.addToRegistry(AUDIO_BY_FOLDER)
 
+                var initialId = 2_000_000
+
                 FileHierarchyBuilder().populate(
                     contentResolver = context.contentResolver,
                     parentContainer = container,
                     uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                     column = AudioDirectoryContainer.AUDIO_DATA_PATH
-                ) { id: String,
-                    parentId: String?,
-                    containerName: String,
-                    path: String
+                ) {
+                        parentId: String?,
+                        containerName: String,
+                        path: String,
                     ->
+                    val id = initialId++
 
                     AudioDirectoryContainer(
-                        id = id,
-                        parentID = parentId ?: AUDIO_ID.toString(),
+                        id = id.toString(),
+                        parentID = parentId ?: AUDIO_BY_FOLDER.toString(),
                         title = containerName,
                         creator = appName,
                         baseUrl = baseURL,
                         directory = ContentDirectory(path),
                         contentResolver = context.contentResolver
-                    )
-                }.addToRegistry()
+                    ).addToRegistry(id)
+                }
             }
         }
 
@@ -351,33 +357,36 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 addContainer(container)
                 container.addToRegistry(VIDEO_BY_FOLDER)
 
+                var initialId = 3_000_000
+
                 FileHierarchyBuilder().populate(
                     contentResolver = context.contentResolver,
                     parentContainer = container,
                     uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                     column = VideoDirectoryContainer.VIDEO_DATA_PATH
-                ) { id: String,
-                    parentId: String?,
-                    containerName: String,
-                    directory: String
+                ) {
+                        parentId: String?,
+                        containerName: String,
+                        directory: String,
                     ->
+                    val id = initialId++
 
                     VideoDirectoryContainer(
-                        id,
-                        parentId ?: VIDEO_ID.toString(),
+                        id.toString(),
+                        parentId ?: VIDEO_BY_FOLDER.toString(),
                         containerName,
                         appName,
                         baseUrl = baseURL,
                         directory = ContentDirectory(directory),
                         contentResolver = context.contentResolver
-                    )
-                }.addToRegistry()
+                    ).addToRegistry(id)
+                }
             }
         }
 
     private fun getAlbumContainer(
         albumId: String,
-        parentId: String
+        parentId: String,
     ): BaseContainer = AllAudioContainer(
         albumId,
         parentId,
@@ -389,12 +398,9 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         artist = null
     )
 
-    private fun BaseContainer.addToRegistry(key: Int) {
+    private fun BaseContainer.addToRegistry(key: Int): BaseContainer {
         containerRegistry[key] = this
-    }
-
-    private fun Map<Int, BaseContainer>.addToRegistry() {
-        containerRegistry.putAll(this)
+        return this
     }
 
     private val isImagesEnabled

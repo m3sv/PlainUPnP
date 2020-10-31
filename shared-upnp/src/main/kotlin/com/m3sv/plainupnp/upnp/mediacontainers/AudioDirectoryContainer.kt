@@ -13,14 +13,14 @@ import org.seamless.util.MimeType
 
 class AudioDirectoryContainer(
     id: String,
-    parentID: String,
+    parentID: String?,
     title: String,
     creator: String?,
     artist: String? = null,
     albumId: String? = null,
     private val baseUrl: String,
     private val directory: ContentDirectory,
-    private val contentResolver: ContentResolver
+    private val contentResolver: ContentResolver,
 ) : BaseContainer(id, parentID, title, creator) {
 
     private var orderBy: String? = null
