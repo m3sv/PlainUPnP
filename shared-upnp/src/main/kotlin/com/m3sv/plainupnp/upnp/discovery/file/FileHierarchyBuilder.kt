@@ -12,7 +12,6 @@ typealias ContainerBuilder = (
 ) -> BaseContainer
 
 class FileHierarchyBuilder {
-
     private val fileTree = FileTree(FileHierarchyExtractor())
 
     private val registry = mutableMapOf<Int, BaseContainer>()
