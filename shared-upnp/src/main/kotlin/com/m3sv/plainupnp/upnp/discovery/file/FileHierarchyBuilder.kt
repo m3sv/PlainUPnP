@@ -33,8 +33,13 @@ class FileHierarchyBuilder {
             val pathColumn = cursor.getColumnIndexOrThrow(column)
             while (cursor.moveToNext()) {
                 var path = cursor.getString(pathColumn)
+
                 if (path.startsWith("/")) {
                     path = path.drop(1)
+                }
+
+                if (path.endsWith("/")) {
+                    path = path.dropLast(1)
                 }
 
                 fileTree.insertPath(path)

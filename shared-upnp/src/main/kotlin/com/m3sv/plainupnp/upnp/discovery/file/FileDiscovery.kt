@@ -15,13 +15,11 @@ class FileTree(private val extractor: FileHierarchyExtractor) {
      * We assume that first inserted path defines root
      */
     fun insertPath(path: String) {
-        val vettedPath = path.substring(0, path.indexOfLast { it == '/' })
-
-        if (pathCache.contains(vettedPath))
+        if (pathCache.contains(path))
             return
 
-        val splitPath = vettedPath.split("/")
+        val splitPath = path.split("/")
         extractor.extract(roots, LinkedList(splitPath))
-        pathCache.add(vettedPath)
+        pathCache.add(path)
     }
 }
