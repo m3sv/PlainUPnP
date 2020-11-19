@@ -83,7 +83,9 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
             if (isImagesEnabled && containerRegistry[IMAGE_ID] == null) {
                 jobs += launch(Dispatchers.IO) {
-                    getRootImagesContainer(rootContainer).addToRegistry(IMAGE_ID)
+                    getRootImagesContainer()
+                        .also(rootContainer::addContainer)
+                        .addToRegistry(IMAGE_ID)
                 }
             }
 
@@ -186,62 +188,63 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         return BrowseResult(answer, count, count)
     }
 
-    private fun getRootImagesContainer(rootContainer: BaseContainer): BaseContainer =
-        Container(
+    private fun getRootImagesContainer(): BaseContainer {
+        val rootContainer = Container(
             IMAGE_ID.toString(),
             ROOT_ID.toString(),
             context.getString(R.string.images),
             appName
-        ).apply {
-            rootContainer.addContainer(this)
+        )
 
-            AllImagesContainer(
-                id = ALL_IMAGE.toString(),
-                parentID = IMAGE_ID.toString(),
-                title = context.getString(R.string.all),
-                creator = appName,
-                baseUrl = baseURL,
-                contentResolver = context.contentResolver
-            ).also { container ->
-                addContainer(container)
-                container.addToRegistry(ALL_IMAGE)
-            }
+        AllImagesContainer(
+            id = ALL_IMAGE.toString(),
+            parentID = IMAGE_ID.toString(),
+            title = context.getString(R.string.all),
+            creator = appName,
+            baseUrl = baseURL,
+            contentResolver = context.contentResolver
+        ).also { container ->
+            rootContainer.addContainer(container)
+            container.addToRegistry(ALL_IMAGE)
+        }
 
-            Container(
-                IMAGE_BY_FOLDER.toString(),
-                id,
-                context.getString(R.string.by_folder),
-                appName
-            ).also { container ->
-                addContainer(container)
-                container.addToRegistry(IMAGE_BY_FOLDER)
+        Container(
+            IMAGE_BY_FOLDER.toString(),
+            rootContainer.id,
+            context.getString(R.string.by_folder),
+            appName
+        ).also { container ->
+            rootContainer.addContainer(container)
+            container.addToRegistry(IMAGE_BY_FOLDER)
 
-                var initialId = 1_000_000
+            var initialId = 1_000_000
 
-                FileHierarchyBuilder().populate(
-                    contentResolver = context.contentResolver,
-                    parentContainer = container,
-                    uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    column = ImageDirectoryContainer.IMAGE_DATA_PATH
-                ) {
-                        parentId: String?,
-                        containerName: String,
-                        path: String,
-                    ->
-                    val id = initialId++
+            FileHierarchyBuilder().populate(
+                contentResolver = context.contentResolver,
+                parentContainer = container,
+                uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                column = ImageDirectoryContainer.IMAGE_DATA_PATH
+            ) {
+                    parentId: String?,
+                    containerName: String,
+                    path: String,
+                ->
+                val id = initialId++
 
-                    ImageDirectoryContainer(
-                        id = id.toString(),
-                        parentID = parentId ?: IMAGE_BY_FOLDER.toString(),
-                        title = containerName,
-                        creator = appName,
-                        baseUrl = baseURL,
-                        directory = ContentDirectory(path),
-                        contentResolver = context.contentResolver
-                    ).addToRegistry(id)
-                }
+                ImageDirectoryContainer(
+                    id = id.toString(),
+                    parentID = parentId ?: IMAGE_BY_FOLDER.toString(),
+                    title = containerName,
+                    creator = appName,
+                    baseUrl = baseURL,
+                    directory = ContentDirectory(path),
+                    contentResolver = context.contentResolver
+                ).addToRegistry(id)
             }
         }
+
+        return rootContainer
+    }
 
     private fun getRootAudioContainer(rootContainer: BaseContainer): BaseContainer =
         Container(
