@@ -1,6 +1,5 @@
 apply from: '../scripts/base-android-library.gradle'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
 
 android {
     sourceSets {
@@ -14,21 +13,9 @@ android {
         warning 'InvalidPackage'
     }
 
-    compileOptions {
-        coreLibraryDesugaringEnabled true
-    }
-
-    buildFeatures {
-        viewBinding true
-    }
-
     testOptions {
         unitTests.all {
             useJUnitPlatform()
         }
     }
-}
-
-dependencies {
-    coreLibraryDesugaring deps.coreLibraryDesugaring
 }

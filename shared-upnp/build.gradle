@@ -1,6 +1,7 @@
 apply from: '../scripts/android-library.gradle'
 apply from: '../scripts/cling.gradle'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 
 dependencies {
     compileOnly deps.dagger.annotation

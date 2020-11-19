@@ -1,4 +1,5 @@
 apply from: "../scripts/android-library.gradle"
+apply plugin: 'kotlin-kapt'
 
 dependencies {
     compileOnly deps.dagger.annotation

@@ -16,8 +16,8 @@ buildscript {
     ext.buildConfig.version['name'] = "${buildConfig.version.major}.${buildConfig.version.minor}.${buildConfig.version.patch}"
 
     ext.versions = [
-            'kotlin'              : '1.4.10',
-            'sqlDelight'          : '1.4.0',
+            kotlin                : '1.4.20',
+            sqlDelight            : '1.4.4',
             architectureComponents: "2.2.0",
             cardView              : "1.0.0",
             cling                 : "2.2.0",
@@ -44,7 +44,6 @@ buildscript {
             'okHttp'                 : "com.squareup.okhttp3:okhttp:${versions.okHttp}",
             'sqlDelightAndroidDriver': "com.squareup.sqldelight:android-driver:${versions.sqlDelight}",
             'timber'                 : 'com.jakewharton.timber:timber:4.7.1',
-            'coreLibraryDesugaring'  : 'com.android.tools:desugar_jdk_libs:1.0.10',
             'androidx'               : [
                     'material'        : 'com.google.android.material:material:1.2.0',
                     "appCompat"       : "androidx.appcompat:appcompat:${versions.supportLibrary}",
@@ -91,7 +90,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.android.tools.build:gradle:4.1.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "com.squareup.sqldelight:gradle-plugin:${versions.sqlDelight}"
     }
