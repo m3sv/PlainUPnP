@@ -1,0 +1,38 @@
+apply from: '../../scripts/kotlin-android-library.gradle'
+apply from: '../../scripts/cling.gradle'
+
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+
+
+android {
+    compileOptions {
+        // Flag to enable support for the new language APIs
+        coreLibraryDesugaringEnabled true
+    }
+}
+
+dependencies {
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${versions.coreLibraryDesugaring}"
+
+    compileOnly deps.dagger.annotation
+    compileOnly deps.javaxCdi
+
+    implementation deps.androidx.ktx.core
+    implementation deps.androidx.material
+    implementation deps.androidx.preference
+    implementation deps.coroutines.core
+    implementation deps.dagger.core
+    implementation deps.nanohttpd.core
+    implementation deps.nanohttpd.webserver
+    implementation deps.okHttp
+    implementation deps.timber
+
+    implementation project(":common")
+    implementation project(':core:persistence')
+
+    kapt deps.dagger.compiler
+
+    testImplementation deps.test.junit
+    testImplementation deps.test.mockito
+}

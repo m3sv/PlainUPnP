@@ -1,0 +1,17 @@
+apply from: "../../scripts/kotlin-android-library.gradle"
+apply plugin: 'kotlin-kapt'
+
+dependencies {
+    compileOnly deps.dagger.annotation
+    compileOnly deps.dagger.annotation
+
+    implementation deps.androidx.material
+    implementation deps.androidx.preference
+    implementation deps.coroutines.core
+    implementation deps.dagger.core
+
+    implementation project(':common')
+    implementation project(':shared:upnp')
+
+    kapt deps.dagger.compiler
+}

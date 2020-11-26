@@ -1,5 +1,0 @@
-apply from: '../scripts/base-android-library.gradle'
-
-dependencies {
-    implementation deps.androidx.material
-}

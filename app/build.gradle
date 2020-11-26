@@ -2,6 +2,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply from: "../scripts/cling.gradle"
+apply plugin: 'com.squareup.sqldelight'
+
 
 android {
     compileSdkVersion buildConfig.compileSdk
@@ -71,7 +73,7 @@ dependencies {
     implementation deps.androidx.appCompat
     implementation deps.androidx.cardView
     implementation deps.androidx.constraintLayout
-    implementation deps.ktx.core
+    implementation deps.androidx.ktx.core
     implementation deps.androidx.lifecycle.extensions
     implementation deps.androidx.lifecycle.lifecycleKtx
     implementation deps.androidx.lifecycle.liveDataKtx
@@ -83,21 +85,20 @@ dependencies {
     implementation deps.coroutines.core
     implementation deps.dagger.core
     implementation deps.glide
-    implementation deps.kotlin
     implementation deps.nanohttpd.core
     implementation deps.nanohttpd.webserver
     implementation deps.sqlDelightAndroidDriver
     implementation deps.timber
 
     implementation project(':common')
-    implementation project(':core-persistence')
-    implementation project(':core-event-bus')
-    implementation project(':core-resources')
-    implementation project(':feature-home')
-    implementation project(':feature-onboarding')
-    implementation project(':feature-settings')
-    implementation project(':feature-in-app-player')
-    implementation project(':shared-upnp')
+    implementation project(':core:persistence')
+    implementation project(':core:eventbus')
+    implementation project(':core:resources')
+    implementation project(':feature:home')
+    implementation project(':feature:onboarding')
+    implementation project(':feature:settings')
+    implementation project(':feature:inappplayer')
+    implementation project(':shared:upnp')
 
     kapt deps.dagger.compiler
 

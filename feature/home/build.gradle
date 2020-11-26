@@ -1,0 +1,35 @@
+apply from: "../../scripts/kotlin-android-library.gradle"
+apply plugin: 'kotlin-kapt'
+
+android {
+    buildFeatures {
+        viewBinding = true
+    }
+}
+
+dependencies {
+    compileOnly deps.dagger.annotation
+
+    implementation deps.androidx.constraintLayout
+    implementation deps.androidx.lifecycle.extensions
+    implementation deps.androidx.lifecycle.lifecycleKtx
+    implementation deps.androidx.lifecycle.liveDataKtx
+    implementation deps.androidx.lifecycle.viewModelKtx
+    implementation deps.androidx.material
+    implementation deps.androidx.recyclerView
+    implementation deps.coroutines.core
+    implementation deps.dagger.core
+    implementation deps.fastScroll
+    implementation deps.glide
+
+    implementation project(':common')
+    implementation project(':shared:upnp')
+    implementation project(':feature:inappplayer')
+    implementation project(':core:eventbus')
+
+    kapt deps.dagger.compiler
+
+    testImplementation deps.test.junit
+    testImplementation deps.test.mockito
+    testImplementation deps.test.mockitoInline
+}
