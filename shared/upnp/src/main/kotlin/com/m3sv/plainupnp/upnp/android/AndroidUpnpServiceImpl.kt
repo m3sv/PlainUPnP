@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp.android
 
 import android.content.Context
-import androidx.preference.PreferenceManager
+import android.content.SharedPreferences
 import com.m3sv.plainupnp.common.util.getUdn
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import com.m3sv.plainupnp.upnp.R
@@ -18,10 +18,11 @@ class AndroidUpnpServiceImpl(
     context: Context,
     configuration: AndroidUpnpServiceConfiguration,
     resourceProvider: LocalServiceResourceProvider,
+    sharedPreferences: SharedPreferences,
 ) : UpnpServiceImpl(configuration, context) {
 
     init {
-        registry.addDevice(getLocalDevice(resourceProvider, context))
+        registry.addDevice(getLocalDevice(resourceProvider, context, sharedPreferences))
         controlPoint.search()
     }
 
@@ -34,6 +35,7 @@ class AndroidUpnpServiceImpl(
 private fun getLocalDevice(
     serviceResourceProvider: LocalServiceResourceProvider,
     context: Context,
+    sharedPreferences: SharedPreferences,
 ): LocalDevice {
     val details = DeviceDetails(
         serviceResourceProvider.settingContentDirectoryName,
@@ -78,11 +80,14 @@ private fun getLocalDevice(
         type,
         details,
         icon,
-        getLocalService(context)
+        getLocalService(context, sharedPreferences)
     )
 }
 
-private fun getLocalService(context: Context): LocalService<ContentDirectoryService> {
+private fun getLocalService(
+    context: Context,
+    sharedPreferences: SharedPreferences,
+): LocalService<ContentDirectoryService> {
     val serviceBinder = AnnotationLocalServiceBinder()
     val contentDirectoryService =
         serviceBinder.read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>
@@ -98,7 +103,7 @@ private fun getLocalService(context: Context): LocalService<ContentDirectoryServ
                     context
                 ).hostAddress
             }:$PORT"
-            service.sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+            service.sharedPref = sharedPreferences
         }
     }
 

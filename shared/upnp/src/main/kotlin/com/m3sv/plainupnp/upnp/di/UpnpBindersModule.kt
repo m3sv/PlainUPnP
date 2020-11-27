@@ -1,6 +1,7 @@
 package com.m3sv.plainupnp.upnp.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.m3sv.plainupnp.upnp.PlainUpnpServiceConfiguration
 import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
@@ -31,11 +32,13 @@ abstract class UpnpBindersModule {
         @Singleton
         fun provideUpnpService(
             context: Context,
-            localServiceResourceProvider: LocalServiceResourceProvider
+            sharedPreferences: SharedPreferences,
+            localServiceResourceProvider: LocalServiceResourceProvider,
         ): UpnpService = AndroidUpnpServiceImpl(
             context,
             PlainUpnpServiceConfiguration(),
-            localServiceResourceProvider
+            localServiceResourceProvider,
+            sharedPreferences
         )
 
         @Provides
