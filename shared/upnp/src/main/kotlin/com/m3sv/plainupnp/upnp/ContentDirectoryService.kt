@@ -1,9 +1,10 @@
 package com.m3sv.plainupnp.upnp
 
+import android.content.ContentResolver
 import android.content.Context
 import android.content.SharedPreferences
+import android.net.Uri
 import android.provider.MediaStore
-import com.m3sv.plainupnp.upnp.discovery.file.FileHierarchyBuilder
 import com.m3sv.plainupnp.upnp.mediacontainers.*
 import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_AUDIO
 import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_IMAGE
@@ -21,15 +22,11 @@ import timber.log.Timber
 import kotlin.LazyThreadSafetyMode.NONE
 
 class ContentDirectoryService : AbstractContentDirectoryService() {
-
     lateinit var context: Context
-
     lateinit var baseURL: String
-
     lateinit var sharedPref: SharedPreferences
 
     private val appName by lazy(NONE) { context.getString(R.string.app_name) }
-
     private val containerRegistry: MutableMap<Int, BaseContainer> = mutableMapOf()
 
     override fun browse(
@@ -217,73 +214,24 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             rootContainer.addContainer(container)
             container.addToRegistry(IMAGE_BY_FOLDER)
 
-            var initialId = 1_000_000
-
-            val folders: MutableMap<String, Map<String, Any>> = mutableMapOf()
-
+            val initialId = 1_000_000
             val column = ImageDirectoryContainer.IMAGE_DATA_PATH
+            val externalContentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-            buildSet<String> {
-                context.contentResolver.query(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    arrayOf(column),
-                    null,
-                    null,
-                    null
-                )?.use { cursor ->
-                    val pathColumn = cursor.getColumnIndexOrThrow(column)
-
-                    while (cursor.moveToNext()) {
-                        var path = cursor.getString(pathColumn)
-
-                        path = when {
-                            path.startsWith("/") -> path.drop(1)
-                            path.endsWith("/") -> path.dropLast(1)
-                            else -> path
-                        }
-
-                        add(path)
-                    }
-                }
-            }.map { it.split("/") }.map {
-                lateinit var map: MutableMap<String, Map<String, Any>>
-
-                it.forEachIndexed { index, s ->
-                    if (index == 0) {
-                        if (folders[s] == null)
-                            folders[s] = mutableMapOf<String, Map<String, Any>>()
-
-                        map = folders[s] as MutableMap<String, Map<String, Any>>
-                    } else {
-                        if (map[s] == null)
-                            map[s] = mutableMapOf<String, Map<String, Any>>()
-
-                        map = map[s] as MutableMap<String, Map<String, Any>>
-                    }
-                }
+            generateContainerStructure(initialId,
+                column,
+                container,
+                externalContentUri) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
+                ImageDirectoryContainer(
+                    id = id,
+                    parentID = parentID,
+                    title = title,
+                    creator = creator,
+                    baseUrl = baseUrl,
+                    directory = contentDirectory,
+                    contentResolver = contentResolver
+                )
             }
-
-
-            fun populateFromMap(rootContainer: BaseContainer, map: Map<String, Map<String, Any>>) {
-                map.forEach { kv ->
-                    val id = initialId++
-
-                    val childContainer = ImageDirectoryContainer(
-                        id = id.toString(),
-                        parentID = rootContainer.rawId,
-                        title = kv.key,
-                        creator = appName,
-                        baseUrl = baseURL,
-                        directory = ContentDirectory(kv.key),
-                        contentResolver = context.contentResolver
-                    ).addToRegistry(id).also(rootContainer::addContainer)
-
-                    populateFromMap(childContainer, kv.value as Map<String, Map<String, Any>>)
-                }
-            }
-
-
-            populateFromMap(container, folders)
         }
 
         return rootContainer
@@ -346,29 +294,23 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 addContainer(container)
                 container.addToRegistry(AUDIO_BY_FOLDER)
 
-                var initialId = 2_000_000
+                val initialId = 2_000_000
+                val column = AudioDirectoryContainer.AUDIO_DATA_PATH
+                val externalContentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
-                FileHierarchyBuilder().populate(
-                    contentResolver = context.contentResolver,
-                    parentContainer = container,
-                    uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                    column = AudioDirectoryContainer.AUDIO_DATA_PATH
-                ) {
-                        parentId: String?,
-                        containerName: String,
-                        path: String,
-                    ->
-                    val id = initialId++
-
+                generateContainerStructure(initialId,
+                    column,
+                    container,
+                    externalContentUri) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
                     AudioDirectoryContainer(
-                        id = id.toString(),
-                        parentID = parentId ?: AUDIO_BY_FOLDER.toString(),
-                        title = containerName,
-                        creator = appName,
-                        baseUrl = baseURL,
-                        directory = ContentDirectory(path),
-                        contentResolver = context.contentResolver
-                    ).addToRegistry(id)
+                        id = id,
+                        parentID = parentID,
+                        title = title,
+                        creator = creator,
+                        baseUrl = baseUrl,
+                        directory = contentDirectory,
+                        contentResolver = contentResolver
+                    )
                 }
             }
         }
@@ -405,27 +347,22 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                 var initialId = 3_000_000
 
-                FileHierarchyBuilder().populate(
-                    contentResolver = context.contentResolver,
-                    parentContainer = container,
-                    uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                    column = VideoDirectoryContainer.VIDEO_DATA_PATH
-                ) {
-                        parentId: String?,
-                        containerName: String,
-                        directory: String,
-                    ->
-                    val id = initialId++
+                val column = VideoDirectoryContainer.VIDEO_DATA_PATH
+                val externalContentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 
+                generateContainerStructure(initialId,
+                    column,
+                    container,
+                    externalContentUri) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
                     VideoDirectoryContainer(
-                        id.toString(),
-                        parentId ?: VIDEO_BY_FOLDER.toString(),
-                        containerName,
-                        appName,
-                        baseUrl = baseURL,
-                        directory = ContentDirectory(directory),
-                        contentResolver = context.contentResolver
-                    ).addToRegistry(id)
+                        id = id,
+                        parentID = parentID,
+                        title = title,
+                        creator = creator,
+                        baseUrl = baseUrl,
+                        directory = contentDirectory,
+                        contentResolver = contentResolver
+                    )
                 }
             }
         }
@@ -444,9 +381,90 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         artist = null
     )
 
-    private fun BaseContainer.addToRegistry(key: Int): BaseContainer {
+    private fun generateContainerStructure(
+        initialId: Int,
+        column: String,
+        rootContainer: BaseContainer,
+        externalContentUri: Uri,
+        childContainerBuilder: (
+            id: String,
+            parentID: String?,
+            title: String,
+            creator: String,
+            baseUrl: String,
+            contentDirectory: ContentDirectory,
+            contentResolver: ContentResolver,
+        ) -> BaseContainer,
+    ) {
+        var initialId = initialId
+        val folders: MutableMap<String, Map<String, Any>> = mutableMapOf()
+        buildSet<String> {
+            context.contentResolver.query(
+                externalContentUri,
+                arrayOf(column),
+                null,
+                null,
+                null
+            )?.use { cursor ->
+                val pathColumn = cursor.getColumnIndexOrThrow(column)
+
+                while (cursor.moveToNext()) {
+                    cursor
+                        .getString(pathColumn)
+                        .let { path ->
+                            when {
+                                path.startsWith("/") -> path.drop(1)
+                                path.endsWith("/") -> path.dropLast(1)
+                                else -> path
+                            }
+                        }.also(::add)
+                }
+            }
+        }.map { it.split("/") }.forEach {
+            lateinit var map: MutableMap<String, Map<String, Any>>
+
+            it.forEachIndexed { index, s ->
+                if (index == 0) {
+                    if (folders[s] == null)
+                        folders[s] = mutableMapOf<String, Map<String, Any>>()
+
+                    map = folders[s] as MutableMap<String, Map<String, Any>>
+                } else {
+                    if (map[s] == null)
+                        map[s] = mutableMapOf<String, Map<String, Any>>()
+
+                    map = map[s] as MutableMap<String, Map<String, Any>>
+                }
+            }
+        }
+
+
+        fun populateFromMap(rootContainer: BaseContainer, map: Map<String, Map<String, Any>>) {
+            map.forEach { kv ->
+                val id = initialId++
+
+                val childContainer = childContainerBuilder(
+                    id.toString(),
+                    rootContainer.rawId,
+                    kv.key,
+                    appName,
+                    baseURL,
+                    ContentDirectory(kv.key),
+                    context.contentResolver
+                ).apply { addToRegistry(id) }
+
+                rootContainer.addContainer(childContainer)
+
+                populateFromMap(childContainer, kv.value as Map<String, Map<String, Any>>)
+            }
+        }
+
+
+        populateFromMap(rootContainer, folders)
+    }
+
+    private fun BaseContainer.addToRegistry(key: Int) {
         containerRegistry[key] = this
-        return this
     }
 
     private val isImagesEnabled
