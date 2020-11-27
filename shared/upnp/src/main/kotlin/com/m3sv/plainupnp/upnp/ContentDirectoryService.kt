@@ -62,6 +62,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                     it
                 }
+                    // drop 0 (HOME)
                 .drop(1)
 
             Timber.d("Browsing type $root")
