@@ -4,7 +4,9 @@ import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_TYPE
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -16,6 +18,7 @@ class ObserveContentDirectoriesUseCase @Inject constructor(
 
     operator fun invoke(): Flow<DeviceDisplayBundle> = upnpManager
         .contentDirectories
+        .flowOn(Dispatchers.IO)
         .map { devices ->
             var deviceIndex = -1
             var deviceName: String? = null

@@ -21,9 +21,21 @@ class AndroidUpnpServiceImpl(
     sharedPreferences: SharedPreferences,
 ) : UpnpServiceImpl(configuration, context) {
 
-    init {
-        registry.addDevice(getLocalDevice(resourceProvider, context, sharedPreferences))
+    private val localDevice by lazy {
+        getLocalDevice(resourceProvider, context, sharedPreferences)
+    }
+
+    fun resume() {
+        registry.addDevice(localDevice)
         controlPoint.search()
+    }
+
+    fun pause() {
+        try {
+            registry.removeDevice(localDevice)
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
     }
 
     override fun shutdown() {

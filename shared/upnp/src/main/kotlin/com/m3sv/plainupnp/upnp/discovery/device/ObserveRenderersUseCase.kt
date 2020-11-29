@@ -4,18 +4,21 @@ import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import com.m3sv.plainupnp.upnp.util.RENDERER_TYPE
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class ObserveRenderersUseCase @Inject constructor(
     private val upnpManager: UpnpManager,
-    private val database: Database
+    private val database: Database,
 ) {
     private var foundCached: Boolean = false
 
     operator fun invoke(): Flow<DeviceDisplayBundle> = upnpManager
         .renderers
+        .flowOn(Dispatchers.IO)
         .map { devices ->
             var deviceIndex = -1
             var deviceName: String? = null

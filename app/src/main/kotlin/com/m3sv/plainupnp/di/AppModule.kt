@@ -24,5 +24,10 @@ object AppModule {
     @Singleton
     fun provideDatabase(context: Context) =
         Database(AndroidSqliteDriver(Database.Schema, context, "plainupnp.db"))
+//
+//    @Provides
+//    @JvmStatic
+//    @Singleton
+//    fun provideMediaServer(context: Context) = MediaServer(context)
 
 }

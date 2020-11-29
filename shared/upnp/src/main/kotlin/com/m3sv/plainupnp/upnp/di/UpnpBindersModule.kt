@@ -39,7 +39,7 @@ abstract class UpnpBindersModule {
             PlainUpnpServiceConfiguration(),
             localServiceResourceProvider,
             sharedPreferences
-        )
+        ).also { it.resume() }
 
         @Provides
         @JvmStatic

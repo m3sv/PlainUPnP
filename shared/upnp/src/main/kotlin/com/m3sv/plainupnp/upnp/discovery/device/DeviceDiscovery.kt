@@ -29,7 +29,6 @@ import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
 import com.m3sv.plainupnp.upnp.CDevice
 import com.m3sv.plainupnp.upnp.CRegistryListener
 import com.m3sv.plainupnp.upnp.RegistryListener
-import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import org.fourthline.cling.UpnpService
 import timber.log.Timber
 import java.util.concurrent.CopyOnWriteArrayList

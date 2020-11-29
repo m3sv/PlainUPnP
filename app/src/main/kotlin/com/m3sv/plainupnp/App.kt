@@ -2,6 +2,10 @@ package com.m3sv.plainupnp
 
 import android.app.Application
 import android.os.StrictMode
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.m3sv.plainupnp.common.util.generateUdn
 import com.m3sv.plainupnp.common.util.updateTheme
 import com.m3sv.plainupnp.di.AppComponent
@@ -47,7 +51,21 @@ class App : Application(),
         }
 
         thread {
-            MediaServer(this@App).apply { start() }
+            val server = MediaServer(this@App)
+
+            ProcessLifecycleOwner.get().lifecycle.addObserver(object : LifecycleObserver {
+                @OnLifecycleEvent(Lifecycle.Event.ON_START)
+                fun onMoveToForeground() {
+                    Timber.d("Starting server")
+                    server.start()
+                }
+
+                @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+                fun onMoveToBackground() {
+                    Timber.d("Stopping server")
+                    server.stop()
+                }
+            })
         }
     }
 }

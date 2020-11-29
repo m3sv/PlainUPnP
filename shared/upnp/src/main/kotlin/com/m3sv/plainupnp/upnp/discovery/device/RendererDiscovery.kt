@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.upnp.discovery.device
 
-import com.m3sv.plainupnp.upnp.filters.CallableFilter
 import com.m3sv.plainupnp.upnp.filters.CallableRendererFilter
 import org.fourthline.cling.UpnpService
 import javax.inject.Inject
