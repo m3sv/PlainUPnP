@@ -18,7 +18,6 @@ class ObserveRenderersUseCase @Inject constructor(
 
     operator fun invoke(): Flow<DeviceDisplayBundle> = upnpManager
         .renderers
-        .flowOn(Dispatchers.IO)
         .map { devices ->
             var deviceIndex = -1
             var deviceName: String? = null
@@ -38,6 +37,8 @@ class ObserveRenderersUseCase @Inject constructor(
                 deviceName
             )
         }
+        .flowOn(Dispatchers.IO)
+
 
     private fun queryDatabaseForIdentity(deviceDisplay: DeviceDisplay): Boolean {
         val device = deviceDisplay.device

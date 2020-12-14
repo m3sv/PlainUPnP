@@ -4,7 +4,10 @@ package com.m3sv.plainupnp.upnp.manager
 import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.util.formatTime
 import com.m3sv.plainupnp.core.persistence.Database
-import com.m3sv.plainupnp.data.upnp.*
+import com.m3sv.plainupnp.data.upnp.DeviceDisplay
+import com.m3sv.plainupnp.data.upnp.LocalDevice
+import com.m3sv.plainupnp.data.upnp.UpnpItemType
+import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.upnp.CDevice
 import com.m3sv.plainupnp.upnp.UpnpRepository
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
@@ -20,6 +23,8 @@ import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.scan
 import org.fourthline.cling.model.meta.Service
 import org.fourthline.cling.model.types.UDAServiceType
 import org.fourthline.cling.support.model.TransportState
@@ -63,139 +68,41 @@ class UpnpManagerImpl @Inject constructor(
     private val folderChange: BroadcastChannel<Folder> = BroadcastChannel(1)
     override val folderChangeFlow: Flow<Folder> = folderChange.asFlow()
 
-    override fun selectContentDirectory(position: Int) {
-        val contentDirectory = contentDirectoryObservable
-            .currentContentDirectories[position]
-            .device
+    private val updateChannel = BroadcastChannel<Pair<Item, Service<*, *>>>(Channel.CONFLATED)
 
-        saveSelectedContentDirectory(contentDirectory)
-
-        contentDirectoryObservable.selectedContentDirectory = contentDirectory
-
+    init {
         launch {
-            safeNavigateTo(
-                errorReason = ErrorReason.BROWSE_FAILED,
-                folderId = ROOT_FOLDER_ID,
-                folderName = contentDirectory.friendlyName
-            )
-        }
-    }
+            updateChannel.asFlow().scan(launch { }) { accumulator, pair ->
+                accumulator.cancel()
 
-    override fun selectRenderer(position: Int) {
-        val renderer = rendererDiscoveryObservable.currentRenderers[position].device
+                Timber.d("update: received new pair: ${pair.first}");
+                val didlItem = pair.first
+                val service = pair.second
 
-        isLocal = renderer is LocalDevice
+                val type = when (didlItem) {
+                    is AudioItem -> UpnpItemType.AUDIO
+                    is VideoItem -> UpnpItemType.VIDEO
+                    else -> UpnpItemType.UNKNOWN
+                }
 
-        saveSelectedRenderer(renderer)
+                val title = didlItem.title
+                val artist = didlItem.creator
+                val uri = didlItem.firstResource?.value ?: error("no uri")
 
-        if (isLocal || renderer != rendererDiscoveryObservable.selectedRenderer)
-            stopUpdate()
-
-        if (!isLocal) {
-            rendererDiscoveryObservable.selectedRenderer = renderer
-        }
-    }
-
-    private suspend fun renderItem(item: RenderItem) {
-        stopUpdate()
-
-        if (isLocal) {
-            launchLocally(item)
-            return
-        }
-
-        val didlItem = item.didlItem.didlObject as Item
-
-        val uri = item.didlItem.didlObject.firstResource?.value ?: return
-
-        val type = when (didlItem) {
-            is AudioItem -> "audioItem"
-            is VideoItem -> "videoItem"
-            is ImageItem -> "imageItem"
-            is PlaylistItem -> "playlistItem"
-            is TextItem -> "textItem"
-            else -> return
-        }
-
-        // TODO genre && artURI
-        val trackMetadata = with(didlItem) {
-            TrackMetadata(
-                id,
-                title,
-                creator,
-                "",
-                "",
-                firstResource.value,
-                "object.item.$type"
-            )
-        }
-
-        safeAvAction { service ->
-            with(upnpRepository) {
-                setUri(service, uri, trackMetadata)
-                play(service)
-            }
-        }
-
-        if (didlItem is AudioItem || didlItem is VideoItem) {
-            with(didlItem) {
-                launchUpdate(
-                    id = id,
-                    uri = uri,
-                    type = when (this) {
-                        is AudioItem -> UpnpItemType.AUDIO
-                        is ImageItem -> UpnpItemType.IMAGE
-                        is VideoItem -> UpnpItemType.VIDEO
-                        else -> UpnpItemType.UNKNOWN
-                    },
-                    title = title,
-                    artist = creator
-                )
-            }
-        } else {
-            with(didlItem) {
-                showImageInfo(
-                    id = id,
-                    uri = uri,
-                    title = title
-                )
-            }
-        }
-    }
-
-    private var currentDuration: Long = 0L
-
-    private var pauseUpdate = false
-
-    private var isPaused = false
-
-    private var updateJob: Job? = null
-
-    private suspend fun launchUpdate(
-        id: String,
-        uri: String?,
-        type: UpnpItemType,
-        title: String,
-        artist: String?,
-    ) {
-        withContext(Dispatchers.IO) {
-            safeAvAction { service ->
-                updateJob = launch {
+                launch {
                     while (isActive) {
                         delay(500)
 
-                        val transportInfo = upnpRepository.getTransportInfo(service)
-                        val positionInfo = upnpRepository.getPositionInfo(service)
+                        val transportInfo =
+                            upnpRepository.getTransportInfo(service) ?: break
 
-                        if (transportInfo == null || positionInfo == null) {
-                            break
-                        }
+                        val positionInfo =
+                            upnpRepository.getPositionInfo(service) ?: break
 
-                        isPaused =
+                        remotePaused =
                             transportInfo.currentTransportState == TransportState.PAUSED_PLAYBACK
 
                         val state = UpnpRendererState(
-                            id = id,
                             uri = uri,
                             type = type,
                             state = transportInfo.currentTransportState,
@@ -214,25 +121,131 @@ class UpnpManagerImpl @Inject constructor(
 
                         Timber.d("Got new state: $state")
 
-                        if (transportInfo.currentTransportState == TransportState.STOPPED)
-                            break
+                        if (transportInfo.currentTransportState == TransportState.STOPPED) break
                     }
                 }
+            }.collect()
+        }
+    }
+
+    override fun selectContentDirectory(position: Int) {
+        launch {
+            val contentDirectory = contentDirectoryObservable
+                .currentContentDirectories[position]
+                .device
+
+            database
+                .selectedDeviceQueries
+                .insertSelectedDevice(CONTENT_DIRECTORY_TYPE, contentDirectory.fullIdentity)
+
+            contentDirectoryObservable.selectedContentDirectory = contentDirectory
+
+            safeNavigateTo(
+                errorReason = ErrorReason.BROWSE_FAILED,
+                folderId = ROOT_FOLDER_ID,
+                folderName = contentDirectory.friendlyName
+            )
+        }
+    }
+
+    override fun selectRenderer(position: Int) {
+        launch {
+            val renderer = rendererDiscoveryObservable.currentRenderers[position].device
+
+            isLocal = renderer is LocalDevice
+
+            database
+                .selectedDeviceQueries
+                .insertSelectedDevice(RENDERER_TYPE, renderer.fullIdentity)
+
+            if (isLocal || renderer != rendererDiscoveryObservable.selectedRenderer)
+                stopUpdate()
+
+            if (!isLocal) {
+                rendererDiscoveryObservable.selectedRenderer = renderer
             }
         }
     }
 
+    private suspend fun renderItem(item: RenderItem) {
+        stopUpdate()
+
+        if (isLocal) {
+            launchLocally(item)
+            return
+        }
+
+        try {
+            safeAvAction { service ->
+                val didlItem = item.didlItem.didlObject as Item
+                val uri = didlItem.firstResource?.value ?: return
+                val didlType = didlType(didlItem)
+
+                with(upnpRepository) {
+                    setUri(service, uri, newMetadata(didlItem, didlType))
+                    play(service)
+                }
+
+                when (didlItem) {
+                    is AudioItem,
+                    is VideoItem,
+                    -> {
+                        updateChannel.offer(didlItem to service)
+                    }
+                    is ImageItem -> {
+                        with(didlItem) {
+                            showImageInfo(
+                                uri = uri,
+                                title = title
+                            )
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    private fun newMetadata(
+        didlItem: Item,
+        didlType: String?,
+    ): TrackMetadata = with(didlItem) {
+        // TODO genre && artURI
+        TrackMetadata(
+            id,
+            title,
+            creator,
+            "",
+            "",
+            firstResource.value,
+            "object.item.$didlType"
+        )
+    }
+
+    private fun didlType(didlItem: Item) = when (didlItem) {
+        is AudioItem -> "audioItem"
+        is VideoItem -> "videoItem"
+        is ImageItem -> "imageItem"
+        is PlaylistItem -> "playlistItem"
+        is TextItem -> "textItem"
+        else -> null
+    }
+
+    private var currentDuration: Long = 0L
+
+    private var pauseUpdate = false
+
+    private var remotePaused = false
+
     private fun stopUpdate() {
-        updateJob?.cancel()
     }
 
     private fun showImageInfo(
-        id: String,
         uri: String,
         title: String,
     ) {
         val state = UpnpRendererState(
-            id = id,
             uri = uri,
             type = UpnpItemType.IMAGE,
             state = TransportState.STOPPED,
@@ -343,7 +356,7 @@ class UpnpManagerImpl @Inject constructor(
     override fun togglePlayback() {
         launch {
             safeAvAction { service ->
-                if (isPaused)
+                if (remotePaused)
                     upnpRepository.play(service)
                 else
                     upnpRepository.pause(service)
@@ -361,18 +374,6 @@ class UpnpManagerImpl @Inject constructor(
     override fun getCurrentFolderContents(): List<ClingDIDLObject> = currentContent
 
     override fun getCurrentFolderName(): String = currentFolderName
-
-    private fun saveSelectedContentDirectory(contentDirectory: UpnpDevice) {
-        database
-            .selectedDeviceQueries
-            .insertSelectedDevice(CONTENT_DIRECTORY_TYPE, contentDirectory.fullIdentity)
-    }
-
-    private fun saveSelectedRenderer(renderer: UpnpDevice) {
-        database
-            .selectedDeviceQueries
-            .insertSelectedDevice(RENDERER_TYPE, renderer.fullIdentity)
-    }
 
     private suspend inline fun safeNavigateTo(
         errorReason: ErrorReason? = null,

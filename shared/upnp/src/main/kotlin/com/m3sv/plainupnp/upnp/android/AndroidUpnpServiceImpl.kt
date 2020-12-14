@@ -26,8 +26,12 @@ class AndroidUpnpServiceImpl(
     }
 
     fun resume() {
-        registry.addDevice(localDevice)
-        controlPoint.search()
+        try {
+            registry.addDevice(localDevice)
+            controlPoint.search()
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
     }
 
     fun pause() {

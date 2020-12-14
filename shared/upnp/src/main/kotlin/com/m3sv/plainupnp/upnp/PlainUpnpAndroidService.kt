@@ -3,53 +3,52 @@ package com.m3sv.plainupnp.upnp
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
-import androidx.core.app.NotificationManagerCompat
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
+import com.m3sv.plainupnp.core.eventbus.post
+import com.m3sv.plainupnp.upnp.di.UpnpSubComponentProvider
+import org.fourthline.cling.UpnpService
+import javax.inject.Inject
 
 class PlainUpnpAndroidService : Service() {
 
-    private lateinit var notificationManager: NotificationManagerCompat
+    @Inject
+    lateinit var upnpService: UpnpService
 
-    private lateinit var notificationBuilder: NotificationBuilder
+    override fun onCreate() {
+        super.onCreate()
+        inject()
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        notificationManager = NotificationManagerCompat.from(this)
-
         when (intent?.action) {
             NotificationBuilder.ACTION_EXIT -> {
                 stopForeground(false)
-                notificationManager.cancelAll()
                 stopSelf(startId)
-                finishChannel.offer(Unit)
             }
 
-            START_SERVICE -> {
-                notificationBuilder = NotificationBuilder(this)
-                val notification = notificationBuilder.buildNotification()
-
-                startForeground(
-                    NotificationBuilder.SERVER_NOTIFICATION,
-                    notification
-                )
-            }
+            START_SERVICE -> startForeground(
+                NotificationBuilder.SERVER_NOTIFICATION,
+                NotificationBuilder(this).buildNotification()
+            )
         }
 
         return START_STICKY
     }
 
-    fun inject() {
-        // TODO inject upnp manager here
+    override fun onDestroy() {
+        super.onDestroy()
+        post(ExitApplication)
+        upnpService.shutdown()
+        android.os.Process.killProcess(android.os.Process.myPid())
+    }
+
+    private fun inject() {
+        (application as UpnpSubComponentProvider).upnpSubComponent.inject(this)
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
         const val START_SERVICE = "START_UPNP_SERVICE"
-
-        private val finishChannel = BroadcastChannel<Unit>(1)
-
-        val finishFlow: Flow<Unit> = finishChannel.asFlow()
     }
 }

@@ -12,13 +12,12 @@ import javax.inject.Inject
 
 class ObserveContentDirectoriesUseCase @Inject constructor(
     private val upnpManager: UpnpManager,
-    private val database: Database
+    private val database: Database,
 ) {
     private var foundCached: Boolean = false
 
     operator fun invoke(): Flow<DeviceDisplayBundle> = upnpManager
         .contentDirectories
-        .flowOn(Dispatchers.IO)
         .map { devices ->
             var deviceIndex = -1
             var deviceName: String? = null
@@ -38,6 +37,7 @@ class ObserveContentDirectoriesUseCase @Inject constructor(
                 deviceName
             )
         }
+        .flowOn(Dispatchers.IO)
 
     private fun queryDatabaseForIdentity(deviceDisplay: DeviceDisplay): Boolean {
         val device = deviceDisplay.device

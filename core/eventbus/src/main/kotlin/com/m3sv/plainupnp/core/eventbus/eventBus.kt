@@ -9,14 +9,18 @@ abstract class Event(
     val data: Any?,
 )
 
-val eventChannel: BroadcastChannel<Event> = BroadcastChannel(1)
+private val eventChannel: BroadcastChannel<Event> = BroadcastChannel(1)
 
-inline fun <reified T : Event> subscribe(): Flow<T> = eventChannel
-    .asFlow()
-    .filterIsInstance()
+val eventFlow: Flow<Event> = eventChannel.asFlow()
+
+inline fun <reified T : Event> subscribe(): Flow<T> = eventFlow.filterIsInstance()
 
 fun post(event: Event) {
     eventChannel.offer(event)
+}
+
+suspend fun sendEvent(event: Event) {
+    eventChannel.send(event)
 }
 
 

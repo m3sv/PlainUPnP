@@ -3,4 +3,5 @@
     <bool name="default_enable_content_directory">true</bool>
     <bool name="default_enable_dark_theme">false</bool>
     <bool name="default_enable_thumbnails">false</bool>
+    <bool name="default_allow_run_in_background">false</bool>
 </resources>

@@ -49,4 +49,5 @@
     <string name="battery_saver_theme_label">Donker op batterijbesparing</string>
     <string name="browse_failed">Bladeren door inhoud is mislukt. Probeer het apparaat opnieuw te selecteren. Als dat niet helpt, herstart apparaat en app.</string>
     <string name="by_folder">Per map</string>
+    <string name="pref_title_allow_run_in_background">Draai server op de achtergrond</string>
 </resources>

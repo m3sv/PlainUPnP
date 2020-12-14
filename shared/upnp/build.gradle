@@ -29,6 +29,7 @@ dependencies {
     implementation deps.timber
 
     implementation project(":common")
+    implementation project(':core:eventbus')
     implementation project(':core:persistence')
 
     kapt deps.dagger.compiler

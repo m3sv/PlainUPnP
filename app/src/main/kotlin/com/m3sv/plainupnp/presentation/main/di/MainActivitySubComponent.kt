@@ -4,7 +4,7 @@ import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.presentation.main.controls.ControlsFragment
 import dagger.Subcomponent
 
-@Subcomponent(modules = [MainActivityModule::class])
+@Subcomponent
 interface MainActivitySubComponent {
 
     @Subcomponent.Factory

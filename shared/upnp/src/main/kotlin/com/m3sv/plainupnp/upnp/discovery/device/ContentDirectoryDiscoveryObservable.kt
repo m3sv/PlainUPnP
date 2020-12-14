@@ -1,18 +1,24 @@
 package com.m3sv.plainupnp.upnp.discovery.device
 
+import com.m3sv.plainupnp.common.BackgroundModeManager
+import com.m3sv.plainupnp.common.util.doNothing
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
+import com.m3sv.plainupnp.upnp.CDevice
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.callbackFlow
+import org.fourthline.cling.model.meta.LocalDevice
 import timber.log.Timber
 import javax.inject.Inject
 
 
-class ContentDirectoryDiscoveryObservable @Inject constructor(private val contentDirectoryDiscovery: ContentDirectoryDiscovery) {
-
+class ContentDirectoryDiscoveryObservable @Inject constructor(
+    private val contentDirectoryDiscovery: ContentDirectoryDiscovery,
+    private val backgroundModeManager: BackgroundModeManager,
+) {
     var selectedContentDirectory: UpnpDevice? = null
 
     private val contentDirectories = LinkedHashSet<DeviceDisplay>()
@@ -58,8 +64,15 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(private val conten
                         if (contentDirectories.contains(device))
                             contentDirectories -= device
 
-                        if (event.upnpDevice == selectedContentDirectory)
-                            selectedContentDirectory = null
+                        when {
+                            !backgroundModeManager.isAllowedToRunInBackground()
+                                    && (event.upnpDevice as CDevice).device is LocalDevice
+                                    && event.upnpDevice == selectedContentDirectory
+                            -> doNothing
+
+                            event.upnpDevice == selectedContentDirectory ->
+                                selectedContentDirectory = null
+                        }
                     }
                 }
             }

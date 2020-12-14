@@ -14,22 +14,27 @@
     </com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory>
 
     <com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory android:title="@string/upnp_category">
+        <SwitchPreferenceCompat
+            android:defaultValue="@bool/default_allow_run_in_background"
+            android:icon="@drawable/ic_run_in_background"
+            android:key="@string/pref_key_allow_run_in_background"
+            android:title="@string/pref_title_allow_run_in_background" />
         <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"
             android:icon="@drawable/ic_image"
-            android:key="@string/enable_image_container_key"
+            android:key="@string/pref_enable_image_container_key"
             android:title="@string/share_images" />
 
         <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"
             android:icon="@drawable/ic_music"
-            android:key="@string/enable_audio_container_key"
+            android:key="@string/pref_enable_audio_container_key"
             android:title="@string/share_music" />
 
         <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"
             android:icon="@drawable/ic_video"
-            android:key="@string/enable_video_container_key"
+            android:key="@string/pref_enable_video_container_key"
             android:title="@string/share_videos" />
 
         <SwitchPreference

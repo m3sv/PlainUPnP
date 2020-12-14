@@ -49,4 +49,5 @@
     <string name="battery_saver_theme_label">Тёмная на энергосберегающем режиме</string>
     <string name="browse_failed">"Произошла ошибка при открытии содержимого устройства, попробуйте повторно выбрать устройство. Если это не поможет перезагрузите устройство и приложение. "</string>
     <string name="by_folder">По папкам</string>
+    <string name="pref_title_allow_run_in_background">Запустить сервер в фоновом режиме</string>
 </resources>

@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
-import androidx.lifecycle.observe
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.m3sv.plainupnp.R
@@ -70,15 +69,15 @@ class ControlsFragment : BaseFragment() {
         (requireActivity() as MainActivity).mainActivitySubComponent.inject(this)
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-        viewModel = getViewModel()
+        viewModel = getViewModel(true)
         initAdapters()
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        savedInstanceState: Bundle?,
+    ): View {
         _binding = ControlsFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }

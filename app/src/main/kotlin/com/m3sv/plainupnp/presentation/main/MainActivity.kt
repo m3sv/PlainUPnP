@@ -29,8 +29,9 @@ import com.m3sv.plainupnp.common.TriggerOnceStateAction
 import com.m3sv.plainupnp.common.util.doNothing
 import com.m3sv.plainupnp.common.util.exhaustive
 import com.m3sv.plainupnp.common.util.inputMethodManager
+import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
+import com.m3sv.plainupnp.core.eventbus.subscribe
 import com.m3sv.plainupnp.databinding.MainActivityBinding
-import com.m3sv.plainupnp.di.ViewModelFactory
 import com.m3sv.plainupnp.presentation.home.HomeFragment
 import com.m3sv.plainupnp.presentation.inappplayer.ImageFragment
 import com.m3sv.plainupnp.presentation.inappplayer.PlayerFragment
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var mainActivitySubComponent: MainActivitySubComponent
 
     @Inject
-    lateinit var viewModelFactory: ViewModelFactory
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var binding: MainActivityBinding
 
@@ -168,11 +169,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeState() {
-        viewModel
-            .finishFlow
-            .observe(this) {
-                finishAndRemoveTask()
-            }
+        lifecycleScope.launchWhenCreated {
+            subscribe<ExitApplication>().collect { finishAndRemoveTask() }
+        }
 
         viewModel
             .volume
@@ -351,7 +350,7 @@ class MainActivity : AppCompatActivity() {
     private fun inject() {
         mainActivitySubComponent = (applicationContext as App)
             .appComponent
-            .mainSubcomponent()
+            .mainSubComponent()
             .create()
             .also { component -> component.inject(this) }
     }

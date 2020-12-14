@@ -6,6 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
+import com.m3sv.plainupnp.common.BackgroundModeManager
 import com.m3sv.plainupnp.common.util.generateUdn
 import com.m3sv.plainupnp.common.util.updateTheme
 import com.m3sv.plainupnp.di.AppComponent
@@ -14,13 +15,30 @@ import com.m3sv.plainupnp.presentation.home.HomeComponent
 import com.m3sv.plainupnp.presentation.home.HomeComponentProvider
 import com.m3sv.plainupnp.presentation.settings.SettingsComponent
 import com.m3sv.plainupnp.presentation.settings.SettingsComponentProvider
+import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
+import com.m3sv.plainupnp.upnp.di.UpnpSubComponent
+import com.m3sv.plainupnp.upnp.di.UpnpSubComponentProvider
 import com.m3sv.plainupnp.upnp.server.MediaServer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import org.fourthline.cling.UpnpService
 import timber.log.Timber
-import kotlin.concurrent.thread
+import javax.inject.Inject
 
 class App : Application(),
     HomeComponentProvider,
-    SettingsComponentProvider {
+    SettingsComponentProvider,
+    UpnpSubComponentProvider {
+
+    @Inject
+    lateinit var server: MediaServer
+
+    @Inject
+    lateinit var upnpService: UpnpService
+
+    @Inject
+    lateinit var backgroundModeManager: BackgroundModeManager
 
     val appComponent: AppComponent by lazy {
         DaggerAppComponent
@@ -29,13 +47,18 @@ class App : Application(),
     }
 
     override val homeComponent: HomeComponent
-        get() = appComponent.homeSubcomponent().create()
+        get() = appComponent.homeSubComponent().create()
 
     override val settingsComponent: SettingsComponent
-        get() = appComponent.settingsSubcomponent().create()
+        get() = appComponent.settingsSubComponent().create()
+
+    override val upnpSubComponent: UpnpSubComponent
+        get() = appComponent.upnpSubComponent().create()
 
     override fun onCreate() {
         super.onCreate()
+        appComponent.inject(this)
+
         updateTheme()
         generateUdn()
 
@@ -50,22 +73,33 @@ class App : Application(),
             )
         }
 
-        thread {
-            val server = MediaServer(this@App)
-
-            ProcessLifecycleOwner.get().lifecycle.addObserver(object : LifecycleObserver {
-                @OnLifecycleEvent(Lifecycle.Event.ON_START)
-                fun onMoveToForeground() {
-                    Timber.d("Starting server")
-                    server.start()
-                }
-
-                @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-                fun onMoveToBackground() {
-                    Timber.d("Stopping server")
-                    server.stop()
-                }
-            })
+        if (backgroundModeManager.isAllowedToRunInBackground()) {
+            (upnpService as AndroidUpnpServiceImpl).resume()
+            server.start()
         }
+
+        ProcessLifecycleOwner.get().lifecycle.addObserver(object : LifecycleObserver {
+            @OnLifecycleEvent(Lifecycle.Event.ON_START)
+            fun onMoveToForeground() {
+                Timber.d("Starting server")
+                GlobalScope.launch(Dispatchers.IO) {
+                    if (!backgroundModeManager.isAllowedToRunInBackground()) {
+                        (upnpService as AndroidUpnpServiceImpl).resume()
+                        server.start()
+                    }
+                }
+            }
+
+            @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+            fun onMoveToBackground() {
+                Timber.d("Stopping server")
+                GlobalScope.launch(Dispatchers.IO) {
+                    if (!backgroundModeManager.isAllowedToRunInBackground()) {
+                        (upnpService as AndroidUpnpServiceImpl).pause()
+                        server.stop()
+                    }
+                }
+            }
+        })
     }
 }

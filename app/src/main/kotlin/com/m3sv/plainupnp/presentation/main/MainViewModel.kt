@@ -10,7 +10,6 @@ import com.m3sv.plainupnp.core.eventbus.subscribe
 import com.m3sv.plainupnp.presentation.home.FolderClick
 import com.m3sv.plainupnp.presentation.home.MediaItemClick
 import com.m3sv.plainupnp.presentation.home.MediaItemLongClick
-import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
 import com.m3sv.plainupnp.upnp.didl.ClingImageItem
 import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
@@ -25,6 +24,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 sealed class MainRoute {
@@ -75,10 +75,6 @@ class MainViewModel @Inject constructor(
                 }
         }
     }
-
-    val finishFlow = PlainUpnpAndroidService
-        .finishFlow
-        .asLiveData()
 
     val volume = volumeManager
         .volumeFlow
@@ -174,5 +170,10 @@ class MainViewModel @Inject constructor(
 
     fun navigate(route: MainRoute) {
         navigationChannel.offer(route)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Timber.d("OnCleared is called")
     }
 }

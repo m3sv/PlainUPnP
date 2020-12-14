@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.m3sv.plainupnp.core.persistence.Database
+import com.m3sv.plainupnp.upnp.server.MediaServer
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import dagger.Module
 import dagger.Provides
@@ -24,10 +25,9 @@ object AppModule {
     @Singleton
     fun provideDatabase(context: Context) =
         Database(AndroidSqliteDriver(Database.Schema, context, "plainupnp.db"))
-//
-//    @Provides
-//    @JvmStatic
-//    @Singleton
-//    fun provideMediaServer(context: Context) = MediaServer(context)
 
+    @Provides
+    @JvmStatic
+    @Singleton
+    fun provideMediaServer(applicationContext: Context) = MediaServer(applicationContext)
 }
