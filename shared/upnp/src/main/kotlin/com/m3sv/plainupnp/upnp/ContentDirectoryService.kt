@@ -346,7 +346,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 addContainer(container)
                 container.addToRegistry(VIDEO_BY_FOLDER)
 
-                var initialId = 3_000_000
+                val initialId = 3_000_000
 
                 val column = VideoDirectoryContainer.VIDEO_DATA_PATH
                 val externalContentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
@@ -460,7 +460,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             }
         }
 
-
         populateFromMap(rootContainer, folders)
     }
 
@@ -487,16 +486,16 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         const val VIDEO_ID = 3
 
         // Type subfolder
-        const val ALL_IMAGE = 11
-        const val ALL_VIDEO = 21
-        const val ALL_AUDIO = 31
+        const val ALL_IMAGE = 10
+        const val ALL_VIDEO = 20
+        const val ALL_AUDIO = 30
 
-        const val IMAGE_BY_FOLDER = 12
-        const val VIDEO_BY_FOLDER = 22
-        const val AUDIO_BY_FOLDER = 32
+        const val IMAGE_BY_FOLDER = 100
+        const val VIDEO_BY_FOLDER = 200
+        const val AUDIO_BY_FOLDER = 300
 
-        const val ALL_ARTISTS = 33
-        const val ALL_ALBUMS = 34
+        const val ALL_ARTISTS = 301
+        const val ALL_ALBUMS = 302
 
         // Prefix item
         const val VIDEO_PREFIX = "v-"

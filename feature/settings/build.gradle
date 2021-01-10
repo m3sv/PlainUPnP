@@ -3,7 +3,6 @@ apply plugin: 'kotlin-kapt'
 
 dependencies {
     compileOnly deps.dagger.annotation
-    compileOnly deps.dagger.annotation
 
     implementation deps.androidx.material
     implementation deps.androidx.preference

@@ -1,9 +1,7 @@
 package com.m3sv.plainupnp.presentation.main
 
-import android.Manifest
 import android.animation.ObjectAnimator
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -13,8 +11,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.View.ROTATION
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -94,8 +90,6 @@ class MainActivity : AppCompatActivity() {
 
             addFragment(OnboardingFragment())
         }
-
-        requestReadStoragePermission()
 
         viewModel = getViewModel()
 
@@ -390,26 +384,7 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun requestReadStoragePermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    REQUEST_READ_EXTERNAL_STORAGE
-                )
-            }
-        }
-    }
-
     private inline fun <reified T : ViewModel> getViewModel(): T =
         ViewModelProvider(this, viewModelFactory).get(T::class.java)
 
-    companion object {
-        private const val REQUEST_READ_EXTERNAL_STORAGE = 12345
-    }
 }

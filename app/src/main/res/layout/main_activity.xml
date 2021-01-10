@@ -5,6 +5,11 @@
     android:layout_height="match_parent"
     tools:context=".presentation.main.MainActivity">
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/composeView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <androidx.constraintlayout.motion.widget.MotionLayout
         android:id="@+id/motion_container"
         android:layout_width="match_parent"

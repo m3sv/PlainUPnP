@@ -1,8 +1,15 @@
 apply from: "../../scripts/kotlin-android-library.gradle"
+apply plugin: 'kotlin-kapt'
 
 android {
     buildFeatures {
+        compose true
         viewBinding = true
+    }
+
+    composeOptions {
+        kotlinCompilerVersion versions.kotlin
+        kotlinCompilerExtensionVersion versions.composeVersion
     }
 }
 
@@ -11,6 +18,27 @@ dependencies {
     implementation deps.coroutines.core
 
     implementation project(':common')
+
+    // Compose
+    implementation "androidx.compose.runtime:runtime:$versions.composeVersion"
+    implementation "androidx.compose.runtime:runtime-livedata:$versions.composeVersion"
+    implementation "androidx.compose.ui:ui:$versions.composeVersion"
+    implementation "androidx.compose.ui:ui-tooling:$versions.composeVersion"
+    implementation "androidx.compose.foundation:foundation:$versions.composeVersion"
+    implementation "androidx.compose.foundation:foundation-layout:$versions.composeVersion"
+    implementation "androidx.compose.material:material:$versions.composeVersion"
+    implementation "androidx.compose.material:material-icons-core:$versions.composeVersion"
+    implementation "androidx.compose.material:material-icons-extended:$versions.composeVersion"
+    implementation "com.google.android.material:compose-theme-adapter:$versions.composeVersion"
+    implementation 'androidx.fragment:fragment-ktx:1.1.0'
+
+    implementation 'androidx.documentfile:documentfile:1.0.1'
+
+    implementation deps.androidx.lifecycle.liveDataKtx
+
+    compileOnly deps.dagger.annotation
+    implementation deps.dagger.core
+    kapt deps.dagger.compiler
 
     testImplementation deps.test.junit
     testImplementation deps.test.mockito

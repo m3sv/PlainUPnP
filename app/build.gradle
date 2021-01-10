@@ -9,6 +9,11 @@ android {
     compileSdkVersion buildConfig.compileSdk
     buildToolsVersion buildConfig.buildTools
 
+    composeOptions {
+        kotlinCompilerVersion versions.kotlin
+        kotlinCompilerExtensionVersion versions.composeVersion
+    }
+
     defaultConfig {
         applicationId "com.m3sv.plainupnp"
         minSdkVersion buildConfig.minSdk
@@ -22,6 +27,7 @@ android {
 
     buildFeatures {
         viewBinding true
+        compose true
     }
 
     testOptions {
@@ -89,6 +95,18 @@ dependencies {
     implementation deps.nanohttpd.webserver
     implementation deps.sqlDelightAndroidDriver
     implementation deps.timber
+
+    // Compose
+    implementation "androidx.compose.runtime:runtime:$versions.composeVersion"
+    implementation "androidx.compose.runtime:runtime-livedata:$versions.composeVersion"
+    implementation "androidx.compose.ui:ui:$versions.composeVersion"
+    implementation "androidx.compose.ui:ui-tooling:$versions.composeVersion"
+    implementation "androidx.compose.foundation:foundation:$versions.composeVersion"
+    implementation "androidx.compose.foundation:foundation-layout:$versions.composeVersion"
+    implementation "androidx.compose.material:material:$versions.composeVersion"
+    implementation "androidx.compose.material:material-icons-core:$versions.composeVersion"
+    implementation "androidx.compose.material:material-icons-extended:$versions.composeVersion"
+    implementation "com.google.android.material:compose-theme-adapter:$versions.composeVersion"
 
     implementation project(':common')
     implementation project(':core:persistence')

@@ -13,6 +13,8 @@ import com.m3sv.plainupnp.di.AppComponent
 import com.m3sv.plainupnp.di.DaggerAppComponent
 import com.m3sv.plainupnp.presentation.home.HomeComponent
 import com.m3sv.plainupnp.presentation.home.HomeComponentProvider
+import com.m3sv.plainupnp.presentation.onboarding.OnboardingActivity
+import com.m3sv.plainupnp.presentation.onboarding.OnboardingInjector
 import com.m3sv.plainupnp.presentation.settings.SettingsComponent
 import com.m3sv.plainupnp.presentation.settings.SettingsComponentProvider
 import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
@@ -28,6 +30,7 @@ import javax.inject.Inject
 
 class App : Application(),
     HomeComponentProvider,
+    OnboardingInjector,
     SettingsComponentProvider,
     UpnpSubComponentProvider {
 
@@ -54,6 +57,10 @@ class App : Application(),
 
     override val upnpSubComponent: UpnpSubComponent
         get() = appComponent.upnpSubComponent().create()
+
+    override fun inject(onboardingActivity: OnboardingActivity) {
+        appComponent.inject(onboardingActivity)
+    }
 
     override fun onCreate() {
         super.onCreate()
