@@ -32,6 +32,9 @@ dependencies {
     implementation project(':core:eventbus')
     implementation project(':core:persistence')
 
+    implementation 'androidx.documentfile:documentfile:1.0.1'
+
+
     kapt deps.dagger.compiler
 
     testImplementation deps.test.junit

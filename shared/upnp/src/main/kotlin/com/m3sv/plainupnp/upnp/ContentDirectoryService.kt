@@ -5,29 +5,35 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.documentfile.provider.DocumentFile
+import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.upnp.mediacontainers.*
 import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_AUDIO
 import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_IMAGE
 import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_VIDEO
+import com.m3sv.plainupnp.upnp.util.queryImages
+import comm3svplainupnpcorepersistence.DirectoryCache
 import kotlinx.coroutines.*
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException
 import org.fourthline.cling.support.contentdirectory.DIDLParser
-import org.fourthline.cling.support.model.BrowseFlag
-import org.fourthline.cling.support.model.BrowseResult
-import org.fourthline.cling.support.model.DIDLContent
-import org.fourthline.cling.support.model.SortCriterion
+import org.fourthline.cling.support.model.*
+import org.fourthline.cling.support.model.item.ImageItem
+import org.seamless.util.MimeType
 import timber.log.Timber
+import java.security.SecureRandom
 import kotlin.LazyThreadSafetyMode.NONE
+import kotlin.math.abs
 
 class ContentDirectoryService : AbstractContentDirectoryService() {
     lateinit var context: Context
     lateinit var baseURL: String
     lateinit var sharedPref: SharedPreferences
+    lateinit var database: Database
 
     private val appName by lazy(NONE) { context.getString(R.string.app_name) }
-    private val containerRegistry: MutableMap<Int, BaseContainer> = mutableMapOf()
+    private val containerRegistry: MutableMap<Long, BaseContainer> = mutableMapOf()
 
     override fun browse(
         objectID: String,
@@ -38,13 +44,13 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         orderby: Array<SortCriterion>,
     ): BrowseResult = runBlocking {
         try {
-            var root = -1
+            var root = -1L
 
             val subtype = objectID
                 .split(SEPARATOR)
-                .map(Integer::parseInt)
+                .map(String::toLong)
                 .map {
-                    if (root == -1) {
+                    if (root == -1L) {
                         root = it
 
                         if (root != ROOT_ID
@@ -62,7 +68,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
                     it
                 }
-                    // drop 0 (HOME)
+                // drop 0 (HOME)
                 .drop(1)
 
             Timber.d("Browsing type $root")
@@ -72,7 +78,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                     ROOT_ID.toString(),
                     appName,
                     appName
-                ).addToRegistry(ROOT_ID)
+                ).addToRegistry()
             }
 
             val rootContainer: BaseContainer = requireNotNull(containerRegistry[ROOT_ID])
@@ -83,20 +89,24 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 jobs += launch(Dispatchers.IO) {
                     getRootImagesContainer()
                         .also(rootContainer::addContainer)
-                        .addToRegistry(IMAGE_ID)
+                        .addToRegistry()
                 }
             }
 
             if (isAudioEnabled && containerRegistry[AUDIO_ID] == null) {
                 jobs += launch(Dispatchers.IO) {
-                    getRootAudioContainer(rootContainer).addToRegistry(AUDIO_ID)
+                    getRootAudioContainer(rootContainer).addToRegistry()
                 }
             }
 
             if (isVideoEnabled && containerRegistry[VIDEO_ID] == null) {
                 jobs += launch(Dispatchers.IO) {
-                    getRootVideoContainer(rootContainer).addToRegistry(VIDEO_ID)
+                    getRootVideoContainer(rootContainer).addToRegistry()
                 }
+            }
+
+            if (containerRegistry[VIDEO_ID] == null) {
+                jobs += launch(Dispatchers.IO) { getUserSelectedContainer(rootContainer as Container) }
             }
 
             jobs.joinAll()
@@ -203,7 +213,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             contentResolver = context.contentResolver
         ).also { container ->
             rootContainer.addContainer(container)
-            container.addToRegistry(ALL_IMAGE)
+            container.addToRegistry()
         }
 
         Container(
@@ -213,9 +223,9 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             appName
         ).also { container ->
             rootContainer.addContainer(container)
-            container.addToRegistry(IMAGE_BY_FOLDER)
+            container.addToRegistry()
 
-            val initialId = 1_000_000
+            val initialId: Long = 1_000_000
             val column = ImageDirectoryContainer.IMAGE_DATA_PATH
             val externalContentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
@@ -258,7 +268,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 artist = null
             ).also { container ->
                 addContainer(container)
-                container.addToRegistry(ALL_AUDIO)
+                container.addToRegistry()
             }
 
             ArtistContainer(
@@ -270,7 +280,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 context.contentResolver
             ).also { container ->
                 addContainer(container)
-                container.addToRegistry(ALL_ARTISTS)
+                container.addToRegistry()
             }
 
             AlbumContainer(
@@ -283,7 +293,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 null
             ).also { container ->
                 addContainer(container)
-                container.addToRegistry(ALL_ALBUMS)
+                container.addToRegistry()
             }
 
             Container(
@@ -293,9 +303,9 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 appName
             ).also { container ->
                 addContainer(container)
-                container.addToRegistry(AUDIO_BY_FOLDER)
+                container.addToRegistry()
 
-                val initialId = 2_000_000
+                val initialId: Long = 2_000_000
                 val column = AudioDirectoryContainer.AUDIO_DATA_PATH
                 val externalContentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
@@ -334,7 +344,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 contentResolver = context.contentResolver
             ).also { container ->
                 addContainer(container)
-                container.addToRegistry(ALL_VIDEO)
+                container.addToRegistry()
             }
 
             Container(
@@ -344,9 +354,9 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 appName
             ).also { container ->
                 addContainer(container)
-                container.addToRegistry(VIDEO_BY_FOLDER)
+                container.addToRegistry()
 
-                val initialId = 3_000_000
+                val initialId: Long = 3_000_000
 
                 val column = VideoDirectoryContainer.VIDEO_DATA_PATH
                 val externalContentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
@@ -368,6 +378,117 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             }
         }
 
+    private fun getUserSelectedContainer(rootContainer: Container) {
+        context
+            .contentResolver
+            .persistedUriPermissions
+            .map { it.uri }
+            .mapNotNull { DocumentFile.fromTreeUri(context, it) }
+            .forEach { documentFile ->
+                when {
+                    documentFile.isDirectory -> handleDirectory(documentFile, rootContainer)
+                    documentFile.isFile -> queryUri(documentFile.uri, rootContainer)
+
+                    documentFile.isVirtual -> {
+                        // TODO not supported yet
+                    }
+                }
+            }
+    }
+
+    private fun handleDirectory(
+        documentFile: DocumentFile,
+        rootContainer: Container,
+    ) {
+        queryOrCreateContainer(documentFile.uri, rootContainer.rawId)?.let { parentContainer ->
+            documentFile.listFiles().forEach {
+                when {
+                    it.isFile -> queryUri(it.uri, parentContainer)
+                    it.isDirectory -> handleDirectory(it, parentContainer)
+                }
+            }
+            rootContainer.addContainer(parentContainer)
+        }
+    }
+
+    private fun queryOrCreateContainer(uri: Uri, parentId: String): Container? {
+        return (database.directoryCacheQueries.selectByUri(uri.toString()).executeAsOneOrNull()?.let { cachedValue ->
+            Container(cachedValue._id, parentId, cachedValue.name, null)
+        } ?: createFolderContainer(uri, parentId))?.also { it.addToRegistry() }
+    }
+
+    private fun createFolderContainer(uri: Uri, parentId: String): Container? = context
+        .contentResolver
+        .query(uri,
+            arrayOf(
+                MediaStore.MediaColumns.DISPLAY_NAME
+            ),
+            null,
+            null,
+            null
+        )?.use { cursor ->
+            val nameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
+            if (cursor.moveToFirst()) {
+                val id = abs(random.nextLong()).toString()
+                val name = cursor.getString(nameColumn)
+
+                database.directoryCacheQueries.insertDirectory(DirectoryCache(id, uri.toString(), name))
+                Container(id, parentId, name, null)
+            } else
+                null
+        }
+
+    private fun queryUri(
+        uri: Uri,
+        parentContainer: Container,
+    ) {
+        context
+            .contentResolver
+            .query(uri,
+                arrayOf(
+                    MediaStore.MediaColumns._ID,
+                    MediaStore.MediaColumns.DISPLAY_NAME,
+                    MediaStore.MediaColumns.MIME_TYPE
+                ), null, null, null)
+            ?.use { cursor ->
+                val idColumn = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
+                val titleColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
+                val mimeTypeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
+
+                while (cursor.moveToNext()) {
+                    val id = cursor.getInt(idColumn)
+                    val title = cursor.getString(titleColumn)
+                    val mimeType = cursor.getString(mimeTypeColumn)
+                    when {
+                        mimeType.startsWith("image") ->
+                            context.contentResolver.queryImages(uri) { _, _, _, size, width, height ->
+                                val mimeTypeSeparatorPosition = mimeType.indexOf('/')
+                                val mime = mimeType.substring(0, mimeTypeSeparatorPosition)
+                                val mimeSubType = mimeType.substring(mimeTypeSeparatorPosition + 1)
+
+                                val res = Res(
+                                    MimeType(mime, mimeSubType),
+                                    size,
+                                    "http://$baseURL/$id.$mimeSubType"
+                                ).apply {
+                                    setResolution(width.toInt(), height.toInt())
+                                }
+
+                                parentContainer.addItem(ImageItem(
+                                    id.toString(),
+                                    parentContainer.rawId,
+                                    title,
+                                    "",
+                                    res
+                                ))
+                            }
+                        mimeType.startsWith("video") -> Unit
+                        mimeType.startsWith("audio") -> Unit
+                    }
+                }
+            }
+    }
+
     private fun getAlbumContainer(
         albumId: String,
         parentId: String,
@@ -383,7 +504,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
     )
 
     private fun generateContainerStructure(
-        initialId: Int,
+        initialId: Long,
         column: String,
         rootContainer: BaseContainer,
         externalContentUri: Uri,
@@ -452,7 +573,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                     baseURL,
                     ContentDirectory(kv.key),
                     context.contentResolver
-                ).apply { addToRegistry(id) }
+                ).apply { addToRegistry() }
 
                 rootContainer.addContainer(childContainer)
 
@@ -463,8 +584,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         populateFromMap(rootContainer, folders)
     }
 
-    private fun BaseContainer.addToRegistry(key: Int) {
-        containerRegistry[key] = this
+    private fun BaseContainer.addToRegistry() {
+        containerRegistry[rawId.toLong()] = this
     }
 
     private val isImagesEnabled
@@ -477,30 +598,34 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         get() = sharedPref.getBoolean(CONTENT_DIRECTORY_VIDEO, true)
 
     companion object {
+        const val USER_DEFINED_PREFIX = "USER_DEFINED_"
         const val SEPARATOR = '$'
 
         // Type
-        const val ROOT_ID = 0
-        const val IMAGE_ID = 1
-        const val AUDIO_ID = 2
-        const val VIDEO_ID = 3
+        const val ROOT_ID: Long = 0
+        const val IMAGE_ID: Long = 1
+        const val AUDIO_ID: Long = 2
+        const val VIDEO_ID: Long = 3
 
         // Type subfolder
-        const val ALL_IMAGE = 10
-        const val ALL_VIDEO = 20
-        const val ALL_AUDIO = 30
+        const val ALL_IMAGE: Long = 10
+        const val ALL_VIDEO: Long = 20
+        const val ALL_AUDIO: Long = 30
 
-        const val IMAGE_BY_FOLDER = 100
-        const val VIDEO_BY_FOLDER = 200
-        const val AUDIO_BY_FOLDER = 300
+        const val IMAGE_BY_FOLDER: Long = 100
+        const val VIDEO_BY_FOLDER: Long = 200
+        const val AUDIO_BY_FOLDER: Long = 300
 
-        const val ALL_ARTISTS = 301
-        const val ALL_ALBUMS = 302
+        const val ALL_ARTISTS: Long = 301
+        const val ALL_ALBUMS: Long = 302
 
         // Prefix item
+        const val CONTAINER_PREFIX = "c-"
         const val VIDEO_PREFIX = "v-"
         const val AUDIO_PREFIX = "a-"
         const val IMAGE_PREFIX = "i-"
+
+        private val random = SecureRandom()
 
         private val noSuchObject =
             ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)

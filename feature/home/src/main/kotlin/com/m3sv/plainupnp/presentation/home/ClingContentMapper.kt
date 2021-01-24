@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.presentation.home
 
+import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import com.m3sv.plainupnp.upnp.didl.*
 import javax.inject.Inject
 
@@ -8,9 +9,10 @@ class ClingContentMapper @Inject constructor() {
         when (item) {
             is ClingDIDLContainer -> ContentItem(
                 itemUri = item.id,
-                name = item.title,
+                name = item.title.replace(ContentDirectoryService.USER_DEFINED_PREFIX, ""),
                 type = ContentType.FOLDER,
-                icon = R.drawable.ic_folder
+                icon = R.drawable.ic_folder,
+                userGenerated = item.title.startsWith(ContentDirectoryService.USER_DEFINED_PREFIX)
             )
 
             is ClingImageItem -> ContentItem(

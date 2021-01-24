@@ -1,0 +1,11 @@
+CREATE TABLE directoryCache (
+_id TEXT PRIMARY KEY NOT NULL,
+uri TEXT NOT NULL UNIQUE,
+name TEXT
+);
+
+selectByUri:
+SELECT * FROM directoryCache WHERE uri=?;
+
+insertDirectory:
+INSERT INTO directoryCache VALUES ?;

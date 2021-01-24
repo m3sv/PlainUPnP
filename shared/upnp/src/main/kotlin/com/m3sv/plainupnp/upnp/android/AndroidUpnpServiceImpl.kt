@@ -3,6 +3,7 @@ package com.m3sv.plainupnp.upnp.android
 import android.content.Context
 import android.content.SharedPreferences
 import com.m3sv.plainupnp.common.util.getUdn
+import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import com.m3sv.plainupnp.upnp.R
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
@@ -19,10 +20,11 @@ class AndroidUpnpServiceImpl(
     configuration: AndroidUpnpServiceConfiguration,
     resourceProvider: LocalServiceResourceProvider,
     sharedPreferences: SharedPreferences,
+    database: Database,
 ) : UpnpServiceImpl(configuration, context) {
 
     private val localDevice by lazy {
-        getLocalDevice(resourceProvider, context, sharedPreferences)
+        getLocalDevice(resourceProvider, context, sharedPreferences, database)
     }
 
     fun resume() {
@@ -52,6 +54,7 @@ private fun getLocalDevice(
     serviceResourceProvider: LocalServiceResourceProvider,
     context: Context,
     sharedPreferences: SharedPreferences,
+    database: Database,
 ): LocalDevice {
     val details = DeviceDetails(
         serviceResourceProvider.settingContentDirectoryName,
@@ -96,13 +99,14 @@ private fun getLocalDevice(
         type,
         details,
         icon,
-        getLocalService(context, sharedPreferences)
+        getLocalService(context, sharedPreferences, database)
     )
 }
 
 private fun getLocalService(
     context: Context,
     sharedPreferences: SharedPreferences,
+    database: Database,
 ): LocalService<ContentDirectoryService> {
     val serviceBinder = AnnotationLocalServiceBinder()
     val contentDirectoryService =
@@ -120,6 +124,7 @@ private fun getLocalService(
                 ).hostAddress
             }:$PORT"
             service.sharedPref = sharedPreferences
+            service.database = database
         }
     }
 
