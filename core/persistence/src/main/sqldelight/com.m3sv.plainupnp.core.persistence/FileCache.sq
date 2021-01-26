@@ -1,0 +1,20 @@
+CREATE TABLE fileCache(
+_id INTEGER NOT NULL PRIMARY KEY,
+uri TEXT NOT NULL,
+mime TEXT NOT NULL,
+name TEXT,
+width INTEGER,
+height INTEGER,
+size INTEGER NOT NULL,
+duration INTEGER,
+creator TEXT
+);
+
+selectByUri:
+SELECT * FROM fileCache WHERE uri=?;
+
+selectById:
+SELECT * FROM fileCache WHERE _id=?;
+
+insertEntry:
+INSERT OR IGNORE INTO fileCache VALUES ?;

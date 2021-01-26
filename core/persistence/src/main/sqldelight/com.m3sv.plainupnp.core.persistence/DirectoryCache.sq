@@ -1,5 +1,5 @@
 CREATE TABLE directoryCache (
-_id TEXT PRIMARY KEY NOT NULL,
+_id INTEGER PRIMARY KEY NOT NULL,
 uri TEXT NOT NULL UNIQUE,
 name TEXT
 );
@@ -7,5 +7,8 @@ name TEXT
 selectByUri:
 SELECT * FROM directoryCache WHERE uri=?;
 
-insertDirectory:
-INSERT INTO directoryCache VALUES ?;
+selectById:
+SELECT * FROM directoryCache WHERE _id=?;
+
+insertEntry:
+INSERT OR IGNORE INTO directoryCache VALUES ?;

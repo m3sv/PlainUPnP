@@ -7,7 +7,6 @@ import androidx.preference.PreferenceManager
 import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingManager
-import com.m3sv.plainupnp.upnp.server.MediaServer
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import dagger.Module
 import dagger.Provides
@@ -37,8 +36,4 @@ object AppModule {
     fun provideDatabase(context: Context) =
         Database(AndroidSqliteDriver(Database.Schema, context, "plainupnp.db"))
 
-    @Provides
-    @JvmStatic
-    @Singleton
-    fun provideMediaServer(applicationContext: Context) = MediaServer(applicationContext)
 }

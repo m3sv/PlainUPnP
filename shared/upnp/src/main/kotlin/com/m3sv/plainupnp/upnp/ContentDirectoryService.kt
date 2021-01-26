@@ -13,6 +13,7 @@ import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_IMAGE
 import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_VIDEO
 import com.m3sv.plainupnp.upnp.util.queryImages
 import comm3svplainupnpcorepersistence.DirectoryCache
+import comm3svplainupnpcorepersistence.FileCache
 import kotlinx.coroutines.*
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
@@ -400,21 +401,33 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         documentFile: DocumentFile,
         rootContainer: Container,
     ) {
-        queryOrCreateContainer(documentFile.uri, rootContainer.rawId)?.let { parentContainer ->
+        if (isContainerCached(documentFile.uri)) {
+            return
+        }
+
+        queryOrCreateContainer(documentFile.uri, rootContainer)?.let { parentContainer ->
             documentFile.listFiles().forEach {
                 when {
                     it.isFile -> queryUri(it.uri, parentContainer)
                     it.isDirectory -> handleDirectory(it, parentContainer)
                 }
             }
-            rootContainer.addContainer(parentContainer)
         }
     }
 
-    private fun queryOrCreateContainer(uri: Uri, parentId: String): Container? {
+    private fun isContainerCached(uri: Uri): Boolean {
+        val cachedEntry =
+            database.directoryCacheQueries.selectByUri(uri.toString()).executeAsOneOrNull() ?: return false
+        return containerRegistry[cachedEntry._id] != null
+    }
+
+    private fun queryOrCreateContainer(uri: Uri, parentContainer: Container): Container? {
         return (database.directoryCacheQueries.selectByUri(uri.toString()).executeAsOneOrNull()?.let { cachedValue ->
-            Container(cachedValue._id, parentId, cachedValue.name, null)
-        } ?: createFolderContainer(uri, parentId))?.also { it.addToRegistry() }
+            Container(cachedValue._id.toString(), parentContainer.rawId, cachedValue.name, null)
+        } ?: createFolderContainer(uri, parentContainer.rawId))?.also {
+            parentContainer.addContainer(it)
+            it.addToRegistry()
+        }
     }
 
     private fun createFolderContainer(uri: Uri, parentId: String): Container? = context
@@ -429,11 +442,11 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         )?.use { cursor ->
             val nameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
             if (cursor.moveToFirst()) {
-                val id = abs(random.nextLong()).toString()
+                val id = getRandomId()
                 val name = cursor.getString(nameColumn)
 
-                database.directoryCacheQueries.insertDirectory(DirectoryCache(id, uri.toString(), name))
-                Container(id, parentId, name, null)
+                database.directoryCacheQueries.insertEntry(DirectoryCache(id, uri.toString(), name))
+                Container(id.toString(), parentId, name, null)
             } else
                 null
         }
@@ -442,7 +455,20 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         uri: Uri,
         parentContainer: Container,
     ) {
-        context
+        getCachedFile(uri)?.apply {
+            when {
+                mime.startsWith("image") -> {
+                    parentContainer.addImageItem(
+                        _id,
+                        name ?: "",
+                        mime,
+                        width ?: 0L,
+                        height ?: 0L,
+                        size ?: 0L
+                    )
+                }
+            }
+        } ?: context
             .contentResolver
             .query(uri,
                 arrayOf(
@@ -451,42 +477,71 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                     MediaStore.MediaColumns.MIME_TYPE
                 ), null, null, null)
             ?.use { cursor ->
-                val idColumn = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
                 val titleColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
                 val mimeTypeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
 
                 while (cursor.moveToNext()) {
-                    val id = cursor.getInt(idColumn)
+                    val id = getRandomId()
                     val title = cursor.getString(titleColumn)
                     val mimeType = cursor.getString(mimeTypeColumn)
                     when {
                         mimeType.startsWith("image") ->
                             context.contentResolver.queryImages(uri) { _, _, _, size, width, height ->
-                                val mimeTypeSeparatorPosition = mimeType.indexOf('/')
-                                val mime = mimeType.substring(0, mimeTypeSeparatorPosition)
-                                val mimeSubType = mimeType.substring(mimeTypeSeparatorPosition + 1)
+                                database
+                                    .fileCacheQueries
+                                    .insertEntry(
+                                        FileCache(
+                                            _id = id,
+                                            uri = uri.toString(),
+                                            mime = mimeType,
+                                            name = title,
+                                            width = width,
+                                            height = height,
+                                            duration = null,
+                                            size = size,
+                                            creator = null
+                                        )
+                                    )
 
-                                val res = Res(
-                                    MimeType(mime, mimeSubType),
-                                    size,
-                                    "http://$baseURL/$id.$mimeSubType"
-                                ).apply {
-                                    setResolution(width.toInt(), height.toInt())
-                                }
-
-                                parentContainer.addItem(ImageItem(
-                                    id.toString(),
-                                    parentContainer.rawId,
-                                    title,
-                                    "",
-                                    res
-                                ))
+                                parentContainer.addImageItem(id, title, mimeType, width, height, size)
                             }
                         mimeType.startsWith("video") -> Unit
                         mimeType.startsWith("audio") -> Unit
                     }
                 }
             }
+    }
+
+    private fun BaseContainer.addImageItem(
+        id: Long,
+        name: String,
+        mime: String,
+        width: Long,
+        height: Long,
+        size: Long,
+    ) {
+        val (type, subtype) = mime.split('/')
+        val upnpId = "$TREE_PREFIX$id"
+
+        val res = Res(
+            MimeType(type, subtype),
+            size,
+            "http://$baseURL/$upnpId.$subtype"
+        ).apply {
+            setResolution(width.toInt(), height.toInt())
+        }
+
+        addItem(ImageItem(
+            upnpId,
+            rawId,
+            name,
+            "",
+            res
+        ))
+    }
+
+    private fun getCachedFile(uri: Uri): FileCache? {
+        return database.fileCacheQueries.selectByUri(uri.toString()).executeAsOneOrNull()
     }
 
     private fun getAlbumContainer(
@@ -620,12 +675,12 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         const val ALL_ALBUMS: Long = 302
 
         // Prefix item
-        const val CONTAINER_PREFIX = "c-"
         const val VIDEO_PREFIX = "v-"
         const val AUDIO_PREFIX = "a-"
         const val IMAGE_PREFIX = "i-"
-
+        const val TREE_PREFIX = "t-"
         private val random = SecureRandom()
+        private fun getRandomId() = abs(random.nextLong())
 
         private val noSuchObject =
             ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)
