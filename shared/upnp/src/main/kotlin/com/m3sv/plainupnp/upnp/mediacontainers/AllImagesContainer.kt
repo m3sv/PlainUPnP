@@ -26,11 +26,9 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
+import com.m3sv.plainupnp.upnp.util.addImageItem
 import com.m3sv.plainupnp.upnp.util.queryImages
-import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
-import org.fourthline.cling.support.model.item.ImageItem
-import org.seamless.util.MimeType
 
 class AllImagesContainer(
     id: String,
@@ -55,28 +53,7 @@ class AllImagesContainer(
 
     override fun getContainers(): List<Container> {
         contentResolver.queryImages { id, title, mimeType, size, width, height ->
-            val mimeTypeSeparatorPosition = mimeType.indexOf('/')
-            val mime = mimeType.substring(0, mimeTypeSeparatorPosition)
-            val mimeSubType = mimeType.substring(mimeTypeSeparatorPosition + 1)
-
-            val res = Res(
-                MimeType(mime, mimeSubType),
-                size,
-                "http://$baseUrl/$id.$mimeSubType"
-            ).apply {
-                setResolution(width.toInt(), height.toInt())
-            }
-
-            addItem(
-                ImageItem(
-                    id,
-                    parentID,
-                    title,
-                    "",
-                    res
-                )
-            )
-
+            addImageItem(baseUrl, id, title, mimeType, width, height, size)
         }
 
         return containers

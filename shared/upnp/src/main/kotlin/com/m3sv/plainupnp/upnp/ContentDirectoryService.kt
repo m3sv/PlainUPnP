@@ -8,10 +8,7 @@ import android.provider.MediaStore
 import androidx.documentfile.provider.DocumentFile
 import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.upnp.mediacontainers.*
-import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_AUDIO
-import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_IMAGE
-import com.m3sv.plainupnp.upnp.util.CONTENT_DIRECTORY_VIDEO
-import com.m3sv.plainupnp.upnp.util.queryImages
+import com.m3sv.plainupnp.upnp.util.*
 import comm3svplainupnpcorepersistence.DirectoryCache
 import comm3svplainupnpcorepersistence.FileCache
 import kotlinx.coroutines.*
@@ -19,9 +16,10 @@ import org.fourthline.cling.support.contentdirectory.AbstractContentDirectorySer
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException
 import org.fourthline.cling.support.contentdirectory.DIDLParser
-import org.fourthline.cling.support.model.*
-import org.fourthline.cling.support.model.item.ImageItem
-import org.seamless.util.MimeType
+import org.fourthline.cling.support.model.BrowseFlag
+import org.fourthline.cling.support.model.BrowseResult
+import org.fourthline.cling.support.model.DIDLContent
+import org.fourthline.cling.support.model.SortCriterion
 import timber.log.Timber
 import java.security.SecureRandom
 import kotlin.LazyThreadSafetyMode.NONE
@@ -456,15 +454,42 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         parentContainer: Container,
     ) {
         getCachedFile(uri)?.apply {
+            val id = "$TREE_PREFIX$_id"
             when {
                 mime.startsWith("image") -> {
                     parentContainer.addImageItem(
-                        _id,
-                        name ?: "",
-                        mime,
-                        width ?: 0L,
-                        height ?: 0L,
-                        size ?: 0L
+                        baseURL = baseURL,
+                        id = id,
+                        name = name ?: "",
+                        mime = mime,
+                        width = width ?: 0L,
+                        height = height ?: 0L,
+                        size = size
+                    )
+                }
+                mime.startsWith("audio") -> {
+                    parentContainer.addAudioItem(
+                        baseURL = baseURL,
+                        id = id,
+                        name = name ?: "",
+                        mime = mime,
+                        width = width ?: 0L,
+                        height = height ?: 0L,
+                        size = size,
+                        duration = duration ?: 0L,
+                        album = album ?: "",
+                        creator = creator ?: "")
+                }
+                mime.startsWith("video") -> {
+                    parentContainer.addVideoItem(
+                        baseURL = baseURL,
+                        id = id,
+                        name = name ?: "",
+                        mime = mime,
+                        width = width ?: 0L,
+                        height = height ?: 0L,
+                        size = size,
+                        duration = duration ?: 0L
                     )
                 }
             }
@@ -499,11 +524,18 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                                             height = height,
                                             duration = null,
                                             size = size,
-                                            creator = null
+                                            creator = null,
+                                            album = null
                                         )
                                     )
 
-                                parentContainer.addImageItem(id, title, mimeType, width, height, size)
+                                parentContainer.addImageItem(baseURL,
+                                    "$TREE_PREFIX$id",
+                                    title,
+                                    mimeType,
+                                    width,
+                                    height,
+                                    size)
                             }
                         mimeType.startsWith("video") -> Unit
                         mimeType.startsWith("audio") -> Unit
@@ -512,33 +544,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             }
     }
 
-    private fun BaseContainer.addImageItem(
-        id: Long,
-        name: String,
-        mime: String,
-        width: Long,
-        height: Long,
-        size: Long,
-    ) {
-        val (type, subtype) = mime.split('/')
-        val upnpId = "$TREE_PREFIX$id"
-
-        val res = Res(
-            MimeType(type, subtype),
-            size,
-            "http://$baseURL/$upnpId.$subtype"
-        ).apply {
-            setResolution(width.toInt(), height.toInt())
-        }
-
-        addItem(ImageItem(
-            upnpId,
-            rawId,
-            name,
-            "",
-            res
-        ))
-    }
 
     private fun getCachedFile(uri: Uri): FileCache? {
         return database.fileCacheQueries.selectByUri(uri.toString()).executeAsOneOrNull()

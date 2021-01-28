@@ -5,11 +5,8 @@ import android.os.Build
 import android.provider.MediaStore
 import com.m3sv.plainupnp.common.util.isQ
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
-import org.fourthline.cling.support.model.PersonWithRole
-import org.fourthline.cling.support.model.Res
+import com.m3sv.plainupnp.upnp.util.addAudioItem
 import org.fourthline.cling.support.model.container.Container
-import org.fourthline.cling.support.model.item.MusicTrack
-import org.seamless.util.MimeType
 
 class AudioDirectoryContainer(
     id: String,
@@ -45,7 +42,7 @@ class AudioDirectoryContainer(
         }
     }
 
-    override fun getChildCount(): Int? {
+    override fun getChildCount(): Int {
         val projection = arrayOf(
             MediaStore.Audio.Media._ID,
             AUDIO_DATA_PATH
@@ -63,9 +60,6 @@ class AudioDirectoryContainer(
     }
 
     override fun getContainers(): List<Container> {
-        if (items.isNotEmpty() || containers.isNotEmpty())
-            return containers
-
         val columns = arrayOf(
             MediaStore.Audio.Media._ID,
             AUDIO_DATA_PATH,
@@ -105,28 +99,7 @@ class AudioDirectoryContainer(
                 val duration = cursor.getLong(audioDurationColumn)
                 val album = cursor.getString(audioAlbumColumn)
 
-                val mimeType = type.substring(0, type.indexOf('/'))
-                val mimeSubType = type.substring(type.indexOf('/') + 1)
-                val res = Res(
-                    MimeType(mimeType, mimeSubType),
-                    size,
-                    "http://$baseUrl/$id.$mimeSubType"
-                )
-
-                res.duration =
-                    "${(duration / (1000 * 60 * 60))}:${duration % (1000 * 60 * 60) / (1000 * 60)}:${duration % (1000 * 60) / 1000}"
-
-                addItem(
-                    MusicTrack(
-                        id,
-                        parentID,
-                        title,
-                        creator,
-                        album,
-                        PersonWithRole(creator, "Performer"),
-                        res
-                    )
-                )
+                addAudioItem(baseUrl, id, title, type, 0L, 0L, size, duration, album, creator)
             }
         }
 

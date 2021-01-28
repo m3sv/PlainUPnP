@@ -2,11 +2,9 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.ContentResolver
 import android.provider.MediaStore
+import com.m3sv.plainupnp.upnp.util.addVideoItem
 import com.m3sv.plainupnp.upnp.util.queryVideos
-import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
-import org.fourthline.cling.support.model.item.VideoItem
-import org.seamless.util.MimeType
 
 class AllVideoContainer(
     id: String,
@@ -34,23 +32,7 @@ class AllVideoContainer(
 
     override fun getContainers(): List<Container> {
         contentResolver.queryVideos { id, title, creator, mimeType, size, duration, width, height ->
-            val mimeTypeType = mimeType.substring(0, mimeType.indexOf('/'))
-            val mimeTypeSubType = mimeType.substring(mimeType.indexOf('/') + 1)
-
-            val res = Res(
-                MimeType(
-                    mimeTypeType,
-                    mimeTypeSubType
-                ),
-                size,
-                "http://$baseUrl/$id.$mimeTypeSubType"
-            ).also { res ->
-                res.duration =
-                    "${duration / (1000 * 60 * 60)}:${duration % (1000 * 60 * 60) / (1000 * 60)}:${duration % (1000 * 60) / 1000}"
-                res.setResolution(width.toInt(), height.toInt())
-            }
-
-            addItem(VideoItem(id, parentID, title, creator, res))
+            addVideoItem(baseUrl, id, title, mimeType, width, height, size, duration)
         }
 
         return containers

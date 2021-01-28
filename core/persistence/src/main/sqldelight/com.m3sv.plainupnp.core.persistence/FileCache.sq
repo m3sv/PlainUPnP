@@ -7,7 +7,8 @@ width INTEGER,
 height INTEGER,
 size INTEGER NOT NULL,
 duration INTEGER,
-creator TEXT
+creator TEXT,
+album TEXT
 );
 
 selectByUri:
