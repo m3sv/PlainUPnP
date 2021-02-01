@@ -431,14 +431,13 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
     private fun createFolderContainer(uri: Uri, parentId: String): Container? = context
         .contentResolver
         .query(uri,
-            arrayOf(
-                MediaStore.MediaColumns.DISPLAY_NAME
-            ),
+            arrayOf(MediaStore.MediaColumns.DISPLAY_NAME),
             null,
             null,
             null
         )?.use { cursor ->
             val nameColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
+
             if (cursor.moveToFirst()) {
                 val id = getRandomId()
                 val name = cursor.getString(nameColumn)
@@ -498,52 +497,109 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             .query(uri,
                 arrayOf(
                     MediaStore.MediaColumns._ID,
-                    MediaStore.MediaColumns.DISPLAY_NAME,
                     MediaStore.MediaColumns.MIME_TYPE
                 ), null, null, null)
             ?.use { cursor ->
-                val titleColumn = cursor.getColumnIndex(MediaStore.MediaColumns.DISPLAY_NAME)
                 val mimeTypeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
 
                 while (cursor.moveToNext()) {
                     val id = getRandomId()
-                    val title = cursor.getString(titleColumn)
                     val mimeType = cursor.getString(mimeTypeColumn)
                     when {
-                        mimeType.startsWith("image") ->
-                            context.contentResolver.queryImages(uri) { _, _, _, size, width, height ->
-                                database
-                                    .fileCacheQueries
-                                    .insertEntry(
-                                        FileCache(
-                                            _id = id,
-                                            uri = uri.toString(),
-                                            mime = mimeType,
-                                            name = title,
-                                            width = width,
-                                            height = height,
-                                            duration = null,
-                                            size = size,
-                                            creator = null,
-                                            album = null
-                                        )
+                        mimeType.startsWith("image") -> context.contentResolver.queryImages(uri) { _, title, _, size, width, height ->
+                            database
+                                .fileCacheQueries
+                                .insertEntry(
+                                    FileCache(
+                                        _id = id,
+                                        uri = uri.toString(),
+                                        mime = mimeType,
+                                        name = title,
+                                        width = width,
+                                        height = height,
+                                        duration = null,
+                                        size = size,
+                                        creator = null,
+                                        album = null
                                     )
+                                )
 
-                                parentContainer.addImageItem(baseURL,
-                                    "$TREE_PREFIX$id",
-                                    title,
-                                    mimeType,
-                                    width,
-                                    height,
-                                    size)
-                            }
-                        mimeType.startsWith("video") -> Unit
-                        mimeType.startsWith("audio") -> Unit
+                            parentContainer.addImageItem(
+                                baseURL = baseURL,
+                                id = "$TREE_PREFIX$id",
+                                name = title,
+                                mime = mimeType,
+                                width = width,
+                                height = height,
+                                size = size)
+
+                        }
+
+                        mimeType.startsWith("video") -> context.contentResolver.queryVideos(uri) { _, title, creator, _, size, duration, width, height ->
+                            database
+                                .fileCacheQueries
+                                .insertEntry(
+                                    FileCache(
+                                        _id = id,
+                                        uri = uri.toString(),
+                                        mime = mimeType,
+                                        name = title,
+                                        width = width,
+                                        height = height,
+                                        duration = null,
+                                        size = size,
+                                        creator = null,
+                                        album = null
+                                    )
+                                )
+
+                            parentContainer.addVideoItem(
+                                baseURL = baseURL,
+                                id = "$TREE_PREFIX$id",
+                                name = title,
+                                mime = mimeType,
+                                width = width,
+                                height = height,
+                                size = size,
+                                duration = duration
+                            )
+                        }
+
+                        mimeType.startsWith("audio") -> context.contentResolver.queryAudio(uri) { _, title, creator, _, size, duration, width, height, artist, album ->
+                            database
+                                .fileCacheQueries
+                                .insertEntry(
+                                    FileCache(
+                                        _id = id,
+                                        uri = uri.toString(),
+                                        mime = mimeType,
+                                        name = title,
+                                        width = width,
+                                        height = height,
+                                        duration = null,
+                                        size = size,
+                                        creator = null,
+                                        album = null
+                                    )
+                                )
+
+                            parentContainer.addAudioItem(
+                                baseURL = baseURL,
+                                id = "$TREE_PREFIX$id",
+                                name = title,
+                                mime = mimeType,
+                                width = width,
+                                height = height,
+                                size = size,
+                                duration = duration,
+                                album = album ?: "",
+                                creator = creator ?: ""
+                            )
+                        }
                     }
                 }
             }
     }
-
 
     private fun getCachedFile(uri: Uri): FileCache? {
         return database.fileCacheQueries.selectByUri(uri.toString()).executeAsOneOrNull()

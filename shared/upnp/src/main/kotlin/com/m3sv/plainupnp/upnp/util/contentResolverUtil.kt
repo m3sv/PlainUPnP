@@ -57,7 +57,7 @@ fun ContentResolver.queryVideos(
     block: (
         id: String,
         title: String,
-        creator: String,
+        creator: String?,
         mimeType: String,
         size: Long,
         duration: Long,
@@ -107,4 +107,58 @@ private val VIDEO_COLUMNS = arrayOf(
     MediaStore.Video.Media.DURATION,
     MediaStore.Video.Media.HEIGHT,
     MediaStore.Video.Media.WIDTH
+)
+
+fun ContentResolver.queryAudio(
+    uri: Uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+    block: (
+        id: String,
+        title: String,
+        creator: String?,
+        mimeType: String,
+        size: Long,
+        duration: Long,
+        width: Long,
+        height: Long,
+        artist: String?,
+        album: String?,
+    ) -> Unit,
+) {
+    query(
+        uri,
+        AUDIO_COLUMNS,
+        null,
+        null,
+        null
+    )?.use { cursor ->
+        val audioIdColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
+        val audioTitleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
+        val audioArtistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
+        val audioMimeTypeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
+        val audioSizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
+        val audioDurationColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+        val audioAlbumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
+
+        while (cursor.moveToNext()) {
+            val id = ContentDirectoryService.AUDIO_PREFIX + cursor.getInt(audioIdColumn)
+            val title = cursor.getString(audioTitleColumn)
+            val creator = cursor.getString(audioArtistColumn)
+            val type = cursor.getString(audioMimeTypeColumn)
+            val size = cursor.getLong(audioSizeColumn)
+            val duration = cursor.getLong(audioDurationColumn)
+            val album = cursor.getString(audioAlbumColumn)
+
+            block(id, title, creator, type, size, duration, 0L, 0L, null, album)
+        }
+    }
+}
+
+private val AUDIO_COLUMNS = arrayOf(
+    MediaStore.Audio.Media._ID,
+    MediaStore.Audio.Media.TITLE,
+    MediaStore.Audio.Media.ARTIST,
+    MediaStore.Audio.Media.MIME_TYPE,
+    MediaStore.Audio.Media.SIZE,
+    MediaStore.Audio.Media.DURATION,
+    MediaStore.Audio.Media.ALBUM
 )
