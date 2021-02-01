@@ -43,14 +43,13 @@ class HomeFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View? = HomeFragmentBinding.inflate(
+    ): View = HomeFragmentBinding.inflate(
         inflater,
         container,
         false
     ).apply {
         binding = this
     }.root
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
