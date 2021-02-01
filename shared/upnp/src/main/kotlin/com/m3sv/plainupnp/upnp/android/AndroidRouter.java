@@ -119,10 +119,6 @@ public class AndroidRouter extends RouterImpl {
         }
     }
 
-    public NetworkInfo getNetworkInfo() {
-        return networkInfo;
-    }
-
     public boolean isMobile() {
         return NetworkUtils.isMobile(networkInfo);
     }
@@ -133,23 +129,6 @@ public class AndroidRouter extends RouterImpl {
 
     public boolean isEthernet() {
         return NetworkUtils.isEthernet(networkInfo);
-    }
-
-    public boolean enableWiFi() {
-        log.info("Enabling WiFi...");
-        try {
-            return wifiManager.setWifiEnabled(true);
-        } catch (Throwable t) {
-            // workaround (HTC One X, 4.0.3)
-            //java.lang.SecurityException: Permission Denial: writing com.android.providers.settings.SettingsProvider
-            // uri content://settings/system from pid=4691, uid=10226 requires android.permission.WRITE_SETTINGS
-            //	at android.os.Parcel.readException(Parcel.java:1332)
-            //	at android.os.Parcel.readException(Parcel.java:1286)
-            //	at android.net.wifi.IWifiManager$Stub$Proxy.setWifiEnabled(IWifiManager.java:1115)
-            //	at android.net.wifi.WifiManager.setWifiEnabled(WifiManager.java:946)
-            log.log(Level.WARNING, "SetWifiEnabled failed", t);
-            return false;
-        }
     }
 
     public void unregisterBroadcastReceiver() {
