@@ -10,5 +10,5 @@ class BackgroundModeManager @Inject constructor(private val context: Context) {
     private val preferences = PreferenceManager.getDefaultSharedPreferences(context)
 
     fun isAllowedToRunInBackground(): Boolean =
-        preferences.getBoolean(context.getString(R.string.pref_key_allow_run_in_background), false)
+        preferences.getBoolean(context.getString(R.string.pref_key_allow_run_in_background), true)
 }
