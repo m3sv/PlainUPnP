@@ -222,11 +222,10 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             rootContainer.addContainer(container)
             container.addToRegistry()
 
-            val initialId: Long = 1_000_000
             val column = ImageDirectoryContainer.IMAGE_DATA_PATH
             val externalContentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
 
-            generateContainerStructure(initialId,
+            generateContainerStructure(
                 column,
                 container,
                 externalContentUri) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
@@ -302,11 +301,10 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 addContainer(container)
                 container.addToRegistry()
 
-                val initialId: Long = 2_000_000
                 val column = AudioDirectoryContainer.AUDIO_DATA_PATH
                 val externalContentUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
 
-                generateContainerStructure(initialId,
+                generateContainerStructure(
                     column,
                     container,
                     externalContentUri) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
@@ -353,12 +351,10 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 addContainer(container)
                 container.addToRegistry()
 
-                val initialId: Long = 3_000_000
-
                 val column = VideoDirectoryContainer.VIDEO_DATA_PATH
                 val externalContentUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI
 
-                generateContainerStructure(initialId,
+                generateContainerStructure(
                     column,
                     container,
                     externalContentUri) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
@@ -624,7 +620,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
     )
 
     private fun generateContainerStructure(
-        initialId: Long,
         column: String,
         rootContainer: BaseContainer,
         externalContentUri: Uri,
@@ -638,7 +633,6 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
             contentResolver: ContentResolver,
         ) -> BaseContainer,
     ) {
-        var initialId = initialId
         val folders: MutableMap<String, Map<String, Any>> = mutableMapOf()
         buildSet<String> {
             context.contentResolver.query(
@@ -683,10 +677,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
         fun populateFromMap(rootContainer: BaseContainer, map: Map<String, Map<String, Any>>) {
             map.forEach { kv ->
-                val id = initialId++
-
                 val childContainer = childContainerBuilder(
-                    id.toString(),
+                    getRandomId().toString(),
                     rootContainer.rawId,
                     kv.key,
                     appName,
