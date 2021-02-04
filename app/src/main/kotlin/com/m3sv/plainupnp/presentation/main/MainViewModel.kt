@@ -10,9 +10,7 @@ import com.m3sv.plainupnp.core.eventbus.subscribe
 import com.m3sv.plainupnp.presentation.home.FolderClick
 import com.m3sv.plainupnp.presentation.home.MediaItemClick
 import com.m3sv.plainupnp.presentation.home.MediaItemLongClick
-import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
-import com.m3sv.plainupnp.upnp.didl.ClingImageItem
-import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
+import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveContentDirectoriesUseCase
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
 import com.m3sv.plainupnp.upnp.folder.Folder
@@ -65,9 +63,9 @@ class MainViewModel @Inject constructor(
                 .map { it.data as PlayItem }
                 .collect { item ->
                     val route: MainRoute = when (item.clingDIDLObject) {
-                        is ClingImageItem -> MainRoute.PreviewImage(requireNotNull(item.clingDIDLObject.uri))
-                        is ClingVideoItem -> MainRoute.PreviewVideo(requireNotNull(item.clingDIDLObject.uri))
-                        is ClingAudioItem -> MainRoute.PreviewAudio(requireNotNull(item.clingDIDLObject.uri))
+                        is ClingMedia.Image -> MainRoute.PreviewImage(requireNotNull(item.clingDIDLObject.uri))
+                        is ClingMedia.Video -> MainRoute.PreviewVideo(requireNotNull(item.clingDIDLObject.uri))
+                        is ClingMedia.Audio -> MainRoute.PreviewAudio(requireNotNull(item.clingDIDLObject.uri))
                         else -> error("Unknown media type")
                     }
 

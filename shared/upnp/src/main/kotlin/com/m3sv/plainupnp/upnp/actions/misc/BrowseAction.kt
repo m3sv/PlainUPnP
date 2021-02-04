@@ -1,7 +1,9 @@
 package com.m3sv.plainupnp.upnp.actions.misc
 
 import com.m3sv.plainupnp.upnp.actions.Action
-import com.m3sv.plainupnp.upnp.didl.*
+import com.m3sv.plainupnp.upnp.didl.ClingContainer
+import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
+import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -55,14 +57,14 @@ class BrowseAction @Inject constructor(controlPoint: ControlPoint) :
         val result = mutableListOf<ClingDIDLObject>()
 
         for (item in didl.containers) {
-            result.add(ClingDIDLContainer(item))
+            result.add(ClingContainer(item))
         }
 
         for (item in didl.items) {
             val clingItem: ClingDIDLObject = when (item) {
-                is VideoItem -> ClingVideoItem(item)
-                is AudioItem -> ClingAudioItem(item)
-                is ImageItem -> ClingImageItem(item)
+                is VideoItem -> ClingMedia.Video(item)
+                is AudioItem -> ClingMedia.Audio(item)
+                is ImageItem -> ClingMedia.Image(item)
                 else -> ClingDIDLObject(item)
             }
 

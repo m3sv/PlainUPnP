@@ -25,4 +25,4 @@ package com.m3sv.plainupnp.upnp.didl
 
 import org.fourthline.cling.support.model.container.Container
 
-class ClingDIDLContainer(item: Container) : ClingDIDLObject(item)
+class ClingContainer(item: Container) : ClingDIDLObject(item)

@@ -58,8 +58,8 @@ class HomeFragment : BaseFragment() {
     }
 
     private fun observeState() {
-        viewModel.currentFolderContents.observe(viewLifecycleOwner) { folder ->
-            contentAdapter.setWithDiff(folder.contents)
+        viewModel.currentFolderContents.observe(viewLifecycleOwner) { contents ->
+            contentAdapter.setWithDiff(contents)
             binding.progress.disappear()
         }
 

@@ -82,7 +82,7 @@ class GalleryContentAdapter(
 
     private fun loadFolder(holder: ItemViewHolder<*>) {
         with(holder.extractBinding<FolderItemBinding>()) {
-            thumbnail.setImageResource(R.drawable.ic_folder)
+            thumbnail.setImageResource(holder.item.icon)
             title.text = holder.item.name
         }
     }

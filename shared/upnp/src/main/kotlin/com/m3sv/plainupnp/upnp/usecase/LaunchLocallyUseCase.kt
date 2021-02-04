@@ -3,9 +3,7 @@ package com.m3sv.plainupnp.upnp.usecase
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import com.m3sv.plainupnp.upnp.didl.ClingAudioItem
-import com.m3sv.plainupnp.upnp.didl.ClingImageItem
-import com.m3sv.plainupnp.upnp.didl.ClingVideoItem
+import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import com.m3sv.plainupnp.upnp.manager.RenderItem
 import timber.log.Timber
 import javax.inject.Inject
@@ -16,9 +14,9 @@ class LaunchLocallyUseCase @Inject constructor(private val context: Context) {
         val uri = item.didlItem.uri
         if (uri != null) {
             val contentType = when (item.didlItem) {
-                is ClingAudioItem -> "audio/*"
-                is ClingImageItem -> "image/*"
-                is ClingVideoItem -> "video/*"
+                is ClingMedia.Audio -> "audio/*"
+                is ClingMedia.Image -> "image/*"
+                is ClingMedia.Video -> "video/*"
                 else -> null
             }
 

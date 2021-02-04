@@ -104,9 +104,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 }
             }
 
-            if (containerRegistry[VIDEO_ID] == null) {
-                jobs += launch(Dispatchers.IO) { getUserSelectedContainer(rootContainer as Container) }
-            }
+            jobs += launch(Dispatchers.IO) { getUserSelectedContainer(rootContainer as Container) }
 
             jobs.joinAll()
 
@@ -421,7 +419,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
     private fun queryOrCreateContainer(uri: Uri, parentContainer: Container): Container? {
         return (database.directoryCacheQueries.selectByUri(uri.toString()).executeAsOneOrNull()?.let { cachedValue ->
-            Container(cachedValue._id.toString(), parentContainer.rawId, cachedValue.name, null)
+            createContainer(cachedValue._id, parentContainer.rawId, cachedValue.name)
         } ?: createFolderContainer(uri, parentContainer.rawId))?.also {
             parentContainer.addContainer(it)
             it.addToRegistry()
@@ -443,10 +441,16 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 val name = cursor.getString(nameColumn)
 
                 database.directoryCacheQueries.insertEntry(DirectoryCache(id, uri.toString(), name))
-                Container(id.toString(), parentId, name, null)
+                createContainer(id, parentId, name)
             } else
                 null
         }
+
+    private fun createContainer(
+        id: Long,
+        parentId: String,
+        name: String?,
+    ) = Container(id.toString(), parentId, "$USER_DEFINED_PREFIX$name", null)
 
     private fun queryUri(
         uri: Uri,

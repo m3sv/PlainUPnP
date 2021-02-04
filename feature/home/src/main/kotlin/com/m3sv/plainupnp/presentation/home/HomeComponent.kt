@@ -3,9 +3,7 @@ package com.m3sv.plainupnp.presentation.home
 import dagger.Subcomponent
 
 @HomeScope
-@Subcomponent(
-    modules = [HomeFragmentModule::class]
-)
+@Subcomponent
 interface HomeComponent {
 
     @Subcomponent.Factory
