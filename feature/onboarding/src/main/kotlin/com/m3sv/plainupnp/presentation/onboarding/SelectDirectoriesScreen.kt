@@ -1,12 +1,15 @@
 package com.m3sv.plainupnp.presentation.onboarding
 
 import android.net.Uri
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -24,12 +27,12 @@ fun SelectDirectoriesScreen(contentUris: List<Uri>, pickDirectory: () -> Unit, o
             val dismissState = rememberDismissState()
             SwipeToDismiss(state = dismissState, background = {
                 val direction = dismissState.dismissDirection ?: return@SwipeToDismiss
-                val color = when (dismissState.targetValue) {
+                val color by animateColorAsState(targetValue = when (dismissState.targetValue) {
                     DismissValue.Default -> Color.LightGray
                     DismissValue.DismissedToEnd,
                     DismissValue.DismissedToStart,
                     -> Color.Red
-                }
+                })
 
                 val alignment = when (direction) {
                     DismissDirection.StartToEnd -> Alignment.CenterStart
@@ -37,8 +40,8 @@ fun SelectDirectoriesScreen(contentUris: List<Uri>, pickDirectory: () -> Unit, o
                 }
 
                 val icon = Icons.Default.Delete
-                val scale = if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-
+                val scale by animateFloatAsState(targetValue = if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
+                )
                 Box(
                     Modifier
                         .fillMaxSize()
@@ -48,6 +51,7 @@ fun SelectDirectoriesScreen(contentUris: List<Uri>, pickDirectory: () -> Unit, o
                 ) {
                     Icon(
                         icon,
+                        contentDescription = "Localized description",
                         modifier = Modifier.scale(scale)
                     )
                 }

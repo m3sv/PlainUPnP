@@ -76,7 +76,7 @@ class ComposeActivity : AppCompatActivity() {
                         IconButton(onClick = {
                             startActivity(Intent(context, SettingsActivity::class.java))
                         }) {
-                            Icon(vectorDrawable, tint = MaterialTheme.colors.onSurface)
+                            Icon(vectorDrawable, contentDescription = null, tint = MaterialTheme.colors.onSurface)
                         }
                     }
 
@@ -124,7 +124,7 @@ class ComposeActivity : AppCompatActivity() {
             DropdownMenu(
                 toggle = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(vectorResource(id = icon), modifier = Modifier.padding(16.dp))
+                        Icon(vectorResource(id = icon), contentDescription = null, modifier = Modifier.padding(16.dp))
                         Text(
                             text = selectedDir,
                             overflow = TextOverflow.Ellipsis,

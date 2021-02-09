@@ -16,8 +16,8 @@ buildscript {
     ext.buildConfig.version['name'] = "${buildConfig.version.major}.${buildConfig.version.minor}.${buildConfig.version.patch}"
 
     ext.versions = [
-            kotlin                : '1.4.21',
-            composeVersion        : '1.0.0-alpha09',
+            kotlin                : '1.4.21-2',
+            composeVersion        : '1.0.0-alpha11',
             coreLibraryDesugaring : '1.1.1',
             sqlDelight            : '1.4.4',
             architectureComponents: "2.2.0",
