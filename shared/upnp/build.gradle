@@ -1,7 +1,7 @@
 apply from: '../../scripts/kotlin-android-library.gradle'
 apply from: '../../scripts/cling.gradle'
 
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 
 
