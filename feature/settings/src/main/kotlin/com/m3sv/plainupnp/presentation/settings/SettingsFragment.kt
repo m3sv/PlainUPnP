@@ -12,11 +12,25 @@ import androidx.fragment.app.Fragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
-import com.m3sv.plainupnp.common.util.updateTheme
+import com.m3sv.plainupnp.ThemeManager
+import com.m3sv.plainupnp.common.util.doNothing
+import com.m3sv.plainupnp.presentation.onboarding.ConfigureFolderActivity
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
 
+private enum class PreferenceKey(val tag: String) {
+    VERSION("version"),
+    RATE("rate"),
+    GITHUB("github"),
+    PRIVACY_POLICY("privacy_policy"),
+    CONTACT_US("contact_us"),
+    CONFIGURE_FOLDERS("configure_folders");
+
+    companion object {
+        fun byTag(tag: String): PreferenceKey? = values().firstOrNull { it.tag == tag }
+    }
+}
 
 class SettingsFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener,
@@ -25,15 +39,18 @@ class SettingsFragment : PreferenceFragmentCompat(),
     @Inject
     lateinit var upnpManager: UpnpManager
 
+    @Inject
+    lateinit var themeManager: ThemeManager
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         inject()
         super.onViewCreated(view, savedInstanceState)
 
+        PreferenceKey.values().forEach { preference ->
+            findPreference<Preference>(preference.tag)?.onPreferenceClickListener = this
+        }
+
         findPreference<Preference>(VERSION)?.summary = appVersion
-        findPreference<Preference>(RATE)?.onPreferenceClickListener = this
-        findPreference<Preference>(GITHUB)?.onPreferenceClickListener = this
-        findPreference<Preference>(PRIVACY_POLICY)?.onPreferenceClickListener = this
-        findPreference<Preference>(CONTACT_US)?.onPreferenceClickListener = this
     }
 
     private fun inject() {
@@ -60,20 +77,25 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         when (key) {
-            setThemeKey -> requireContext().updateTheme()
+            setThemeKey -> themeManager.setDefaultNightMode()
         }
     }
 
     override fun onPreferenceClick(preference: Preference): Boolean {
-        val result = when (preference.key) {
-            RATE -> rateApplication()
-            GITHUB -> github()
-            PRIVACY_POLICY -> privacyPolicy()
-            CONTACT_US -> openEmail()
-            else -> null
+        val key = PreferenceKey.byTag(preference.key)
+
+        when (key) {
+            PreferenceKey.VERSION -> doNothing
+            PreferenceKey.RATE -> rateApplication()
+            PreferenceKey.GITHUB -> github()
+            PreferenceKey.PRIVACY_POLICY -> privacyPolicy()
+            PreferenceKey.CONTACT_US -> openEmail()
+            PreferenceKey.CONFIGURE_FOLDERS -> requireActivity().startActivity(Intent(requireContext(),
+                ConfigureFolderActivity::class.java))
+            null -> doNothing
         }
 
-        return result != null
+        return key != null
     }
 
     private fun openEmail() {
@@ -126,10 +148,6 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     private companion object {
         private const val VERSION = "version"
-        private const val RATE = "rate"
-        private const val GITHUB = "github"
-        private const val PRIVACY_POLICY = "privacy_policy"
-        private const val CONTACT_US = "contact_us"
 
         private const val MAIL_TO = "mailto:"
         private const val EMAIL = "m3sv.dev@gmail.com"

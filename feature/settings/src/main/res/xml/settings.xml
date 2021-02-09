@@ -4,7 +4,7 @@
 
     <com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory android:title="@string/general_category">
         <ListPreference
-            android:defaultValue="@string/system_theme_value"
+            android:defaultValue="@string/system_theme_label"
             android:entries="@array/theme_entries"
             android:entryValues="@array/theme_entry_values"
             android:icon="@drawable/ic_theme"
@@ -14,6 +14,11 @@
     </com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory>
 
     <com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory android:title="@string/upnp_category">
+        <Preference
+            android:key="configure_folders"
+            android:summary="@string/contact_us_body"
+            android:title="@string/contact_us_title" />
+
         <SwitchPreferenceCompat
             android:defaultValue="@bool/default_allow_run_in_background"
             android:icon="@drawable/ic_run_in_background"

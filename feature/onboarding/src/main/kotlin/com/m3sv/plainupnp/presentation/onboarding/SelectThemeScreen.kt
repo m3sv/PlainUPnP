@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
+import com.m3sv.plainupnp.ThemeOption
 
 @Composable
 fun SelectThemeScreen(
@@ -35,7 +36,7 @@ fun SelectThemeScreen(
             onThemOptionSelected = onThemeOptionSelected
         )
         Button(onClick = onClick) {
-            Text(text = "Start using PlainUPnP")
+            Text(text = "Next")
         }
     }
 }

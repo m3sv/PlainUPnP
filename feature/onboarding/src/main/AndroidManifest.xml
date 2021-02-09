@@ -1,2 +1,8 @@
-<manifest package="com.m3sv.plainupnp.presentation.onboarding" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.m3sv.plainupnp.presentation.onboarding">
+
+    <application>
+        <activity android:name=".ConfigureFolderActivity" />
+    </application>
+</manifest>
 

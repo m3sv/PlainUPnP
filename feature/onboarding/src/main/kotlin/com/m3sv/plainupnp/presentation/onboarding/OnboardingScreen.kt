@@ -2,9 +2,9 @@ package com.m3sv.plainupnp.presentation.onboarding
 
 enum class OnboardingScreen {
     Greeting,
+    SelectTheme,
     StoragePermission,
-    SelectDirectories,
-    SelectTheme;
+    SelectDirectories;
 
     val next: OnboardingScreen
         get() = when (this.ordinal) {

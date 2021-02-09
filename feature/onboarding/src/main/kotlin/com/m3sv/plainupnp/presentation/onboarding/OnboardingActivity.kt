@@ -27,6 +27,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.m3sv.plainupnp.ThemeManager
+import com.m3sv.plainupnp.ThemeOption
 import java.util.*
 import javax.inject.Inject
 
@@ -36,9 +40,18 @@ class OnboardingActivity : AppCompatActivity() {
     @Inject
     lateinit var onboardingManager: OnboardingManager
 
+    @Inject
+    lateinit var themeManager: ThemeManager
+
     private var onPermissionResult by mutableStateOf(-1)
 
-    private val viewModel: OnboardingViewModel by viewModels()
+    private val viewModel: OnboardingViewModel by viewModels(factoryProducer = {
+        object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return OnboardingViewModel(application, themeManager) as T
+            }
+        }
+    })
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,7 +107,7 @@ class OnboardingActivity : AppCompatActivity() {
                     }
                     OnboardingScreen.SelectDirectories -> SelectDirectoriesScreen(contentUris,
                         pickDirectory = { openDirectory() }) {
-                        onPageChange(currentScreen.next)
+                        onboardingManager.completeOnboarding(this@OnboardingActivity)
                     }
                     OnboardingScreen.SelectTheme -> SelectThemeScreen(
                         text = getString(R.string.set_theme_label),
@@ -103,7 +116,7 @@ class OnboardingActivity : AppCompatActivity() {
                         stringProvider = stringProvider,
                         onThemeOptionSelected = onThemeOptionSelected
                     ) {
-                        onboardingManager.completeOnboarding(this@OnboardingActivity)
+                        onPageChange(currentScreen.next)
                     }
                 }
             }

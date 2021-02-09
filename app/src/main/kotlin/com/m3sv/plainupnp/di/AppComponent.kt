@@ -4,6 +4,7 @@ import android.content.Context
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.presentation.home.HomeComponent
 import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
+import com.m3sv.plainupnp.presentation.onboarding.ConfigureFolderActivity
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingActivity
 import com.m3sv.plainupnp.presentation.settings.SettingsComponent
 import com.m3sv.plainupnp.presentation.splash.SplashActivity
@@ -36,4 +37,5 @@ interface AppComponent {
     fun inject(app: App)
     fun inject(splashActivity: SplashActivity)
     fun inject(onboardingActivity: OnboardingActivity)
+    fun inject(configureFolderActivity: ConfigureFolderActivity)
 }

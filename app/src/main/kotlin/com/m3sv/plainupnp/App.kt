@@ -8,11 +8,11 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.m3sv.plainupnp.common.BackgroundModeManager
 import com.m3sv.plainupnp.common.util.generateUdn
-import com.m3sv.plainupnp.common.util.updateTheme
 import com.m3sv.plainupnp.di.AppComponent
 import com.m3sv.plainupnp.di.DaggerAppComponent
 import com.m3sv.plainupnp.presentation.home.HomeComponent
 import com.m3sv.plainupnp.presentation.home.HomeComponentProvider
+import com.m3sv.plainupnp.presentation.onboarding.ConfigureFolderActivity
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingActivity
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingInjector
 import com.m3sv.plainupnp.presentation.settings.SettingsComponent
@@ -43,6 +43,9 @@ class App : Application(),
     @Inject
     lateinit var backgroundModeManager: BackgroundModeManager
 
+    @Inject
+    lateinit var themeManager: ThemeManager
+
     val appComponent: AppComponent by lazy {
         DaggerAppComponent
             .factory()
@@ -62,11 +65,15 @@ class App : Application(),
         appComponent.inject(onboardingActivity)
     }
 
+    override fun inject(configureFolderActivity: ConfigureFolderActivity) {
+        appComponent.inject(configureFolderActivity)
+    }
+
     override fun onCreate() {
         super.onCreate()
         appComponent.inject(this)
 
-        updateTheme()
+        themeManager.setDefaultNightMode()
         generateUdn()
 
         if (BuildConfig.DEBUG) {

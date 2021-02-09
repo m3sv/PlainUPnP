@@ -4,10 +4,9 @@ import android.app.Activity
 import android.content.SharedPreferences
 
 class OnboardingManager(
-    val preferences: SharedPreferences,
-    val onboardingCompletedListener: (Activity) -> Unit,
+    private val preferences: SharedPreferences,
+    private val onboardingCompletedListener: (Activity) -> Unit,
 ) {
-
     val isOnboardingCompleted
         get() = preferences.getBoolean(FINISHED_ONBOARDING_KEY, false)
 
