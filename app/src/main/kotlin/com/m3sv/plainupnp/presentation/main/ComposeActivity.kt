@@ -39,7 +39,6 @@ class ComposeActivity : AppCompatActivity() {
         ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
     }
 
-    @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
         super.onCreate(savedInstanceState)
@@ -57,7 +56,6 @@ class ComposeActivity : AppCompatActivity() {
             .also { component -> component.inject(this) }
     }
 
-    @ExperimentalMaterialApi
     @Composable
     private fun Content() {
         val context = AmbientContext.current

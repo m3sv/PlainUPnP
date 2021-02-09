@@ -13,7 +13,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-@ExperimentalMaterialApi
 @Composable
 fun SelectDirectoriesScreen(contentUris: List<Uri>, pickDirectory: () -> Unit, onNext: (() -> Unit)? = null) {
     Column(
