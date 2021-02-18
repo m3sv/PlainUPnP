@@ -23,14 +23,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
+import com.m3sv.plainupnp.data.upnp.UriWrapper
 import java.util.*
 import javax.inject.Inject
 
@@ -43,12 +46,15 @@ class OnboardingActivity : AppCompatActivity() {
     @Inject
     lateinit var themeManager: ThemeManager
 
+    @Inject
+    lateinit var contentManager: ContentManager
+
     private var onPermissionResult by mutableStateOf(-1)
 
     private val viewModel: OnboardingViewModel by viewModels(factoryProducer = {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return OnboardingViewModel(application, themeManager) as T
+                return OnboardingViewModel(application, themeManager, contentManager) as T
             }
         }
     })
@@ -77,38 +83,45 @@ class OnboardingActivity : AppCompatActivity() {
             else -> Unit
         }
 
+        val contentUris by viewModel.contentUris.collectAsState(initial = listOf())
+
         Content(
-            colors = if (isSystemInDarkTheme()) darkColors() else lightColors(),
             selectedTheme = viewModel.activeTheme,
             currentScreen = viewModel.currentScreen,
             onPageChange = viewModel::onPageChange,
             stringProvider = this@OnboardingActivity::getString,
             onThemeOptionSelected = viewModel::onThemeChange,
-            contentUris = viewModel.contentUris.map { it.uri }
+            contentUris = contentUris
         )
     }
 
     @Composable
     private fun Content(
-        colors: Colors,
         selectedTheme: ThemeOption,
         currentScreen: OnboardingScreen,
-        contentUris: List<Uri> = listOf(),
+        contentUris: List<UriWrapper> = listOf(),
         stringProvider: (Int) -> String,
         onThemeOptionSelected: (ThemeOption) -> Unit,
         onPageChange: (OnboardingScreen) -> Unit,
     ) {
-        MaterialTheme(colors) {
+        MaterialTheme(
+            if (isSystemInDarkTheme())
+                darkColors(primary = colorResource(id = com.m3sv.plainupnp.common.R.color.colorPrimary))
+            else lightColors(
+                primary = colorResource(id = com.m3sv.plainupnp.common.R.color.colorPrimary))
+        ) {
             Surface {
                 when (currentScreen) {
                     OnboardingScreen.Greeting -> GreetingScreen { onPageChange(currentScreen.next) }
                     OnboardingScreen.StoragePermission -> StorageAccessScreen {
                         checkStoragePermission { onPageChange(currentScreen.next) }
                     }
-                    OnboardingScreen.SelectDirectories -> SelectDirectoriesScreen(contentUris,
-                        pickDirectory = { openDirectory() }) {
-                        onboardingManager.completeOnboarding(this@OnboardingActivity)
-                    }
+                    OnboardingScreen.SelectDirectories -> SelectDirectoriesScreen(
+                        contentUris,
+                        pickDirectory = { openDirectory() },
+                        onNext = { onboardingManager.completeOnboarding(this@OnboardingActivity) },
+                        onReleaseUri = { viewModel.releaseUri(it) },
+                    )
                     OnboardingScreen.SelectTheme -> SelectThemeScreen(
                         text = getString(R.string.set_theme_label),
                         selectedTheme = selectedTheme,
@@ -221,7 +234,6 @@ class OnboardingActivity : AppCompatActivity() {
     @Preview
     private fun PreviewContent() {
         Content(
-            lightColors(),
             selectedTheme = ThemeOption.Light,
             currentScreen = OnboardingScreen.SelectTheme,
             onPageChange = { },

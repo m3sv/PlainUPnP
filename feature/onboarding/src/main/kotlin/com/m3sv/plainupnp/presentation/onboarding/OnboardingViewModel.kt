@@ -1,15 +1,21 @@
 package com.m3sv.plainupnp.presentation.onboarding
 
 import android.app.Application
-import android.content.UriPermission
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
+import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
+import com.m3sv.plainupnp.data.upnp.UriWrapper
+import kotlinx.coroutines.flow.Flow
 
-class OnboardingViewModel(application: Application, private val themeManager: ThemeManager) :
+class OnboardingViewModel(
+    application: Application,
+    private val themeManager: ThemeManager,
+    private val contentManager: ContentManager,
+) :
     AndroidViewModel(application) {
 
     var activeTheme: ThemeOption by mutableStateOf(themeManager.currentTheme)
@@ -18,8 +24,7 @@ class OnboardingViewModel(application: Application, private val themeManager: Th
     var currentScreen: OnboardingScreen by mutableStateOf(OnboardingScreen.Greeting)
         private set
 
-    var contentUris: List<UriPermission> by mutableStateOf(application.contentResolver.persistedUriPermissions)
-        private set
+    val contentUris: Flow<List<UriWrapper>> = contentManager.getPersistedUris()
 
     fun onThemeChange(themeOption: ThemeOption) {
         activeTheme = themeOption
@@ -31,6 +36,10 @@ class OnboardingViewModel(application: Application, private val themeManager: Th
     }
 
     fun saveUri() {
-        contentUris = getApplication<Application>().contentResolver.persistedUriPermissions
+        contentManager.updateUris()
+    }
+
+    fun releaseUri(uriWrapper: UriWrapper) {
+        contentManager.releaseUri(uriWrapper)
     }
 }

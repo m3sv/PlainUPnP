@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -62,9 +63,14 @@ class ComposeActivity : AppCompatActivity() {
         val renderers by viewModel.renderers.observeAsState()
         val contentDirectories by viewModel.contentDirectories.observeAsState()
 
-        MaterialTheme(if (isSystemInDarkTheme()) darkColors() else lightColors()) {
-            val vectorDrawable = vectorResource(id = R.drawable.ic_settings)
+        val primaryColor = colorResource(id = R.color.colorPrimary)
 
+        MaterialTheme(
+            if (isSystemInDarkTheme())
+                darkColors(primaryColor)
+            else
+                lightColors(primaryColor)
+        ) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.BottomCenter
@@ -73,10 +79,12 @@ class ComposeActivity : AppCompatActivity() {
                 Column(modifier = Modifier.align(Alignment.TopCenter)) {
                     Row(horizontalArrangement = Arrangement.End,
                         modifier = Modifier.fillMaxWidth()) {
-                        IconButton(onClick = {
-                            startActivity(Intent(context, SettingsActivity::class.java))
-                        }) {
-                            Icon(vectorDrawable, contentDescription = null, tint = MaterialTheme.colors.onSurface)
+                        IconButton(onClick = { startActivity(Intent(context, SettingsActivity::class.java)) }) {
+                            Icon(
+                                imageVector = vectorResource(id = R.drawable.ic_settings),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.onSurface
+                            )
                         }
                     }
 

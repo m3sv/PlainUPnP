@@ -11,11 +11,17 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.setContent
+import androidx.compose.ui.res.colorResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ThemeManager
+import com.m3sv.plainupnp.data.upnp.UriWrapper
 import javax.inject.Inject
+
 
 class ConfigureFolderActivity : AppCompatActivity() {
 
@@ -25,10 +31,13 @@ class ConfigureFolderActivity : AppCompatActivity() {
     @Inject
     lateinit var themeManager: ThemeManager
 
+    @Inject
+    lateinit var contentManager: ContentManager
+
     private val viewModel: OnboardingViewModel by viewModels(factoryProducer = {
         object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return OnboardingViewModel(application, themeManager) as T
+                return OnboardingViewModel(application, themeManager, contentManager) as T
             }
         }
     })
@@ -37,11 +46,18 @@ class ConfigureFolderActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         (application as OnboardingInjector).inject(this)
         setContent {
-            MaterialTheme(if (isSystemInDarkTheme()) darkColors() else lightColors()) {
+            val contentUris: List<UriWrapper> by viewModel.contentUris.collectAsState(initial = listOf())
+            MaterialTheme(
+                if (isSystemInDarkTheme())
+                    darkColors(primary = colorResource(id = com.m3sv.plainupnp.common.R.color.colorPrimary))
+                else lightColors(
+                    primary = colorResource(id = com.m3sv.plainupnp.common.R.color.colorPrimary))
+            ) {
                 Surface {
                     SelectDirectoriesScreen(
-                        contentUris = viewModel.contentUris.map { it.uri },
+                        contentUris = contentUris,
                         pickDirectory = { openDirectory() },
+                        onReleaseUri = { viewModel.releaseUri(it) },
                     )
                 }
             }
