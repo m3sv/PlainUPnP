@@ -132,7 +132,7 @@ fun ContentResolver.queryAudio(
         null
     )?.use { cursor ->
         val audioIdColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
-        val audioTitleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
+        val audioTitleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
         val audioArtistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
         val audioMimeTypeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
         val audioSizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
@@ -155,7 +155,7 @@ fun ContentResolver.queryAudio(
 
 private val AUDIO_COLUMNS = arrayOf(
     MediaStore.Audio.Media._ID,
-    MediaStore.Audio.Media.TITLE,
+    MediaStore.Audio.Media.DISPLAY_NAME,
     MediaStore.Audio.Media.ARTIST,
     MediaStore.Audio.Media.MIME_TYPE,
     MediaStore.Audio.Media.SIZE,
