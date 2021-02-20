@@ -7,10 +7,10 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import com.m3sv.plainupnp.core.persistence.Database
-import com.m3sv.plainupnp.upnp.ContentDirectoryService.Companion.AUDIO_PREFIX
-import com.m3sv.plainupnp.upnp.ContentDirectoryService.Companion.IMAGE_PREFIX
-import com.m3sv.plainupnp.upnp.ContentDirectoryService.Companion.TREE_PREFIX
-import com.m3sv.plainupnp.upnp.ContentDirectoryService.Companion.VIDEO_PREFIX
+import com.m3sv.plainupnp.upnp.ContentRepository.Companion.AUDIO_PREFIX
+import com.m3sv.plainupnp.upnp.ContentRepository.Companion.IMAGE_PREFIX
+import com.m3sv.plainupnp.upnp.ContentRepository.Companion.TREE_PREFIX
+import com.m3sv.plainupnp.upnp.ContentRepository.Companion.VIDEO_PREFIX
 import com.m3sv.plainupnp.upnp.util.PORT
 import fi.iki.elonen.NanoHTTPD
 import timber.log.Timber

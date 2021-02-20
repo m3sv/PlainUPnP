@@ -1,13 +1,7 @@
 package com.m3sv.plainupnp.upnp.di
 
-import android.content.Context
-import android.content.SharedPreferences
-import com.m3sv.plainupnp.core.persistence.Database
-import com.m3sv.plainupnp.upnp.PlainUpnpServiceConfiguration
-import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import com.m3sv.plainupnp.upnp.manager.UpnpManagerImpl
-import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import com.m3sv.plainupnp.upnp.volume.UpnpVolumeManager
 import dagger.Binds
 import dagger.Module
@@ -28,21 +22,6 @@ abstract class UpnpBindersModule {
     abstract fun bindUpnpManager(upnpManagerImpl: UpnpManagerImpl): UpnpManager
 
     companion object {
-        @Provides
-        @JvmStatic
-        @Singleton
-        fun provideUpnpService(
-            context: Context,
-            sharedPreferences: SharedPreferences,
-            localServiceResourceProvider: LocalServiceResourceProvider,
-            database: Database,
-        ): UpnpService = AndroidUpnpServiceImpl(
-            context,
-            PlainUpnpServiceConfiguration(),
-            localServiceResourceProvider,
-            sharedPreferences,
-            database
-        )
 
         @Provides
         @JvmStatic

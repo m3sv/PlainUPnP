@@ -27,7 +27,7 @@ import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
 import com.m3sv.plainupnp.common.util.isQ
-import com.m3sv.plainupnp.upnp.ContentDirectoryService
+import com.m3sv.plainupnp.upnp.ContentRepository
 import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
 import org.fourthline.cling.support.model.item.ImageItem
@@ -99,7 +99,7 @@ class ImageDirectoryContainer(
                 if (!isQ && !directory.samePath(cursor.getString(dataColumn)))
                     continue
 
-                val id = ContentDirectoryService.IMAGE_PREFIX + cursor.getInt(imagesIdColumn)
+                val id = ContentRepository.IMAGE_PREFIX + cursor.getInt(imagesIdColumn)
                 val title = cursor.getString(imagesTitleColumn)
                 val mime = cursor.getString(imagesMimeTypeColumn)
                 val size = cursor.getLong(imagesMediaSizeColumn)

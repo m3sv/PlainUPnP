@@ -27,7 +27,7 @@ import android.content.ContentResolver
 import android.os.Build
 import android.provider.MediaStore
 import com.m3sv.plainupnp.common.util.isQ
-import com.m3sv.plainupnp.upnp.ContentDirectoryService
+import com.m3sv.plainupnp.upnp.ContentRepository
 import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
 import org.fourthline.cling.support.model.item.VideoItem
@@ -110,7 +110,7 @@ class VideoDirectoryContainer(
                 if (!isQ && !directory.samePath(cursor.getString(dataColumn)))
                     continue
 
-                val id = ContentDirectoryService.VIDEO_PREFIX + cursor.getInt(videoIdColumn)
+                val id = ContentRepository.VIDEO_PREFIX + cursor.getInt(videoIdColumn)
                 val title = cursor.getString(videoTitleColumn)
                 val creator = cursor.getString(videoArtistColumn)
                 val mimeType = cursor.getString(videoMimeTypeColumn)

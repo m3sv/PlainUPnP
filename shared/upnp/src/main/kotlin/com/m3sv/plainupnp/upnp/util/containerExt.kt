@@ -9,7 +9,7 @@ import org.fourthline.cling.support.model.item.VideoItem
 import org.seamless.util.MimeType
 
 fun BaseContainer.addImageItem(
-    baseURL: String,
+    baseUrl: String,
     id: String,
     name: String,
     mime: String,
@@ -22,7 +22,7 @@ fun BaseContainer.addImageItem(
     val res = Res(
         MimeType(type, subtype),
         size,
-        "http://$baseURL/$id.$subtype"
+        "http://$baseUrl/$id.$subtype"
     ).apply {
         setResolution(width.toInt(), height.toInt())
     }
@@ -37,7 +37,7 @@ fun BaseContainer.addImageItem(
 }
 
 fun BaseContainer.addVideoItem(
-    baseURL: String,
+    baseUrl: String,
     id: String,
     name: String,
     mime: String,
@@ -51,7 +51,7 @@ fun BaseContainer.addVideoItem(
     val res = Res(
         MimeType(type, subtype),
         size,
-        "http://$baseURL/$id.$subtype"
+        "http://$baseUrl/$id.$subtype"
     ).also { res ->
         res.duration =
             "${duration / (1000 * 60 * 60)}:${duration % (1000 * 60 * 60) / (1000 * 60)}:${duration % (1000 * 60) / 1000}"
@@ -63,7 +63,7 @@ fun BaseContainer.addVideoItem(
 }
 
 fun BaseContainer.addAudioItem(
-    baseURL: String,
+    baseUrl: String,
     id: String,
     name: String,
     mime: String,
@@ -79,7 +79,7 @@ fun BaseContainer.addAudioItem(
     val res = Res(
         MimeType(type, subtype),
         size,
-        "http://$baseURL/$id.$subtype"
+        "http://$baseUrl/$id.$subtype"
     ).also { res ->
         res.duration =
             "${duration / (1000 * 60 * 60)}:${duration % (1000 * 60 * 60) / (1000 * 60)}:${duration % (1000 * 60) / 1000}"

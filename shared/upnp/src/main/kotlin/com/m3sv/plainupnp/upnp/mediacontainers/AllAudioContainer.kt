@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.ContentResolver
 import android.provider.MediaStore
-import com.m3sv.plainupnp.upnp.ContentDirectoryService
+import com.m3sv.plainupnp.upnp.ContentRepository
 import org.fourthline.cling.support.model.PersonWithRole
 import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
@@ -57,7 +57,7 @@ class AllAudioContainer(
     override fun getContainers(): List<Container> {
         val columns = arrayOf(
             MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.DISPLAY_NAME,
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.MIME_TYPE,
             MediaStore.Audio.Media.SIZE,
@@ -73,7 +73,7 @@ class AllAudioContainer(
             orderBy
         )?.use { cursor ->
             val audioIdColumn = cursor.getColumnIndex(MediaStore.Audio.Media._ID)
-            val audioTitleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE)
+            val audioTitleColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
             val audioArtistColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST)
             val audioMimeTypeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.MIME_TYPE)
             val audioSizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
@@ -81,7 +81,7 @@ class AllAudioContainer(
             val audioAlbumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
 
             while (cursor.moveToNext()) {
-                val id = ContentDirectoryService.AUDIO_PREFIX + cursor.getInt(audioIdColumn)
+                val id = ContentRepository.AUDIO_PREFIX + cursor.getInt(audioIdColumn)
                 val title = cursor.getString(audioTitleColumn)
                 val creator = cursor.getString(audioArtistColumn)
                 val type = cursor.getString(audioMimeTypeColumn)

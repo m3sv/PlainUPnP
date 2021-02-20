@@ -24,6 +24,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
+import com.m3sv.plainupnp.upnp.ContentRepository
 import org.fourthline.cling.support.model.WriteStatus
 import org.fourthline.cling.support.model.container.Container
 
@@ -31,7 +32,7 @@ private fun getRelativeId(id: String, parentId: String?): String =
     if (ContentDirectoryService.isRoot(parentId))
         id
     else
-        parentId + ContentDirectoryService.SEPARATOR + id
+        parentId + ContentRepository.SEPARATOR + id
 
 abstract class BaseContainer(
     id: String,

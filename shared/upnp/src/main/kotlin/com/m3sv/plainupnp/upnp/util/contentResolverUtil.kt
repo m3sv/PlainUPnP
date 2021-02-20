@@ -3,7 +3,7 @@ package com.m3sv.plainupnp.upnp.util
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
-import com.m3sv.plainupnp.upnp.ContentDirectoryService
+import com.m3sv.plainupnp.upnp.ContentRepository
 
 fun ContentResolver.queryImages(
     uri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
@@ -31,7 +31,7 @@ fun ContentResolver.queryImages(
         val imagesWidthColumn = cursor.getColumnIndex(MediaStore.Images.Media.WIDTH)
 
         while (cursor.moveToNext()) {
-            val id = ContentDirectoryService.IMAGE_PREFIX + cursor.getInt(imagesIdColumn)
+            val id = ContentRepository.IMAGE_PREFIX + cursor.getInt(imagesIdColumn)
             val title = cursor.getString(imagesTitleColumn)
             val mime = cursor.getString(imagesMimeTypeColumn)
             val size = cursor.getLong(imagesMediaSizeColumn)
@@ -84,7 +84,7 @@ fun ContentResolver.queryVideos(
         val videoWidthColumn = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.WIDTH)
 
         while (cursor.moveToNext()) {
-            val id = ContentDirectoryService.VIDEO_PREFIX + cursor.getInt(videoIdColumn)
+            val id = ContentRepository.VIDEO_PREFIX + cursor.getInt(videoIdColumn)
             val title = cursor.getString(videoTitleColumn)
             val creator = cursor.getString(videoArtistColumn)
             val mimeType = cursor.getString(videoMimeTypeColumn)
@@ -140,7 +140,7 @@ fun ContentResolver.queryAudio(
         val audioAlbumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
 
         while (cursor.moveToNext()) {
-            val id = ContentDirectoryService.AUDIO_PREFIX + cursor.getInt(audioIdColumn)
+            val id = ContentRepository.AUDIO_PREFIX + cursor.getInt(audioIdColumn)
             val title = cursor.getString(audioTitleColumn)
             val creator = cursor.getString(audioArtistColumn)
             val type = cursor.getString(audioMimeTypeColumn)

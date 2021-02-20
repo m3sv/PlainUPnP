@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.presentation.home
 
-import com.m3sv.plainupnp.upnp.ContentDirectoryService
+import com.m3sv.plainupnp.upnp.ContentRepository
 import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
@@ -41,9 +41,9 @@ class ClingContentMapper @Inject constructor() {
 
     private fun handleContainer(item: ClingDIDLObject): ContentItem {
         return when {
-            item.title.startsWith(ContentDirectoryService.USER_DEFINED_PREFIX) -> ContentItem(
+            item.title.startsWith(ContentRepository.USER_DEFINED_PREFIX) -> ContentItem(
                 itemUri = item.id,
-                name = item.title.replace(ContentDirectoryService.USER_DEFINED_PREFIX, ""),
+                name = item.title.replace(ContentRepository.USER_DEFINED_PREFIX, ""),
                 type = ContentType.USER_SELECTED_FOLDER,
                 icon = R.drawable.ic_folder,
                 userSelected = true,

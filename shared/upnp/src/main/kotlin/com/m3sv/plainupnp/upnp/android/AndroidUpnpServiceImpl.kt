@@ -1,30 +1,29 @@
 package com.m3sv.plainupnp.upnp.android
 
 import android.content.Context
-import android.content.SharedPreferences
 import com.m3sv.plainupnp.common.util.getUdn
-import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
+import com.m3sv.plainupnp.upnp.ContentRepository
+import com.m3sv.plainupnp.upnp.PlainUpnpServiceConfiguration
 import com.m3sv.plainupnp.upnp.R
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
-import com.m3sv.plainupnp.upnp.util.PORT
-import com.m3sv.plainupnp.upnp.util.getLocalIpAddress
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
 import org.fourthline.cling.model.DefaultServiceManager
 import org.fourthline.cling.model.meta.*
 import org.fourthline.cling.model.types.UDADeviceType
 import timber.log.Timber
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class AndroidUpnpServiceImpl(
+@Singleton
+class AndroidUpnpServiceImpl @Inject constructor(
     context: Context,
-    configuration: AndroidUpnpServiceConfiguration,
     resourceProvider: LocalServiceResourceProvider,
-    sharedPreferences: SharedPreferences,
-    database: Database,
-) : UpnpServiceImpl(configuration, context) {
+    contentRepository: ContentRepository,
+) : UpnpServiceImpl(PlainUpnpServiceConfiguration(), context) {
 
     private val localDevice by lazy {
-        getLocalDevice(resourceProvider, context, sharedPreferences, database)
+        getLocalDevice(resourceProvider, context, contentRepository)
     }
 
     fun resume() {
@@ -53,8 +52,7 @@ class AndroidUpnpServiceImpl(
 private fun getLocalDevice(
     serviceResourceProvider: LocalServiceResourceProvider,
     context: Context,
-    sharedPreferences: SharedPreferences,
-    database: Database,
+    contentRepository: ContentRepository,
 ): LocalDevice {
     val details = DeviceDetails(
         serviceResourceProvider.settingContentDirectoryName,
@@ -99,15 +97,11 @@ private fun getLocalDevice(
         type,
         details,
         icon,
-        getLocalService(context, sharedPreferences, database)
+        getLocalService(contentRepository)
     )
 }
 
-private fun getLocalService(
-    context: Context,
-    sharedPreferences: SharedPreferences,
-    database: Database,
-): LocalService<ContentDirectoryService> {
+private fun getLocalService(contentRepository: ContentRepository): LocalService<ContentDirectoryService> {
     val serviceBinder = AnnotationLocalServiceBinder()
     val contentDirectoryService =
         serviceBinder.read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>
@@ -116,16 +110,7 @@ private fun getLocalService(
         contentDirectoryService,
         ContentDirectoryService::class.java
     ).apply {
-        (implementation as ContentDirectoryService).let { service ->
-            service.context = context
-            service.baseURL = "${
-                getLocalIpAddress(
-                    context
-                ).hostAddress
-            }:$PORT"
-            service.sharedPref = sharedPreferences
-            service.database = database
-        }
+        (implementation as ContentDirectoryService).contentRepository = contentRepository
     }
 
     contentDirectoryService.manager = serviceManager
