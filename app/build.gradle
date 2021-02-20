@@ -10,7 +10,6 @@ android {
     buildToolsVersion buildConfig.buildTools
 
     composeOptions {
-        kotlinCompilerVersion versions.kotlin
         kotlinCompilerExtensionVersion versions.composeVersion
     }
 

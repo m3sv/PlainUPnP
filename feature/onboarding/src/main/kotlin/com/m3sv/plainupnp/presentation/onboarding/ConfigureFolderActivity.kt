@@ -6,19 +6,15 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.setContent
-import androidx.compose.ui.res.colorResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ThemeManager
+import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import javax.inject.Inject
 
@@ -47,17 +43,13 @@ class ConfigureFolderActivity : AppCompatActivity() {
         (application as OnboardingInjector).inject(this)
         setContent {
             val contentUris: List<UriWrapper> by viewModel.contentUris.collectAsState(initial = listOf())
-            MaterialTheme(
-                if (isSystemInDarkTheme())
-                    darkColors(primary = colorResource(id = com.m3sv.plainupnp.common.R.color.colorPrimary))
-                else lightColors(
-                    primary = colorResource(id = com.m3sv.plainupnp.common.R.color.colorPrimary))
-            ) {
+            AppTheme {
                 Surface {
-                    SelectDirectoriesScreen(
+                    SelectFoldersScreen(
                         contentUris = contentUris,
-                        pickDirectory = { openDirectory() },
+                        selectDirectory = { openDirectory() },
                         onReleaseUri = { viewModel.releaseUri(it) },
+                        onBackClick = { finish() }
                     )
                 }
             }

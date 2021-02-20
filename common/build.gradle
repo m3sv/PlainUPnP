@@ -4,7 +4,12 @@ apply plugin: 'kotlin-kapt'
 
 android {
     buildFeatures {
+        compose true
         viewBinding true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion versions.composeVersion
     }
 }
 
@@ -17,6 +22,17 @@ dependencies {
     implementation deps.coroutines.core
     implementation deps.dagger.core
     implementation deps.timber
+
+    implementation "androidx.compose.runtime:runtime:$versions.composeVersion"
+    implementation "androidx.compose.runtime:runtime-livedata:$versions.composeVersion"
+    implementation "androidx.compose.ui:ui:$versions.composeVersion"
+    implementation "androidx.compose.ui:ui-tooling:$versions.composeVersion"
+    implementation "androidx.compose.foundation:foundation:$versions.composeVersion"
+    implementation "androidx.compose.foundation:foundation-layout:$versions.composeVersion"
+    implementation "androidx.compose.material:material:$versions.composeVersion"
+    implementation "androidx.compose.material:material-icons-core:$versions.composeVersion"
+    implementation "androidx.compose.material:material-icons-extended:$versions.composeVersion"
+    implementation "com.google.android.material:compose-theme-adapter:$versions.composeVersion"
 
     implementation project(':core:resources')
 

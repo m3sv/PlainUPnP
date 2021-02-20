@@ -7,7 +7,6 @@ import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -17,13 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.platform.setContent
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.settings.SettingsActivity
 import javax.inject.Inject
@@ -63,14 +62,7 @@ class ComposeActivity : AppCompatActivity() {
         val renderers by viewModel.renderers.observeAsState()
         val contentDirectories by viewModel.contentDirectories.observeAsState()
 
-        val primaryColor = colorResource(id = R.color.colorPrimary)
-
-        MaterialTheme(
-            if (isSystemInDarkTheme())
-                darkColors(primaryColor)
-            else
-                lightColors(primaryColor)
-        ) {
+        AppTheme {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.BottomCenter

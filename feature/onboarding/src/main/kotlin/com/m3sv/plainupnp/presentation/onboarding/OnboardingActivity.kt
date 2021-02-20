@@ -12,20 +12,11 @@ import android.provider.Settings
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.setContent
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -33,10 +24,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
+import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import java.util.*
 import javax.inject.Inject
-
 
 class OnboardingActivity : AppCompatActivity() {
 
@@ -104,21 +95,19 @@ class OnboardingActivity : AppCompatActivity() {
         onThemeOptionSelected: (ThemeOption) -> Unit,
         onPageChange: (OnboardingScreen) -> Unit,
     ) {
-        MaterialTheme(
-            if (isSystemInDarkTheme())
-                darkColors(primary = colorResource(id = com.m3sv.plainupnp.common.R.color.colorPrimary))
-            else lightColors(
-                primary = colorResource(id = com.m3sv.plainupnp.common.R.color.colorPrimary))
-        ) {
+        AppTheme {
             Surface {
                 when (currentScreen) {
                     OnboardingScreen.Greeting -> GreetingScreen { onPageChange(currentScreen.next) }
-                    OnboardingScreen.StoragePermission -> StorageAccessScreen {
+                    OnboardingScreen.StoragePermission -> StoragePermissionScreen(onBackClick = {
+                        onPageChange(currentScreen.previous)
+                    }) {
                         checkStoragePermission { onPageChange(currentScreen.next) }
                     }
-                    OnboardingScreen.SelectDirectories -> SelectDirectoriesScreen(
+                    OnboardingScreen.SelectDirectories -> SelectFoldersScreen(
                         contentUris,
-                        pickDirectory = { openDirectory() },
+                        selectDirectory = { openDirectory() },
+                        onBackClick = { onPageChange(currentScreen.previous) },
                         onNext = { onboardingManager.completeOnboarding(this@OnboardingActivity) },
                         onReleaseUri = { viewModel.releaseUri(it) },
                     )
@@ -127,25 +116,24 @@ class OnboardingActivity : AppCompatActivity() {
                         selectedTheme = selectedTheme,
                         themeOptions = ThemeOption.values().toList(),
                         stringProvider = stringProvider,
-                        onThemeOptionSelected = onThemeOptionSelected
-                    ) {
-                        onPageChange(currentScreen.next)
-                    }
+                        onThemeOptionSelected = onThemeOptionSelected,
+                        onClick = { onPageChange(currentScreen.next) },
+                        onBackClick = { onPageChange(currentScreen.previous) })
                 }
             }
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                Row(modifier = Modifier.align(Alignment.BottomCenter),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    for (i in OnboardingScreen.values().indices) {
-                        Box(modifier = Modifier
-                            .size(8.dp)
-                            .clip(CircleShape)
-                            .background(animate(if (currentScreen.ordinal == i) Color.Red else Color.Yellow))
-                        )
-                    }
-                }
-            }
+//            Box(modifier = Modifier.fillMaxSize()) {
+//                Row(modifier = Modifier.align(Alignment.BottomCenter),
+//                    horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+//                    for (i in OnboardingScreen.values().indices) {
+//                        Box(modifier = Modifier
+//                            .size(8.dp)
+//                            .clip(CircleShape)
+//                            .background(animate(if (currentScreen.ordinal == i) Color.Red else Color.Yellow))
+//                        )
+//                    }
+//                }
+//            }
         }
     }
 

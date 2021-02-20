@@ -16,8 +16,7 @@
     <com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory android:title="@string/upnp_category">
         <Preference
             android:key="configure_folders"
-            android:summary="@string/contact_us_body"
-            android:title="@string/contact_us_title" />
+            android:title="@string/selected_folders" />
 
         <SwitchPreferenceCompat
             android:defaultValue="@bool/default_allow_run_in_background"
