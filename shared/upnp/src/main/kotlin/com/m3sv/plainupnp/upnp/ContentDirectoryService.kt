@@ -8,7 +8,6 @@ import com.m3sv.plainupnp.upnp.ContentRepository.Companion.ROOT_ID
 import com.m3sv.plainupnp.upnp.ContentRepository.Companion.SEPARATOR
 import com.m3sv.plainupnp.upnp.ContentRepository.Companion.VIDEO_ID
 import com.m3sv.plainupnp.upnp.mediacontainers.BaseContainer
-import kotlinx.coroutines.runBlocking
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryException
@@ -30,7 +29,9 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         firstResult: Long,
         maxResults: Long,
         orderby: Array<SortCriterion>,
-    ): BrowseResult = runBlocking {
+    ): BrowseResult {
+        contentRepository.init
+
         try {
             var root = -1L
 
@@ -104,7 +105,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
                 }
             }
 
-            getBrowseResult(container)
+            return getBrowseResult(container)
         } catch (ex: Exception) {
             Timber.e(ex)
             throw ContentDirectoryException(
