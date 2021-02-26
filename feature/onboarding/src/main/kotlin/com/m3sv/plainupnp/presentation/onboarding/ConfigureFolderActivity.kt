@@ -2,14 +2,13 @@ package com.m3sv.plainupnp.presentation.onboarding
 
 import android.app.Activity
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.setContent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.m3sv.plainupnp.ContentManager
@@ -20,9 +19,6 @@ import javax.inject.Inject
 
 
 class ConfigureFolderActivity : AppCompatActivity() {
-
-    @Inject
-    lateinit var sharedPreferences: SharedPreferences
 
     @Inject
     lateinit var themeManager: ThemeManager
@@ -41,6 +37,7 @@ class ConfigureFolderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (application as OnboardingInjector).inject(this)
+
         setContent {
             val contentUris: List<UriWrapper> by viewModel.contentUris.collectAsState(initial = listOf())
             AppTheme {

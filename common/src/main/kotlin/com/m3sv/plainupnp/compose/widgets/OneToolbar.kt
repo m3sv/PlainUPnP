@@ -9,7 +9,7 @@ import androidx.compose.material.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.m3sv.plainupnp.common.R
 
@@ -22,7 +22,7 @@ fun BoxScope.OneToolbar(modifier: Modifier = Modifier, onBackClick: () -> Unit) 
     ) {
         IconButton(onClick = onBackClick) {
             Icon(
-                imageVector = vectorResource(id = R.drawable.ic_back),
+                painter = painterResource(id = R.drawable.ic_back),
                 contentDescription = null
             )
         }

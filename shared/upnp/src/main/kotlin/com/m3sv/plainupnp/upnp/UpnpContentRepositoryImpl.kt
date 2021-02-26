@@ -6,13 +6,17 @@ import android.content.SharedPreferences
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.documentfile.provider.DocumentFile
+import com.m3sv.plainupnp.ContentRepository
 import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.upnp.mediacontainers.*
 import com.m3sv.plainupnp.upnp.util.*
 import comm3svplainupnpcorepersistence.DirectoryCache
 import comm3svplainupnpcorepersistence.FileCache
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import java.security.SecureRandom
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -27,11 +31,11 @@ sealed class ContentUpdateState {
 }
 
 @Singleton
-class ContentRepository @Inject constructor(
+class UpnpContentRepositoryImpl @Inject constructor(
     private val context: Context,
     private val sharedPreferences: SharedPreferences,
     private val database: Database,
-) : CoroutineScope {
+) : CoroutineScope, ContentRepository {
 
     override val coroutineContext: CoroutineContext
         get() = SupervisorJob() + Dispatchers.IO
@@ -39,22 +43,23 @@ class ContentRepository @Inject constructor(
     val containerRegistry: MutableMap<Long, BaseContainer> = mutableMapOf()
 
     private val random = SecureRandom()
+
     private val randomId
         get() = abs(random.nextLong())
 
     private val isImagesEnabled
-        get() = sharedPreferences.getBoolean(CONTENT_DIRECTORY_IMAGE, true)
+        get() = sharedPreferences.getBoolean(context.getString(R.string.pref_enable_image_container_key), true)
 
     private val isAudioEnabled
-        get() = sharedPreferences.getBoolean(CONTENT_DIRECTORY_AUDIO, true)
+        get() = sharedPreferences.getBoolean(context.getString(R.string.pref_enable_audio_container_key), true)
 
     private val isVideoEnabled
-        get() = sharedPreferences.getBoolean(CONTENT_DIRECTORY_VIDEO, true)
+        get() = sharedPreferences.getBoolean(context.getString(R.string.pref_enable_video_container_key), true)
 
     private val appName by lazy { context.getString(R.string.app_name) }
     private val baseUrl: String by lazy { "${getLocalIpAddress(context).hostAddress}:$PORT" }
 
-    private val refreshInternal = MutableSharedFlow<Boolean>()
+    private val refreshInternal = MutableSharedFlow<Unit>()
 
     private val _updateState: MutableStateFlow<ContentUpdateState> =
         MutableStateFlow(ContentUpdateState.Ready(containerRegistry))
@@ -63,27 +68,24 @@ class ContentRepository @Inject constructor(
 
     init {
         launch {
-            refreshInternal.scan(containerRegistry) { accumulator, value ->
-                if (value) {
-                    refreshInternal().join()
-                }
-
-                accumulator
-            }.collect()
+            refreshInternal.collect {
+                _updateState.value = ContentUpdateState.Loading
+                refreshInternal()
+                _updateState.value = ContentUpdateState.Ready(containerRegistry)
+            }
         }
     }
 
     val init by lazy {
-        runBlocking { refreshInternal().join() }
-        Unit
+        runBlocking { refreshInternal() }
     }
 
-    fun refreshContent(invalidateCache: Boolean) {
-        launch { refreshInternal.emit(invalidateCache) }
+    override fun refreshContent() {
+        launch { refreshInternal.emit(Unit) }
     }
 
-    private fun refreshInternal(): Job = launch {
-        _updateState.value = ContentUpdateState.Loading
+    private suspend fun refreshInternal() = coroutineScope {
+        containerRegistry.clear()
 
         Container(
             ROOT_ID.toString(),
@@ -96,25 +98,29 @@ class ContentRepository @Inject constructor(
 
         val jobs = mutableListOf<Deferred<Unit>>()
 
-        jobs += async {
-            getRootImagesContainer()
-                .also(rootContainer::addContainer)
-                .addToRegistry()
+        if (isImagesEnabled) {
+            jobs += async {
+                getRootImagesContainer()
+                    .also(rootContainer::addContainer)
+                    .addToRegistry()
+            }
         }
 
-        jobs += async {
-            getRootAudioContainer(rootContainer).addToRegistry()
+        if (isAudioEnabled) {
+            jobs += async {
+                getRootAudioContainer(rootContainer).addToRegistry()
+            }
         }
 
-        jobs += async {
-            getRootVideoContainer(rootContainer).addToRegistry()
+        if (isVideoEnabled) {
+            jobs += async {
+                getRootVideoContainer(rootContainer).addToRegistry()
+            }
         }
 
         jobs += async { getUserSelectedContainer(rootContainer as Container) }
 
         jobs.joinAll()
-
-        _updateState.value = ContentUpdateState.Ready(containerRegistry)
     }
 
     fun getAudioContainerForAlbum(

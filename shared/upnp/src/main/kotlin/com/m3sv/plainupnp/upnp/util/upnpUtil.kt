@@ -6,9 +6,6 @@ import timber.log.Timber
 import java.net.*
 
 const val CONTENT_DIRECTORY_SERVICE = "pref_contentDirectoryService"
-const val CONTENT_DIRECTORY_VIDEO = "pref_contentDirectoryService_video"
-const val CONTENT_DIRECTORY_AUDIO = "pref_contentDirectoryService_audio"
-const val CONTENT_DIRECTORY_IMAGE = "pref_contentDirectoryService_image"
 const val CONTENT_DIRECTORY_NAME = "pref_contentDirectoryService_name"
 
 const val PORT = 8192

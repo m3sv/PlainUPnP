@@ -1,12 +1,12 @@
 package com.m3sv.plainupnp.upnp
 
-import com.m3sv.plainupnp.upnp.ContentRepository.Companion.ALL_ALBUMS
-import com.m3sv.plainupnp.upnp.ContentRepository.Companion.ALL_ARTISTS
-import com.m3sv.plainupnp.upnp.ContentRepository.Companion.AUDIO_ID
-import com.m3sv.plainupnp.upnp.ContentRepository.Companion.IMAGE_ID
-import com.m3sv.plainupnp.upnp.ContentRepository.Companion.ROOT_ID
-import com.m3sv.plainupnp.upnp.ContentRepository.Companion.SEPARATOR
-import com.m3sv.plainupnp.upnp.ContentRepository.Companion.VIDEO_ID
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ALL_ALBUMS
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ALL_ARTISTS
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.AUDIO_ID
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.IMAGE_ID
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ROOT_ID
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.SEPARATOR
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.VIDEO_ID
 import com.m3sv.plainupnp.upnp.mediacontainers.BaseContainer
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
@@ -20,7 +20,7 @@ import timber.log.Timber
 
 class ContentDirectoryService : AbstractContentDirectoryService() {
 
-    lateinit var contentRepository: ContentRepository
+    lateinit var contentRepository: UpnpContentRepositoryImpl
 
     override fun browse(
         objectID: String,

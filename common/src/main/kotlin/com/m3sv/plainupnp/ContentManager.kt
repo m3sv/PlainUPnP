@@ -18,6 +18,7 @@ import kotlin.coroutines.CoroutineContext
 class ContentManager @Inject constructor(
     private val context: Context,
     private val sharedPreferences: SharedPreferences,
+    private val contentRepository: ContentRepository,
 ) : CoroutineScope {
 
     override val coroutineContext: CoroutineContext
@@ -43,6 +44,7 @@ class ContentManager @Inject constructor(
     fun updateUris() {
         launch {
             persistedUris.value = getUris()
+            contentRepository.refreshContent()
         }
     }
 

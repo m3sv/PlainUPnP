@@ -9,6 +9,8 @@ import com.m3sv.plainupnp.data.upnp.LocalDevice
 import com.m3sv.plainupnp.data.upnp.UpnpItemType
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.upnp.CDevice
+import com.m3sv.plainupnp.upnp.ContentUpdateState
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl
 import com.m3sv.plainupnp.upnp.UpnpRepository
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscoveryObservable
@@ -52,6 +54,7 @@ class UpnpManagerImpl @Inject constructor(
     private val upnpRepository: UpnpRepository,
     private val volumeRepository: VolumeRepository,
     private val errorReporter: ErrorReporter,
+    private val contentRepository: UpnpContentRepositoryImpl,
 ) : UpnpManager,
     CoroutineScope {
 
@@ -125,6 +128,22 @@ class UpnpManagerImpl @Inject constructor(
                     }
                 }
             }.collect()
+        }
+
+        launch {
+            contentRepository.updateState.collect {
+                if (it is ContentUpdateState.Ready) {
+                    val contentDirectory = contentDirectoryObservable.selectedContentDirectory
+
+                    if (contentDirectory != null) {
+                        safeNavigateTo(
+                            errorReason = ErrorReason.BROWSE_FAILED,
+                            folderId = ROOT_FOLDER_ID,
+                            folderName = contentDirectory.friendlyName
+                        )
+                    }
+                }
+            }
         }
     }
 

@@ -3,9 +3,9 @@ package com.m3sv.plainupnp.upnp.android
 import android.content.Context
 import com.m3sv.plainupnp.common.util.getUdn
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
-import com.m3sv.plainupnp.upnp.ContentRepository
 import com.m3sv.plainupnp.upnp.PlainUpnpServiceConfiguration
 import com.m3sv.plainupnp.upnp.R
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
 import org.fourthline.cling.model.DefaultServiceManager
@@ -19,7 +19,7 @@ import javax.inject.Singleton
 class AndroidUpnpServiceImpl @Inject constructor(
     context: Context,
     resourceProvider: LocalServiceResourceProvider,
-    contentRepository: ContentRepository,
+    contentRepository: UpnpContentRepositoryImpl,
 ) : UpnpServiceImpl(PlainUpnpServiceConfiguration(), context) {
 
     private val localDevice by lazy {
@@ -52,7 +52,7 @@ class AndroidUpnpServiceImpl @Inject constructor(
 private fun getLocalDevice(
     serviceResourceProvider: LocalServiceResourceProvider,
     context: Context,
-    contentRepository: ContentRepository,
+    contentRepository: UpnpContentRepositoryImpl,
 ): LocalDevice {
     val details = DeviceDetails(
         serviceResourceProvider.settingContentDirectoryName,
@@ -101,7 +101,7 @@ private fun getLocalDevice(
     )
 }
 
-private fun getLocalService(contentRepository: ContentRepository): LocalService<ContentDirectoryService> {
+private fun getLocalService(contentRepository: UpnpContentRepositoryImpl): LocalService<ContentDirectoryService> {
     val serviceBinder = AnnotationLocalServiceBinder()
     val contentDirectoryService =
         serviceBinder.read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>

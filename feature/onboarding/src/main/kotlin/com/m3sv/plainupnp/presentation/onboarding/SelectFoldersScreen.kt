@@ -10,8 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -40,12 +39,18 @@ fun SelectFoldersScreen(
                 .weight(1f, true)
                 .padding(vertical = 8.dp), content = {
                 items(contentUris) { uriWrapper ->
-                    val dismissState = rememberDismissState(confirmStateChange = {
-                        if (it != DismissValue.Default) {
+                    var unread by remember { mutableStateOf(false) }
+                    val dismissState = rememberDismissState(
+                        confirmStateChange = {
+                            if (it == DismissValue.DismissedToEnd) {
+                                unread = !unread
+                            }
                             onReleaseUri(uriWrapper)
+
+                            it != DismissValue.DismissedToEnd
                         }
-                        true
-                    })
+                    )
+
 
                     SwipeToDismiss(
                         state = dismissState,

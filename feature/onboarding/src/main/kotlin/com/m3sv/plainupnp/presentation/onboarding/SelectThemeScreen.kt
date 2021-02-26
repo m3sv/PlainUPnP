@@ -67,7 +67,7 @@ private fun RadioGroup(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .preferredHeight(56.dp)
+                    .height(56.dp)
                     .selectable(
                         selected = (themeOption == selectedOption),
                         onClick = { onClick(themeOption) }
