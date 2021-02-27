@@ -6,11 +6,14 @@ import com.m3sv.plainupnp.upnp.volume.UpnpVolumeManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import org.fourthline.cling.UpnpService
 import org.fourthline.cling.controlpoint.ControlPoint
 import javax.inject.Singleton
 
 @Module
+@InstallIn(SingletonComponent::class)
 abstract class UpnpBindersModule {
 
     @Binds
@@ -22,9 +25,7 @@ abstract class UpnpBindersModule {
     abstract fun bindUpnpManager(upnpManagerImpl: UpnpManagerImpl): UpnpManager
 
     companion object {
-
         @Provides
-        @JvmStatic
         @Singleton
         fun provideControlPoint(upnpService: UpnpService): ControlPoint = upnpService.controlPoint
     }

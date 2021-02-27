@@ -4,22 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.m3sv.plainupnp.common.util.disappear
-import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.home.databinding.HomeFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import me.zhanghai.android.fastscroll.FastScrollerBuilder
 import javax.inject.Inject
 
-class HomeFragment : BaseFragment() {
+@AndroidEntryPoint
+class HomeFragment : Fragment() {
 
     @Inject
     lateinit var showThumbnailsUseCase: ShowThumbnailsUseCase
-
-    private lateinit var viewModel: HomeViewModel
 
     private lateinit var contentAdapter: GalleryContentAdapter
 
@@ -27,16 +28,12 @@ class HomeFragment : BaseFragment() {
 
     private lateinit var binding: HomeFragmentBinding
 
+    private val viewModel: HomeViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        inject()
         super.onCreate(savedInstanceState)
-        viewModel = getViewModel()
         if (savedInstanceState == null)
             viewModel.refreshFolderContents()
-    }
-
-    private fun inject() {
-        (requireContext().applicationContext as HomeComponentProvider).homeComponent.inject(this)
     }
 
     override fun onCreateView(

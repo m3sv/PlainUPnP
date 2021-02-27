@@ -10,16 +10,14 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.ROTATION
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.m3sv.plainupnp.App
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
 import com.m3sv.plainupnp.common.util.doNothing
@@ -32,14 +30,13 @@ import com.m3sv.plainupnp.presentation.home.HomeFragment
 import com.m3sv.plainupnp.presentation.inappplayer.ImageFragment
 import com.m3sv.plainupnp.presentation.inappplayer.PlayerFragment
 import com.m3sv.plainupnp.presentation.main.controls.ControlsFragment
-import com.m3sv.plainupnp.presentation.main.di.MainActivitySubComponent
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingFragment
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.folder.Folder
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
 import kotlin.properties.Delegates
 
@@ -47,16 +44,12 @@ private const val CHEVRON_ROTATION_ANGLE_KEY = "chevron_rotation_angle_key"
 private const val IS_SEARCH_CONTAINER_VISIBLE = "is_search_container_visible_key"
 private const val ARE_CONTROLS_VISIBLE = "are_controls_visible"
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
-    lateinit var mainActivitySubComponent: MainActivitySubComponent
-
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var binding: MainActivityBinding
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels()
 
     private val volumeIndicator: VolumeIndicator by lazy(NONE) { VolumeIndicator(this) }
 
@@ -65,7 +58,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        inject()
         super.onCreate(savedInstanceState)
         inflateView()
 
@@ -91,7 +83,6 @@ class MainActivity : AppCompatActivity() {
             addFragment(OnboardingFragment())
         }
 
-        viewModel = getViewModel()
 
         observeState()
         animateBottomDrawChanges()
@@ -294,12 +285,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
         with(outState) {
             putFloat(CHEVRON_ROTATION_ANGLE_KEY, binding.bottomAppBarChevron.rotation)
             putBoolean(IS_SEARCH_CONTAINER_VISIBLE, binding.searchContainer.isVisible)
             putBoolean(ARE_CONTROLS_VISIBLE, areControlsVisible)
         }
-        super.onSaveInstanceState(outState)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
@@ -341,14 +332,6 @@ class MainActivity : AppCompatActivity() {
         animator.start()
     }
 
-    private fun inject() {
-        mainActivitySubComponent = (applicationContext as App)
-            .appComponent
-            .mainSubComponent()
-            .create()
-            .also { component -> component.inject(this) }
-    }
-
     private fun Bundle.restoreChevronState() {
         binding.bottomAppBarChevron.rotation = getFloat(CHEVRON_ROTATION_ANGLE_KEY, 0f)
     }
@@ -383,8 +366,4 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
             .show()
     }
-
-    private inline fun <reified T : ViewModel> getViewModel(): T =
-        ViewModelProvider(this, viewModelFactory).get(T::class.java)
-
 }

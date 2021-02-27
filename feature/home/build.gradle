@@ -1,5 +1,6 @@
 apply from: "../../scripts/kotlin-android-library.gradle"
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     buildFeatures {
@@ -8,7 +9,8 @@ android {
 }
 
 dependencies {
-    compileOnly deps.dagger.annotation
+    implementation 'androidx.fragment:fragment-ktx:1.1.0'
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.architectureComponents}"
 
     implementation deps.androidx.constraintLayout
     implementation deps.androidx.lifecycle.extensions
@@ -18,7 +20,7 @@ dependencies {
     implementation deps.androidx.material
     implementation deps.androidx.recyclerView
     implementation deps.coroutines.core
-    implementation deps.dagger.core
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
     implementation deps.fastScroll
     implementation deps.glide
 
@@ -27,7 +29,7 @@ dependencies {
     implementation project(':feature:inappplayer')
     implementation project(':core:eventbus')
 
-    kapt deps.dagger.compiler
+    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
 
     testImplementation deps.test.junit
     testImplementation deps.test.mockito

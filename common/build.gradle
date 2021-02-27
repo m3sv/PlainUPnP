@@ -1,6 +1,7 @@
 apply from: '../scripts/kotlin-android-library.gradle'
 apply from: '../scripts/cling.gradle'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     buildFeatures {
@@ -14,13 +15,13 @@ android {
 }
 
 dependencies {
-    compileOnly deps.dagger.annotation
+
 
     implementation deps.androidx.lifecycle.extensions
     implementation deps.androidx.material
     implementation deps.androidx.preference
     implementation deps.coroutines.core
-    implementation deps.dagger.core
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
     implementation deps.timber
 
     implementation "androidx.compose.runtime:runtime:$versions.composeVersion"
@@ -36,7 +37,7 @@ dependencies {
 
     implementation project(':core:resources')
 
-    kapt deps.dagger.compiler
+    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
 
     testImplementation deps.test.junit
     testImplementation deps.test.mockito

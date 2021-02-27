@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp
 
-import android.content.Context
+import android.app.Application
 import android.content.Intent
 import android.content.SharedPreferences
 import com.m3sv.plainupnp.data.upnp.UriWrapper
@@ -16,7 +16,7 @@ import kotlin.coroutines.CoroutineContext
 
 @Singleton
 class ContentManager @Inject constructor(
-    private val context: Context,
+    private val application: Application,
     private val sharedPreferences: SharedPreferences,
     private val contentRepository: ContentRepository,
 ) : CoroutineScope {
@@ -34,7 +34,7 @@ class ContentManager @Inject constructor(
 
     fun releaseUri(uriWrapper: UriWrapper) {
         launch {
-            context
+            application
                 .contentResolver
                 .releasePersistableUriPermission(uriWrapper.uriPermission.uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
             updateUris()
@@ -49,6 +49,6 @@ class ContentManager @Inject constructor(
     }
 
     private fun getUris(): List<UriWrapper> {
-        return context.contentResolver.persistedUriPermissions.map(::UriWrapper)
+        return application.contentResolver.persistedUriPermissions.map(::UriWrapper)
     }
 }

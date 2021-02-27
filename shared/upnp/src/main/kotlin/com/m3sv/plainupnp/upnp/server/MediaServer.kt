@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp.server
 
+import android.app.Application
 import android.content.ContentUris
-import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.ParcelFileDescriptor
@@ -19,7 +19,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MediaServer @Inject constructor(private val context: Context, private val database: Database) :
+class MediaServer @Inject constructor(private val application: Application, private val database: Database) :
     SimpleInputStreamServer(
         null,
         PORT, listOf(), true
@@ -93,7 +93,7 @@ class MediaServer @Inject constructor(private val context: Context, private val 
 
         val whereVal = arrayOf(mediaId)
 
-        context
+        application
             .contentResolver
             .query(
                 contentUri, columns,
@@ -107,7 +107,7 @@ class MediaServer @Inject constructor(private val context: Context, private val 
                         cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
 
                     val fileUri = ContentUris.withAppendedId(contentUri, fileId)
-                    val inputStream = context.contentResolver.openFileDescriptor(fileUri, "r")
+                    val inputStream = application.contentResolver.openFileDescriptor(fileUri, "r")
 
                     return ServerObject(
                         fileUri,
@@ -127,7 +127,7 @@ class MediaServer @Inject constructor(private val context: Context, private val 
                 MediaStore.MediaColumns.MIME_TYPE
             )
 
-        context
+        application
             .contentResolver
             .query(
                 contentUri,
@@ -144,7 +144,7 @@ class MediaServer @Inject constructor(private val context: Context, private val 
                         cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
 
                     val fileUri = ContentUris.withAppendedId(contentUri, fileId)
-                    val inputStream = context.contentResolver.openFileDescriptor(fileUri, "r")
+                    val inputStream = application.contentResolver.openFileDescriptor(fileUri, "r")
 
                     return ServerObject(
                         fileUri,

@@ -7,12 +7,14 @@ import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import com.m3sv.plainupnp.upnp.manager.PlayItem
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.m3sv.plainupnp.upnp.folder.Folder as UpnpFolder
 
 data class Folder(val name: String, val contents: List<ContentItem>)
 
+@HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getFolderContentUseCase: GetFolderContentUseCase,
     filterDelegate: FilterDelegate,

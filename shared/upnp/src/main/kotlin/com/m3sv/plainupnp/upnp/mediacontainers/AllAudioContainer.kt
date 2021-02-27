@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.ContentResolver
 import android.provider.MediaStore
-import com.m3sv.plainupnp.upnp.ContentRepository
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl
 import org.fourthline.cling.support.model.PersonWithRole
 import org.fourthline.cling.support.model.Res
 import org.fourthline.cling.support.model.container.Container
@@ -81,7 +81,7 @@ class AllAudioContainer(
             val audioAlbumColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM)
 
             while (cursor.moveToNext()) {
-                val id = ContentRepository.AUDIO_PREFIX + cursor.getInt(audioIdColumn)
+                val id = UpnpContentRepositoryImpl.AUDIO_PREFIX + cursor.getInt(audioIdColumn)
                 val title = cursor.getString(audioTitleColumn)
                 val creator = cursor.getString(audioArtistColumn)
                 val type = cursor.getString(audioMimeTypeColumn)

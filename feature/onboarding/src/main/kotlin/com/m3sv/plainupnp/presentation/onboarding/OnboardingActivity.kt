@@ -26,9 +26,11 @@ import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class OnboardingActivity : AppCompatActivity() {
 
     @Inject
@@ -52,7 +54,6 @@ class OnboardingActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (application as OnboardingInjector).inject(this)
         setContent { LayoutContainer() }
     }
 

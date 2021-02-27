@@ -16,6 +16,7 @@ import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
 import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.manager.PlayItem
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
@@ -35,6 +36,7 @@ sealed class MainRoute {
     data class PreviewAudio(val url: String) : MainRoute()
 }
 
+@HiltViewModel
 class MainViewModel @Inject constructor(
     private val upnpManager: UpnpManager,
     private val volumeManager: BufferedVolumeManager,

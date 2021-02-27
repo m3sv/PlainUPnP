@@ -16,6 +16,7 @@ import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.common.util.doNothing
 import com.m3sv.plainupnp.presentation.onboarding.ConfigureFolderActivity
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
 
@@ -32,6 +33,7 @@ private enum class PreferenceKey(val tag: String) {
     }
 }
 
+@AndroidEntryPoint
 class SettingsFragment : PreferenceFragmentCompat(),
     SharedPreferences.OnSharedPreferenceChangeListener,
     Preference.OnPreferenceClickListener {
@@ -43,20 +45,12 @@ class SettingsFragment : PreferenceFragmentCompat(),
     lateinit var themeManager: ThemeManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        inject()
         super.onViewCreated(view, savedInstanceState)
-
         PreferenceKey.values().forEach { preference ->
             findPreference<Preference>(preference.tag)?.onPreferenceClickListener = this
         }
 
         findPreference<Preference>(VERSION)?.summary = appVersion
-    }
-
-    private fun inject() {
-        (requireContext().applicationContext as SettingsComponentProvider)
-            .settingsComponent
-            .inject(this)
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

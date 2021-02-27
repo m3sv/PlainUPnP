@@ -1,5 +1,6 @@
 apply from: "../../scripts/kotlin-android-library.gradle"
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     buildFeatures {
@@ -36,9 +37,9 @@ dependencies {
 
     implementation deps.androidx.lifecycle.liveDataKtx
 
-    compileOnly deps.dagger.annotation
-    implementation deps.dagger.core
-    kapt deps.dagger.compiler
+
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
+    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
 
     testImplementation deps.test.junit
     testImplementation deps.test.mockito

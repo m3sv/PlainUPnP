@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.upnp.android
 
+import android.app.Application
 import android.content.Context
 import com.m3sv.plainupnp.common.util.getUdn
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
@@ -17,13 +18,13 @@ import javax.inject.Singleton
 
 @Singleton
 class AndroidUpnpServiceImpl @Inject constructor(
-    context: Context,
+    application: Application,
     resourceProvider: LocalServiceResourceProvider,
     contentRepository: UpnpContentRepositoryImpl,
-) : UpnpServiceImpl(PlainUpnpServiceConfiguration(), context) {
+) : UpnpServiceImpl(PlainUpnpServiceConfiguration(), application) {
 
     private val localDevice by lazy {
-        getLocalDevice(resourceProvider, context, contentRepository)
+        getLocalDevice(resourceProvider, application, contentRepository)
     }
 
     fun resume() {

@@ -9,15 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class ConfigureFolderActivity : AppCompatActivity() {
 
     @Inject
@@ -26,18 +25,10 @@ class ConfigureFolderActivity : AppCompatActivity() {
     @Inject
     lateinit var contentManager: ContentManager
 
-    private val viewModel: OnboardingViewModel by viewModels(factoryProducer = {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return OnboardingViewModel(application, themeManager, contentManager) as T
-            }
-        }
-    })
+    private val viewModel: OnboardingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        (application as OnboardingInjector).inject(this)
-
         setContent {
             val contentUris: List<UriWrapper> by viewModel.contentUris.collectAsState(initial = listOf())
             AppTheme {

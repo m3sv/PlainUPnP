@@ -1,8 +1,9 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
-apply from: "../scripts/cling.gradle"
+apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.squareup.sqldelight'
+apply from: "../scripts/cling.gradle"
 
 
 android {
@@ -73,7 +74,7 @@ android {
 }
 
 dependencies {
-    compileOnly deps.dagger.annotation
+
 
     implementation deps.androidx.appCompat
     implementation deps.androidx.cardView
@@ -88,7 +89,7 @@ dependencies {
     implementation deps.androidx.preference
     implementation deps.androidx.recyclerView
     implementation deps.coroutines.core
-    implementation deps.dagger.core
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
     implementation deps.glide
     implementation deps.nanohttpd.core
     implementation deps.nanohttpd.webserver
@@ -117,7 +118,7 @@ dependencies {
     implementation project(':feature:inappplayer')
     implementation project(':shared:upnp')
 
-    kapt deps.dagger.compiler
+    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
 
     testImplementation deps.androidx.coreTesting
     testImplementation deps.coroutines.test

@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp
 
+import android.app.Application
 import android.content.ContentResolver
-import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.provider.MediaStore
@@ -32,7 +32,7 @@ sealed class ContentUpdateState {
 
 @Singleton
 class UpnpContentRepositoryImpl @Inject constructor(
-    private val context: Context,
+    private val application: Application,
     private val sharedPreferences: SharedPreferences,
     private val database: Database,
 ) : CoroutineScope, ContentRepository {
@@ -48,16 +48,16 @@ class UpnpContentRepositoryImpl @Inject constructor(
         get() = abs(random.nextLong())
 
     private val isImagesEnabled
-        get() = sharedPreferences.getBoolean(context.getString(R.string.pref_enable_image_container_key), true)
+        get() = sharedPreferences.getBoolean(application.getString(R.string.pref_enable_image_container_key), true)
 
     private val isAudioEnabled
-        get() = sharedPreferences.getBoolean(context.getString(R.string.pref_enable_audio_container_key), true)
+        get() = sharedPreferences.getBoolean(application.getString(R.string.pref_enable_audio_container_key), true)
 
     private val isVideoEnabled
-        get() = sharedPreferences.getBoolean(context.getString(R.string.pref_enable_video_container_key), true)
+        get() = sharedPreferences.getBoolean(application.getString(R.string.pref_enable_video_container_key), true)
 
-    private val appName by lazy { context.getString(R.string.app_name) }
-    private val baseUrl: String by lazy { "${getLocalIpAddress(context).hostAddress}:$PORT" }
+    private val appName by lazy { application.getString(R.string.app_name) }
+    private val baseUrl: String by lazy { "${getLocalIpAddress(application).hostAddress}:$PORT" }
 
     private val refreshInternal = MutableSharedFlow<Unit>()
 
@@ -132,7 +132,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
         title = "",
         creator = appName,
         baseUrl = baseUrl,
-        contentResolver = context.contentResolver,
+        contentResolver = application.contentResolver,
         albumId = albumId,
         artist = null
     )
@@ -146,7 +146,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
         "",
         appName,
         baseUrl,
-        context.contentResolver,
+        application.contentResolver,
         artistId = artistId
     )
 
@@ -158,17 +158,17 @@ class UpnpContentRepositoryImpl @Inject constructor(
         val rootContainer = Container(
             IMAGE_ID.toString(),
             ROOT_ID.toString(),
-            context.getString(R.string.images),
+            application.getString(R.string.images),
             appName
         )
 
         AllImagesContainer(
             id = ALL_IMAGE.toString(),
             parentID = IMAGE_ID.toString(),
-            title = context.getString(R.string.all),
+            title = application.getString(R.string.all),
             creator = appName,
             baseUrl = baseUrl,
-            contentResolver = context.contentResolver
+            contentResolver = application.contentResolver
         ).also { container ->
             rootContainer.addContainer(container)
             container.addToRegistry()
@@ -177,7 +177,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
         Container(
             IMAGE_BY_FOLDER.toString(),
             rootContainer.id,
-            context.getString(R.string.by_folder),
+            application.getString(R.string.by_folder),
             appName
         ).also { container ->
             rootContainer.addContainer(container)
@@ -209,7 +209,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
         Container(
             AUDIO_ID.toString(),
             ROOT_ID.toString(),
-            context.getString(R.string.audio),
+            application.getString(R.string.audio),
             appName
         ).apply {
             rootContainer.addContainer(this)
@@ -217,10 +217,10 @@ class UpnpContentRepositoryImpl @Inject constructor(
             AllAudioContainer(
                 ALL_AUDIO.toString(),
                 AUDIO_ID.toString(),
-                context.getString(R.string.all),
+                application.getString(R.string.all),
                 appName,
                 baseUrl = baseUrl,
-                contentResolver = context.contentResolver,
+                contentResolver = application.contentResolver,
                 albumId = null,
                 artist = null
             ).also { container ->
@@ -231,10 +231,10 @@ class UpnpContentRepositoryImpl @Inject constructor(
             ArtistContainer(
                 ALL_ARTISTS.toString(),
                 AUDIO_ID.toString(),
-                context.getString(R.string.artist),
+                application.getString(R.string.artist),
                 appName,
                 baseUrl,
-                context.contentResolver
+                application.contentResolver
             ).also { container ->
                 addContainer(container)
                 container.addToRegistry()
@@ -243,10 +243,10 @@ class UpnpContentRepositoryImpl @Inject constructor(
             AlbumContainer(
                 ALL_ALBUMS.toString(),
                 AUDIO_ID.toString(),
-                context.getString(R.string.album),
+                application.getString(R.string.album),
                 appName,
                 baseUrl,
-                context.contentResolver,
+                application.contentResolver,
                 null
             ).also { container ->
                 addContainer(container)
@@ -256,7 +256,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
             Container(
                 AUDIO_BY_FOLDER.toString(),
                 id,
-                context.getString(R.string.by_folder),
+                application.getString(R.string.by_folder),
                 appName
             ).also { container ->
                 addContainer(container)
@@ -286,7 +286,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
         Container(
             VIDEO_ID.toString(),
             ROOT_ID.toString(),
-            context.getString(R.string.videos),
+            application.getString(R.string.videos),
             appName
         ).apply {
             rootContainer.addContainer(this)
@@ -294,10 +294,10 @@ class UpnpContentRepositoryImpl @Inject constructor(
             AllVideoContainer(
                 ALL_VIDEO.toString(),
                 VIDEO_ID.toString(),
-                context.getString(R.string.all),
+                application.getString(R.string.all),
                 appName,
                 baseUrl,
-                contentResolver = context.contentResolver
+                contentResolver = application.contentResolver
             ).also { container ->
                 addContainer(container)
                 container.addToRegistry()
@@ -306,7 +306,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
             Container(
                 VIDEO_BY_FOLDER.toString(),
                 id,
-                context.getString(R.string.by_folder),
+                application.getString(R.string.by_folder),
                 appName
             ).also { container ->
                 addContainer(container)
@@ -333,11 +333,11 @@ class UpnpContentRepositoryImpl @Inject constructor(
         }
 
     private fun getUserSelectedContainer(rootContainer: Container) {
-        context
+        application
             .contentResolver
             .persistedUriPermissions
             .map { it.uri }
-            .mapNotNull { DocumentFile.fromTreeUri(context, it) }
+            .mapNotNull { DocumentFile.fromTreeUri(application, it) }
             .forEach { documentFile ->
                 when {
                     documentFile.isDirectory -> handleDirectory(documentFile, rootContainer)
@@ -383,7 +383,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun createFolderContainer(uri: Uri, parentId: String): Container? = context
+    private fun createFolderContainer(uri: Uri, parentId: String): Container? = application
         .contentResolver
         .query(uri,
             arrayOf(MediaStore.MediaColumns.DISPLAY_NAME),
@@ -453,7 +453,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
                     )
                 }
             }
-        } ?: context
+        } ?: application
             .contentResolver
             .query(uri,
                 arrayOf(
@@ -467,7 +467,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
                     val id = randomId
                     val mimeType = cursor.getString(mimeTypeColumn)
                     when {
-                        mimeType.startsWith("image") -> context.contentResolver.queryImages(uri) { _, title, _, size, width, height ->
+                        mimeType.startsWith("image") -> application.contentResolver.queryImages(uri) { _, title, _, size, width, height ->
                             database
                                 .fileCacheQueries
                                 .insertEntry(
@@ -496,7 +496,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
 
                         }
 
-                        mimeType.startsWith("video") -> context.contentResolver.queryVideos(uri) { _, title, creator, _, size, duration, width, height ->
+                        mimeType.startsWith("video") -> application.contentResolver.queryVideos(uri) { _, title, creator, _, size, duration, width, height ->
                             database
                                 .fileCacheQueries
                                 .insertEntry(
@@ -526,7 +526,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
                             )
                         }
 
-                        mimeType.startsWith("audio") -> context.contentResolver.queryAudio(uri) { _, title, creator, _, size, duration, width, height, artist, album ->
+                        mimeType.startsWith("audio") -> application.contentResolver.queryAudio(uri) { _, title, creator, _, size, duration, width, height, artist, album ->
                             database
                                 .fileCacheQueries
                                 .insertEntry(
@@ -582,7 +582,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
     ) {
         val folders: MutableMap<String, Map<String, Any>> = mutableMapOf()
         buildSet<String> {
-            context.contentResolver.query(
+            application.contentResolver.query(
                 externalContentUri,
                 arrayOf(column),
                 null,
@@ -631,7 +631,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
                     appName,
                     baseUrl,
                     ContentDirectory(kv.key),
-                    context.contentResolver
+                    application.contentResolver
                 ).apply { addToRegistry() }
 
                 rootContainer.addContainer(childContainer)

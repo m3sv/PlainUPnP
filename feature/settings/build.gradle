@@ -1,17 +1,16 @@
 apply from: "../../scripts/kotlin-android-library.gradle"
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 dependencies {
-    compileOnly deps.dagger.annotation
-
     implementation deps.androidx.material
     implementation deps.androidx.preference
     implementation deps.coroutines.core
-    implementation deps.dagger.core
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
 
     implementation project(':common')
     implementation project(':shared:upnp')
     implementation project(':feature:onboarding')
 
-    kapt deps.dagger.compiler
+    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
 }

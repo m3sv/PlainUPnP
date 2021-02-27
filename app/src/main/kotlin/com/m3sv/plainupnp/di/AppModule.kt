@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.di
 
-import android.content.Context
+import android.app.Application
 import android.content.Intent
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
@@ -10,20 +10,21 @@ import com.m3sv.plainupnp.presentation.onboarding.OnboardingManager
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 
 @Module
+@InstallIn(SingletonComponent::class)
 object AppModule {
 
     @Provides
-    @JvmStatic
     @Singleton
-    fun provideSharedPreferences(context: Context): SharedPreferences =
-        PreferenceManager.getDefaultSharedPreferences(context)
+    fun provideSharedPreferences(application: Application): SharedPreferences =
+        PreferenceManager.getDefaultSharedPreferences(application)
 
     @Provides
-    @JvmStatic
     @Singleton
     fun provideOnboardingManager(preferences: SharedPreferences): OnboardingManager =
         OnboardingManager(preferences) { activity ->
@@ -31,9 +32,7 @@ object AppModule {
         }
 
     @Provides
-    @JvmStatic
     @Singleton
-    fun provideDatabase(context: Context) =
-        Database(AndroidSqliteDriver(Database.Schema, context, "plainupnp.db"))
-
+    fun provideDatabase(application: Application) =
+        Database(AndroidSqliteDriver(Database.Schema, application, "plainupnp.db"))
 }

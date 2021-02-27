@@ -5,19 +5,15 @@ import android.content.Intent
 import android.os.IBinder
 import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
 import com.m3sv.plainupnp.core.eventbus.post
-import com.m3sv.plainupnp.upnp.di.UpnpSubComponentProvider
+import dagger.hilt.android.AndroidEntryPoint
 import org.fourthline.cling.UpnpService
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class PlainUpnpAndroidService : Service() {
 
     @Inject
     lateinit var upnpService: UpnpService
-
-    override fun onCreate() {
-        super.onCreate()
-        inject()
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
@@ -40,10 +36,6 @@ class PlainUpnpAndroidService : Service() {
         post(ExitApplication)
         upnpService.shutdown()
         android.os.Process.killProcess(android.os.Process.myPid())
-    }
-
-    private fun inject() {
-        (application as UpnpSubComponentProvider).upnpSubComponent.inject(this)
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

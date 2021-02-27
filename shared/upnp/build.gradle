@@ -1,9 +1,8 @@
 apply from: '../../scripts/kotlin-android-library.gradle'
 apply from: '../../scripts/cling.gradle'
-
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
-
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileOptions {
@@ -15,14 +14,14 @@ android {
 dependencies {
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${versions.coreLibraryDesugaring}"
 
-    compileOnly deps.dagger.annotation
+
     compileOnly deps.javaxCdi
 
     implementation deps.androidx.ktx.core
     implementation deps.androidx.material
     implementation deps.androidx.preference
     implementation deps.coroutines.core
-    implementation deps.dagger.core
+    implementation "com.google.dagger:hilt-android:${versions.hilt}"
     implementation deps.nanohttpd.core
     implementation deps.nanohttpd.webserver
     implementation deps.okHttp
@@ -34,8 +33,7 @@ dependencies {
 
     implementation 'androidx.documentfile:documentfile:1.0.1'
 
-
-    kapt deps.dagger.compiler
+    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
 
     testImplementation deps.test.junit
     testImplementation deps.test.mockito

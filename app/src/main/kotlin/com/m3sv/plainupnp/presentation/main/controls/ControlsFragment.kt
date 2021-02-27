@@ -12,6 +12,8 @@ import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.DrawableRes
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.m3sv.plainupnp.R
@@ -23,14 +25,13 @@ import com.m3sv.plainupnp.common.util.*
 import com.m3sv.plainupnp.data.upnp.UpnpItemType
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.databinding.ControlsFragmentBinding
-import com.m3sv.plainupnp.presentation.base.BaseFragment
 import com.m3sv.plainupnp.presentation.base.ControlsSheetDelegate
 import com.m3sv.plainupnp.presentation.base.SimpleArrayAdapter
 import com.m3sv.plainupnp.presentation.base.SpinnerItem
-import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.presentation.main.MainViewModel
 import com.m3sv.plainupnp.presentation.main.PlayerButton
 import com.m3sv.plainupnp.presentation.main.SpinnerItemsBundle
+import dagger.hilt.android.AndroidEntryPoint
 import org.fourthline.cling.support.model.TransportState
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
@@ -38,7 +39,8 @@ import kotlin.LazyThreadSafetyMode.NONE
 private const val PICKERS_VISIBILITY = "pickers_visibility_key"
 private const val CONTROLS_VISIBILITY = "controls_visibility_key"
 
-class ControlsFragment : BaseFragment() {
+@AndroidEntryPoint
+class ControlsFragment : Fragment() {
 
     @Inject
     lateinit var controlsSheetDelegate: ControlsSheetDelegate
@@ -48,7 +50,7 @@ class ControlsFragment : BaseFragment() {
     private val binding: ControlsFragmentBinding
         get() = requireNotNull(_binding)
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels()
 
     private lateinit var rendererAdapter: SimpleArrayAdapter<SpinnerItem>
 
@@ -66,10 +68,8 @@ class ControlsFragment : BaseFragment() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        (requireActivity() as MainActivity).mainActivitySubComponent.inject(this)
         super.onCreate(savedInstanceState)
         requireActivity().onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
-        viewModel = getViewModel(true)
         initAdapters()
     }
 
@@ -208,7 +208,8 @@ class ControlsFragment : BaseFragment() {
 
             BottomSheetBehavior.STATE_HALF_EXPANDED,
             BottomSheetBehavior.STATE_EXPANDED,
-            BottomSheetBehavior.STATE_COLLAPSED -> close()
+            BottomSheetBehavior.STATE_COLLAPSED,
+            -> close()
         }
     }
 
@@ -270,7 +271,8 @@ class ControlsFragment : BaseFragment() {
 
         val isProgressEnabled = when (rendererState.state) {
             TransportState.PLAYING,
-            TransportState.PAUSED_PLAYBACK -> true
+            TransportState.PAUSED_PLAYBACK,
+            -> true
             else -> false
         }
 
@@ -399,6 +401,7 @@ private val UpnpRendererState.icon: Int
         TransportState.PAUSED_RECORDING,
         TransportState.RECORDING,
         TransportState.NO_MEDIA_PRESENT,
-        TransportState.CUSTOM -> R.drawable.ic_play_arrow
+        TransportState.CUSTOM,
+        -> R.drawable.ic_play_arrow
     }
 

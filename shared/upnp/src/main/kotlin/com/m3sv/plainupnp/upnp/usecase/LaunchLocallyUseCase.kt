@@ -1,6 +1,6 @@
 package com.m3sv.plainupnp.upnp.usecase
 
-import android.content.Context
+import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
@@ -8,7 +8,7 @@ import com.m3sv.plainupnp.upnp.manager.RenderItem
 import timber.log.Timber
 import javax.inject.Inject
 
-class LaunchLocallyUseCase @Inject constructor(private val context: Context) {
+class LaunchLocallyUseCase @Inject constructor(private val application: Application) {
 
     suspend operator fun invoke(item: RenderItem) {
         val uri = item.didlItem.uri
@@ -26,8 +26,8 @@ class LaunchLocallyUseCase @Inject constructor(private val context: Context) {
                         setDataAndType(Uri.parse(uri), contentType)
                         flags += Intent.FLAG_ACTIVITY_NEW_TASK
                     }
-                    if (intent.resolveActivity(context.packageManager) != null) {
-                        context.startActivity(intent)
+                    if (intent.resolveActivity(application.packageManager) != null) {
+                        application.startActivity(intent)
                     }
                 } catch (e: Exception) {
                     Timber.e(e)
