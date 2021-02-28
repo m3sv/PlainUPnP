@@ -2,20 +2,16 @@ package com.m3sv.plainupnp.upnp.manager
 
 import android.app.Application
 import com.m3sv.plainupnp.common.Consumable
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import javax.inject.Inject
 
 class ErrorReporter @Inject constructor(private val application: Application) {
 
-    // We use Conflated channel because error might happen before we actually observe errors
-    private val errorChannel: BroadcastChannel<Consumable<String>> =
-        BroadcastChannel(Channel.CONFLATED)
+    private val errorChannel: MutableSharedFlow<Consumable<String>> = MutableSharedFlow()
 
-    val errorFlow = errorChannel.asFlow()
+    val errorFlow = errorChannel
 
-    fun report(errorReason: ErrorReason) {
-        errorChannel.offer(Consumable(application.getString(errorReason.message)))
+    suspend fun report(errorReason: ErrorReason) {
+        errorChannel.emit(Consumable(application.getString(errorReason.message)))
     }
 }

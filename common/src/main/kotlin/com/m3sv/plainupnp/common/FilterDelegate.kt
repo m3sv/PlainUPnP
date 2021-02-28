@@ -1,9 +1,8 @@
 package com.m3sv.plainupnp.common
 
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.filterNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,11 +15,11 @@ interface FilterDelegate {
 @Singleton
 class Filter @Inject constructor() : FilterDelegate {
 
-    private val textChannel = BroadcastChannel<String>(BUFFERED)
+    private val textChannel = MutableSharedFlow<String>()
 
-    override val state: Flow<String> = textChannel.asFlow()
+    override val state: Flow<String> = textChannel.filterNotNull()
 
     override suspend fun filter(text: String) {
-        textChannel.send(text)
+        textChannel.emit(text)
     }
 }

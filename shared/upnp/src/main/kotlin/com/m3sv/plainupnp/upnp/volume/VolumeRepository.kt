@@ -1,9 +1,9 @@
 package com.m3sv.plainupnp.upnp.volume
 
 import com.m3sv.plainupnp.upnp.actions.renderingcontrol.*
-import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.filterNotNull
 import org.fourthline.cling.model.meta.Service
 import javax.inject.Inject
 
@@ -12,11 +12,11 @@ class VolumeRepository @Inject constructor(
     private val lowerVolumeAction: LowerVolumeAction,
     private val getVolumeAction: GetVolumeAction,
     private val setVolumeAction: SetVolumeAction,
-    private val muteVolumeAction: MuteVolumeAction
+    private val muteVolumeAction: MuteVolumeAction,
 ) {
-    private val volumeChannel = BroadcastChannel<Int>(1)
+    private val volumeChannel = MutableSharedFlow<Int>()
 
-    val volumeFlow: Flow<Int> = volumeChannel.asFlow()
+    val volumeFlow: Flow<Int> = volumeChannel.filterNotNull()
 
     suspend fun raiseVolume(service: Service<*, *>, step: Int) =
         raiseVolumeAction(service, step).let(::postVolume)
@@ -32,7 +32,7 @@ class VolumeRepository @Inject constructor(
     suspend fun getVolume(service: Service<*, *>): Int = getVolumeAction(service).also(::postVolume)
 
     private fun postVolume(volume: Int) {
-        volumeChannel.offer(volume)
+        volumeChannel.tryEmit(volume)
     }
 }
 

@@ -88,7 +88,9 @@ dependencies {
     implementation deps.androidx.material
     implementation deps.androidx.preference
     implementation deps.androidx.recyclerView
-    implementation deps.coroutines.core
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
+
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     implementation deps.glide
     implementation deps.nanohttpd.core

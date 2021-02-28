@@ -6,6 +6,8 @@ import android.os.IBinder
 import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
 import com.m3sv.plainupnp.core.eventbus.post
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import org.fourthline.cling.UpnpService
 import javax.inject.Inject
 
@@ -33,9 +35,11 @@ class PlainUpnpAndroidService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        post(ExitApplication)
-        upnpService.shutdown()
-        android.os.Process.killProcess(android.os.Process.myPid())
+        GlobalScope.launch {
+            post(ExitApplication)
+            upnpService.shutdown()
+            android.os.Process.killProcess(android.os.Process.myPid())
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

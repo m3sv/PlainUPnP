@@ -45,24 +45,26 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun handleClick(clickPosition: Int, isLongClick: Boolean) {
-        _currentFolderContents.value?.let { contents ->
-            val item = contents[clickPosition]
+        viewModelScope.launch {
+            _currentFolderContents.value?.let { contents ->
+                val item = contents[clickPosition]
 
-            when (item.type) {
-                ContentType.FOLDER,
-                ContentType.USER_SELECTED_FOLDER,
-                -> post(FolderClick(UpnpFolder.SubFolder(item.clingItem.id, item.clingItem.title)))
-                else -> {
-                    val event = if (isLongClick) {
-                        MediaItemLongClick(PlayItem(
-                            item.clingItem,
-                            media.listIterator(clickPosition - folders.size)))
-                    } else {
-                        MediaItemClick(PlayItem(
-                            item.clingItem,
-                            media.listIterator(clickPosition - folders.size)))
+                when (item.type) {
+                    ContentType.FOLDER,
+                    ContentType.USER_SELECTED_FOLDER,
+                    -> post(FolderClick(UpnpFolder.SubFolder(item.clingItem.id, item.clingItem.title)))
+                    else -> {
+                        val event = if (isLongClick) {
+                            MediaItemLongClick(PlayItem(
+                                item.clingItem,
+                                media.listIterator(clickPosition - folders.size)))
+                        } else {
+                            MediaItemClick(PlayItem(
+                                item.clingItem,
+                                media.listIterator(clickPosition - folders.size)))
+                        }
+                        post(event)
                     }
-                    post(event)
                 }
             }
         }

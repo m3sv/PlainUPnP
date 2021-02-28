@@ -21,10 +21,8 @@ import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import com.m3sv.plainupnp.upnp.util.*
 import com.m3sv.plainupnp.upnp.volume.VolumeRepository
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.scan
 import org.fourthline.cling.model.meta.Service
@@ -61,21 +59,20 @@ class UpnpManagerImpl @Inject constructor(
     override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.IO
 
     private var isLocal: Boolean = false
-
-    private val upnpInnerStateChannel = BroadcastChannel<UpnpRendererState>(Channel.CONFLATED)
-    override val upnpRendererState: Flow<UpnpRendererState> = upnpInnerStateChannel.asFlow()
+    private val upnpInnerStateChannel = MutableSharedFlow<UpnpRendererState>()
+    override val upnpRendererState: Flow<UpnpRendererState> = upnpInnerStateChannel
     override val contentDirectories: Flow<List<DeviceDisplay>> = contentDirectoryObservable()
     override val renderers: Flow<List<DeviceDisplay>> = rendererDiscoveryObservable()
     override val actionErrors: Flow<Consumable<String>> = errorReporter.errorFlow
 
-    private val folderChange: BroadcastChannel<Folder> = BroadcastChannel(1)
-    override val folderChangeFlow: Flow<Folder> = folderChange.asFlow()
+    private val folderChange = MutableSharedFlow<Folder>()
+    override val folderChangeFlow: Flow<Folder> = folderChange
 
-    private val updateChannel = BroadcastChannel<Pair<Item, Service<*, *>>>(Channel.CONFLATED)
+    private val updateChannel = MutableSharedFlow<Pair<Item, Service<*, *>>>()
 
     init {
         launch {
-            updateChannel.asFlow().scan(launch { }) { accumulator, pair ->
+            updateChannel.scan(launch { }) { accumulator, pair ->
                 accumulator.cancel()
 
                 Timber.d("update: received new pair: ${pair.first}");
@@ -120,7 +117,7 @@ class UpnpManagerImpl @Inject constructor(
 
                         currentDuration = positionInfo.trackDurationSeconds
 
-                        if (!pauseUpdate) upnpInnerStateChannel.offer(state)
+                        if (!pauseUpdate) upnpInnerStateChannel.emit(state)
 
                         Timber.d("Got new state: $state")
 
@@ -209,7 +206,7 @@ class UpnpManagerImpl @Inject constructor(
                     is AudioItem,
                     is VideoItem,
                     -> {
-                        updateChannel.offer(didlItem to service)
+                        updateChannel.emit(didlItem to service)
                     }
                     is ImageItem -> {
                         with(didlItem) {
@@ -260,7 +257,7 @@ class UpnpManagerImpl @Inject constructor(
     private fun stopUpdate() {
     }
 
-    private fun showImageInfo(
+    private suspend fun showImageInfo(
         uri: String,
         title: String,
     ) {
@@ -277,7 +274,7 @@ class UpnpManagerImpl @Inject constructor(
             artist = null
         )
 
-        upnpInnerStateChannel.offer(state)
+        upnpInnerStateChannel.emit(state)
     }
 
     override fun playNext() {
@@ -412,13 +409,13 @@ class UpnpManagerImpl @Inject constructor(
                     else -> Folder.SubFolder(folderId, currentFolderName)
                 }
 
-                folderChange.offer(folder)
+                folderChange.emit(folder)
             } else
                 errorReason.report()
         }
     }
 
-    private inline fun safeAvAction(
+    private suspend inline fun safeAvAction(
         errorReason: ErrorReason? = null,
         block: (Service<*, *>) -> Unit,
     ) {
@@ -433,7 +430,7 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private inline fun <T> safeRcAction(
+    private suspend inline fun <T> safeRcAction(
         errorReason: ErrorReason? = null,
         block: (Service<*, *>) -> T,
     ): T? {
@@ -450,7 +447,7 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private fun ErrorReason?.report() {
+    private suspend fun ErrorReason?.report() {
         if (this != null) errorReporter.report(this)
     }
 }

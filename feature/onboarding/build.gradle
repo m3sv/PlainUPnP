@@ -15,7 +15,9 @@ android {
 
 dependencies {
     implementation deps.androidx.constraintLayout
-    implementation deps.coroutines.core
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
+
 
     implementation project(':common')
 

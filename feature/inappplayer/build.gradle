@@ -13,7 +13,9 @@ dependencies {
     implementation deps.androidx.lifecycle.lifecycleKtx
     implementation deps.androidx.lifecycle.liveDataKtx
     implementation deps.androidx.lifecycle.viewModelKtx
-    implementation deps.coroutines.core
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
+
     implementation deps.exoPlayer
     implementation deps.glide
     implementation deps.androidx.ktx.core

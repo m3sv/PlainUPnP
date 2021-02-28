@@ -6,8 +6,7 @@ import androidx.core.view.doOnNextLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.m3sv.plainupnp.upnp.folder.Folder
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 
 class NavigationStrip : RecyclerView {
     constructor(context: Context) : super(context)
@@ -27,13 +26,13 @@ class NavigationStrip : RecyclerView {
         navigationLayoutManager = LinearLayoutManager(context, HORIZONTAL, false)
             .apply { layoutManager = this }
 
-        navigationAdapter = NavigationStripAdapter { clickChannel.offer(it) }
+        navigationAdapter = NavigationStripAdapter { clickChannel.tryEmit(it) }
             .apply { adapter = this }
     }
 
-    private val clickChannel = BroadcastChannel<Folder>(1)
+    private val clickChannel = MutableSharedFlow<Folder>()
 
-    val clickFlow = clickChannel.asFlow()
+    val clickFlow = clickChannel
 
     fun replaceItems(folders: List<Folder>) {
         navigationAdapter.submitList(folders)

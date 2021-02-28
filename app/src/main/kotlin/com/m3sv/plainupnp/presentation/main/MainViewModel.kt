@@ -17,8 +17,7 @@ import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.manager.PlayItem
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.BroadcastChannel
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
@@ -105,10 +104,9 @@ class MainViewModel @Inject constructor(
         .observe()
         .asLiveData()
 
-    private val navigationChannel: BroadcastChannel<MainRoute> = BroadcastChannel(1)
+    private val navigationChannel: MutableSharedFlow<MainRoute> = MutableSharedFlow()
 
     val navigation: LiveData<Consumable<MainRoute>> = navigationChannel
-        .asFlow()
         .scan<MainRoute, MainRoute>(MainRoute.Initial) { previous, next ->
             when (previous) {
                 is MainRoute.Initial -> {
@@ -169,7 +167,9 @@ class MainViewModel @Inject constructor(
     }
 
     fun navigate(route: MainRoute) {
-        navigationChannel.offer(route)
+        viewModelScope.launch {
+            navigationChannel.emit(route)
+        }
     }
 
     override fun onCleared() {

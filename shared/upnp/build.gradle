@@ -14,13 +14,14 @@ android {
 dependencies {
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${versions.coreLibraryDesugaring}"
 
-
     compileOnly deps.javaxCdi
 
     implementation deps.androidx.ktx.core
     implementation deps.androidx.material
     implementation deps.androidx.preference
-    implementation deps.coroutines.core
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
+
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     implementation deps.nanohttpd.core
     implementation deps.nanohttpd.webserver
