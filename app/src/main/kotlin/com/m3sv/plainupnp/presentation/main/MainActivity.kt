@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
         animateBottomDrawChanges()
 
         with(binding) {
+            binding.navigationStrip.scope = lifecycleScope
             setSupportActionBar(bottomBar)
 
             controlsContainer.setOnClickListener { view ->

@@ -3,7 +3,7 @@ package com.m3sv.plainupnp.presentation.main
 import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import timber.log.Timber
@@ -14,7 +14,7 @@ class FolderManager @Inject constructor(private val upnpManager: UpnpManager) {
 
     private var fileStructure: Deque<Folder> = LinkedList()
 
-    private val fileStructureFlow: MutableStateFlow<List<Folder>> = MutableStateFlow(listOf())
+    private val fileStructureFlow: MutableSharedFlow<List<Folder>> = MutableSharedFlow()
 
     fun observe(): Flow<List<Folder>> =
         merge(upnpManager
@@ -34,12 +34,12 @@ class FolderManager @Inject constructor(private val upnpManager: UpnpManager) {
             },
             fileStructureFlow)
 
-    private fun navigateBack() {
+    private suspend fun navigateBack() {
         fileStructure.pollLast()
         updateClients()
     }
 
-    fun backTo(folder: Folder?) {
+    suspend fun backTo(folder: Folder?) {
         if (folder == null) {
             navigateBack()
             return
@@ -55,8 +55,8 @@ class FolderManager @Inject constructor(private val upnpManager: UpnpManager) {
         updateClients()
     }
 
-    private fun updateClients() {
-        fileStructureFlow.value = fileStructure.toList()
+    private suspend fun updateClients() {
+        fileStructureFlow.emit(fileStructure.toList())
     }
 
 }
