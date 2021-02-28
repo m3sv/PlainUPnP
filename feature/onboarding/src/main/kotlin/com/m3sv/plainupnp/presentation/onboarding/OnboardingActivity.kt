@@ -19,10 +19,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.m3sv.plainupnp.ContentManager
-import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
@@ -36,21 +32,9 @@ class OnboardingActivity : AppCompatActivity() {
     @Inject
     lateinit var onboardingManager: OnboardingManager
 
-    @Inject
-    lateinit var themeManager: ThemeManager
-
-    @Inject
-    lateinit var contentManager: ContentManager
-
     private var onPermissionResult by mutableStateOf(-1)
 
-    private val viewModel: OnboardingViewModel by viewModels(factoryProducer = {
-        object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return OnboardingViewModel(application, themeManager, contentManager) as T
-            }
-        }
-    })
+    private val viewModel: OnboardingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

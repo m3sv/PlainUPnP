@@ -9,10 +9,9 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
+    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
 
     implementation project(':common')
     implementation project(':shared:upnp')
     implementation project(':feature:onboarding')
-
-    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
 }

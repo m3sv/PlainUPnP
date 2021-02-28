@@ -5,8 +5,8 @@ import android.content.Intent
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.m3sv.plainupnp.core.persistence.Database
-import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingManager
+import com.m3sv.selectcontentdirectory.SelectContentDirectoryActivity
 import com.squareup.sqldelight.android.AndroidSqliteDriver
 import dagger.Module
 import dagger.Provides
@@ -28,7 +28,7 @@ object AppModule {
     @Singleton
     fun provideOnboardingManager(preferences: SharedPreferences): OnboardingManager =
         OnboardingManager(preferences) { activity ->
-            activity.startActivity(Intent(activity, MainActivity::class.java))
+            activity.startActivity(Intent(activity, SelectContentDirectoryActivity::class.java))
         }
 
     @Provides

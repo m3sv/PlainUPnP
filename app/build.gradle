@@ -116,6 +116,7 @@ dependencies {
     implementation project(':core:resources')
     implementation project(':feature:home')
     implementation project(':feature:onboarding')
+    implementation project(':feature:selectcontentdirectory')
     implementation project(':feature:settings')
     implementation project(':feature:inappplayer')
     implementation project(':shared:upnp')

@@ -178,7 +178,6 @@ class MainActivity : AppCompatActivity() {
             .changeFolder
             .observe(this) { changeEvent ->
                 areControlsVisible = true
-
                 changeEvent.consume { folderType ->
                     when (folderType) {
                         is Folder.Root -> {

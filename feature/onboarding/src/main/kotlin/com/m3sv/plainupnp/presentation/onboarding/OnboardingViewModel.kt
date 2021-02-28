@@ -18,8 +18,7 @@ class OnboardingViewModel @Inject constructor(
     application: Application,
     private val themeManager: ThemeManager,
     private val contentManager: ContentManager,
-) :
-    AndroidViewModel(application) {
+) : AndroidViewModel(application) {
 
     var activeTheme: ThemeOption by mutableStateOf(themeManager.currentTheme)
         private set
