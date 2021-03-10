@@ -4,10 +4,7 @@ package com.m3sv.plainupnp.upnp.manager
 import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.util.formatTime
 import com.m3sv.plainupnp.core.persistence.Database
-import com.m3sv.plainupnp.data.upnp.DeviceDisplay
-import com.m3sv.plainupnp.data.upnp.LocalDevice
-import com.m3sv.plainupnp.data.upnp.UpnpItemType
-import com.m3sv.plainupnp.data.upnp.UpnpRendererState
+import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.CDevice
 import com.m3sv.plainupnp.upnp.ContentUpdateState
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl
@@ -43,6 +40,11 @@ data class PlayItem(
     val clingDIDLObject: ClingDIDLObject,
     val listIterator: ListIterator<ClingDIDLObject>,
 )
+
+sealed class Result {
+    object Success : Result()
+    object Error : Result()
+}
 
 class UpnpManagerImpl @Inject constructor(
     private val rendererDiscoveryObservable: RendererDiscoveryObservable,
@@ -148,7 +150,7 @@ class UpnpManagerImpl @Inject constructor(
         launch {
             val contentDirectory = contentDirectoryObservable
                 .currentContentDirectories[position]
-                .device
+                .upnpDevice
 
             database
                 .selectedDeviceQueries
@@ -164,9 +166,23 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
+    override fun selectContentDirectoryAsync(upnpDevice: UpnpDevice): Deferred<Result> = async {
+        database
+            .selectedDeviceQueries
+            .insertSelectedDevice(CONTENT_DIRECTORY_TYPE, upnpDevice.fullIdentity)
+
+        contentDirectoryObservable.selectedContentDirectory = upnpDevice
+
+        safeNavigateTo(
+            errorReason = ErrorReason.BROWSE_FAILED,
+            folderId = ROOT_FOLDER_ID,
+            folderName = upnpDevice.friendlyName
+        )
+    }
+
     override fun selectRenderer(position: Int) {
         launch {
-            val renderer = rendererDiscoveryObservable.currentRenderers[position].device
+            val renderer = rendererDiscoveryObservable.currentRenderers[position].upnpDevice
 
             isLocal = renderer is LocalDevice
 
@@ -395,25 +411,27 @@ class UpnpManagerImpl @Inject constructor(
         errorReason: ErrorReason? = null,
         folderId: String,
         folderName: String,
-    ) {
-        contentDirectoryObservable.selectedContentDirectory?.let { selectedDevice ->
+    ): Result = contentDirectoryObservable.selectedContentDirectory
+        ?.let { selectedDevice ->
             val service: Service<*, *>? =
                 (selectedDevice as CDevice).device.findService(UDAServiceType(CONTENT_DIRECTORY))
 
-            if (service != null && service.hasActions()) {
-                currentContent = upnpRepository.browse(service, folderId)
-                currentFolderName = folderName
-
-                val folder = when (folderId) {
-                    ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName)
-                    else -> Folder.SubFolder(folderId, currentFolderName)
-                }
-
-                folderChange.emit(folder)
-            } else
+            if (service == null || !service.hasActions()) {
                 errorReason.report()
-        }
-    }
+                return Result.Error
+            }
+
+            currentContent = upnpRepository.browse(service, folderId)
+            currentFolderName = folderName
+
+            val folder = when (folderId) {
+                ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName)
+                else -> Folder.SubFolder(folderId, currentFolderName)
+            }
+
+            folderChange.emit(folder)
+            Result.Success
+        } ?: Result.Error
 
     private suspend inline fun safeAvAction(
         errorReason: ErrorReason? = null,

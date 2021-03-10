@@ -26,7 +26,7 @@ class ObserveRenderersUseCase @Inject constructor(
                 deviceIndex = devices.indexOfFirst(::queryDatabaseForIdentity)
                 deviceName = if (deviceIndex != -1) {
                     foundCached = true
-                    devices[deviceIndex].device.friendlyName
+                    devices[deviceIndex].upnpDevice.friendlyName
                 } else
                     null
             }
@@ -41,7 +41,7 @@ class ObserveRenderersUseCase @Inject constructor(
 
 
     private fun queryDatabaseForIdentity(deviceDisplay: DeviceDisplay): Boolean {
-        val device = deviceDisplay.device
+        val device = deviceDisplay.upnpDevice
         return database
             .selectedDeviceQueries
             .selectDeviceByIdentity(RENDERER_TYPE, device.fullIdentity)

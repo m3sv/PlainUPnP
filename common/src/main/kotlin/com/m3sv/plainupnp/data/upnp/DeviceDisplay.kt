@@ -8,7 +8,7 @@ enum class DeviceType {
 }
 
 data class DeviceDisplay(
-    val device: UpnpDevice,
+    val upnpDevice: UpnpDevice,
     val extendedInformation: Boolean = false,
-    val type: DeviceType = DeviceType.UNDEFINED
+    val type: DeviceType = DeviceType.UNDEFINED,
 )

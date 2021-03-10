@@ -1,8 +1,6 @@
 package com.m3sv.plainupnp.presentation.main
 
 import android.animation.ObjectAnimator
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.view.KeyEvent
@@ -32,7 +30,6 @@ import com.m3sv.plainupnp.presentation.inappplayer.PlayerFragment
 import com.m3sv.plainupnp.presentation.main.controls.ControlsFragment
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingFragment
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
-import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.folder.Folder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -70,19 +67,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } else {
-            val intent = Intent(this, PlainUpnpAndroidService::class.java).apply {
-                action = PlainUpnpAndroidService.START_SERVICE
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent)
-            } else {
-                startService(intent)
-            }
-
             addFragment(OnboardingFragment())
         }
-
 
         observeState()
         animateBottomDrawChanges()
@@ -353,17 +339,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleBackPressed() {
         when (supportFragmentManager.backStackEntryCount) {
-            0 -> showExitConfirmationDialog()
+            0 -> finishAndRemoveTask()
             else -> viewModel.navigate(MainRoute.Back(null))
         }
-    }
-
-    private fun showExitConfirmationDialog() {
-        MaterialAlertDialogBuilder(this)
-            .setTitle(getString(R.string.dialog_exit_title))
-            .setMessage(getString(R.string.dialog_exit_body))
-            .setPositiveButton(getString(R.string.exit)) { _, _ -> finishAndRemoveTask() }
-            .setNegativeButton(getString(R.string.cancel)) { _, _ -> }
-            .show()
     }
 }

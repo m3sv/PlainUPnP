@@ -43,13 +43,6 @@
             android:resizeableActivity="true" />
 
         <activity
-            android:name="com.m3sv.plainupnp.presentation.main.ComposeActivity"
-            android:exported="false"
-            android:label="@string/app_name"
-            android:resizeableActivity="true"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
-
-        <activity
             android:name=".presentation.onboarding.OnboardingActivity"
             android:exported="false"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />

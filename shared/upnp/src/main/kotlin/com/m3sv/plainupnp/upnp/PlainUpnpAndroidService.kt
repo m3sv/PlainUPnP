@@ -1,8 +1,10 @@
 package com.m3sv.plainupnp.upnp
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
 import android.os.IBinder
+import androidx.core.content.ContextCompat
 import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
 import com.m3sv.plainupnp.core.eventbus.post
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +47,14 @@ class PlainUpnpAndroidService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     companion object {
-        const val START_SERVICE = "START_UPNP_SERVICE"
+        fun start(context: Context) {
+            val intent = Intent(context, PlainUpnpAndroidService::class.java).apply {
+                action = START_SERVICE
+            }
+
+            ContextCompat.startForegroundService(context, intent)
+        }
+
+        private const val START_SERVICE = "START_UPNP_SERVICE"
     }
 }

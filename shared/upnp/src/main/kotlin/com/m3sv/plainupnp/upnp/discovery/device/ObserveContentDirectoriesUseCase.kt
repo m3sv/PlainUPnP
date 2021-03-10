@@ -26,7 +26,7 @@ class ObserveContentDirectoriesUseCase @Inject constructor(
                 deviceIndex = devices.indexOfFirst(::queryDatabaseForIdentity)
                 deviceName = if (deviceIndex != -1) {
                     foundCached = true
-                    devices[deviceIndex].device.friendlyName
+                    devices[deviceIndex].upnpDevice.friendlyName
                 } else
                     null
             }
@@ -40,7 +40,7 @@ class ObserveContentDirectoriesUseCase @Inject constructor(
         .flowOn(Dispatchers.IO)
 
     private fun queryDatabaseForIdentity(deviceDisplay: DeviceDisplay): Boolean {
-        val device = deviceDisplay.device
+        val device = deviceDisplay.upnpDevice
         return database
             .selectedDeviceQueries
             .selectDeviceByIdentity(CONTENT_DIRECTORY_TYPE, device.fullIdentity)

@@ -153,12 +153,12 @@ class ControlsFragment : Fragment() {
 
             scrimView.setOnClickListener { close() }
 
-            with(pickers.mainContentDevicePicker) {
-                setAdapter(contentDirectoriesAdapter)
-                setOnItemClickListener { _, _, position, _ ->
-                    viewModel.selectContentDirectory(position)
-                }
-            }
+//            with(pickers.mainContentDevicePicker) {
+//                setAdapter(contentDirectoriesAdapter)
+//                setOnItemClickListener { _, _, position, _ ->
+//                    viewModel.selectContentDirectory(position)
+//                }
+//            }
 
             with(pickers.mainRendererDevicePicker) {
                 setAdapter(rendererAdapter)
@@ -260,7 +260,7 @@ class ControlsFragment : Fragment() {
 
         contentDirectoriesAdapter = SimpleArrayAdapter.init(requireContext(), CONTENT_ADAPTER_KEY) {
             if (selectedContentDirectoryIndex != -1 && selectedContentDirectoryName != null) {
-                binding.pickers.mainContentDevicePicker.setText(selectedContentDirectoryName)
+//                binding.pickers.mainContentDevicePicker.setText(selectedContentDirectoryName)
                 viewModel.selectContentDirectory(selectedContentDirectoryIndex)
             }
         }
