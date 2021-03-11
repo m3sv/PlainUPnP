@@ -75,7 +75,11 @@ class MainActivity : AppCompatActivity() {
 
         with(binding) {
             binding.navigationStrip.scope = lifecycleScope
-            setSupportActionBar(bottomBar)
+            setSupportActionBar(toolbar)
+            supportActionBar?.let {
+                it.setDisplayHomeAsUpEnabled(true)
+                it.setDisplayShowTitleEnabled(false)
+            }
 
             controlsContainer.setOnClickListener { view ->
                 hideSearchContainer()
@@ -185,7 +189,15 @@ class MainActivity : AppCompatActivity() {
 
         viewModel
             .navigationStrip
-            .observe(this) { folders -> binding.navigationStrip.replaceItems(folders) }
+            .observe(this) { folders ->
+                binding.navigationStrip.replaceItems(folders)
+
+                val clickListener = folders
+                    .firstOrNull()
+                    ?.let { folder -> View.OnClickListener { navigateToFolder(folder) } }
+
+                binding.navigateHome.setOnClickListener(clickListener)
+            }
 
         viewModel.navigation.observe(this) { navigationEvent ->
             navigationEvent.consume { route ->
@@ -251,6 +263,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
+            android.R.id.home -> onBackPressed()
             R.id.menu_settings -> viewModel.navigate(MainRoute.Settings)
             R.id.menu_search -> showSearch()
         }

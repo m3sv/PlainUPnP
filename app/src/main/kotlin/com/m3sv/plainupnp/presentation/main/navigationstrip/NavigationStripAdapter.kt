@@ -23,7 +23,6 @@ class NavigationStripAdapter(private val clickListener: (Folder) -> Unit) :
     override fun onBindViewHolder(holder: NavigationStripViewHolder, position: Int) {
         holder.bind(getItem(position), clickListener)
     }
-
 }
 
 class NavigationStripViewHolder(itemView: TextView) : RecyclerView.ViewHolder(itemView) {

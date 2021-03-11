@@ -34,7 +34,8 @@ fun SelectThemeScreen(
     }) {
         Column(Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())) {
+            .verticalScroll(rememberScrollState())
+        ) {
             OneSubtitle(text = "Start by selecting theme that you would like to use")
             RadioGroup(
                 themeOptions = themeOptions,

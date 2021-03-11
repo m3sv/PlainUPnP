@@ -12,11 +12,35 @@
         android:orientation="vertical"
         app:layoutDescription="@xml/main_scene">
 
-        <com.m3sv.plainupnp.presentation.main.navigationstrip.NavigationStrip
-            android:id="@+id/navigation_strip"
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="8dp" />
+            app:navigationIcon="@drawable/ic_back"
+            app:navigationIconTint="?colorOnSurface" />
+
+        <LinearLayout
+            android:id="@+id/navigation_strip_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="8dp">
+
+            <ImageButton
+                android:id="@+id/navigate_home"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:src="@drawable/ic_folder_home"
+                app:backgroundTint="" />
+
+            <com.m3sv.plainupnp.presentation.main.navigationstrip.NavigationStrip
+                android:id="@+id/navigation_strip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/nav_host_container"
