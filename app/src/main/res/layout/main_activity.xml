@@ -25,16 +25,16 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingHorizontal="24dp"
+            android:paddingHorizontal="16dp"
             android:paddingVertical="8dp">
 
             <ImageButton
                 android:id="@+id/navigate_home"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="?selectableItemBackgroundBorderless"
                 android:padding="8dp"
-                android:src="@drawable/ic_folder_home"
-                app:backgroundTint="" />
+                android:src="@drawable/ic_folder_home" />
 
             <com.m3sv.plainupnp.presentation.main.navigationstrip.NavigationStrip
                 android:id="@+id/navigation_strip"
