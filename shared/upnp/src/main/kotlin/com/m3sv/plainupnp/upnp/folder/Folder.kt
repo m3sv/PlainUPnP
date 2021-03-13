@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp.folder
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 sealed class Folder(open val id: String, open val title: String) : Parcelable {
 

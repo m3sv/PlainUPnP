@@ -422,7 +422,7 @@ class UpnpManagerImpl @Inject constructor(
             }
 
             currentContent = upnpRepository.browse(service, folderId)
-            currentFolderName = folderName
+            currentFolderName = folderName.replace(UpnpContentRepositoryImpl.USER_DEFINED_PREFIX, "")
 
             val folder = when (folderId) {
                 ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName)
