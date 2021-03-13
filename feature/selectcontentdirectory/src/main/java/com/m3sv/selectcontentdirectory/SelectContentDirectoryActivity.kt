@@ -10,12 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -46,6 +42,9 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
 
         setContent {
             val contentDirectories by upnpManager.contentDirectories.collectAsState(initial = listOf())
+            var loadingDeviceDisplay: DeviceDisplay? by remember { mutableStateOf(null) }
+
+            fun DeviceDisplay.isLoading(): Boolean = loadingDeviceDisplay != null && loadingDeviceDisplay == this
 
             AppTheme {
                 Surface {
@@ -56,15 +55,29 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
                                 content = {
                                     itemsIndexed(contentDirectories) { index, item ->
                                         Column(modifier = Modifier
-                                            .clickable {
-                                                onContentDirectoryClick(item)
+                                            .clickable(enabled = loadingDeviceDisplay == null) {
+                                                loadingDeviceDisplay = item
+                                                lifecycleScope.launch {
+                                                    when (upnpManager.selectContentDirectoryAsync(item.upnpDevice)
+                                                        .await()) {
+                                                        Result.Error -> handleSelectDirectoryError()
+                                                        Result.Success -> handleSelectDirectorySuccess()
+                                                    }
+
+                                                    loadingDeviceDisplay = null
+                                                }
                                             }) {
+
                                             Text(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .padding(16.dp),
                                                 text = item.upnpDevice.friendlyName
                                             )
+                                            if (item.isLoading()) {
+                                                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                                            }
+
                                             if (contentDirectories.size > 1 && index != contentDirectories.size - 1)
                                                 Divider(color = Color.DarkGray)
                                         }
@@ -73,16 +86,9 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
                             )
                         }
                     }
-                }
-            }
-        }
-    }
 
-    private fun onContentDirectoryClick(item: DeviceDisplay) {
-        lifecycleScope.launch {
-            when (upnpManager.selectContentDirectoryAsync(item.upnpDevice).await()) {
-                Result.Error -> handleSelectDirectoryError()
-                Result.Success -> handleSelectDirectorySuccess()
+
+                }
             }
         }
     }
