@@ -3,10 +3,8 @@ package com.m3sv.plainupnp.upnp
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ALL_ALBUMS
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ALL_ARTISTS
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.AUDIO_ID
-import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.IMAGE_ID
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ROOT_ID
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.SEPARATOR
-import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.VIDEO_ID
 import com.m3sv.plainupnp.upnp.mediacontainers.BaseContainer
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
 import org.fourthline.cling.support.contentdirectory.ContentDirectoryErrorCode
@@ -33,85 +31,81 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         contentRepository.init
 
         try {
-            var root = -1L
-
-            val subtype = objectID
+            val url = objectID
                 .split(SEPARATOR)
                 .map(String::toLong)
-                .map {
-                    if (root == -1L) {
-                        root = it
+                .takeIf { it.isNotEmpty() }
+                ?: throw ContentDirectoryException(
+                    ContentDirectoryErrorCode.CANNOT_PROCESS,
+                    "Invalid type!"
+                )
 
-                        if (root != ROOT_ID
-                            && root != VIDEO_ID
-                            && root != AUDIO_ID
-                            && root != IMAGE_ID
-                            && root !in contentRepository.containerRegistry.keys
-                        ) {
-                            throw ContentDirectoryException(
-                                ContentDirectoryErrorCode.NO_SUCH_OBJECT,
-                                "Invalid type!"
-                            )
-                        }
-                    }
+            val root = url.first()
+            val end = url.last()
 
-                    it
-                }
-                // drop 0 (HOME)
-                .drop(1)
+            Timber.d("Browsing type $objectID")
 
-            Timber.d("Browsing type $root")
-
-            val container: BaseContainer = if (subtype.isEmpty()) {
-                contentRepository.containerRegistry[root] ?: throw noSuchObject
-            } else {
-                when (root) {
-                    VIDEO_ID -> contentRepository.containerRegistry[subtype[0]] ?: throw noSuchObject
-                    AUDIO_ID -> when {
-                        subtype.size == 1 -> contentRepository.containerRegistry[subtype[0]] ?: throw noSuchObject
-                        subtype.size == 2 && subtype[0] == ALL_ARTISTS -> {
-                            val artistId = subtype[1].toString()
-                            val parentId = "$AUDIO_ID$SEPARATOR${subtype[0]}"
-                            Timber.d("Listing album of artist $artistId")
-
-
-                            contentRepository.getAlbumContainerForArtist(artistId, parentId)
-                        }
-                        subtype.size == 2 && subtype[0] == ALL_ALBUMS -> {
-                            val albumId = subtype[1].toString()
-                            val parentId = "$AUDIO_ID$SEPARATOR${subtype[0]}"
-                            Timber.d("Listing song of album $albumId")
-
-                            contentRepository.getAudioContainerForAlbum(albumId, parentId)
-                        }
-                        subtype.size == 3 && subtype[0] == ALL_ARTISTS -> {
-                            val albumId = subtype[2].toString()
-                            val parentId =
-                                "$AUDIO_ID$SEPARATOR${subtype[0]}$SEPARATOR${subtype[1]}"
-
-                            Timber.d(
-                                "Listing song of album %s for artist %s",
-                                albumId,
-                                subtype[1]
-                            )
-
-                            contentRepository.getAudioContainerForAlbum(albumId, parentId)
-                        }
-                        else -> throw noSuchObject
-                    }
-
-                    IMAGE_ID -> contentRepository.containerRegistry[subtype[0]] ?: throw noSuchObject
-                    else -> contentRepository.containerRegistry[subtype[0]] ?: throw noSuchObject
-                }
+            val container: BaseContainer? = when {
+                // drop AUDIO_ID, we don't care about it
+                root == AUDIO_ID && url.size > 1 -> handleAudioContainerSelection(url.drop(1))
+                    ?: contentRepository.containerRegistry[end]
+                else -> contentRepository.containerRegistry[end]
             }
 
-            return getBrowseResult(container)
+            return getBrowseResult(container ?: throw noSuchObject)
         } catch (ex: Exception) {
             Timber.e(ex)
             throw ContentDirectoryException(
                 ContentDirectoryErrorCode.CANNOT_PROCESS,
                 ex.toString()
             )
+        }
+    }
+
+    private fun handleAudioContainerSelection(
+        url: List<Long>,
+    ): BaseContainer? {
+        val root = url[0]
+        val tail = url.last()
+
+        return when (root) {
+            ALL_ARTISTS -> {
+                when (url.size) {
+                    2 -> {
+                        val artistId = tail.toString()
+                        val parentId = "$AUDIO_ID$SEPARATOR${root}"
+                        Timber.d("Listing album of artist $artistId")
+
+                        contentRepository.getAlbumContainerForArtist(artistId, parentId)
+                    }
+                    3 -> {
+                        val albumId = url[2].toString()
+                        val parentId =
+                            "$AUDIO_ID$SEPARATOR${root}$SEPARATOR${tail}"
+
+                        Timber.d(
+                            "Listing song of album %s for artist %s",
+                            albumId,
+                            url[2]
+                        )
+
+                        contentRepository.getAudioContainerForAlbum(albumId, parentId)
+                    }
+                    else -> null
+                }
+
+            }
+            ALL_ALBUMS -> {
+                if (url.size == 2) {
+                    val albumId = tail.toString()
+                    val parentId = "$AUDIO_ID$SEPARATOR${root}"
+                    Timber.d("Listing song of album $albumId")
+
+                    contentRepository.getAudioContainerForAlbum(albumId, parentId)
+                } else null
+            }
+
+            else -> null
         }
     }
 
@@ -134,6 +128,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         try {
             answer = DIDLParser().generate(didl)
         } catch (ex: Exception) {
+            Timber.e(ex)
             throw ContentDirectoryException(ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString())
         }
 
@@ -141,8 +136,8 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
     }
 
     companion object {
-        private val noSuchObject =
-            ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)
+        private val noSuchObject
+            get() = ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)
 
         fun isRoot(parentId: String?) =
             parentId?.compareTo(ROOT_ID.toString()) == 0

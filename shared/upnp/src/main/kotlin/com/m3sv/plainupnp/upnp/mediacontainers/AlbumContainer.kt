@@ -73,7 +73,7 @@ class AlbumContainer(
                 val album: String?
 
                 if (artistId == null) {
-                    albumId = cursor.getInt(albumIdColumn!!).toString()
+                    albumId = cursor.getLong(albumIdColumn!!).toString()
                     album = cursor.getString(albumColumn!!)
                 } else {
                     album = cursor.getString(artistsColumn!!)
@@ -117,7 +117,7 @@ class AlbumContainer(
         )?.use { cursor ->
             if (cursor.moveToFirst())
                 result =
-                    cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Albums._ID)).toString()
+                    cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Albums._ID)).toString()
         }
 
         return result

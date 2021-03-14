@@ -75,7 +75,7 @@ class ArtistContainer(
                 val artistsColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Artists.ARTIST)
 
                 while (cursor.moveToNext()) {
-                    val artistId = cursor.getInt(artistsIdColumn).toString()
+                    val artistId = cursor.getLong(artistsIdColumn).toString()
                     val artist = cursor.getString(artistsColumn)
 
                     containers.add(
