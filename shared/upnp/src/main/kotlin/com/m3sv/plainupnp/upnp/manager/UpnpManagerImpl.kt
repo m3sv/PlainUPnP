@@ -67,7 +67,7 @@ class UpnpManagerImpl @Inject constructor(
     override val renderers: Flow<List<DeviceDisplay>> = rendererDiscoveryObservable()
     override val actionErrors: Flow<Consumable<String>> = errorReporter.errorFlow
 
-    private val folderChange = MutableSharedFlow<Folder>()
+    private val folderChange = MutableSharedFlow<Folder>(1)
     override val folderChangeFlow: Flow<Folder> = folderChange
 
     private val updateChannel = MutableSharedFlow<Pair<Item, Service<*, *>>>()

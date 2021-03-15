@@ -132,9 +132,6 @@
                     android:layout_height="@dimen/media_controls_size"
                     android:background="?selectableItemBackgroundBorderless"
                     android:padding="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/play"
-                    app:layout_constraintEnd_toStartOf="@+id/play"
-                    app:layout_constraintTop_toTopOf="@+id/play"
                     app:srcCompat="@drawable/ic_skip_previous" />
 
                 <ImageView
@@ -143,10 +140,16 @@
                     android:layout_height="@dimen/media_controls_size"
                     android:background="?selectableItemBackgroundBorderless"
                     android:padding="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/next"
-                    app:layout_constraintEnd_toStartOf="@+id/next"
-                    app:layout_constraintTop_toTopOf="@+id/next"
                     app:srcCompat="@drawable/ic_play_arrow" />
+
+                <ImageView
+                    android:id="@+id/stop"
+                    android:layout_width="@dimen/media_controls_size"
+                    android:layout_height="@dimen/media_controls_size"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:padding="8dp"
+                    app:srcCompat="@drawable/ic_stop"
+                    app:tint="@color/colorPrimary" />
 
                 <ImageView
                     android:id="@+id/next"
@@ -154,9 +157,6 @@
                     android:layout_height="@dimen/media_controls_size"
                     android:background="?selectableItemBackgroundBorderless"
                     android:padding="8dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/art"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/art"
                     app:srcCompat="@drawable/ic_skip_next" />
             </LinearLayout>
 

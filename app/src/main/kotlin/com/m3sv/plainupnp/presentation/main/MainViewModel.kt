@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 sealed class MainRoute {
@@ -158,6 +157,7 @@ class MainViewModel @Inject constructor(
                 PlayerButton.NEXT -> upnpManager.playNext()
                 PlayerButton.RAISE_VOLUME -> volumeManager.raiseVolume()
                 PlayerButton.LOWER_VOLUME -> volumeManager.lowerVolume()
+                PlayerButton.STOP -> upnpManager.stopPlayback()
             }
         }
     }
@@ -170,10 +170,5 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             navigationChannel.emit(route)
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        Timber.d("OnCleared is called")
     }
 }

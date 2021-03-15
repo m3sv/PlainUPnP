@@ -22,7 +22,7 @@ buildscript {
             architectureComponents: "2.2.0",
             cardView              : "1.0.0",
             cling                 : "2.2.0",
-            composeVersion        : '1.0.0-beta01',
+            composeVersion        : '1.0.0-beta02',
             constraintLayout      : "2.0.0",
             coreLibraryDesugaring : '1.1.1',
             coreTesting           : "2.1.0",
@@ -30,7 +30,7 @@ buildscript {
             hilt                  : "2.33-beta",
             detekt                : "1.0.0",
             jetty                 : "8.1.8.v20121106",
-            kotlin                : '1.4.30',
+            kotlin                : '1.4.31',
             nanohttpd             : "2.3.1",
             okHttp                : "4.9.0",
             recyclerView          : "1.1.0",
@@ -89,7 +89,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0-alpha09'
+        classpath 'com.android.tools.build:gradle:7.0.0-alpha10'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "com.squareup.sqldelight:gradle-plugin:${versions.sqlDelight}"
         classpath "com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}"
@@ -134,7 +134,6 @@ allprojects {
                     '-Xopt-in=kotlin.ExperimentalStdlibApi',
                     '-Xopt-in=androidx.compose.animation.ExperimentalAnimationApi',
                     '-Xopt-in=androidx.compose.material.ExperimentalMaterialApi'
-
             ]
         }
     }

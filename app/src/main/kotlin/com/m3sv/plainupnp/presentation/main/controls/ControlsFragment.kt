@@ -54,8 +54,6 @@ class ControlsFragment : Fragment() {
 
     private lateinit var rendererAdapter: SimpleArrayAdapter<SpinnerItem>
 
-    private lateinit var contentDirectoriesAdapter: SimpleArrayAdapter<SpinnerItem>
-
     private val bottomSheetCallback: BottomSheetCallback =
         BottomSheetCallback()
 
@@ -147,18 +145,15 @@ class ControlsFragment : Fragment() {
                 viewModel.playerButtonClick(PlayerButton.PLAY)
             }
 
+            stop.setOnClickListener {
+                viewModel.playerButtonClick(PlayerButton.STOP)
+            }
+
             progress.setOnSeekBarChangeListener(onSeekBarChangeListener { progress ->
                 viewModel.moveTo(progress)
             })
 
             scrimView.setOnClickListener { close() }
-
-//            with(pickers.mainContentDevicePicker) {
-//                setAdapter(contentDirectoriesAdapter)
-//                setOnItemClickListener { _, _, position, _ ->
-//                    viewModel.selectContentDirectory(position)
-//                }
-//            }
 
             with(pickers.mainRendererDevicePicker) {
                 setAdapter(rendererAdapter)
@@ -174,10 +169,6 @@ class ControlsFragment : Fragment() {
 
         viewModel.renderers.observe(viewLifecycleOwner) { renderers ->
             setRenderers(renderers)
-        }
-
-        viewModel.contentDirectories.observe(viewLifecycleOwner) { contentDirectories ->
-            setContentDirectories(contentDirectories)
         }
     }
 
@@ -238,15 +229,6 @@ class ControlsFragment : Fragment() {
         rendererAdapter.setNewItems(bundle.devices)
     }
 
-    private fun setContentDirectories(bundle: SpinnerItemsBundle) {
-        selectedContentDirectoryIndex = bundle.selectedDeviceIndex
-        selectedContentDirectoryName = bundle.selectedDeviceName
-        contentDirectoriesAdapter.setNewItems(bundle.devices)
-    }
-
-    private var selectedContentDirectoryName: String? = null
-    private var selectedContentDirectoryIndex: Int = -1
-
     private var selectedRendererName: String? = null
     private var selectedRendererIndex: Int = -1
 
@@ -255,13 +237,6 @@ class ControlsFragment : Fragment() {
             if (selectedRendererIndex != -1 && selectedRendererName != null) {
                 binding.pickers.mainRendererDevicePicker.setText(selectedRendererName)
                 viewModel.selectRenderer(selectedRendererIndex)
-            }
-        }
-
-        contentDirectoriesAdapter = SimpleArrayAdapter.init(requireContext(), CONTENT_ADAPTER_KEY) {
-            if (selectedContentDirectoryIndex != -1 && selectedContentDirectoryName != null) {
-//                binding.pickers.mainContentDevicePicker.setText(selectedContentDirectoryName)
-                viewModel.selectContentDirectory(selectedContentDirectoryIndex)
             }
         }
     }
@@ -342,7 +317,6 @@ class ControlsFragment : Fragment() {
 
     private fun saveAdaptersState(outState: Bundle) {
         rendererAdapter.onSaveInstanceState(outState)
-        contentDirectoriesAdapter.onSaveInstanceState(outState)
     }
 
     private fun saveScrimViewState(outState: Bundle) {
@@ -374,7 +348,6 @@ class ControlsFragment : Fragment() {
 
     private fun restoreAdaptersState(savedInstanceState: Bundle) {
         rendererAdapter.onRestoreInstanceState(savedInstanceState)
-        contentDirectoriesAdapter.onRestoreInstanceState(savedInstanceState)
     }
 
     private fun restoreBackPressedCallbackState(savedInstanceState: Bundle) {
@@ -383,7 +356,6 @@ class ControlsFragment : Fragment() {
 
     companion object {
         private const val RENDERERS_ADAPTER_KEY = "renderers"
-        private const val CONTENT_ADAPTER_KEY = "contentDirectories"
 
         private const val SCRIM_VIEW_VISIBILITY_KEY = "SCRIM_VIEW_VISIBILITY"
         private const val SCRIM_VIEW_ALPHA_KEY = "SCRIM_VIEW_ALPHA"
