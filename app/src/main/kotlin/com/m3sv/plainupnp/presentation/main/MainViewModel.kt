@@ -11,7 +11,6 @@ import com.m3sv.plainupnp.presentation.home.FolderClick
 import com.m3sv.plainupnp.presentation.home.MediaItemClick
 import com.m3sv.plainupnp.presentation.home.MediaItemLongClick
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
-import com.m3sv.plainupnp.upnp.discovery.device.ObserveContentDirectoriesUseCase
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
 import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.manager.PlayItem
@@ -41,7 +40,6 @@ class MainViewModel @Inject constructor(
     private val filterDelegate: FilterDelegate,
     private val deviceDisplayMapper: DeviceDisplayMapper,
     private val folderManager: FolderManager,
-    observeContentDirectories: ObserveContentDirectoriesUseCase,
     observeRenderersUseCase: ObserveRenderersUseCase,
 ) : ViewModel() {
 
@@ -83,10 +81,6 @@ class MainViewModel @Inject constructor(
         .asLiveData()
 
     val renderers = observeRenderersUseCase()
-        .map { bundle -> deviceDisplayMapper(bundle) }
-        .asLiveData()
-
-    val contentDirectories = observeContentDirectories()
         .map { bundle -> deviceDisplayMapper(bundle) }
         .asLiveData()
 

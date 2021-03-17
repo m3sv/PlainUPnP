@@ -15,6 +15,7 @@
 
     <com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory android:title="@string/upnp_category">
         <Preference
+            android:icon="@drawable/ic_folder_24dp"
             android:key="configure_folders"
             android:title="@string/selected_folders" />
 
