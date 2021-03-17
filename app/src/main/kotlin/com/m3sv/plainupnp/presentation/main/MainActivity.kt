@@ -58,6 +58,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         inflateView()
 
+        lifecycleScope.launchWhenCreated {
+            viewModel.finishFlow.collect {
+                finishAndRemoveTask()
+            }
+        }
+
         if (savedInstanceState != null) {
             Handler().post {
                 with(savedInstanceState) {
@@ -66,7 +72,6 @@ class MainActivity : AppCompatActivity() {
                     restoreControlsVisibility()
                 }
             }
-        } else {
             addFragment(OnboardingFragment())
         }
 

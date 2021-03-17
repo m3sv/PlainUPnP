@@ -72,6 +72,9 @@ class UpnpManagerImpl @Inject constructor(
 
     private val updateChannel = MutableSharedFlow<Pair<Item, Service<*, *>>>()
 
+    override val isContentDirectorySelected: Boolean
+        get() = contentDirectoryObservable.selectedContentDirectory != null
+
     init {
         launch {
             updateChannel.scan(launch { }) { accumulator, pair ->

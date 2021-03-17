@@ -16,10 +16,7 @@ import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.manager.PlayItem
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,7 +40,14 @@ class MainViewModel @Inject constructor(
     observeRenderersUseCase: ObserveRenderersUseCase,
 ) : ViewModel() {
 
+    private val _finishFlow: MutableStateFlow<Unit?> = MutableStateFlow(null)
+    val finishFlow: Flow<Unit> = _finishFlow.filterNotNull()
+
     init {
+        if (!upnpManager.isContentDirectorySelected) {
+            _finishFlow.value = Unit
+        }
+
         viewModelScope.launch {
             subscribe<MediaItemClick>()
                 .map { it.data as PlayItem }

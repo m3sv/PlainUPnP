@@ -12,20 +12,20 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 
 interface UpnpManager : UpnpVolumeManager, PlaybackManager {
+    val isContentDirectorySelected: Boolean
     val renderers: Flow<List<DeviceDisplay>>
     val contentDirectories: Flow<List<DeviceDisplay>>
     val upnpRendererState: Flow<UpnpRendererState>
     val actionErrors: Flow<Consumable<String>>
-
     val folderChangeFlow: Flow<Folder>
 
     fun selectContentDirectory(position: Int)
     fun selectContentDirectoryAsync(upnpDevice: UpnpDevice): Deferred<Result>
+
     fun selectRenderer(position: Int)
 
     // TODO Split Object into Media and Folder
     fun playItem(playItem: PlayItem)
-
     fun openFolder(folder: Folder)
     fun seekTo(progress: Int)
     fun getCurrentFolderContents(): List<ClingDIDLObject>
