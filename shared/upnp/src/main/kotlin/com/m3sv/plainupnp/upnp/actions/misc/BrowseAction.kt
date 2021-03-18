@@ -35,11 +35,12 @@ class BrowseAction @Inject constructor(controlPoint: ControlPoint) :
             null
         ) {
             override fun received(actionInvocation: ActionInvocation<*>, didl: DIDLContent) {
+                Timber.d("Received browse response")
                 continuation.resume(buildContentList(didl))
             }
 
             override fun updateStatus(status: Status) {
-                Timber.v("Update browse status!")
+                Timber.d("Update browse status $status")
             }
 
             override fun failure(

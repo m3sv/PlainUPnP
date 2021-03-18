@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import com.m3sv.plainupnp.Router
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OnePane
 import com.m3sv.plainupnp.compose.widgets.OneTitle
@@ -94,7 +95,7 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
     }
 
     private fun handleSelectDirectorySuccess() {
-        startActivity(this.intent.getParcelableExtra(NEXT_ACTIVITY_INTENT))
+        startActivity((application as Router).getNextIntent(this))
     }
 
     private fun handleSelectDirectoryError() {
@@ -103,7 +104,4 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
             .show()
     }
 
-    companion object {
-        const val NEXT_ACTIVITY_INTENT = "next_activity_intent"
-    }
 }

@@ -1,6 +1,8 @@
 package com.m3sv.plainupnp
 
 import android.app.Application
+import android.content.Context
+import android.content.Intent
 import android.os.StrictMode
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
@@ -8,6 +10,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
 import com.m3sv.plainupnp.common.BackgroundModeManager
 import com.m3sv.plainupnp.common.util.generateUdn
+import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
 import com.m3sv.plainupnp.upnp.server.MediaServer
 import dagger.hilt.android.HiltAndroidApp
@@ -19,7 +22,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltAndroidApp
-class App : Application() {
+class App : Application(), Router {
 
     @Inject
     lateinit var server: MediaServer
@@ -78,4 +81,6 @@ class App : Application() {
             }
         })
     }
+
+    override fun getNextIntent(context: Context): Intent = Intent(context, MainActivity::class.java)
 }
