@@ -70,7 +70,7 @@ class UpnpManagerImpl @Inject constructor(
     private val folderChange = MutableSharedFlow<Folder>(1)
     override val folderChangeFlow: Flow<Folder> = folderChange
 
-    private val updateChannel = MutableSharedFlow<Pair<Item, Service<*, *>>>()
+    private val updateChannel = MutableSharedFlow<Pair<Item, Service<*, *>>?>()
 
     override val isContentDirectorySelected: Boolean
         get() = contentDirectoryObservable.selectedContentDirectory != null
@@ -82,6 +82,9 @@ class UpnpManagerImpl @Inject constructor(
         launch {
             updateChannel.scan(launch { }) { accumulator, pair ->
                 accumulator.cancel()
+
+                if (pair == null)
+                    return@scan launch { }
 
                 Timber.d("update: received new pair: ${pair.first}");
                 val didlItem = pair.first
@@ -278,7 +281,8 @@ class UpnpManagerImpl @Inject constructor(
 
     private var remotePaused = false
 
-    private fun stopUpdate() {
+    private suspend fun stopUpdate() {
+        updateChannel.emit(null)
     }
 
     private suspend fun showImageInfo(
