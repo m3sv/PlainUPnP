@@ -5,6 +5,8 @@ import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.resourceproviders.UpnpResourceProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import timber.log.Timber
 import javax.inject.Inject
@@ -14,13 +16,21 @@ class RendererDiscoveryObservable @Inject constructor(
     private val rendererDiscovery: RendererDiscovery,
     upnpResourceProvider: UpnpResourceProvider
 ) {
-    var selectedRenderer: UpnpDevice? = null
+    private var selectedRenderer: MutableStateFlow<UpnpDevice?> = MutableStateFlow(null)
 
     private val renderers =
         LinkedHashSet<DeviceDisplay>(listOf(DeviceDisplay(LocalDevice(upnpResourceProvider.playLocally))))
 
     val currentRenderers: List<DeviceDisplay>
         get() = renderers.toList()
+
+    fun selectRenderer(upnpDevice: UpnpDevice?) {
+        selectedRenderer.value = upnpDevice
+    }
+
+    fun getSelectedRenderer(): UpnpDevice? = selectedRenderer.value
+
+    fun observeSelectRenderer(): Flow<UpnpDevice?> = selectedRenderer
 
     operator fun invoke() = callbackFlow {
         rendererDiscovery.startObserving()
@@ -59,8 +69,8 @@ class RendererDiscoveryObservable @Inject constructor(
                         if (renderers.contains(device))
                             renderers -= device
 
-                        if (event.upnpDevice == selectedRenderer)
-                            selectedRenderer = null
+                        if (event.upnpDevice == selectedRenderer.value)
+                            selectedRenderer.value = null
                     }
                 }
             }

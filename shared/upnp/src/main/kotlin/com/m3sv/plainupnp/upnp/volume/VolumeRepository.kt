@@ -18,21 +18,18 @@ class VolumeRepository @Inject constructor(
 
     val volumeFlow: Flow<Int> = volumeChannel.filterNotNull()
 
-    suspend fun raiseVolume(service: Service<*, *>, step: Int) =
-        raiseVolumeAction(service, step).let(::postVolume)
+    suspend fun raiseVolume(service: Service<*, *>, step: Int) = postVolume(raiseVolumeAction(service, step))
 
-    suspend fun lowerVolume(service: Service<*, *>, step: Int) =
-        lowerVolumeAction(service, step).let(::postVolume)
+    suspend fun lowerVolume(service: Service<*, *>, step: Int) = postVolume(lowerVolumeAction(service, step))
 
     suspend fun muteVolume(service: Service<*, *>, mute: Boolean) = muteVolumeAction(service, mute)
 
-    suspend fun setVolume(service: Service<*, *>, volume: Int) =
-        setVolumeAction(service, volume).let(::postVolume)
+    suspend fun setVolume(service: Service<*, *>, volume: Int) = postVolume(setVolumeAction(service, volume))
 
-    suspend fun getVolume(service: Service<*, *>): Int = getVolumeAction(service).also(::postVolume)
+    suspend fun getVolume(service: Service<*, *>): Int = getVolumeAction(service).also { postVolume(it) }
 
-    private fun postVolume(volume: Int) {
-        volumeChannel.tryEmit(volume)
+    private suspend fun postVolume(volume: Int) {
+        volumeChannel.emit(volume)
     }
 }
 

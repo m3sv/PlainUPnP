@@ -14,6 +14,7 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.m3sv.plainupnp.R
@@ -28,7 +29,6 @@ import com.m3sv.plainupnp.presentation.home.HomeFragment
 import com.m3sv.plainupnp.presentation.inappplayer.ImageFragment
 import com.m3sv.plainupnp.presentation.inappplayer.PlayerFragment
 import com.m3sv.plainupnp.presentation.main.controls.ControlsFragment
-import com.m3sv.plainupnp.presentation.onboarding.OnboardingFragment
 import com.m3sv.plainupnp.presentation.settings.SettingsFragment
 import com.m3sv.plainupnp.upnp.folder.Folder
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,6 +54,8 @@ class MainActivity : AppCompatActivity() {
         (supportFragmentManager.findFragmentById(R.id.bottom_nav_drawer) as ControlsFragment)
     }
 
+    private var isConnectedToRenderer: Boolean = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         inflateView()
@@ -72,7 +74,6 @@ class MainActivity : AppCompatActivity() {
                     restoreControlsVisibility()
                 }
             }
-            addFragment(OnboardingFragment())
         }
 
         observeState()
@@ -106,13 +107,6 @@ class MainActivity : AppCompatActivity() {
     private fun inflateView() {
         binding = MainActivityBinding.inflate(layoutInflater)
         setContentView(binding.root)
-    }
-
-    private fun addFragment(fragment: Fragment) {
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.nav_host_container, fragment)
-            .commit()
     }
 
     private fun replaceFragment(
@@ -154,9 +148,11 @@ class MainActivity : AppCompatActivity() {
             subscribe<ExitApplication>().collect { finishAndRemoveTask() }
         }
 
-        viewModel
-            .volume
-            .observe(this) { volume: Int -> volumeIndicator.volume = volume }
+        lifecycleScope.launchWhenCreated {
+            viewModel.volume.collect { volume: Int ->
+                volumeIndicator.volume = volume
+            }
+        }
 
         viewModel
             .errors
@@ -203,6 +199,11 @@ class MainActivity : AppCompatActivity() {
 
                 binding.navigateHome.setOnClickListener(clickListener)
             }
+
+
+        viewModel.isConnectedToRenderer.asLiveData().observe(this) {
+            isConnectedToRenderer = it != null
+        }
 
         viewModel.navigation.observe(this) { navigationEvent ->
             navigationEvent.consume { route ->
@@ -297,17 +298,21 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean = when (keyCode) {
-        KeyEvent.KEYCODE_VOLUME_UP -> {
-            viewModel.playerButtonClick(PlayerButton.RAISE_VOLUME)
-            true
-        }
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        return if (isConnectedToRenderer) {
+            when (keyCode) {
+                KeyEvent.KEYCODE_VOLUME_UP -> {
+                    viewModel.playerButtonClick(PlayerButton.RAISE_VOLUME)
+                    true
+                }
 
-        KeyEvent.KEYCODE_VOLUME_DOWN -> {
-            viewModel.playerButtonClick(PlayerButton.LOWER_VOLUME)
-            true
-        }
-        else -> super.onKeyDown(keyCode, event)
+                KeyEvent.KEYCODE_VOLUME_DOWN -> {
+                    viewModel.playerButtonClick(PlayerButton.LOWER_VOLUME)
+                    true
+                }
+                else -> super.onKeyDown(keyCode, event)
+            }
+        } else super.onKeyDown(keyCode, event)
     }
 
     private fun animateBottomDrawChanges() {

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.core.eventbus.subscribe
+import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.presentation.home.FolderClick
 import com.m3sv.plainupnp.presentation.home.MediaItemClick
 import com.m3sv.plainupnp.presentation.home.MediaItemLongClick
@@ -78,7 +79,6 @@ class MainViewModel @Inject constructor(
 
     val volume = volumeManager
         .volumeFlow
-        .asLiveData()
 
     val upnpState = upnpManager
         .upnpRendererState
@@ -100,6 +100,8 @@ class MainViewModel @Inject constructor(
     val navigationStrip = folderManager
         .observe()
         .asLiveData()
+
+    val isConnectedToRenderer: Flow<UpnpDevice?> = upnpManager.isConnectedToRender
 
     private val navigationChannel: MutableSharedFlow<MainRoute> = MutableSharedFlow()
 
@@ -137,10 +139,6 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             upnpManager.seekTo(progress)
         }
-    }
-
-    fun selectContentDirectory(position: Int) {
-        upnpManager.selectContentDirectory(position)
     }
 
     fun selectRenderer(position: Int) {

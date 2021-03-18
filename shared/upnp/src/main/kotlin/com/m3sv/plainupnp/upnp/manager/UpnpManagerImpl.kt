@@ -75,6 +75,9 @@ class UpnpManagerImpl @Inject constructor(
     override val isContentDirectorySelected: Boolean
         get() = contentDirectoryObservable.selectedContentDirectory != null
 
+    override val isConnectedToRender: Flow<UpnpDevice?>
+        get() = rendererDiscoveryObservable.observeSelectRenderer()
+
     init {
         launch {
             updateChannel.scan(launch { }) { accumulator, pair ->
@@ -193,11 +196,13 @@ class UpnpManagerImpl @Inject constructor(
                 .selectedDeviceQueries
                 .insertSelectedDevice(RENDERER_TYPE, renderer.fullIdentity)
 
-            if (isLocal || renderer != rendererDiscoveryObservable.selectedRenderer)
+            if (isLocal || renderer != rendererDiscoveryObservable.getSelectedRenderer())
                 stopUpdate()
 
             if (!isLocal) {
-                rendererDiscoveryObservable.selectedRenderer = renderer
+                rendererDiscoveryObservable.selectRenderer(renderer)
+            } else {
+                rendererDiscoveryObservable.selectRenderer(null)
             }
         }
     }
@@ -440,7 +445,7 @@ class UpnpManagerImpl @Inject constructor(
         errorReason: ErrorReason? = null,
         block: (Service<*, *>) -> Unit,
     ) {
-        rendererDiscoveryObservable.selectedRenderer?.let { renderer ->
+        rendererDiscoveryObservable.getSelectedRenderer()?.let { renderer ->
             val service: Service<*, *>? =
                 (renderer as CDevice).device.findService(UDAServiceType(AV_TRANSPORT))
 
@@ -455,7 +460,7 @@ class UpnpManagerImpl @Inject constructor(
         errorReason: ErrorReason? = null,
         block: (Service<*, *>) -> T,
     ): T? {
-        return rendererDiscoveryObservable.selectedRenderer?.let { renderer ->
+        return rendererDiscoveryObservable.getSelectedRenderer()?.let { renderer ->
             val service: Service<*, *>? =
                 (renderer as CDevice).device.findService(UDAServiceType(RENDERING_CONTROL))
 
