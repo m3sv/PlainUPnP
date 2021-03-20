@@ -36,10 +36,7 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (savedInstanceState == null) {
-            PlainUpnpAndroidService.start(this)
-        }
+        PlainUpnpAndroidService.start(this)
 
         setContent {
             val contentDirectories by upnpManager.contentDirectories.collectAsState(initial = listOf())

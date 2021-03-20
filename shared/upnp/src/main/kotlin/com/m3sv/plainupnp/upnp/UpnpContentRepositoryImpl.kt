@@ -370,14 +370,15 @@ class UpnpContentRepositoryImpl @Inject constructor(
 
     private fun isContainerCached(uri: Uri): Boolean {
         val cachedEntry =
-            database.directoryCacheQueries.selectByUri(uri.toString()).executeAsOneOrNull() ?: return false
+            database.directoryCacheQueries.selectByUri(uri.toString()).executeAsList().lastOrNull() ?: return false
         return containerRegistry[cachedEntry._id] != null
     }
 
     private fun queryOrCreateContainer(uri: Uri, parentContainer: Container): Container? {
-        return (database.directoryCacheQueries.selectByUri(uri.toString()).executeAsOneOrNull()?.let { cachedValue ->
-            createContainer(cachedValue._id, parentContainer.rawId, cachedValue.name)
-        } ?: createFolderContainer(uri, parentContainer.rawId))?.also {
+        return (database.directoryCacheQueries.selectByUri(uri.toString()).executeAsList().lastOrNull()
+            ?.let { cachedValue ->
+                createContainer(cachedValue._id, parentContainer.rawId, cachedValue.name)
+            } ?: createFolderContainer(uri, parentContainer.rawId))?.also {
             parentContainer.addContainer(it)
             it.addToRegistry()
         }
@@ -563,7 +564,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
     }
 
     private fun getCachedFile(uri: Uri): FileCache? {
-        return database.fileCacheQueries.selectByUri(uri.toString()).executeAsOneOrNull()
+        return database.fileCacheQueries.selectByUri(uri.toString()).executeAsList().lastOrNull()
     }
 
     private fun generateContainerStructure(

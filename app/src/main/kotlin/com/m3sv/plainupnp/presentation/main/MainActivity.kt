@@ -145,7 +145,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeState() {
         lifecycleScope.launchWhenCreated {
-            subscribe<ExitApplication>().collect { finishAndRemoveTask() }
+            subscribe<ExitApplication>().collect { finishAffinity() }
         }
 
         lifecycleScope.launchWhenCreated {
