@@ -1,6 +1,5 @@
 package com.m3sv.plainupnp.presentation.onboarding
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
@@ -18,8 +17,8 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.m3sv.plainupnp.ThemeOption
+import com.m3sv.plainupnp.applicationmode.ApplicationMode
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import dagger.hilt.android.AndroidEntryPoint
@@ -161,11 +160,8 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun checkStoragePermission(onPermissionGranted: () -> Unit) {
         when {
-            ContextCompat.checkSelfPermission(
-                this,
-                READ_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED -> onPermissionGranted()
-            ActivityCompat.shouldShowRequestPermissionRationale(this, READ_EXTERNAL_STORAGE)
+            viewModel.hasStoragePermission() -> onPermissionGranted()
+            ActivityCompat.shouldShowRequestPermissionRationale(this, OnboardingViewModel.STORAGE_PERMISSION)
             -> {
                 // In an educational UI, explain to the user why your app requires this
                 // permission for a specific feature to behave as expected. In this UI,
@@ -186,14 +182,10 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun requestReadStoragePermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
+            if (!viewModel.hasStoragePermission()) {
                 ActivityCompat.requestPermissions(
                     this,
-                    arrayOf(READ_EXTERNAL_STORAGE),
+                    arrayOf(OnboardingViewModel.STORAGE_PERMISSION),
                     REQUEST_READ_EXTERNAL_STORAGE
                 )
             }
@@ -217,7 +209,6 @@ class OnboardingActivity : AppCompatActivity() {
     companion object {
         private const val REQUEST_READ_EXTERNAL_STORAGE = 12345
         private const val REQUEST_DIRECTORY_CODE = 12
-        private const val READ_EXTERNAL_STORAGE = Manifest.permission.READ_EXTERNAL_STORAGE
         private const val DIRECTORY_PERMISSIONS =
             Intent.FLAG_GRANT_READ_URI_PERMISSION and FLAG_GRANT_PERSISTABLE_URI_PERMISSION
     }

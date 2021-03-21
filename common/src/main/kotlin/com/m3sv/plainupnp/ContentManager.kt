@@ -30,7 +30,7 @@ class ContentManager @Inject constructor(
         updateUris()
     }
 
-    fun getPersistedUris(): Flow<List<UriWrapper>> = persistedUris
+    fun persistedUrisFlow(): Flow<List<UriWrapper>> = persistedUris
 
     fun releaseUri(uriWrapper: UriWrapper) {
         launch {
@@ -48,7 +48,7 @@ class ContentManager @Inject constructor(
         }
     }
 
-    private fun getUris(): List<UriWrapper> {
-        return application.contentResolver.persistedUriPermissions.map(::UriWrapper)
-    }
+    fun getUris(): List<UriWrapper> = application.contentResolver.persistedUriPermissions.map(::UriWrapper)
+
+    // TODO Add selection of common types(image/audio/video)
 }
