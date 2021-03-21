@@ -1,4 +1,5 @@
 apply from: "../../scripts/kotlin-android-library.gradle"
+apply from: '../../scripts/cling.gradle'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 
@@ -36,6 +37,8 @@ dependencies {
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
 
+    implementation deps.nanohttpd.core
+    implementation deps.nanohttpd.webserver
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

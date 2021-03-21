@@ -11,18 +11,18 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import com.m3sv.plainupnp.common.BackgroundModeManager
 import com.m3sv.plainupnp.common.util.generateUdn
 import com.m3sv.plainupnp.presentation.main.MainActivity
+import com.m3sv.plainupnp.upnp.UpnpScopeProvider
 import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
 import com.m3sv.plainupnp.upnp.server.MediaServer
 import dagger.hilt.android.HiltAndroidApp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.fourthline.cling.UpnpService
 import timber.log.Timber
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @HiltAndroidApp
-class App : Application(), Router {
+class App : Application(), Router, UpnpScopeProvider {
 
     @Inject
     lateinit var server: MediaServer
@@ -35,6 +35,9 @@ class App : Application(), Router {
 
     @Inject
     lateinit var themeManager: ThemeManager
+
+    override val upnpScope =
+        CoroutineScope(SupervisorJob() + Executors.newSingleThreadExecutor().asCoroutineDispatcher())
 
     override fun onCreate() {
         super.onCreate()
@@ -52,16 +55,11 @@ class App : Application(), Router {
             )
         }
 
-        if (backgroundModeManager.isAllowedToRunInBackground()) {
-            (upnpService as AndroidUpnpServiceImpl).resume()
-            server.start()
-        }
-
         ProcessLifecycleOwner.get().lifecycle.addObserver(object : LifecycleObserver {
             @OnLifecycleEvent(Lifecycle.Event.ON_START)
             fun onMoveToForeground() {
                 Timber.d("Starting server")
-                GlobalScope.launch(Dispatchers.IO) {
+                upnpScope.launch(Dispatchers.IO) {
                     if (!backgroundModeManager.isAllowedToRunInBackground()) {
                         (upnpService as AndroidUpnpServiceImpl).resume()
                         server.start()
@@ -72,7 +70,7 @@ class App : Application(), Router {
             @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
             fun onMoveToBackground() {
                 Timber.d("Stopping server")
-                GlobalScope.launch(Dispatchers.IO) {
+                upnpScope.launch(Dispatchers.IO) {
                     if (!backgroundModeManager.isAllowedToRunInBackground()) {
                         (upnpService as AndroidUpnpServiceImpl).pause()
                         server.stop()

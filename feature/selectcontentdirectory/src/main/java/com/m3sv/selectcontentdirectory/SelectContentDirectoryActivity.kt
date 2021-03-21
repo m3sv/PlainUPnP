@@ -3,6 +3,7 @@ package com.m3sv.selectcontentdirectory
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,6 @@ import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OnePane
 import com.m3sv.plainupnp.compose.widgets.OneTitle
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
-import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.manager.Result
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,9 +34,12 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
     @Inject
     lateinit var upnpManager: UpnpManager
 
+    private val presenter: SelectContentDirectoryPresenter by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        PlainUpnpAndroidService.start(this)
+        // Trigger lazy initialization
+        presenter
 
         setContent {
             val contentDirectories by upnpManager.contentDirectories.collectAsState(initial = listOf())

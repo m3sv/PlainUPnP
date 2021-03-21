@@ -2,6 +2,8 @@ package com.m3sv.plainupnp.upnp.android
 
 import android.app.Application
 import android.content.Context
+import com.m3sv.plainupnp.applicationmode.ApplicationMode
+import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
 import com.m3sv.plainupnp.common.util.getUdn
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import com.m3sv.plainupnp.upnp.PlainUpnpServiceConfiguration
@@ -21,6 +23,7 @@ class AndroidUpnpServiceImpl @Inject constructor(
     application: Application,
     resourceProvider: LocalServiceResourceProvider,
     contentRepository: UpnpContentRepositoryImpl,
+    private val applicationModeManager: ApplicationModeManager,
 ) : UpnpServiceImpl(PlainUpnpServiceConfiguration(), application) {
 
     private val localDevice by lazy {
@@ -28,8 +31,11 @@ class AndroidUpnpServiceImpl @Inject constructor(
     }
 
     fun resume() {
+        Timber.d("Resuming upnp service")
         try {
-            registry.addDevice(localDevice)
+            if (isStreaming()) {
+                registry.addDevice(localDevice)
+            }
             controlPoint.search()
         } catch (e: Exception) {
             Timber.e(e)
@@ -37,11 +43,19 @@ class AndroidUpnpServiceImpl @Inject constructor(
     }
 
     fun pause() {
-        try {
-            registry.removeDevice(localDevice)
-        } catch (e: Exception) {
-            Timber.e(e)
+        Timber.d("Pause upnp service")
+
+        if (isStreaming()) {
+            try {
+                registry.removeDevice(localDevice)
+            } catch (e: Exception) {
+                Timber.e(e)
+            }
         }
+    }
+
+    private fun isStreaming(): Boolean {
+        return applicationModeManager.applicationMode == ApplicationMode.Streaming
     }
 
     override fun shutdown() {
