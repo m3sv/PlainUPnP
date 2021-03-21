@@ -82,5 +82,6 @@
     <string name="by_folder">By folder</string>
     <string name="pref_title_allow_run_in_background">Allow run in background</string>
     <string name="selected_folders">Selected folders</string>
-
+    <string name="application_mode_player">Player</string>
+    <string name="application_mode_streaming">Streaming</string>
 </resources>

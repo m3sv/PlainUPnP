@@ -30,7 +30,8 @@ class ConfigureFolderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val contentUris: List<UriWrapper> by viewModel.contentUris.collectAsState(initial = listOf())
+            val contentUris: List<UriWrapper> by viewModel.contentUris.collectAsState()
+
             AppTheme {
                 Surface {
                     SelectFoldersScreen(

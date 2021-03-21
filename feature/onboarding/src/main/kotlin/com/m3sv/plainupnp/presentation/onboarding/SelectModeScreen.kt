@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.presentation.onboarding
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,21 +8,23 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.compose.widgets.*
 
+
+enum class ApplicationMode(@StringRes val stringValue: Int) {
+    Streaming(R.string.application_mode_streaming),
+    Player(R.string.application_mode_player),
+}
+
 @Composable
-fun SelectThemeScreen(
-    titleText: String,
-    selectedTheme: ThemeOption,
-    stringProvider: (ThemeOption) -> String,
-    onThemeOptionSelected: (ThemeOption) -> Unit,
+fun SelectModeScreen(
     onClick: () -> Unit,
     onBackClick: () -> Unit,
+    stringProvider: (Int) -> String,
+    onItemSelected: (ApplicationMode) -> Unit,
 ) {
     OnePane(viewingContent = {
-        OneTitle(text = titleText)
+        OneTitle(text = "Select mode")
         OneToolbar(onBackClick = onBackClick)
     }) {
         Column(Modifier
@@ -30,23 +33,13 @@ fun SelectThemeScreen(
         ) {
             OneSubtitle(text = "Start by selecting theme that you would like to use")
             RadioGroup(
-                items = ThemeOption.values().toList(),
-                initial = selectedTheme,
-                stringProvider = stringProvider,
-                onItemSelected = onThemeOptionSelected
+                items = ApplicationMode.values().toList(),
+                initial = ApplicationMode.Streaming,
+                stringProvider = { stringProvider(it.stringValue) },
+                onItemSelected = onItemSelected
             )
             Spacer(Modifier.weight(1f))
             OneContainedButton(text = "Next", onClick = onClick)
         }
     }
-}
-
-@Preview
-@Composable
-private fun SelectableThemePreview() {
-    SelectThemeScreen(titleText = "Set theme",
-        selectedTheme = ThemeOption.Light,
-        stringProvider = { "" },
-        onThemeOptionSelected = { /*TODO*/ },
-        onClick = { /*TODO*/ }, onBackClick = {})
 }

@@ -42,14 +42,14 @@ class OnboardingActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        viewModel.onPageChange(viewModel.currentScreen.previous)
+        viewModel.onNavigateBack()
     }
 
     @Composable
     private fun LayoutContainer() {
         when (onPermissionResult) {
             0 -> {
-                viewModel.onPageChange(OnboardingScreen.SelectDirectories)
+                viewModel.onNavigateNext()
                 onPermissionResult = -1
             }
             1 -> {
@@ -59,15 +59,18 @@ class OnboardingActivity : AppCompatActivity() {
             else -> Unit
         }
 
-        val contentUris by viewModel.contentUris.collectAsState(initial = listOf())
+        val contentUris by viewModel.contentUris.collectAsState()
+        val currentScreen by viewModel.currentScreen.collectAsState()
 
         Content(
             selectedTheme = viewModel.activeTheme,
-            currentScreen = viewModel.currentScreen,
-            onPageChange = viewModel::onPageChange,
+            currentScreen = currentScreen,
             stringProvider = this@OnboardingActivity::getString,
-            onThemeOptionSelected = viewModel::onThemeChange,
-            contentUris = contentUris
+            onSelectTheme = viewModel::onSelectTheme,
+            onSelectApplicationMode = viewModel::onSelectMode,
+            contentUris = contentUris,
+            onNext = viewModel::onNavigateNext,
+            onBack = viewModel::onNavigateBack
         )
     }
 
@@ -77,48 +80,42 @@ class OnboardingActivity : AppCompatActivity() {
         currentScreen: OnboardingScreen,
         contentUris: List<UriWrapper> = listOf(),
         stringProvider: (Int) -> String,
-        onThemeOptionSelected: (ThemeOption) -> Unit,
-        onPageChange: (OnboardingScreen) -> Unit,
+        onSelectTheme: (ThemeOption) -> Unit,
+        onSelectApplicationMode: (ApplicationMode) -> Unit,
+        onNext: () -> Unit,
+        onBack: () -> Unit,
     ) {
         AppTheme {
             Surface {
                 when (currentScreen) {
-                    OnboardingScreen.Greeting -> GreetingScreen { onPageChange(currentScreen.next) }
-                    OnboardingScreen.StoragePermission -> StoragePermissionScreen(onBackClick = {
-                        onPageChange(currentScreen.previous)
-                    }) {
-                        checkStoragePermission { onPageChange(currentScreen.next) }
+                    OnboardingScreen.Greeting -> GreetingScreen(onNext)
+                    OnboardingScreen.StoragePermission -> StoragePermissionScreen(onBackClick = onBack) {
+                        checkStoragePermission(onNext)
                     }
                     OnboardingScreen.SelectDirectories -> SelectFoldersScreen(
                         contentUris,
-                        selectDirectory = { openDirectory() },
-                        onBackClick = { onPageChange(currentScreen.previous) },
-                        onNext = { onboardingManager.completeOnboarding(this@OnboardingActivity) },
-                        onReleaseUri = { viewModel.releaseUri(it) },
+                        selectDirectory = ::openDirectory,
+                        onBackClick = onBack,
+                        onNext = onNext,
+                        onReleaseUri = viewModel::releaseUri,
                     )
                     OnboardingScreen.SelectTheme -> SelectThemeScreen(
-                        text = getString(R.string.set_theme_label),
+                        titleText = getString(R.string.set_theme_label),
                         selectedTheme = selectedTheme,
-                        themeOptions = ThemeOption.values().toList(),
+                        stringProvider = { stringProvider(it.text) },
+                        onThemeOptionSelected = onSelectTheme,
+                        onClick = onNext,
+                        onBackClick = onBack
+                    )
+                    OnboardingScreen.SelectMode -> SelectModeScreen(
+                        onClick = onNext,
+                        onBackClick = onBack,
                         stringProvider = stringProvider,
-                        onThemeOptionSelected = onThemeOptionSelected,
-                        onClick = { onPageChange(currentScreen.next) },
-                        onBackClick = { onPageChange(currentScreen.previous) })
+                        onItemSelected = onSelectApplicationMode
+                    )
+                    OnboardingScreen.Finish -> onboardingManager.completeOnboarding(this@OnboardingActivity)
                 }
             }
-
-//            Box(modifier = Modifier.fillMaxSize()) {
-//                Row(modifier = Modifier.align(Alignment.BottomCenter),
-//                    horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-//                    for (i in OnboardingScreen.values().indices) {
-//                        Box(modifier = Modifier
-//                            .size(8.dp)
-//                            .clip(CircleShape)
-//                            .background(animate(if (currentScreen.ordinal == i) Color.Red else Color.Yellow))
-//                        )
-//                    }
-//                }
-//            }
         }
     }
 
@@ -209,9 +206,11 @@ class OnboardingActivity : AppCompatActivity() {
         Content(
             selectedTheme = ThemeOption.Light,
             currentScreen = OnboardingScreen.SelectTheme,
-            onPageChange = { },
             stringProvider = { "" },
-            onThemeOptionSelected = {}
+            onSelectTheme = {},
+            onSelectApplicationMode = {},
+            onNext = {},
+            onBack = {}
         )
     }
 
