@@ -5,8 +5,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
 import com.m3sv.plainupnp.compose.widgets.*
 
@@ -25,15 +26,28 @@ fun SelectModeScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
         ) {
+            var selectedMode by remember { mutableStateOf(ApplicationMode.Streaming) }
+
             OneSubtitle(text = "Start by selecting theme that you would like to use")
             RadioGroup(
                 items = ApplicationMode.values().toList(),
-                initial = ApplicationMode.Streaming,
+                initial = selectedMode,
                 stringProvider = { stringProvider(it.stringValue) },
-                onItemSelected = onItemSelected
+                onItemSelected = {
+                    selectedMode = it
+                    onItemSelected(it)
+                }
             )
             Spacer(Modifier.weight(1f))
-            OneContainedButton(text = "Next", onClick = onClick)
+            val text = when (selectedMode) {
+                ApplicationMode.Streaming -> stringResource(id = R.string.next)
+                ApplicationMode.Player -> stringResource(R.string.finish_onboarding)
+            }
+
+            OneContainedButton(
+                text = text,
+                onClick = onClick
+            )
         }
     }
 }

@@ -84,4 +84,6 @@
     <string name="selected_folders">Selected folders</string>
     <string name="application_mode_player">Player</string>
     <string name="application_mode_streaming">Streaming</string>
+    <string name="finish_onboarding">Start using PlainUPnP</string>
+    <string name="next">Next</string>
 </resources>

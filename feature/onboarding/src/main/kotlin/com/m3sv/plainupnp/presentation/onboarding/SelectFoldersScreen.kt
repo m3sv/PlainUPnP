@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.m3sv.plainupnp.compose.widgets.*
 import com.m3sv.plainupnp.data.upnp.UriWrapper
@@ -104,7 +105,7 @@ fun SelectFoldersScreen(
 
             if (onNext != null) {
                 OneOutlinedButton(text = "Pick folder", onClick = selectDirectory)
-                OneContainedButton(text = "Start using PlainUPnP", onClick = onNext)
+                OneContainedButton(text = stringResource(R.string.finish_onboarding), onClick = onNext)
             } else {
                 OneContainedButton(text = "Pick folder", onClick = selectDirectory)
             }
