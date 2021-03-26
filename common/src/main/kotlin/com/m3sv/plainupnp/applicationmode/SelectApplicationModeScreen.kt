@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.presentation.onboarding
+package com.m3sv.plainupnp.applicationmode
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,19 +8,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import com.m3sv.plainupnp.applicationmode.ApplicationMode
+import com.m3sv.plainupnp.common.R
 import com.m3sv.plainupnp.compose.widgets.*
 
 @Composable
-fun SelectModeScreen(
-    onClick: () -> Unit,
-    onBackClick: () -> Unit,
+fun SelectApplicationModeScreen(
+    onNextClick: (() -> Unit)?,
+    onBackClick: (() -> Unit)?,
+    nextText: String? = null,
     stringProvider: (Int) -> String,
     onItemSelected: (ApplicationMode) -> Unit,
 ) {
     OnePane(viewingContent = {
         OneTitle(text = "Select mode")
-        OneToolbar(onBackClick = onBackClick)
+        OneToolbar(onBackClick = onBackClick) {}
     }) {
         Column(Modifier
             .fillMaxSize()
@@ -38,16 +39,20 @@ fun SelectModeScreen(
                     onItemSelected(it)
                 }
             )
+
             Spacer(Modifier.weight(1f))
-            val text = when (selectedMode) {
+
+            val text = nextText ?: when (selectedMode) {
                 ApplicationMode.Streaming -> stringResource(id = R.string.next)
                 ApplicationMode.Player -> stringResource(R.string.finish_onboarding)
             }
 
-            OneContainedButton(
-                text = text,
-                onClick = onClick
-            )
+            if (onNextClick != null) {
+                OneContainedButton(
+                    text = text,
+                    onClick = onNextClick
+                )
+            }
         }
     }
 }

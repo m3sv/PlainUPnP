@@ -22,7 +22,7 @@ fun SelectThemeScreen(
 ) {
     OnePane(viewingContent = {
         OneTitle(text = titleText)
-        OneToolbar(onBackClick = onBackClick)
+        OneToolbar(onBackClick = onBackClick) {}
     }) {
         Column(Modifier
             .fillMaxSize()

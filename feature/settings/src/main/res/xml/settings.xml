@@ -8,12 +8,19 @@
             android:entries="@array/theme_entries"
             android:entryValues="@array/theme_entry_values"
             android:icon="@drawable/ic_theme"
-            android:key="@string/set_theme_key"
+            android:key="@string/key_set_theme"
             android:title="@string/set_theme_label"
             app:useSimpleSummaryProvider="true" />
     </com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory>
 
     <com.m3sv.plainupnp.presentation.settings.AppPreferenceCategory android:title="@string/upnp_category">
+        <ListPreference
+            android:entries="@array/application_mode_entries"
+            android:entryValues="@array/application_mode_values"
+            android:key="@string/key_set_application_mode"
+            android:title="@string/application_mode_settings"
+            app:useSimpleSummaryProvider="true" />
+
         <Preference
             android:icon="@drawable/ic_folder_24dp"
             android:key="configure_folders"
@@ -24,6 +31,7 @@
             android:icon="@drawable/ic_run_in_background"
             android:key="@string/pref_key_allow_run_in_background"
             android:title="@string/pref_title_allow_run_in_background" />
+
         <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"
             android:icon="@drawable/ic_image"

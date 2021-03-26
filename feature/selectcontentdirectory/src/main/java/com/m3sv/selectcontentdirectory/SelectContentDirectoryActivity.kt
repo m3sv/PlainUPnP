@@ -1,10 +1,12 @@
 package com.m3sv.selectcontentdirectory
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,12 +17,14 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.m3sv.plainupnp.Router
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OnePane
 import com.m3sv.plainupnp.compose.widgets.OneTitle
+import com.m3sv.plainupnp.compose.widgets.OneToolbar
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.upnp.manager.Result
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
@@ -49,7 +53,24 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
 
             AppTheme {
                 Surface {
-                    OnePane(viewingContent = { OneTitle(text = "Select content directory") }) {
+                    OnePane(viewingContent = {
+                        OneTitle(text = "Select content directory")
+                        OneToolbar {
+                            Image(
+                                modifier = Modifier
+                                    .clickable {
+                                        startActivity(Intent(
+                                            this@SelectContentDirectoryActivity,
+                                            SelectApplicationModeActivity::class.java
+                                        ))
+                                    }
+                                    .padding(8.dp),
+                                painter = painterResource(id = R.drawable.ic_settings),
+                                contentDescription = null
+                            )
+                        }
+                    }
+                    ) {
                         Card(modifier = Modifier.padding(8.dp)) {
                             LazyColumn(
                                 modifier = Modifier.fillMaxWidth(),
@@ -75,12 +96,14 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
                                                     .padding(16.dp),
                                                 text = item.upnpDevice.friendlyName
                                             )
+
                                             if (item.isLoading()) {
                                                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                                             }
 
-                                            if (contentDirectories.size > 1 && index != contentDirectories.size - 1)
+                                            if (contentDirectories.size > 1 && index != contentDirectories.size - 1) {
                                                 Divider(color = Color.DarkGray)
+                                            }
                                         }
                                     }
                                 }

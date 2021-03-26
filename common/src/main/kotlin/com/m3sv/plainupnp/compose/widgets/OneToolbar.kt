@@ -1,9 +1,6 @@
 package com.m3sv.plainupnp.compose.widgets
 
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.runtime.Composable
@@ -14,17 +11,26 @@ import androidx.compose.ui.unit.dp
 import com.m3sv.plainupnp.common.R
 
 @Composable
-fun BoxScope.OneToolbar(modifier: Modifier = Modifier, onBackClick: () -> Unit) {
+fun BoxScope.OneToolbar(
+    modifier: Modifier = Modifier,
+    onBackClick: (() -> Unit)? = null,
+    content: @Composable RowScope.() -> Unit,
+) {
     Row(modifier = modifier
         .fillMaxWidth()
-        .padding(8.dp)
-        .align(Alignment.BottomCenter)
+        .align(Alignment.BottomCenter), horizontalArrangement = Arrangement.End
     ) {
-        IconButton(onClick = onBackClick) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_back),
-                contentDescription = null
-            )
+        if (onBackClick != null) {
+            IconButton(modifier = Modifier.padding(8.dp), onClick = onBackClick) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = null
+                )
+            }
         }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        content()
     }
 }

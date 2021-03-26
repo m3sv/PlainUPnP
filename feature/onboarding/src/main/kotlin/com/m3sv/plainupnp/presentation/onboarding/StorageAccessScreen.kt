@@ -10,7 +10,7 @@ import com.m3sv.plainupnp.compose.widgets.*
 fun StoragePermissionScreen(onBackClick: () -> Unit, onClick: () -> Unit) {
     OnePane(viewingContent = {
         OneTitle(text = "Storage permission")
-        OneToolbar(onBackClick = onBackClick)
+        OneToolbar(onBackClick = onBackClick) {}
     }) {
         Column {
             OneSubtitle("To stream your files we need to get storage access permission")

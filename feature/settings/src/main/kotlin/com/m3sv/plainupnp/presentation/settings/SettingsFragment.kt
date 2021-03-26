@@ -67,7 +67,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
         super.onPause()
     }
 
-    private val setThemeKey by lazy(NONE) { getString(R.string.set_theme_key) }
+    private val setThemeKey by lazy(NONE) { getString(R.string.key_set_theme) }
 
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
         when (key) {

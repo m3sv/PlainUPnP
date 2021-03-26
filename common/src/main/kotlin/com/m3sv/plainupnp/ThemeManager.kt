@@ -12,7 +12,7 @@ class ThemeManager @Inject constructor(
     private val application: Application,
     private val sharedPreferences: SharedPreferences,
 ) {
-    private val setThemeKey = application.getString(R.string.set_theme_key)
+    private val setThemeKey = application.getString(R.string.key_set_theme)
 
     val currentTheme: ThemeOption
         get() {

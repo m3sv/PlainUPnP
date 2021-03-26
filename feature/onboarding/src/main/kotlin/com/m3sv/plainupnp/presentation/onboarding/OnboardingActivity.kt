@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
+import com.m3sv.plainupnp.applicationmode.SelectApplicationModeScreen
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import dagger.hilt.android.AndroidEntryPoint
@@ -106,8 +107,8 @@ class OnboardingActivity : AppCompatActivity() {
                         onClick = onNext,
                         onBackClick = onBack
                     )
-                    OnboardingScreen.SelectMode -> SelectModeScreen(
-                        onClick = onNext,
+                    OnboardingScreen.SelectMode -> SelectApplicationModeScreen(
+                        onNextClick = onNext,
                         onBackClick = onBack,
                         stringProvider = stringProvider,
                         onItemSelected = onSelectApplicationMode

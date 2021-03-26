@@ -10,4 +10,13 @@
         <item>@string/dark_theme_label</item>
         <item>@string/system_theme_label</item>
     </string-array>
+
+    <string-array name="application_mode_values">
+        <item>@string/application_mode_player</item>
+        <item>@string/application_mode_streaming</item>
+    </string-array>
+    <string-array name="application_mode_entries">
+        <item>@string/application_mode_player</item>
+        <item>@string/application_mode_streaming</item>
+    </string-array>
 </resources>

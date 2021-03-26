@@ -9,7 +9,6 @@
     <string name="about_license" translatable="false">GPLv3</string>
     <string name="link_license" translatable="false">http://www.gnu.org/licenses/gpl-3.0.html</string>
     <string name="source_url" translatable="false">https://github.com/m3sv/PlainUPnP</string>
-    <string name="set_theme_key" translatable="false">set_theme_key</string>
     <string name="empty_content" translatable="false">-</string>
     <string name="udn" translatable="false">UDN</string>
     <string name="desc_xml" translatable="false">Description XML</string>
@@ -22,11 +21,6 @@
     <string name="model_number" translatable="false">2.1.0</string>
     <string name="model_desc" translatable="false">Model description</string>
     <string name="about_copyright" translatable="false">Copyright © 2019 Vadym Shavalda</string>
-    <string name="enable_thumbnails_key" translatable="false">pref_enable_thumbnails</string>
-    <string name="pref_enable_video_container_key" translatable="false">pref_contentDirectoryService_video</string>
-    <string name="pref_enable_audio_container_key" translatable="false">pref_contentDirectoryService_audio</string>
-    <string name="pref_enable_image_container_key" translatable="false">pref_contentDirectoryService_image</string>
-    <string name="pref_key_allow_run_in_background" translatable="false">pref_allowRunInBackground</string>
     <string name="notification_channel_name" translatable="false">PlainUPnP server</string>
     <string name="notification_channel_description" translatable="false">Indicates that PlainUPnP server is running</string>
 
@@ -86,4 +80,6 @@
     <string name="application_mode_streaming">Streaming</string>
     <string name="finish_onboarding">Start using PlainUPnP</string>
     <string name="next">Next</string>
+    <string name="application_mode_settings">Application mode</string>
+    <string name="done">Done</string>
 </resources>

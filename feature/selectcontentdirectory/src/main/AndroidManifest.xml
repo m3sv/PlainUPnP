@@ -6,5 +6,8 @@
         <activity
             android:name=".SelectContentDirectoryActivity"
             android:exported="false" />
+        <activity
+            android:name=".SelectApplicationModeActivity"
+            android:exported="false" />
     </application>
 </manifest>

@@ -31,7 +31,7 @@ fun SelectFoldersScreen(
 ) {
     OnePane(viewingContent = {
         OneTitle(text = "Selected directories")
-        OneToolbar(onBackClick = onBackClick)
+        OneToolbar(onBackClick = onBackClick) {}
     }) {
         Column {
             OneSubtitle(text = "Here you can select any custom directories from your file system or SD card")
