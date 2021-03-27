@@ -92,6 +92,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
                 setThemeKey -> themeManager.setDefaultNightMode()
                 setApplicationModeKey -> sharedPreferences.getString(key, null)?.let {
                     applicationModeManager.setApplicationMode(it)
+                    requireActivity().finish()
                 }
             }
         }
@@ -106,12 +107,16 @@ class SettingsFragment : PreferenceFragmentCompat(),
             PreferenceKey.GITHUB -> github()
             PreferenceKey.PRIVACY_POLICY -> privacyPolicy()
             PreferenceKey.CONTACT_US -> openEmail()
-            PreferenceKey.CONFIGURE_FOLDERS -> requireActivity().startActivity(Intent(requireContext(),
-                ConfigureFolderActivity::class.java))
+            PreferenceKey.CONFIGURE_FOLDERS -> startConfigureFolderActivity()
             null -> doNothing
         }
 
         return key != null
+    }
+
+    private fun startConfigureFolderActivity() {
+        requireActivity().startActivity(Intent(requireContext(),
+            ConfigureFolderActivity::class.java))
     }
 
     private fun openEmail() {
