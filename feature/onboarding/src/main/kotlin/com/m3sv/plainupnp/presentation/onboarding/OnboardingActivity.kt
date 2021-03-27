@@ -108,6 +108,7 @@ class OnboardingActivity : AppCompatActivity() {
                         onBackClick = onBack
                     )
                     OnboardingScreen.SelectMode -> SelectApplicationModeScreen(
+                        initialMode = ApplicationMode.Streaming,
                         onNextClick = onNext,
                         onBackClick = onBack,
                         stringProvider = stringProvider,

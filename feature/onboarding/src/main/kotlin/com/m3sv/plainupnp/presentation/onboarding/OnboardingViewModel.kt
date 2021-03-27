@@ -16,10 +16,8 @@ import com.m3sv.plainupnp.applicationmode.ApplicationMode
 import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 private enum class Direction {
@@ -50,9 +48,6 @@ class OnboardingViewModel @Inject constructor(
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, OnboardingScreen.Greeting)
 
-    suspend fun getApplicationMode(): ApplicationMode = withContext(Dispatchers.IO) {
-        applicationModeManager.applicationMode
-    }
 
     fun onSelectTheme(themeOption: ThemeOption) {
         activeTheme = themeOption
@@ -60,7 +55,9 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun onSelectMode(mode: ApplicationMode) {
-        applicationModeManager.applicationMode = mode
+        viewModelScope.launch {
+            applicationModeManager.setApplicationMode(mode)
+        }
     }
 
     fun onNavigateNext() {
@@ -89,11 +86,14 @@ class OnboardingViewModel @Inject constructor(
         OnboardingScreen.SelectMode -> when (getApplicationMode()) {
             ApplicationMode.Streaming -> if (hasStoragePermission()) OnboardingScreen.SelectDirectories else OnboardingScreen.StoragePermission
             ApplicationMode.Player -> OnboardingScreen.Finish
+            null -> error("Application mode is not selected")
         }
         OnboardingScreen.StoragePermission -> OnboardingScreen.SelectDirectories
         OnboardingScreen.SelectDirectories -> OnboardingScreen.Finish
         OnboardingScreen.Finish -> error("Can't navigate from finish screen")
     }
+
+    private suspend fun getApplicationMode(): ApplicationMode? = applicationModeManager.getApplicationMode()
 
     private fun OnboardingScreen.backward(): OnboardingScreen = when (this) {
         OnboardingScreen.Greeting -> OnboardingScreen.Greeting

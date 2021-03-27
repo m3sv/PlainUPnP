@@ -1,30 +1,31 @@
 package com.m3sv.plainupnp.applicationmode
 
-import android.app.Application
 import android.content.SharedPreferences
 import com.m3sv.plainupnp.common.R
+import com.m3sv.plainupnp.common.util.StringResolver
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.onEach
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ApplicationModeManager @Inject constructor(
-    private val application: Application,
+    private val stringResolver: StringResolver,
     private val sharedPreferences: SharedPreferences,
 ) {
-    private val preferencesKey by lazy { application.getString(R.string.key_application_mode) }
+    private val preferencesKey by lazy { stringResolver.getString(R.string.key_application_mode) }
 
-    var applicationMode: ApplicationMode = getSavedApplicationMode()
-        get() = getSavedApplicationMode()
-        set(value) {
-            field = value
-            sharedPreferences.edit().apply {
-                putString(preferencesKey, application.getString(value.stringValue))
-            }.apply()
-        }
+    private val modeFlow: MutableSharedFlow<ApplicationMode> = MutableSharedFlow()
 
-    private fun getSavedApplicationMode(): ApplicationMode = sharedPreferences
-        .getString(preferencesKey, null)
-        ?.let { ApplicationMode.byStringValue(application, it) }
-        ?: ApplicationMode.Streaming
+    val applicationMode: Flow<ApplicationMode?> = modeFlow.onEach {
+        sharedPreferences.edit().apply { putString(preferencesKey, stringResolver.getString(it.stringValue)) }.apply()
+    }
 
+    suspend fun setApplicationMode(mode: ApplicationMode) {
+        modeFlow.emit(mode)
+    }
+
+    fun getApplicationMode(): ApplicationMode? = sharedPreferences
+        .getString(preferencesKey, null)?.let { ApplicationMode.byStringValue(stringResolver, it) }
 }

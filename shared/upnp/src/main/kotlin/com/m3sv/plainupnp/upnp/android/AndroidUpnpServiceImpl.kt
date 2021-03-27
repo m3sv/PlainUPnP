@@ -10,6 +10,10 @@ import com.m3sv.plainupnp.upnp.PlainUpnpServiceConfiguration
 import com.m3sv.plainupnp.upnp.R
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl
 import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.launch
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
 import org.fourthline.cling.model.DefaultServiceManager
 import org.fourthline.cling.model.meta.*
@@ -26,8 +30,29 @@ class AndroidUpnpServiceImpl @Inject constructor(
     private val applicationModeManager: ApplicationModeManager,
 ) : UpnpServiceImpl(PlainUpnpServiceConfiguration(), application) {
 
+    private val scope = MainScope()
+
     private val localDevice by lazy {
         getLocalDevice(resourceProvider, application, contentRepository)
+    }
+
+    init {
+        scope.launch {
+            applicationModeManager.applicationMode.filterNotNull().collect {
+                try {
+                    when (it) {
+                        ApplicationMode.Streaming -> {
+                            registry.addDevice(localDevice)
+                        }
+                        ApplicationMode.Player -> {
+                            registry.removeDevice(localDevice)
+                        }
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e)
+                }
+            }
+        }
     }
 
     fun resume() {
@@ -54,9 +79,8 @@ class AndroidUpnpServiceImpl @Inject constructor(
         }
     }
 
-    private fun isStreaming(): Boolean {
-        return applicationModeManager.applicationMode == ApplicationMode.Streaming
-    }
+    private fun isStreaming(): Boolean =
+        applicationModeManager.getApplicationMode() == ApplicationMode.Streaming
 
     override fun shutdown() {
         (router as AndroidRouter).unregisterBroadcastReceiver()

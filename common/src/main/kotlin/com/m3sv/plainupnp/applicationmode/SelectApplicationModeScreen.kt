@@ -13,6 +13,7 @@ import com.m3sv.plainupnp.compose.widgets.*
 
 @Composable
 fun SelectApplicationModeScreen(
+    initialMode: ApplicationMode,
     onNextClick: (() -> Unit)?,
     onBackClick: (() -> Unit)?,
     nextText: String? = null,
@@ -27,7 +28,7 @@ fun SelectApplicationModeScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
         ) {
-            var selectedMode by remember { mutableStateOf(ApplicationMode.Streaming) }
+            var selectedMode by remember { mutableStateOf(initialMode) }
 
             OneSubtitle(text = "Start by selecting theme that you would like to use")
             RadioGroup(
