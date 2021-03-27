@@ -10,14 +10,17 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
 import com.m3sv.plainupnp.ThemeManager
+import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
 import com.m3sv.plainupnp.common.util.doNothing
 import com.m3sv.plainupnp.presentation.onboarding.ConfigureFolderActivity
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.LazyThreadSafetyMode.NONE
 
@@ -44,6 +47,12 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     @Inject
     lateinit var themeManager: ThemeManager
+
+    @Inject
+    lateinit var applicationModeManager: ApplicationModeManager
+
+    private val setThemeKey by lazy(NONE) { getString(R.string.key_set_theme) }
+    private val setApplicationModeKey by lazy(NONE) { getString(R.string.key_set_application_mode) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -77,11 +86,14 @@ class SettingsFragment : PreferenceFragmentCompat(),
         super.onPause()
     }
 
-    private val setThemeKey by lazy(NONE) { getString(R.string.key_set_theme) }
-
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String) {
-        when (key) {
-            setThemeKey -> themeManager.setDefaultNightMode()
+        lifecycleScope.launch {
+            when (key) {
+                setThemeKey -> themeManager.setDefaultNightMode()
+                setApplicationModeKey -> sharedPreferences.getString(key, null)?.let {
+                    applicationModeManager.setApplicationMode(it)
+                }
+            }
         }
     }
 

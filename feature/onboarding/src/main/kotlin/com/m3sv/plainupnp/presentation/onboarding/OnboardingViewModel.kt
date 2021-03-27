@@ -80,20 +80,19 @@ class OnboardingViewModel @Inject constructor(
         contentManager.releaseUri(uriWrapper)
     }
 
-    private suspend fun OnboardingScreen.forward(): OnboardingScreen = when (this) {
+    private fun OnboardingScreen.forward(): OnboardingScreen = when (this) {
         OnboardingScreen.Greeting -> OnboardingScreen.SelectTheme
         OnboardingScreen.SelectTheme -> OnboardingScreen.SelectMode
         OnboardingScreen.SelectMode -> when (getApplicationMode()) {
             ApplicationMode.Streaming -> if (hasStoragePermission()) OnboardingScreen.SelectDirectories else OnboardingScreen.StoragePermission
             ApplicationMode.Player -> OnboardingScreen.Finish
-            null -> error("Application mode is not selected")
         }
         OnboardingScreen.StoragePermission -> OnboardingScreen.SelectDirectories
         OnboardingScreen.SelectDirectories -> OnboardingScreen.Finish
         OnboardingScreen.Finish -> error("Can't navigate from finish screen")
     }
 
-    private suspend fun getApplicationMode(): ApplicationMode? = applicationModeManager.getApplicationMode()
+    private fun getApplicationMode(): ApplicationMode = applicationModeManager.getApplicationMode()
 
     private fun OnboardingScreen.backward(): OnboardingScreen = when (this) {
         OnboardingScreen.Greeting -> OnboardingScreen.Greeting

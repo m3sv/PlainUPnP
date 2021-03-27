@@ -28,7 +28,7 @@ class SelectApplicationModeActivity : AppCompatActivity() {
                         onBackClick = { finish() },
                         nextText = getString(R.string.done),
                         stringProvider = { getString(it) },
-                        initialMode = applicationModeManager.getApplicationMode()!!
+                        initialMode = applicationModeManager.getApplicationMode()
                     ) { applicationMode ->
                         lifecycleScope.launch { applicationModeManager.setApplicationMode(applicationMode) }
                     }
