@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.view.Menu
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.preference.Preference
@@ -46,11 +47,20 @@ class SettingsFragment : PreferenceFragmentCompat(),
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         PreferenceKey.values().forEach { preference ->
             findPreference<Preference>(preference.tag)?.onPreferenceClickListener = this
         }
 
         findPreference<Preference>(VERSION)?.summary = appVersion
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+        with(menu) {
+            findItem(R.id.menu_settings).isVisible = false
+            findItem(R.id.menu_search).isVisible = false
+        }
     }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

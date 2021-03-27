@@ -81,10 +81,12 @@ class MainActivity : AppCompatActivity() {
 
         with(binding) {
             binding.navigationStrip.scope = lifecycleScope
+
             setSupportActionBar(toolbar)
-            supportActionBar?.let {
-                it.setDisplayHomeAsUpEnabled(true)
-                it.setDisplayShowTitleEnabled(false)
+
+            supportActionBar?.let { actionBar ->
+                actionBar.setDisplayHomeAsUpEnabled(true)
+                actionBar.setDisplayShowTitleEnabled(false)
             }
 
             controlsContainer.setOnClickListener { view ->
