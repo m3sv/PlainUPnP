@@ -1,6 +1,7 @@
 package com.m3sv.plainupnp.presentation.main
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.view.KeyEvent
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.View.ROTATION
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuBuilder
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -248,8 +250,12 @@ class MainActivity : AppCompatActivity() {
         else -> super.onKeyUp(keyCode, event)
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.bottom_app_bar_home_menu, menu)
+        if (menu is MenuBuilder) {
+            menu.setOptionalIconsVisible(true)
+        }
         return true
     }
 

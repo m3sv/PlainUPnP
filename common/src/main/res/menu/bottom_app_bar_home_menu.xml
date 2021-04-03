@@ -4,9 +4,11 @@
 
     <item
         android:id="@+id/menu_search"
+        android:icon="@drawable/ic_search"
         android:title="@string/menu_item_search" />
 
     <item
         android:id="@+id/menu_settings"
+        android:icon="@drawable/ic_settings"
         android:title="@string/menu_item_settings" />
 </menu>
