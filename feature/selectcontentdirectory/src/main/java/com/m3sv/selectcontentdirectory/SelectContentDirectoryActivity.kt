@@ -43,7 +43,7 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // Trigger lazy initialization
-        presenter
+        presenter.pass
 
         setContent {
             val contentDirectories by upnpManager.contentDirectories.collectAsState(initial = listOf())

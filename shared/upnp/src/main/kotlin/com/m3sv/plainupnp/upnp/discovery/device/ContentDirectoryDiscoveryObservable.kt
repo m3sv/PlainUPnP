@@ -1,7 +1,7 @@
 package com.m3sv.plainupnp.upnp.discovery.device
 
 import com.m3sv.plainupnp.common.BackgroundModeManager
-import com.m3sv.plainupnp.common.util.doNothing
+import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
@@ -68,7 +68,7 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(
                             !backgroundModeManager.isAllowedToRunInBackground()
                                     && (event.upnpDevice as CDevice).device is LocalDevice
                                     && event.upnpDevice == selectedContentDirectory
-                            -> doNothing
+                            -> pass
 
                             event.upnpDevice == selectedContentDirectory ->
                                 selectedContentDirectory = null

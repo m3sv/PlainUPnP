@@ -19,9 +19,9 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.common.TriggerOnceStateAction
-import com.m3sv.plainupnp.common.util.doNothing
 import com.m3sv.plainupnp.common.util.exhaustive
 import com.m3sv.plainupnp.common.util.inputMethodManager
+import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
 import com.m3sv.plainupnp.core.eventbus.subscribe
 import com.m3sv.plainupnp.databinding.MainActivityBinding
@@ -218,7 +218,7 @@ class MainActivity : AppCompatActivity() {
                         supportFragmentManager.popBackStack(route.folder?.id, 0)
                         areControlsVisible = true
                     }
-                    is MainRoute.ToFolder -> doNothing
+                    is MainRoute.ToFolder -> pass
                     is MainRoute.PreviewImage -> {
                         areControlsVisible = false
                         replaceFragment(ImageFragment.newInstance(route.url),
@@ -234,7 +234,7 @@ class MainActivity : AppCompatActivity() {
                         replaceFragment(PlayerFragment.newInstance(route.url),
                             addToBackStack = true)
                     }
-                    is MainRoute.Initial -> doNothing
+                    is MainRoute.Initial -> pass
                 }.exhaustive
             }
         }

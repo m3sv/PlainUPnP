@@ -16,7 +16,7 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
-import com.m3sv.plainupnp.common.util.doNothing
+import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.presentation.onboarding.ConfigureFolderActivity
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -102,13 +102,13 @@ class SettingsFragment : PreferenceFragmentCompat(),
         val key = PreferenceKey.byTag(preference.key)
 
         when (key) {
-            PreferenceKey.VERSION -> doNothing
+            PreferenceKey.VERSION -> pass
             PreferenceKey.RATE -> rateApplication()
             PreferenceKey.GITHUB -> github()
             PreferenceKey.PRIVACY_POLICY -> privacyPolicy()
             PreferenceKey.CONTACT_US -> openEmail()
             PreferenceKey.CONFIGURE_FOLDERS -> startConfigureFolderActivity()
-            null -> doNothing
+            null -> pass
         }
 
         return key != null
