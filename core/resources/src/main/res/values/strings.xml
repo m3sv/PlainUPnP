@@ -82,4 +82,5 @@
     <string name="next">Next</string>
     <string name="application_mode_settings">Application mode</string>
     <string name="done">Done</string>
+    <string name="content_directory_search_message">Whenever content directory is found it will be displayed here</string>
 </resources>
