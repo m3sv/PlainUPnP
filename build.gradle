@@ -22,7 +22,7 @@ buildscript {
             architectureComponents: "2.2.0",
             cardView              : "1.0.0",
             cling                 : "2.2.0",
-            composeVersion        : '1.0.0-beta02',
+            composeVersion        : '1.0.0-beta03',
             constraintLayout      : "2.0.0",
             coreLibraryDesugaring : '1.1.1',
             coreTesting           : "2.1.0",
