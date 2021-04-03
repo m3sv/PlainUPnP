@@ -15,8 +15,6 @@ class DlnaSaxParser : SAXParser() {
             }
             .newSAXParser()
             .xmlReader
-            .apply { this.errorHandler = errorHandler }
-
     } catch (ex: Exception) {
         throw RuntimeException(ex)
     }
