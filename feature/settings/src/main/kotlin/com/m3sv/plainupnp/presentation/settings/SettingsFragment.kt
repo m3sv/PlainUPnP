@@ -52,6 +52,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
     lateinit var applicationModeManager: ApplicationModeManager
 
     private val setThemeKey by lazy(NONE) { getString(R.string.key_set_theme) }
+
     private val setApplicationModeKey by lazy(NONE) { getString(R.string.key_set_application_mode) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

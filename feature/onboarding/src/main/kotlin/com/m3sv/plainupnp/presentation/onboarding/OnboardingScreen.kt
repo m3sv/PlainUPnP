@@ -5,6 +5,8 @@ enum class OnboardingScreen {
     SelectTheme,
     SelectMode,
     StoragePermission,
+    SelectPreconfiguredContainers,
+    SelectBackgroundMode,
     SelectDirectories,
     Finish
 }

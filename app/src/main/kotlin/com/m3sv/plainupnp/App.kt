@@ -8,7 +8,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.lifecycle.ProcessLifecycleOwner
-import com.m3sv.plainupnp.common.BackgroundModeManager
+import com.m3sv.plainupnp.backgroundmode.BackgroundMode
+import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
 import com.m3sv.plainupnp.common.util.generateUdn
 import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.upnp.UpnpScopeProvider
@@ -60,7 +61,7 @@ class App : Application(), Router, UpnpScopeProvider {
             fun onMoveToForeground() {
                 Timber.d("Starting server")
                 upnpScope.launch(Dispatchers.IO) {
-                    if (!backgroundModeManager.isAllowedToRunInBackground()) {
+                    if (backgroundModeManager.backgroundMode == BackgroundMode.DENIED) {
                         (upnpService as AndroidUpnpServiceImpl).resume()
                         server.start()
                     }
@@ -71,7 +72,7 @@ class App : Application(), Router, UpnpScopeProvider {
             fun onMoveToBackground() {
                 Timber.d("Stopping server")
                 upnpScope.launch(Dispatchers.IO) {
-                    if (!backgroundModeManager.isAllowedToRunInBackground()) {
+                    if (backgroundModeManager.backgroundMode == BackgroundMode.DENIED) {
                         (upnpService as AndroidUpnpServiceImpl).pause()
                         server.stop()
                     }

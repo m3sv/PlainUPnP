@@ -30,10 +30,13 @@ fun SelectFoldersScreen(
     onReleaseUri: (UriWrapper) -> Unit,
 ) {
     OnePane(viewingContent = {
-        OneTitle(text = "Selected directories")
+        OneTitle(text = "Selected folders")
         OneToolbar(onBackClick = onBackClick) {}
     }) {
-        Column {
+        Column(Modifier
+            .padding(horizontal = 24.dp)
+            .padding(bottom = 24.dp)
+        ) {
             OneSubtitle(text = "Here you can select any custom directories from your file system or SD card")
 
             LazyColumn(modifier = Modifier
@@ -94,7 +97,7 @@ fun SelectFoldersScreen(
                             Text(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 24.dp, vertical = 8.dp)
+                                    .padding(vertical = 8.dp)
                                     .height(24.dp),
                                 text = "${uriWrapper.uriPermission.uri.path?.split(":")?.last()}")
                         }
@@ -102,12 +105,18 @@ fun SelectFoldersScreen(
                 }
             })
 
+            val text = "Pick folder"
 
             if (onNext != null) {
-                OneOutlinedButton(text = "Pick folder", onClick = selectDirectory)
-                OneContainedButton(text = stringResource(R.string.finish_onboarding), onClick = onNext)
+                OneOutlinedButton(
+                    text = text,
+                    onClick = selectDirectory,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+                OneContainedButton(text = stringResource(R.string.next), onClick = onNext)
             } else {
-                OneContainedButton(text = "Pick folder", onClick = selectDirectory)
+                OneContainedButton(text = text, onClick = selectDirectory)
             }
         }
     }

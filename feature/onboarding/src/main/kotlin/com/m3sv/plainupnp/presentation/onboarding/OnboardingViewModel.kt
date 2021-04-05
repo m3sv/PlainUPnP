@@ -14,6 +14,8 @@ import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
 import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
+import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
+import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -30,10 +32,19 @@ class OnboardingViewModel @Inject constructor(
     private val themeManager: ThemeManager,
     private val contentManager: ContentManager,
     private val applicationModeManager: ApplicationModeManager,
+    private val backgroundModeManager: BackgroundModeManager,
 ) : ViewModel() {
 
     var activeTheme: ThemeOption by mutableStateOf(themeManager.currentTheme)
         private set
+
+    val imageContainerEnabled = mutableStateOf(false)
+
+    val audioContainerEnabled = mutableStateOf(false)
+
+    val videoContainerEnabled = mutableStateOf(false)
+
+    val backgroundMode = mutableStateOf(backgroundModeManager.backgroundMode)
 
     val contentUris: StateFlow<List<UriWrapper>> =
         contentManager.persistedUrisFlow().stateIn(viewModelScope, SharingStarted.Lazily, contentManager.getUris())
@@ -42,12 +53,24 @@ class OnboardingViewModel @Inject constructor(
 
     val currentScreen: StateFlow<OnboardingScreen> =
         _currentScreen.scan(OnboardingScreen.Greeting) { currentScreen, direction ->
+            if (direction == Direction.Forward) {
+                when (currentScreen) {
+                    OnboardingScreen.SelectPreconfiguredContainers -> {
+                        contentManager.isImagesEnabled = imageContainerEnabled.value
+                        contentManager.isVideoEnabled = videoContainerEnabled.value
+                        contentManager.isAudioEnabled = audioContainerEnabled.value
+                    }
+                    OnboardingScreen.SelectBackgroundMode ->
+                        backgroundModeManager.backgroundMode = backgroundMode.value
+                    else -> pass
+                }
+            }
+
             when (direction) {
                 Direction.Forward -> currentScreen.forward()
                 Direction.Backward -> currentScreen.backward()
             }
         }.stateIn(viewModelScope, SharingStarted.Lazily, OnboardingScreen.Greeting)
-
 
     fun onSelectTheme(themeOption: ThemeOption) {
         activeTheme = themeOption
@@ -84,11 +107,13 @@ class OnboardingViewModel @Inject constructor(
         OnboardingScreen.Greeting -> OnboardingScreen.SelectTheme
         OnboardingScreen.SelectTheme -> OnboardingScreen.SelectMode
         OnboardingScreen.SelectMode -> when (getApplicationMode()) {
-            ApplicationMode.Streaming -> if (hasStoragePermission()) OnboardingScreen.SelectDirectories else OnboardingScreen.StoragePermission
+            ApplicationMode.Streaming -> if (hasStoragePermission()) OnboardingScreen.SelectPreconfiguredContainers else OnboardingScreen.StoragePermission
             ApplicationMode.Player -> OnboardingScreen.Finish
         }
-        OnboardingScreen.StoragePermission -> OnboardingScreen.SelectDirectories
-        OnboardingScreen.SelectDirectories -> OnboardingScreen.Finish
+        OnboardingScreen.StoragePermission -> OnboardingScreen.SelectPreconfiguredContainers
+        OnboardingScreen.SelectPreconfiguredContainers -> OnboardingScreen.SelectDirectories
+        OnboardingScreen.SelectDirectories -> OnboardingScreen.SelectBackgroundMode
+        OnboardingScreen.SelectBackgroundMode -> OnboardingScreen.Finish
         OnboardingScreen.Finish -> error("Can't navigate from finish screen")
     }
 
@@ -99,7 +124,9 @@ class OnboardingViewModel @Inject constructor(
         OnboardingScreen.SelectTheme -> OnboardingScreen.Greeting
         OnboardingScreen.SelectMode -> OnboardingScreen.SelectTheme
         OnboardingScreen.StoragePermission -> OnboardingScreen.SelectMode
-        OnboardingScreen.SelectDirectories -> OnboardingScreen.SelectMode
+        OnboardingScreen.SelectPreconfiguredContainers -> OnboardingScreen.SelectMode
+        OnboardingScreen.SelectDirectories -> OnboardingScreen.SelectPreconfiguredContainers
+        OnboardingScreen.SelectBackgroundMode -> OnboardingScreen.SelectDirectories
         OnboardingScreen.Finish -> error("Can't navigate from finish screen")
     }
 
@@ -111,5 +138,4 @@ class OnboardingViewModel @Inject constructor(
     companion object {
         const val STORAGE_PERMISSION = READ_EXTERNAL_STORAGE
     }
-
 }

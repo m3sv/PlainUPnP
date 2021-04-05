@@ -2,7 +2,8 @@ package com.m3sv.selectcontentdirectory
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
-import com.m3sv.plainupnp.common.BackgroundModeManager
+import com.m3sv.plainupnp.backgroundmode.BackgroundMode
+import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
 import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.UpnpScopeProvider
 import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
@@ -24,7 +25,7 @@ class SelectContentDirectoryPresenter @Inject constructor(
     init {
         PlainUpnpAndroidService.start(application)
         (application as UpnpScopeProvider).upnpScope.launch(Dispatchers.IO) {
-            if (backgroundModeManager.isAllowedToRunInBackground()) {
+            if (backgroundModeManager.backgroundMode == BackgroundMode.ALLOWED) {
                 (upnpService as AndroidUpnpServiceImpl).resume()
                 mediaServer.start()
             }

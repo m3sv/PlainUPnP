@@ -83,4 +83,7 @@
     <string name="application_mode_settings">Application mode</string>
     <string name="done">Done</string>
     <string name="content_directory_search_message">Whenever content directory is found it will be displayed here</string>
+    <string name="select_precofigured_containers_title">Select preconfigured containers</string>
+    <string name="run_in_background">Run in background</string>
+    <string name="pause_in_background">Pause in background</string>
 </resources>

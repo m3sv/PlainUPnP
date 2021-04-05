@@ -2,10 +2,10 @@ package com.m3sv.plainupnp.upnp
 
 import android.app.Application
 import android.content.ContentResolver
-import android.content.SharedPreferences
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.documentfile.provider.DocumentFile
+import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ContentRepository
 import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.upnp.mediacontainers.*
@@ -33,8 +33,8 @@ sealed class ContentUpdateState {
 @Singleton
 class UpnpContentRepositoryImpl @Inject constructor(
     private val application: Application,
-    private val sharedPreferences: SharedPreferences,
     private val database: Database,
+    private val contentManager: ContentManager,
 ) : CoroutineScope, ContentRepository {
 
     override val coroutineContext: CoroutineContext
@@ -46,15 +46,6 @@ class UpnpContentRepositoryImpl @Inject constructor(
 
     private val randomId
         get() = abs(random.nextLong())
-
-    private val isImagesEnabled
-        get() = sharedPreferences.getBoolean(application.getString(R.string.pref_enable_image_container_key), true)
-
-    private val isAudioEnabled
-        get() = sharedPreferences.getBoolean(application.getString(R.string.pref_enable_audio_container_key), true)
-
-    private val isVideoEnabled
-        get() = sharedPreferences.getBoolean(application.getString(R.string.pref_enable_video_container_key), true)
 
     private val appName by lazy { application.getString(R.string.app_name) }
     private val baseUrl: String by lazy { "${getLocalIpAddress(application).hostAddress}:$PORT" }
@@ -74,6 +65,8 @@ class UpnpContentRepositoryImpl @Inject constructor(
                 _updateState.value = ContentUpdateState.Ready(containerRegistry)
             }
         }
+
+        launch { contentManager.refreshFlow.collect { refreshContent() } }
     }
 
     val init by lazy {
@@ -98,7 +91,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
 
         val jobs = mutableListOf<Deferred<Unit>>()
 
-        if (isImagesEnabled) {
+        if (contentManager.isImagesEnabled) {
             jobs += async {
                 getRootImagesContainer()
                     .also(rootContainer::addContainer)
@@ -106,13 +99,13 @@ class UpnpContentRepositoryImpl @Inject constructor(
             }
         }
 
-        if (isAudioEnabled) {
+        if (contentManager.isAudioEnabled) {
             jobs += async {
                 getRootAudioContainer(rootContainer).addToRegistry()
             }
         }
 
-        if (isVideoEnabled) {
+        if (contentManager.isVideoEnabled) {
             jobs += async {
                 getRootVideoContainer(rootContainer).addToRegistry()
             }

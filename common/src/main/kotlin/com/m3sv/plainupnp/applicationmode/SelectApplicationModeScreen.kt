@@ -1,13 +1,12 @@
 package com.m3sv.plainupnp.applicationmode
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.m3sv.plainupnp.common.R
 import com.m3sv.plainupnp.compose.widgets.*
 
@@ -30,8 +29,13 @@ fun SelectApplicationModeScreen(
         ) {
             var selectedMode by remember { mutableStateOf(initialMode) }
 
-            OneSubtitle(text = "Start by selecting theme that you would like to use")
+            OneSubtitle(
+                text = "Start by selecting theme that you would like to use",
+                Modifier.padding(horizontal = 24.dp)
+            )
+
             RadioGroup(
+                modifier = Modifier.padding(start = 24.dp),
                 items = ApplicationMode.values().toList(),
                 initial = selectedMode,
                 stringProvider = { stringProvider(it.stringValue) },
@@ -49,10 +53,15 @@ fun SelectApplicationModeScreen(
             }
 
             if (onNextClick != null) {
-                OneContainedButton(
-                    text = text,
-                    onClick = onNextClick
-                )
+                Row(Modifier
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 24.dp)
+                ) {
+                    OneContainedButton(
+                        text = text,
+                        onClick = onNextClick
+                    )
+                }
             }
         }
     }

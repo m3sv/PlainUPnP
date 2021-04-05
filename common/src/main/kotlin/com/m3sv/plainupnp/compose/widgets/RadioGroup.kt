@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun <T> RadioGroup(
+    modifier: Modifier = Modifier,
     items: List<T>,
     initial: T,
     stringProvider: (T) -> String,
@@ -37,7 +38,7 @@ fun <T> RadioGroup(
                         selected = (item == selectedOption),
                         onClick = { onClick(item) }
                     )
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
+                    .padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 // The [clearAndSetSemantics] causes the button's redundant
@@ -46,7 +47,8 @@ fun <T> RadioGroup(
                 Box(Modifier.clearAndSetSemantics {}) {
                     RadioButton(
                         selected = (item == selectedOption),
-                        onClick = { onClick(item) }
+                        onClick = { onClick(item) },
+                        modifier = modifier
                     )
                 }
                 Text(

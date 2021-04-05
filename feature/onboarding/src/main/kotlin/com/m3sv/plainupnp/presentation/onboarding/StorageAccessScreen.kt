@@ -1,9 +1,12 @@
 package com.m3sv.plainupnp.presentation.onboarding
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.m3sv.plainupnp.compose.widgets.*
 
 @Composable
@@ -13,9 +16,19 @@ fun StoragePermissionScreen(onBackClick: () -> Unit, onClick: () -> Unit) {
         OneToolbar(onBackClick = onBackClick) {}
     }) {
         Column {
-            OneSubtitle("To stream your files we need to get storage access permission")
+            OneSubtitle(
+                text = "To stream your files we need to get storage access permission",
+                modifier = Modifier.padding(horizontal = 24.dp)
+            )
+
             Spacer(modifier = Modifier.weight(1f))
-            OneContainedButton(text = "Grant permission", onClick = onClick)
+
+            Row(Modifier
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 24.dp)
+            ) {
+                OneContainedButton(text = "Grant permission", onClick = onClick)
+            }
         }
     }
 }

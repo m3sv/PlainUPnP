@@ -20,6 +20,8 @@ import androidx.core.app.ActivityCompat
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
 import com.m3sv.plainupnp.applicationmode.SelectApplicationModeScreen
+import com.m3sv.plainupnp.backgroundmode.BackgroundMode
+import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,15 +54,18 @@ class OnboardingActivity : AppCompatActivity() {
                 viewModel.onNavigateNext()
                 onPermissionResult = -1
             }
-            1 -> {
-                // TODO handle permission denied
-                onPermissionResult = -1
-            }
-            else -> Unit
+            // TODO handle permission denied
+            1 -> onPermissionResult = -1
+            else -> pass
         }
 
         val contentUris by viewModel.contentUris.collectAsState()
         val currentScreen by viewModel.currentScreen.collectAsState()
+
+        val imageContainerEnabled = remember { viewModel.imageContainerEnabled }
+        val videoContainerEnabled = remember { viewModel.videoContainerEnabled }
+        val audioContainerEnabled = remember { viewModel.audioContainerEnabled }
+        val backgroundMode = remember { viewModel.backgroundMode }
 
         Content(
             selectedTheme = viewModel.activeTheme,
@@ -69,8 +74,12 @@ class OnboardingActivity : AppCompatActivity() {
             onSelectTheme = viewModel::onSelectTheme,
             onSelectApplicationMode = viewModel::onSelectMode,
             contentUris = contentUris,
-            onNext = viewModel::onNavigateNext,
-            onBack = viewModel::onNavigateBack
+            onNextClick = viewModel::onNavigateNext,
+            onBackClick = viewModel::onNavigateBack,
+            imageContainerEnabled = imageContainerEnabled,
+            videoContainerEnabled = videoContainerEnabled,
+            audioContainerEnabled = audioContainerEnabled,
+            backgroundMode = backgroundMode
         )
     }
 
@@ -82,42 +91,69 @@ class OnboardingActivity : AppCompatActivity() {
         stringProvider: (Int) -> String,
         onSelectTheme: (ThemeOption) -> Unit,
         onSelectApplicationMode: (ApplicationMode) -> Unit,
-        onNext: () -> Unit,
-        onBack: () -> Unit,
+        onNextClick: () -> Unit,
+        onBackClick: () -> Unit,
+        imageContainerEnabled: MutableState<Boolean>,
+        videoContainerEnabled: MutableState<Boolean>,
+        audioContainerEnabled: MutableState<Boolean>,
+        backgroundMode: MutableState<BackgroundMode>,
     ) {
         AppTheme {
             Surface {
                 when (currentScreen) {
-                    OnboardingScreen.Greeting -> GreetingScreen(onNext)
-                    OnboardingScreen.StoragePermission -> StoragePermissionScreen(onBackClick = onBack) {
-                        checkStoragePermission(onNext)
-                    }
-                    OnboardingScreen.SelectDirectories -> SelectFoldersScreen(
-                        contentUris,
-                        selectDirectory = ::openDirectory,
-                        onBackClick = onBack,
-                        onNext = onNext,
-                        onReleaseUri = viewModel::releaseUri,
-                    )
+                    OnboardingScreen.Greeting -> GreetingScreen(onNextClick)
+
                     OnboardingScreen.SelectTheme -> SelectThemeScreen(
                         titleText = getString(R.string.set_theme_label),
                         selectedTheme = selectedTheme,
                         stringProvider = { stringProvider(it.text) },
                         onThemeOptionSelected = onSelectTheme,
-                        onClick = onNext,
-                        onBackClick = onBack
+                        onClick = onNextClick,
+                        onBackClick = onBackClick
                     )
+
                     OnboardingScreen.SelectMode -> SelectApplicationModeScreen(
                         initialMode = ApplicationMode.Streaming,
-                        onNextClick = onNext,
-                        onBackClick = onBack,
+                        onNextClick = onNextClick,
+                        onBackClick = onBackClick,
                         stringProvider = stringProvider,
                         onItemSelected = onSelectApplicationMode
                     )
-                    OnboardingScreen.Finish -> onboardingManager.completeOnboarding(this@OnboardingActivity)
+
+                    OnboardingScreen.StoragePermission -> StoragePermissionScreen(onBackClick = onBackClick) {
+                        checkStoragePermission(onNextClick)
+                    }
+
+                    OnboardingScreen.SelectPreconfiguredContainers -> SelectPreconfiguredContainersScreen(
+                        onBackClick = onBackClick,
+                        onNextClick = onNextClick,
+                        imageEnabled = imageContainerEnabled,
+                        videoEnabled = videoContainerEnabled,
+                        audioEnabled = audioContainerEnabled
+                    )
+
+                    OnboardingScreen.SelectDirectories -> SelectFoldersScreen(
+                        contentUris = contentUris,
+                        selectDirectory = ::openDirectory,
+                        onBackClick = onBackClick,
+                        onNext = onNextClick,
+                        onReleaseUri = viewModel::releaseUri,
+                    )
+
+                    OnboardingScreen.SelectBackgroundMode -> SelectBackgroundModeScreen(
+                        backgroundMode = backgroundMode,
+                        onBackClick = onBackClick,
+                        onNextClick = onNextClick
+                    ) { stringProvider(it.resourceId) }
+
+                    OnboardingScreen.Finish -> finishOnboarding()
                 }
             }
         }
+    }
+
+    private fun finishOnboarding() {
+        onboardingManager.completeOnboarding(this)
     }
 
     private fun openDirectory() {
@@ -198,13 +234,17 @@ class OnboardingActivity : AppCompatActivity() {
     @Preview
     private fun PreviewContent() {
         Content(
-            selectedTheme = ThemeOption.Light,
-            currentScreen = OnboardingScreen.SelectTheme,
+            selectedTheme = ThemeOption.Dark,
+            currentScreen = OnboardingScreen.Greeting,
             stringProvider = { "" },
             onSelectTheme = {},
             onSelectApplicationMode = {},
-            onNext = {},
-            onBack = {}
+            onNextClick = {},
+            onBackClick = {},
+            imageContainerEnabled = mutableStateOf(false),
+            videoContainerEnabled = mutableStateOf(false),
+            audioContainerEnabled = mutableStateOf(false),
+            backgroundMode = mutableStateOf(BackgroundMode.ALLOWED),
         )
     }
 
