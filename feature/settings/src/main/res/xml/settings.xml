@@ -26,11 +26,11 @@
             android:key="configure_folders"
             android:title="@string/selected_folders" />
 
-        <SwitchPreferenceCompat
-            android:defaultValue="@bool/default_allow_run_in_background"
-            android:icon="@drawable/ic_run_in_background"
-            android:key="@string/pref_key_allow_run_in_background"
-            android:title="@string/pref_title_allow_run_in_background" />
+        <!--        <SwitchPreferenceCompat-->
+        <!--            android:defaultValue="@bool/default_allow_run_in_background"-->
+        <!--            android:icon="@drawable/ic_run_in_background"-->
+        <!--            android:key="@string/pref_key_allow_run_in_background"-->
+        <!--            android:title="@string/pref_title_allow_run_in_background" />-->
 
         <SwitchPreference
             android:defaultValue="@bool/default_enable_content_directory"

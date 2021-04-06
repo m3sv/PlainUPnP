@@ -16,11 +16,9 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
-import com.m3sv.plainupnp.backgroundmode.BackgroundMode
 import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.presentation.onboarding.ConfigureFolderActivity
-import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -98,10 +96,10 @@ class SettingsFragment : PreferenceFragmentCompat(),
             when (key) {
                 setThemeKey -> themeManager.setDefaultNightMode()
                 setApplicationModeKey -> requireActivity().finish()
-                setBackgroundMode -> when (backgroundModeManager.backgroundMode) {
-                    BackgroundMode.ALLOWED -> PlainUpnpAndroidService.start(requireContext())
-                    BackgroundMode.DENIED -> PlainUpnpAndroidService.stop(requireContext())
-                }
+//                setBackgroundMode -> when (backgroundModeManager.backgroundMode) {
+//                    BackgroundMode.ALLOWED -> PlainUpnpAndroidService.start(requireContext())
+//                    BackgroundMode.DENIED -> PlainUpnpAndroidService.stop(requireContext())
+//                }
             }
         }
     }

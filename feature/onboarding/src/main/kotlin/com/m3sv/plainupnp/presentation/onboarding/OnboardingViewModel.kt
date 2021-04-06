@@ -112,7 +112,7 @@ class OnboardingViewModel @Inject constructor(
         }
         OnboardingScreen.StoragePermission -> OnboardingScreen.SelectPreconfiguredContainers
         OnboardingScreen.SelectPreconfiguredContainers -> OnboardingScreen.SelectDirectories
-        OnboardingScreen.SelectDirectories -> OnboardingScreen.SelectBackgroundMode
+        OnboardingScreen.SelectDirectories -> OnboardingScreen.Finish
         OnboardingScreen.SelectBackgroundMode -> OnboardingScreen.Finish
         OnboardingScreen.Finish -> error("Can't navigate from finish screen")
     }

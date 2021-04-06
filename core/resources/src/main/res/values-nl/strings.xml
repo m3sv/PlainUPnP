@@ -36,7 +36,7 @@
     <string name="menu_item_search">Zoeken</string>
     <string name="menu_item_settings">Instellingen</string>
     <string name="navigation_controls">Controls</string>
-    <string name="notification_body">PlainUPnP Server draait op de achtergrond</string>
+    <string name="notification_body">PlainUPnP Server werkt</string>
     <string name="notification_title">PlainUPnP Server</string>
     <string name="shut_down">Dichtgaan</string>
     <string name="start_here">Begin hier</string>
