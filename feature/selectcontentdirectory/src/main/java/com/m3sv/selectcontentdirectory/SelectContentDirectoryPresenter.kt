@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import com.m3sv.plainupnp.backgroundmode.BackgroundMode
 import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
+import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.UpnpScopeProvider
 import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
@@ -23,7 +24,11 @@ class SelectContentDirectoryPresenter @Inject constructor(
 ) : ViewModel() {
 
     init {
-        PlainUpnpAndroidService.start(application)
+        when (backgroundModeManager.backgroundMode) {
+            BackgroundMode.ALLOWED -> PlainUpnpAndroidService.start(application)
+            BackgroundMode.DENIED -> pass
+        }
+
         (application as UpnpScopeProvider).upnpScope.launch(Dispatchers.IO) {
             if (backgroundModeManager.backgroundMode == BackgroundMode.ALLOWED) {
                 (upnpService as AndroidUpnpServiceImpl).resume()

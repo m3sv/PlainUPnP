@@ -16,8 +16,11 @@ import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
+import com.m3sv.plainupnp.backgroundmode.BackgroundMode
+import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.presentation.onboarding.ConfigureFolderActivity
+import com.m3sv.plainupnp.upnp.PlainUpnpAndroidService
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -51,9 +54,12 @@ class SettingsFragment : PreferenceFragmentCompat(),
     @Inject
     lateinit var applicationModeManager: ApplicationModeManager
 
-    private val setThemeKey by lazy(NONE) { getString(R.string.key_set_theme) }
+    @Inject
+    lateinit var backgroundModeManager: BackgroundModeManager
 
+    private val setThemeKey by lazy(NONE) { getString(R.string.key_set_theme) }
     private val setApplicationModeKey by lazy(NONE) { getString(R.string.key_set_application_mode) }
+    private val setBackgroundMode by lazy(NONE) { getString(R.string.pref_key_allow_run_in_background) }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -91,9 +97,10 @@ class SettingsFragment : PreferenceFragmentCompat(),
         lifecycleScope.launch {
             when (key) {
                 setThemeKey -> themeManager.setDefaultNightMode()
-                setApplicationModeKey -> sharedPreferences.getString(key, null)?.let {
-                    applicationModeManager.setApplicationMode(it)
-                    requireActivity().finish()
+                setApplicationModeKey -> requireActivity().finish()
+                setBackgroundMode -> when (backgroundModeManager.backgroundMode) {
+                    BackgroundMode.ALLOWED -> PlainUpnpAndroidService.start(requireContext())
+                    BackgroundMode.DENIED -> PlainUpnpAndroidService.stop(requireContext())
                 }
             }
         }

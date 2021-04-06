@@ -8,7 +8,7 @@ import androidx.core.content.ContextCompat
 import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
 import com.m3sv.plainupnp.core.eventbus.post
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import org.fourthline.cling.UpnpService
 import javax.inject.Inject
@@ -22,9 +22,15 @@ class PlainUpnpAndroidService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             NotificationBuilder.ACTION_EXIT -> {
-                stopForeground(false)
-                stopSelf(startId)
+                MainScope().launch {
+                    stopSelf()
+                    post(ExitApplication)
+                    upnpService.shutdown()
+                    android.os.Process.killProcess(android.os.Process.myPid())
+                }
             }
+
+            STOP_SERVICE -> stopSelf()
 
             START_SERVICE -> startForeground(
                 NotificationBuilder.SERVER_NOTIFICATION,
@@ -33,15 +39,6 @@ class PlainUpnpAndroidService : Service() {
         }
 
         return START_STICKY
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        GlobalScope.launch {
-            post(ExitApplication)
-            upnpService.shutdown()
-            android.os.Process.killProcess(android.os.Process.myPid())
-        }
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -55,6 +52,15 @@ class PlainUpnpAndroidService : Service() {
             ContextCompat.startForegroundService(context, intent)
         }
 
+        fun stop(context: Context) {
+            val intent = Intent(context, PlainUpnpAndroidService::class.java).apply {
+                action = STOP_SERVICE
+            }
+
+            context.startService(intent)
+        }
+
         private const val START_SERVICE = "START_UPNP_SERVICE"
+        private const val STOP_SERVICE = "STOP_UPNP_SERVICE"
     }
 }
