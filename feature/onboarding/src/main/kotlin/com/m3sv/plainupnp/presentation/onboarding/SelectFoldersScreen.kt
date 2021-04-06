@@ -114,7 +114,7 @@ fun SelectFoldersScreen(
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
-                OneContainedButton(text = stringResource(R.string.next), onClick = onNext)
+                OneContainedButton(text = stringResource(R.string.finish_onboarding), onClick = onNext)
             } else {
                 OneContainedButton(text = text, onClick = selectDirectory)
             }

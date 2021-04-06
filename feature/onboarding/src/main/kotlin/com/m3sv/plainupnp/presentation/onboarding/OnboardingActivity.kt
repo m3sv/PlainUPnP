@@ -140,7 +140,8 @@ class OnboardingActivity : AppCompatActivity() {
                         onReleaseUri = viewModel::releaseUri,
                     )
 
-//                    OnboardingScreen.SelectBackgroundMode -> SelectBackgroundModeScreen(
+                    OnboardingScreen.SelectBackgroundMode -> pass
+//                        SelectBackgroundModeScreen(
 //                        backgroundMode = backgroundMode,
 //                        onBackClick = onBackClick,
 //                        onNextClick = onNextClick
