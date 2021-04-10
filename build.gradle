@@ -22,7 +22,7 @@ buildscript {
             architectureComponents: "2.2.0",
             cardView              : "1.0.0",
             cling                 : "2.2.0",
-            composeVersion        : '1.0.0-beta03',
+            composeVersion        : '1.0.0-beta04',
             constraintLayout      : "2.0.0",
             coreLibraryDesugaring : '1.1.1',
             coreTesting           : "2.1.0",
@@ -93,8 +93,10 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${versions.kotlin}"
         classpath "com.squareup.sqldelight:gradle-plugin:${versions.sqlDelight}"
         classpath "com.google.dagger:hilt-android-gradle-plugin:${versions.hilt}"
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.15'
     }
 }
+
 
 allprojects {
     repositories {
@@ -137,4 +139,7 @@ allprojects {
             ]
         }
     }
+
 }
+
+
