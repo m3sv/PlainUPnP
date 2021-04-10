@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option java_package = "com.m3sv.plainupnp.common.preferences";
+option java_multiple_files = true;
+
+message Preferences {
+  Theme theme = 1;
+
+  enum Theme {
+    SYSTEM = 0;
+    LIGHT = 1;
+    DARK = 2;
+  }
+
+  ApplicationMode application_mode = 2;
+
+  enum ApplicationMode {
+    STREAMING = 0;
+    PLAYER = 1;
+  }
+
+  bool enableImages = 3;
+  bool enableVideos = 4;
+  bool enableAudio = 5;
+  bool enableThumbnails = 6;
+}

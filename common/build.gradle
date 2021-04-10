@@ -2,6 +2,7 @@ apply from: '../scripts/kotlin-android-library.gradle'
 apply from: '../scripts/cling.gradle'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
+apply plugin: "com.google.protobuf"
 
 android {
     buildFeatures {
@@ -37,6 +38,10 @@ dependencies {
     implementation "androidx.compose.material:material-icons-extended:$versions.composeVersion"
     implementation "com.google.android.material:compose-theme-adapter:$versions.composeVersion"
 
+    implementation  "androidx.datastore:datastore:1.0.0-alpha08"
+    implementation  "com.google.protobuf:protobuf-javalite:3.10.0"
+
+
     implementation project(':core:resources')
 
     kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
@@ -44,3 +49,23 @@ dependencies {
     testImplementation deps.test.junit
     testImplementation deps.test.mockito
 }
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.10.0"
+    }
+
+    // Generates the java Protobuf-lite code for the Protobufs in this project. See
+    // https://github.com/google/protobuf-gradle-plugin#customizing-protobuf-compilation
+    // for more information.
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
+}
+
