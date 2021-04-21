@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.presentation.main
 
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.view.KeyEvent
@@ -31,9 +32,10 @@ import com.m3sv.plainupnp.presentation.home.HomeFragment
 import com.m3sv.plainupnp.presentation.inappplayer.ImageFragment
 import com.m3sv.plainupnp.presentation.inappplayer.PlayerFragment
 import com.m3sv.plainupnp.presentation.main.controls.ControlsFragment
-import com.m3sv.plainupnp.presentation.settings.SettingsFragment
+import com.m3sv.plainupnp.presentation.settings.SettingsActivity
 import com.m3sv.plainupnp.upnp.folder.Folder
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlin.LazyThreadSafetyMode.NONE
@@ -212,10 +214,6 @@ class MainActivity : AppCompatActivity() {
         viewModel.navigation.observe(this) { navigationEvent ->
             navigationEvent.consume { route ->
                 when (route) {
-                    is MainRoute.Settings -> {
-                        areControlsVisible = false
-                        replaceFragment(SettingsFragment(), addToBackStack = true)
-                    }
                     is MainRoute.Back -> {
                         supportFragmentManager.popBackStack(route.folder?.id, 0)
                         areControlsVisible = true
@@ -278,7 +276,9 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> onBackPressed()
-            R.id.menu_settings -> viewModel.navigate(MainRoute.Settings)
+            R.id.menu_settings -> lifecycleScope.launch(Dispatchers.IO) {
+                startActivity(Intent(this@MainActivity, SettingsActivity::class.java))
+            }
             R.id.menu_search -> showSearch()
         }
         return true

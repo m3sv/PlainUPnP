@@ -29,6 +29,7 @@ import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.upnp.manager.Result
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -92,7 +93,7 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
                                             Column(modifier = Modifier
                                                 .clickable(enabled = loadingDeviceDisplay == null) {
                                                     loadingDeviceDisplay = item
-                                                    lifecycleScope.launch {
+                                                    lifecycleScope.launch(Dispatchers.IO) {
                                                         when (upnpManager.selectContentDirectoryAsync(item.upnpDevice)
                                                             .await()) {
                                                             Result.Error -> handleSelectDirectoryError()

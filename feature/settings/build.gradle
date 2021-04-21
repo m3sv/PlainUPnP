@@ -2,7 +2,30 @@ apply from: "../../scripts/kotlin-android-library.gradle"
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 
+android {
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion versions.composeVersion
+    }
+}
+
+
+
 dependencies {
+    implementation "androidx.activity:activity-compose:$versions.activity"
+    implementation "androidx.compose.runtime:runtime:$versions.composeVersion"
+    implementation "androidx.compose.runtime:runtime-livedata:$versions.composeVersion"
+    implementation "androidx.compose.ui:ui:$versions.composeVersion"
+    implementation "androidx.compose.foundation:foundation:$versions.composeVersion"
+    implementation "androidx.compose.foundation:foundation-layout:$versions.composeVersion"
+    implementation "androidx.compose.material:material:$versions.composeVersion"
+    implementation "androidx.compose.material:material-icons-core:$versions.composeVersion"
+    implementation "androidx.compose.material:material-icons-extended:$versions.composeVersion"
+    implementation "com.google.android.material:compose-theme-adapter:$versions.composeVersion"
+
     implementation deps.androidx.material
     implementation deps.androidx.preference
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"

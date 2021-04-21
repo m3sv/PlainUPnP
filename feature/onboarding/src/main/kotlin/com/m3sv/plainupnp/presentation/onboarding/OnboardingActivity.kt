@@ -15,7 +15,6 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.app.ActivityCompat
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
@@ -99,55 +98,57 @@ class OnboardingActivity : AppCompatActivity() {
         backgroundMode: MutableState<BackgroundMode>,
     ) {
         AppTheme {
-            Surface {
-                when (currentScreen) {
-                    OnboardingScreen.Greeting -> GreetingScreen(onNextClick)
+            Crossfade(targetState = currentScreen) { screen ->
+                Surface {
+                    when (screen) {
+                        OnboardingScreen.Greeting -> GreetingScreen(onNextClick)
 
-                    OnboardingScreen.SelectTheme -> SelectThemeScreen(
-                        titleText = getString(R.string.set_theme_label),
-                        selectedTheme = selectedTheme,
-                        stringProvider = { stringProvider(it.text) },
-                        onThemeOptionSelected = onSelectTheme,
-                        onClick = onNextClick,
-                        onBackClick = onBackClick
-                    )
+                        OnboardingScreen.SelectTheme -> SelectThemeScreen(
+                            titleText = getString(R.string.set_theme_label),
+                            selectedTheme = selectedTheme,
+                            stringProvider = { stringProvider(it.text) },
+                            onThemeOptionSelected = onSelectTheme,
+                            onClick = onNextClick,
+                            onBackClick = onBackClick
+                        )
 
-                    OnboardingScreen.SelectMode -> SelectApplicationModeScreen(
-                        initialMode = ApplicationMode.Streaming,
-                        onNextClick = onNextClick,
-                        onBackClick = onBackClick,
-                        stringProvider = stringProvider,
-                        onItemSelected = onSelectApplicationMode
-                    )
+                        OnboardingScreen.SelectMode -> SelectApplicationModeScreen(
+                            initialMode = ApplicationMode.Streaming,
+                            onNextClick = onNextClick,
+                            onBackClick = onBackClick,
+                            stringProvider = stringProvider,
+                            onItemSelected = onSelectApplicationMode
+                        )
 
-                    OnboardingScreen.StoragePermission -> StoragePermissionScreen(onBackClick = onBackClick) {
-                        checkStoragePermission(onNextClick)
-                    }
+                        OnboardingScreen.StoragePermission -> StoragePermissionScreen(onBackClick = onBackClick) {
+                            checkStoragePermission(onNextClick)
+                        }
 
-                    OnboardingScreen.SelectPreconfiguredContainers -> SelectPreconfiguredContainersScreen(
-                        onBackClick = onBackClick,
-                        onNextClick = onNextClick,
-                        imageEnabled = imageContainerEnabled,
-                        videoEnabled = videoContainerEnabled,
-                        audioEnabled = audioContainerEnabled
-                    )
+                        OnboardingScreen.SelectPreconfiguredContainers -> SelectPreconfiguredContainersScreen(
+                            onBackClick = onBackClick,
+                            onNextClick = onNextClick,
+                            imageEnabled = imageContainerEnabled,
+                            videoEnabled = videoContainerEnabled,
+                            audioEnabled = audioContainerEnabled
+                        )
 
-                    OnboardingScreen.SelectDirectories -> SelectFoldersScreen(
-                        contentUris = contentUris,
-                        selectDirectory = ::openDirectory,
-                        onBackClick = onBackClick,
-                        onNext = onNextClick,
-                        onReleaseUri = viewModel::releaseUri,
-                    )
+                        OnboardingScreen.SelectDirectories -> SelectFoldersScreen(
+                            contentUris = contentUris,
+                            selectDirectory = ::openDirectory,
+                            onBackClick = onBackClick,
+                            onNext = onNextClick,
+                            onReleaseUri = viewModel::releaseUri,
+                        )
 
-                    OnboardingScreen.SelectBackgroundMode -> pass
+                        OnboardingScreen.SelectBackgroundMode -> pass
 //                        SelectBackgroundModeScreen(
 //                        backgroundMode = backgroundMode,
 //                        onBackClick = onBackClick,
 //                        onNextClick = onNextClick
 //                    ) { stringProvider(it.resourceId) }
 
-                    OnboardingScreen.Finish -> finishOnboarding()
+                        OnboardingScreen.Finish -> finishOnboarding()
+                    }
                 }
             }
         }
@@ -229,24 +230,6 @@ class OnboardingActivity : AppCompatActivity() {
                 )
             }
         }
-    }
-
-    @Composable
-    @Preview
-    private fun PreviewContent() {
-        Content(
-            selectedTheme = ThemeOption.Dark,
-            currentScreen = OnboardingScreen.Greeting,
-            stringProvider = { "" },
-            onSelectTheme = {},
-            onSelectApplicationMode = {},
-            onNextClick = {},
-            onBackClick = {},
-            imageContainerEnabled = mutableStateOf(false),
-            videoContainerEnabled = mutableStateOf(false),
-            audioContainerEnabled = mutableStateOf(false),
-            backgroundMode = mutableStateOf(BackgroundMode.ALLOWED),
-        )
     }
 
     companion object {

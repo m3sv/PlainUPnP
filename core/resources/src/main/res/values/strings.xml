@@ -24,7 +24,7 @@
     <string name="notification_channel_name" translatable="false">PlainUPnP server</string>
     <string name="notification_channel_description" translatable="false">Indicates that PlainUPnP server is running</string>
 
-    <string name="version">Version</string>
+    <string name="version">Application Version</string>
     <string name="app_url" translatable="false">https://github.com/m3sv/PlainUPnP</string>
     <string name="home">Home</string>
     <string name="active_content_directory_description">Activate a local Content Directory server</string>

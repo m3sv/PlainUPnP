@@ -4,12 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun OnePane(
@@ -29,22 +26,4 @@ fun OnePane(
             content = interactionContent
         )
     }
-}
-
-@Composable
-@Preview
-private fun OnePanePreview() {
-    OnePane(
-        viewingContent = {
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                text = "hello world"
-            )
-        },
-        interactionContent = {
-            Button(onClick = {}) {
-                Text("Hello world")
-            }
-        }
-    )
 }

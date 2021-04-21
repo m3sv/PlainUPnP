@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.common.preferences
 
+import android.app.Application
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
@@ -10,7 +11,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PreferencesRepository @Inject constructor(private val context: Context) {
+class PreferencesRepository @Inject constructor(private val context: Application) {
 
     private val Context.preferencesStore: DataStore<Preferences> by dataStore(
         fileName = FILE_NAME,

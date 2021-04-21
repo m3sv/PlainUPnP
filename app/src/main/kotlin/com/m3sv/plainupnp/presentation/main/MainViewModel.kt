@@ -23,7 +23,6 @@ import javax.inject.Inject
 
 sealed class MainRoute {
     object Initial : MainRoute()
-    object Settings : MainRoute()
     data class Back(val folder: Folder?) : MainRoute()
     data class ToFolder(val folder: Folder) : MainRoute()
     data class PreviewImage(val url: String) : MainRoute()
@@ -114,7 +113,6 @@ class MainViewModel @Inject constructor(
                         else -> next
                     }
                 }
-                is MainRoute.Settings -> next
                 is MainRoute.Back -> when (next) {
                     is MainRoute.ToFolder -> next.apply { upnpManager.openFolder(folder) }
                     is MainRoute.Back -> next.apply { folderManager.backTo(folder) }
