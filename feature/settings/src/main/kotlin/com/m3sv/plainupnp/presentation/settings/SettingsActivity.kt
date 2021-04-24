@@ -1,6 +1,8 @@
 package com.m3sv.plainupnp.presentation.settings
 
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.m3sv.plainupnp.common.preferences.Preferences
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
+import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OnePane
 import com.m3sv.plainupnp.compose.widgets.OneTitle
@@ -72,7 +75,9 @@ class SettingsActivity : AppCompatActivity() {
                 title = stringResource(id = R.string.contact_us_title),
                 currentValue = stringResource(id = R.string.contact_us_body),
                 icon = painterResource(id = R.drawable.ic_baseline_email_green)
-            ) {}
+            ) {
+                openActivity(::openEmail)
+            }
 
             RowDivider()
 
@@ -80,7 +85,9 @@ class SettingsActivity : AppCompatActivity() {
                 title = stringResource(id = R.string.rate),
                 currentValue = stringResource(id = R.string.open_play_store),
                 icon = painterResource(id = R.drawable.ic_play_store)
-            ) {}
+            ) {
+                rateApplication()
+            }
 
             RowDivider()
 
@@ -88,7 +95,9 @@ class SettingsActivity : AppCompatActivity() {
                 title = stringResource(id = R.string.github_link_title),
                 currentValue = stringResource(id = R.string.source_url),
                 painterResource(id = R.drawable.ic_github)
-            ) {}
+            ) {
+                openActivity(::openGithub)
+            }
 
             RowDivider()
 
@@ -96,7 +105,9 @@ class SettingsActivity : AppCompatActivity() {
                 title = stringResource(id = R.string.privacy_policy),
                 currentValue = stringResource(id = R.string.open_privacy_policy),
                 icon = painterResource(id = R.drawable.ic_privacy_policy)
-            ) {}
+            ) {
+                openActivity(::openPrivacyPolicy)
+            }
 
             RowDivider()
 
@@ -215,6 +226,46 @@ class SettingsActivity : AppCompatActivity() {
                     }
                 }
             }
+        }
+    }
+
+    private fun openEmail() {
+        val email = getString(R.string.dev_email)
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("${getString(R.string.mail_to)}$email")
+        }
+
+        startActivity(intent)
+    }
+
+    private fun rateApplication() {
+        try {
+            openPlayStore()
+        } catch (e: ActivityNotFoundException) {
+            openActivity(::openPlayStoreFallback)
+        }
+    }
+
+    private fun openPlayStore() =
+        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("${getString(R.string.market_prefix)}$packageName")))
+
+    private fun openPlayStoreFallback() {
+        Intent(Intent.ACTION_VIEW, Uri.parse("${getString(R.string.play_prefix)}$packageName")).also(::startActivity)
+    }
+
+    private fun openPrivacyPolicy() = Intent(
+        Intent.ACTION_VIEW,
+        Uri.parse(getString(R.string.privacy_policy_link))
+    ).also(::startActivity)
+
+    private fun openGithub() =
+        Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.github_link))).also(::startActivity)
+
+    private fun openActivity(block: () -> Unit) {
+        try {
+            block()
+        } catch (e: ActivityNotFoundException) {
+            pass
         }
     }
 }

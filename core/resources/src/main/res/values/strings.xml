@@ -23,6 +23,12 @@
     <string name="about_copyright" translatable="false">Copyright © 2019 Vadym Shavalda</string>
     <string name="notification_channel_name" translatable="false">PlainUPnP server</string>
     <string name="notification_channel_description" translatable="false">Indicates that PlainUPnP server is running</string>
+    <string name="dev_email" translatable="false">m3sv.dev@gmail.com</string>
+    <string name="mail_to" translatable="false">mailto:</string>
+    <string name="play_prefix" translatable="false">http://play.google.com/store/apps/details?id=</string>
+    <string name="market_prefix" translatable="false">market://details?id=</string>
+    <string name="privacy_policy_link" translatable="false">https://www.freeprivacypolicy.com/privacy/view/bf0284b77ca1af94b405030efd47d254</string>
+    <string name="github_link" translatable="false">https://github.com/m3sv/PlainUPnP</string>
 
     <string name="version">Application Version</string>
     <string name="app_url" translatable="false">https://github.com/m3sv/PlainUPnP</string>
