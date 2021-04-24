@@ -1,5 +1,4 @@
 apply from: '../scripts/kotlin-android-library.gradle'
-apply from: '../scripts/cling.gradle'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: "com.google.protobuf"
@@ -16,24 +15,25 @@ android {
 }
 
 dependencies {
-    implementation deps.androidx.lifecycle.extensions
-    implementation deps.androidx.material
-    implementation deps.androidx.preference
+    implementation(libs.androidx.lifecycle.extensions)
+    implementation(libs.material)
+    implementation libs.androidx.ktx.preference
     implementation(libs.bundles.coroutines)
-    implementation "com.google.dagger:hilt-android:${versions.hilt}"
-    implementation deps.timber
+    implementation(libs.hilt.android.core)
+    implementation(libs.timber)
 
     implementation(libs.bundles.compose)
+    implementation(libs.bundles.cling)
 
     implementation "androidx.datastore:datastore:1.0.0-alpha08"
     api "com.google.protobuf:protobuf-javalite:3.10.0"
 
     implementation project(':core:resources')
 
-    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
+    kapt(libs.hilt.compiler)
 
-    testImplementation deps.test.junit
-    testImplementation deps.test.mockito
+    testImplementation(libs.test.junit)
+    testImplementation(libs.test.mockito.core)
 }
 
 protobuf {

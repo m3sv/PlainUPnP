@@ -1,8 +1,0 @@
-dependencies {
-    implementation("com.github.m3sv.cling:cling-core:${versions.cling}")
-    implementation("com.github.m3sv.cling:cling-support:${versions.cling}")
-    implementation('com.github.m3sv.seamless:seamless-xml:1.1.5')
-    implementation("org.eclipse.jetty:jetty-client:${versions.jetty}")
-    implementation("org.eclipse.jetty:jetty-server:${versions.jetty}")
-    implementation("org.eclipse.jetty:jetty-servlet:${versions.jetty}")
-}

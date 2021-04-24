@@ -4,7 +4,6 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.squareup.sqldelight'
-apply from: "../scripts/cling.gradle"
 
 android {
     compileSdkVersion buildConfig.compileSdk
@@ -74,29 +73,32 @@ android {
 }
 
 dependencies {
-
-
-    implementation deps.androidx.appCompat
-    implementation deps.androidx.cardView
-    implementation deps.androidx.constraintLayout
-    implementation deps.androidx.ktx.core
-    implementation deps.androidx.lifecycle.extensions
-    implementation deps.androidx.lifecycle.lifecycleKtx
-    implementation deps.androidx.lifecycle.liveDataKtx
-    implementation deps.androidx.lifecycle.liveDataKtx
-    implementation deps.androidx.lifecycle.viewModelKtx
-    implementation deps.androidx.material
-    implementation deps.androidx.preference
-    implementation deps.androidx.recyclerView
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.cardview)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.ktx.core)
+    implementation(libs.androidx.lifecycle.extensions)
+    implementation(libs.androidx.lifecycle.ktx.runtime)
+    implementation(libs.androidx.lifecycle.ktx.livedata)
+    implementation(libs.androidx.lifecycle.ktx.viewmodel)
+    implementation(libs.material)
+    implementation(libs.androidx.ktx.preference)
+    implementation(libs.androidx.recyclerview)
     implementation(libs.bundles.coroutines)
-    implementation "com.google.dagger:hilt-android:${versions.hilt}"
-    implementation deps.glide
-    implementation deps.nanohttpd.core
-    implementation deps.nanohttpd.webserver
-    implementation deps.sqlDelightAndroidDriver
-    implementation deps.timber
+    implementation(libs.hilt.android.core)
+    implementation(libs.glide)
+    implementation(libs.bundles.nanohttpd)
+    implementation "com.squareup.sqldelight:android-driver:${versions.sqlDelight}"
+    implementation(libs.timber)
 
     implementation(libs.bundles.compose)
+    implementation(libs.bundles.cling)
+
+    kapt(libs.hilt.compiler)
+
+    testImplementation libs.androidx.core.testing
+    testImplementation(libs.test.junit)
+    testImplementation(libs.test.mockito.core)
 
     implementation project(':common')
     implementation project(':core:persistence')
@@ -108,10 +110,4 @@ dependencies {
     implementation project(':feature:settings')
     implementation project(':feature:inappplayer')
     implementation project(':shared:upnp')
-
-    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
-
-    testImplementation deps.androidx.coreTesting
-    testImplementation deps.test.junit
-    testImplementation deps.test.mockito
 }

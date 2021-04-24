@@ -15,11 +15,11 @@ android {
 dependencies {
     implementation(libs.bundles.compose)
 
-    implementation deps.androidx.material
-    implementation deps.androidx.preference
+    implementation(libs.material)
+    implementation libs.androidx.ktx.preference
     implementation(libs.bundles.coroutines)
-    implementation "com.google.dagger:hilt-android:${versions.hilt}"
-    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
+    implementation(libs.hilt.android.core)
+    kapt(libs.hilt.compiler)
 
     implementation project(':common')
     implementation project(':shared:upnp')

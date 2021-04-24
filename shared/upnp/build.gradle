@@ -1,30 +1,25 @@
 apply from: '../../scripts/kotlin-android-library.gradle'
-apply from: '../../scripts/cling.gradle'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 
 dependencies {
-    compileOnly deps.javaxCdi
-
-    implementation deps.androidx.ktx.core
-    implementation deps.androidx.material
-    implementation deps.androidx.preference
+    compileOnly libs.javax.cdi
+    implementation 'androidx.documentfile:documentfile:1.0.1'
+    implementation libs.androidx.ktx.preference
+    implementation(libs.androidx.ktx.core)
+    implementation(libs.material)
+    implementation libs.okHttp
+    implementation(libs.timber)
+    implementation(libs.bundles.cling)
     implementation(libs.bundles.coroutines)
-    implementation "com.google.dagger:hilt-android:${versions.hilt}"
-    implementation deps.nanohttpd.core
-    implementation deps.nanohttpd.webserver
-    implementation deps.okHttp
-    implementation deps.timber
+    implementation(libs.bundles.nanohttpd)
+    implementation(libs.hilt.android.core)
+    kapt(libs.hilt.compiler)
+    testImplementation(libs.test.junit)
+    testImplementation(libs.test.mockito.core)
 
     implementation project(":common")
     implementation project(':core:eventbus')
     implementation project(':core:persistence')
-
-    implementation 'androidx.documentfile:documentfile:1.0.1'
-
-    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
-
-    testImplementation deps.test.junit
-    testImplementation deps.test.mockito
 }

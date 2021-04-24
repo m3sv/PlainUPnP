@@ -14,8 +14,8 @@ android {
 }
 
 dependencies {
-    implementation deps.androidx.constraintLayout
-implementation(libs.bundles.coroutines)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.bundles.coroutines)
     implementation project(':common')
 
     // Compose
@@ -24,11 +24,11 @@ implementation(libs.bundles.coroutines)
 
     implementation 'androidx.documentfile:documentfile:1.0.1'
 
-    implementation deps.androidx.lifecycle.liveDataKtx
+    implementation(libs.androidx.lifecycle.ktx.livedata)
 
-    implementation "com.google.dagger:hilt-android:${versions.hilt}"
-    kapt "com.google.dagger:hilt-compiler:${versions.hilt}"
+    implementation(libs.hilt.android.core)
+    kapt(libs.hilt.compiler)
 
-    testImplementation deps.test.junit
-    testImplementation deps.test.mockito
+    testImplementation(libs.test.junit)
+    testImplementation(libs.test.mockito.core)
 }
