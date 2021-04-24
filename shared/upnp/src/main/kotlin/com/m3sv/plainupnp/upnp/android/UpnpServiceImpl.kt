@@ -17,7 +17,7 @@ import timber.log.Timber
 
 abstract class UpnpServiceImpl(
     private val configuration: UpnpServiceConfiguration,
-    context: Context?,
+    context: Context,
     vararg registryListeners: RegistryListener?,
 ) : UpnpService {
 
@@ -92,7 +92,7 @@ abstract class UpnpServiceImpl(
         } catch (var3: RouterException) {
             val cause = Exceptions.unwrap(var3)
             if (cause is InterruptedException) {
-                Timber.e(cause, "Router shutdown was interrupted: %s", var3)
+                Timber.e(cause, "Router shutdown was interrupted: %s", var3.stackTrace)
             } else {
                 Timber.e(cause, "Router error on shutdown: $var3")
             }
