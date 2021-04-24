@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinCompile
-
 buildscript {
     ext.buildConfig = [
             'compileSdk': 30,
@@ -22,11 +20,8 @@ buildscript {
             architectureComponents: "2.2.0",
             cardView              : "1.0.0",
             cling                 : "2.2.0",
-            composeVersion        : '1.0.0-beta04',
             constraintLayout      : "2.0.0",
-            coreLibraryDesugaring : '1.1.1',
             coreTesting           : "2.1.0",
-            coroutines            : "1.4.2",
             hilt                  : "2.33-beta",
             detekt                : "1.0.0",
             jetty                 : "8.1.8.v20121106",
@@ -64,9 +59,6 @@ buildscript {
                     ],
                     "preference"      : "androidx.preference:preference-ktx:1.1.1",
                     "recyclerView"    : "androidx.recyclerview:recyclerview:${versions.recyclerView}"
-            ],
-            'coroutines'             : [
-                    "test": "org.jetbrains.kotlinx:kotlinx-coroutines-test:${versions.coroutines}"
             ],
             'dagger'                 : [
                     "core": "com.google.dagger:dagger:${versions.hilt}"
@@ -125,7 +117,7 @@ allprojects {
         }
     }
 
-    tasks.withType(KotlinCompile).configureEach { task ->
+    tasks.withType(org.jetbrains.kotlin.gradle.dsl.KotlinCompile).configureEach { task ->
         task.kotlinOptions {
             useIR = true
             freeCompilerArgs += [

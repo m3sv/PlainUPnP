@@ -10,7 +10,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion versions.composeVersion
+        kotlinCompilerExtensionVersion libs.versions.compose.get()
     }
 }
 
@@ -22,16 +22,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.3.0'
 
-    implementation "androidx.activity:activity-compose:$versions.activity"
-    implementation "androidx.compose.runtime:runtime:$versions.composeVersion"
-    implementation "androidx.compose.runtime:runtime-livedata:$versions.composeVersion"
-    implementation "androidx.compose.ui:ui:$versions.composeVersion"
-    implementation "androidx.compose.foundation:foundation:$versions.composeVersion"
-    implementation "androidx.compose.foundation:foundation-layout:$versions.composeVersion"
-    implementation "androidx.compose.material:material:$versions.composeVersion"
-    implementation "androidx.compose.material:material-icons-core:$versions.composeVersion"
-    implementation "androidx.compose.material:material-icons-extended:$versions.composeVersion"
-    implementation "com.google.android.material:compose-theme-adapter:$versions.composeVersion"
+    implementation(libs.bundles.compose)
 
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     kapt "com.google.dagger:hilt-compiler:${versions.hilt}"

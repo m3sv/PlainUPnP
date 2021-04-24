@@ -4,24 +4,13 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 
-android {
-    compileOptions {
-        // Flag to enable support for the new language APIs
-        coreLibraryDesugaringEnabled true
-    }
-}
-
 dependencies {
-    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:${versions.coreLibraryDesugaring}"
-
     compileOnly deps.javaxCdi
 
     implementation deps.androidx.ktx.core
     implementation deps.androidx.material
     implementation deps.androidx.preference
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
-
+    implementation(libs.bundles.coroutines)
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     implementation deps.nanohttpd.core
     implementation deps.nanohttpd.webserver

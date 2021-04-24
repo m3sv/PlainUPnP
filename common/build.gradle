@@ -11,34 +11,22 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion versions.composeVersion
+        kotlinCompilerExtensionVersion libs.versions.compose.get()
     }
 }
 
 dependencies {
-
-
     implementation deps.androidx.lifecycle.extensions
     implementation deps.androidx.material
     implementation deps.androidx.preference
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
-
+    implementation(libs.bundles.coroutines)
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
     implementation deps.timber
 
-    implementation "androidx.compose.runtime:runtime:$versions.composeVersion"
-    implementation "androidx.compose.runtime:runtime-livedata:$versions.composeVersion"
-    implementation "androidx.compose.ui:ui:$versions.composeVersion"
-    implementation "androidx.compose.foundation:foundation:$versions.composeVersion"
-    implementation "androidx.compose.foundation:foundation-layout:$versions.composeVersion"
-    implementation "androidx.compose.material:material:$versions.composeVersion"
-    implementation "androidx.compose.material:material-icons-core:$versions.composeVersion"
-    implementation "androidx.compose.material:material-icons-extended:$versions.composeVersion"
-    implementation "com.google.android.material:compose-theme-adapter:$versions.composeVersion"
+    implementation(libs.bundles.compose)
 
-    implementation  "androidx.datastore:datastore:1.0.0-alpha08"
-    api  "com.google.protobuf:protobuf-javalite:3.10.0"
+    implementation "androidx.datastore:datastore:1.0.0-alpha08"
+    api "com.google.protobuf:protobuf-javalite:3.10.0"
 
     implementation project(':core:resources')
 

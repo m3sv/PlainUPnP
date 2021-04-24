@@ -19,10 +19,10 @@ dependencies {
     implementation deps.androidx.lifecycle.viewModelKtx
     implementation deps.androidx.material
     implementation deps.androidx.recyclerView
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${versions.coroutines}"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${versions.coroutines}"
-
+    implementation(libs.bundles.coroutines)
     implementation "com.google.dagger:hilt-android:${versions.hilt}"
+
+
     implementation deps.fastScroll
     implementation deps.glide
 
