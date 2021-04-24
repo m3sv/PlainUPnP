@@ -80,11 +80,6 @@ public class AndroidUpnpServiceConfiguration extends DefaultUpnpServiceConfigura
     }
 
     @Override
-    protected NetworkAddressFactory createNetworkAddressFactory(int streamListenPort) {
-        return new AndroidNetworkAddressFactory(streamListenPort);
-    }
-
-    @Override
     protected Namespace createNamespace() {
         // For the Jetty server, this is the servlet context path
         return new Namespace("/upnp");
