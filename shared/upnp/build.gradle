@@ -5,17 +5,20 @@ apply plugin: 'dagger.hilt.android.plugin'
 
 dependencies {
     compileOnly libs.javax.cdi
-    implementation 'androidx.documentfile:documentfile:1.0.1'
+
     implementation libs.androidx.ktx.preference
-    implementation(libs.androidx.ktx.core)
-    implementation(libs.material)
     implementation libs.okHttp
-    implementation(libs.timber)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.documentfile)
     implementation(libs.bundles.cling)
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.nanohttpd)
     implementation(libs.hilt.android.core)
+    implementation(libs.material)
+    implementation(libs.timber)
+
     kapt(libs.hilt.compiler)
+
     testImplementation(libs.test.junit)
     testImplementation(libs.test.mockito.core)
 

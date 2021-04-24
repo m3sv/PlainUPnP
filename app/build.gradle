@@ -73,33 +73,6 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.cardview)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.ktx.core)
-    implementation(libs.androidx.lifecycle.extensions)
-    implementation(libs.androidx.lifecycle.ktx.runtime)
-    implementation(libs.androidx.lifecycle.ktx.livedata)
-    implementation(libs.androidx.lifecycle.ktx.viewmodel)
-    implementation(libs.material)
-    implementation(libs.androidx.ktx.preference)
-    implementation(libs.androidx.recyclerview)
-    implementation(libs.bundles.coroutines)
-    implementation(libs.hilt.android.core)
-    implementation(libs.glide)
-    implementation(libs.bundles.nanohttpd)
-    implementation "com.squareup.sqldelight:android-driver:${versions.sqlDelight}"
-    implementation(libs.timber)
-
-    implementation(libs.bundles.compose)
-    implementation(libs.bundles.cling)
-
-    kapt(libs.hilt.compiler)
-
-    testImplementation libs.androidx.core.testing
-    testImplementation(libs.test.junit)
-    testImplementation(libs.test.mockito.core)
-
     implementation project(':common')
     implementation project(':core:persistence')
     implementation project(':core:eventbus')
@@ -110,4 +83,31 @@ dependencies {
     implementation project(':feature:settings')
     implementation project(':feature:inappplayer')
     implementation project(':shared:upnp')
+
+    implementation "com.squareup.sqldelight:android-driver:${versions.sqlDelight}"
+
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.cardview)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.ktx.preference)
+    implementation(libs.androidx.lifecycle.extensions)
+    implementation(libs.androidx.lifecycle.ktx.livedata)
+    implementation(libs.androidx.lifecycle.ktx.runtime)
+    implementation(libs.androidx.lifecycle.ktx.viewmodel)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.bundles.cling)
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.coroutines)
+    implementation(libs.bundles.nanohttpd)
+    implementation(libs.glide)
+    implementation(libs.hilt.android.core)
+    implementation(libs.material)
+    implementation(libs.timber)
+
+    kapt(libs.hilt.compiler)
+
+    testImplementation libs.androidx.core.testing
+    testImplementation(libs.test.junit)
+    testImplementation(libs.test.mockito.core)
 }

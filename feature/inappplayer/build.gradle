@@ -9,14 +9,14 @@ android {
 
 dependencies {
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.extensions)
-    implementation(libs.androidx.lifecycle.ktx.runtime)
     implementation(libs.androidx.lifecycle.ktx.livedata)
+    implementation(libs.androidx.lifecycle.ktx.runtime)
     implementation(libs.androidx.lifecycle.ktx.viewmodel)
     implementation(libs.bundles.coroutines)
     implementation(libs.exoPlayer)
     implementation(libs.glide)
-    implementation(libs.androidx.ktx.core)
     implementation(libs.photoView)
 
     testImplementation(libs.test.junit)

@@ -9,27 +9,23 @@ android {
 }
 
 dependencies {
-    implementation 'androidx.fragment:fragment-ktx:1.1.0'
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:${versions.architectureComponents}"
+    implementation project(':common')
+    implementation project(':core:eventbus')
+    implementation project(':feature:inappplayer')
+    implementation project(':shared:upnp')
 
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.ktx.fragment)
     implementation(libs.androidx.lifecycle.extensions)
-    implementation(libs.androidx.lifecycle.ktx.runtime)
     implementation(libs.androidx.lifecycle.ktx.livedata)
+    implementation(libs.androidx.lifecycle.ktx.runtime)
     implementation(libs.androidx.lifecycle.ktx.viewmodel)
-    implementation(libs.material)
     implementation(libs.androidx.recyclerview)
     implementation(libs.bundles.coroutines)
-    implementation(libs.hilt.android.core)
-
-
-    implementation libs.fastScroll
+    implementation(libs.fastScroll)
     implementation(libs.glide)
-
-    implementation project(':common')
-    implementation project(':shared:upnp')
-    implementation project(':feature:inappplayer')
-    implementation project(':core:eventbus')
+    implementation(libs.hilt.android.core)
+    implementation(libs.material)
 
     kapt(libs.hilt.compiler)
 

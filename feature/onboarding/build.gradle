@@ -14,19 +14,16 @@ android {
 }
 
 dependencies {
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.bundles.coroutines)
     implementation project(':common')
 
-    // Compose
-    implementation(libs.bundles.compose)
-    implementation 'androidx.fragment:fragment-ktx:1.1.0'
-
-    implementation 'androidx.documentfile:documentfile:1.0.1'
-
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.documentfile)
+    implementation(libs.androidx.ktx.fragment)
     implementation(libs.androidx.lifecycle.ktx.livedata)
-
+    implementation(libs.bundles.compose)
+    implementation(libs.bundles.coroutines)
     implementation(libs.hilt.android.core)
+
     kapt(libs.hilt.compiler)
 
     testImplementation(libs.test.junit)

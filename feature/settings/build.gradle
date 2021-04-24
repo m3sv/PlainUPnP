@@ -13,12 +13,12 @@ android {
 }
 
 dependencies {
-    implementation(libs.bundles.compose)
-
-    implementation(libs.material)
     implementation libs.androidx.ktx.preference
+    implementation(libs.bundles.compose)
     implementation(libs.bundles.coroutines)
     implementation(libs.hilt.android.core)
+    implementation(libs.material)
+
     kapt(libs.hilt.compiler)
 
     implementation project(':common')
