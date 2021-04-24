@@ -294,7 +294,5 @@ public class AndroidRouter extends RouterImpl {
             log.info("EXTRA_OTHER_NETWORK_INFO: " + (otherNetworkInfo == null ? "none" : otherNetworkInfo));
             log.info("EXTRA_EXTRA_INFO: " + intent.getStringExtra(ConnectivityManager.EXTRA_EXTRA_INFO));
         }
-
     }
-
 }
