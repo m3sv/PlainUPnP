@@ -1,128 +1,105 @@
-package com.m3sv.plainupnp.upnp.android;
+package com.m3sv.plainupnp.upnp.android
 
-import android.content.Context;
+import android.content.Context
+import org.fourthline.cling.UpnpService
+import org.fourthline.cling.UpnpServiceConfiguration
+import org.fourthline.cling.controlpoint.ControlPoint
+import org.fourthline.cling.controlpoint.ControlPointImpl
+import org.fourthline.cling.protocol.ProtocolFactory
+import org.fourthline.cling.protocol.ProtocolFactoryImpl
+import org.fourthline.cling.registry.Registry
+import org.fourthline.cling.registry.RegistryImpl
+import org.fourthline.cling.registry.RegistryListener
+import org.fourthline.cling.transport.Router
+import org.fourthline.cling.transport.RouterException
+import org.seamless.util.Exceptions
+import timber.log.Timber
 
-import org.fourthline.cling.UpnpService;
-import org.fourthline.cling.UpnpServiceConfiguration;
-import org.fourthline.cling.controlpoint.ControlPoint;
-import org.fourthline.cling.controlpoint.ControlPointImpl;
-import org.fourthline.cling.protocol.ProtocolFactory;
-import org.fourthline.cling.protocol.ProtocolFactoryImpl;
-import org.fourthline.cling.registry.Registry;
-import org.fourthline.cling.registry.RegistryImpl;
-import org.fourthline.cling.registry.RegistryListener;
-import org.fourthline.cling.transport.Router;
-import org.fourthline.cling.transport.RouterException;
-import org.fourthline.cling.transport.RouterImpl;
-import org.seamless.util.Exceptions;
+abstract class UpnpServiceImpl(
+    private val configuration: UpnpServiceConfiguration,
+    context: Context?,
+    vararg registryListeners: RegistryListener?,
+) : UpnpService {
 
-import timber.log.Timber;
+    private val _protocolFactory: ProtocolFactory by lazy { ProtocolFactoryImpl(this) }
+    private val _registry: Registry by lazy { RegistryImpl(this) }
+    private val _controlPoint: ControlPoint by lazy {
+        ControlPointImpl(getConfiguration(), _protocolFactory, _registry)
+    }
 
-public class UpnpServiceImpl implements UpnpService {
-    protected final UpnpServiceConfiguration configuration;
-    protected final ControlPoint controlPoint;
-    protected final ProtocolFactory protocolFactory;
-    protected final Registry registry;
-    protected final Router router;
+    private val router: Router
 
-    public UpnpServiceImpl(UpnpServiceConfiguration configuration, Context context, RegistryListener... registryListeners) {
-        this.configuration = configuration;
-        Timber.i(">>> Starting UPnP service...");
-        Timber.i("Using configuration: %s", this.getConfiguration().getClass().getName());
-        this.protocolFactory = this.createProtocolFactory();
-        this.registry = this.createRegistry(this.protocolFactory);
+    override fun getProtocolFactory(): ProtocolFactory = _protocolFactory
 
-        for (RegistryListener registryListener : registryListeners) {
-            this.registry.addListener(registryListener);
+    init {
+        Timber.i(">>> Starting UPnP service...")
+
+        for (registryListener in registryListeners) {
+            _registry.addListener(registryListener)
         }
 
-        this.router = new AndroidRouter(configuration, this.protocolFactory, context);
+        router = AndroidRouter(configuration, _protocolFactory, context)
 
         try {
-            this.router.enable();
-        } catch (RouterException var7) {
-            throw new RuntimeException("Enabling network router failed: " + var7, var7);
+            router.enable()
+        } catch (var7: RouterException) {
+            throw RuntimeException("Enabling network router failed: $var7", var7)
         }
-
-        this.controlPoint = this.createControlPoint(this.protocolFactory, this.registry);
-        Timber.i("<<< UPnP service started successfully");
+        Timber.i("<<< UPnP service started successfully")
     }
 
-    protected ProtocolFactory createProtocolFactory() {
-        return new ProtocolFactoryImpl(this);
+    override fun getConfiguration(): UpnpServiceConfiguration = configuration
+
+    override fun getControlPoint(): ControlPoint {
+        return _controlPoint
     }
 
-    protected Registry createRegistry(ProtocolFactory protocolFactory) {
-        return new RegistryImpl(this);
+    override fun getRegistry(): Registry {
+        return _registry
     }
 
-    protected Router createRouter(ProtocolFactory protocolFactory, Registry registry) {
-        return new RouterImpl(this.getConfiguration(), protocolFactory);
+    override fun getRouter(): Router {
+        return router
     }
 
-    protected ControlPoint createControlPoint(ProtocolFactory protocolFactory, Registry registry) {
-        return new ControlPointImpl(this.getConfiguration(), protocolFactory, registry);
+    @Synchronized
+    override fun shutdown() {
+        this.shutdown(false)
     }
 
-    public UpnpServiceConfiguration getConfiguration() {
-        return this.configuration;
-    }
-
-    public ControlPoint getControlPoint() {
-        return this.controlPoint;
-    }
-
-    public ProtocolFactory getProtocolFactory() {
-        return this.protocolFactory;
-    }
-
-    public Registry getRegistry() {
-        return this.registry;
-    }
-
-    public Router getRouter() {
-        return this.router;
-    }
-
-    public synchronized void shutdown() {
-        this.shutdown(false);
-    }
-
-    protected void shutdown(boolean separateThread) {
-        Runnable shutdown = () -> {
-            Timber.i(">>> Shutting down UPnP service...");
-            UpnpServiceImpl.this.shutdownRegistry();
-            UpnpServiceImpl.this.shutdownRouter();
-            UpnpServiceImpl.this.shutdownConfiguration();
-            Timber.i("<<< UPnP service shutdown completed");
-        };
+    protected fun shutdown(separateThread: Boolean) {
+        val shutdown = Runnable {
+            Timber.i(">>> Shutting down UPnP service...")
+            shutdownRegistry()
+            shutdownRouter()
+            shutdownConfiguration()
+            Timber.i("<<< UPnP service shutdown completed")
+        }
         if (separateThread) {
-            (new Thread(shutdown)).start();
+            Thread(shutdown).start()
         } else {
-            shutdown.run();
+            shutdown.run()
         }
-
     }
 
-    protected void shutdownRegistry() {
-        this.getRegistry().shutdown();
+    private fun shutdownRegistry() {
+        registry.shutdown()
     }
 
-    protected void shutdownRouter() {
+    private fun shutdownRouter() {
         try {
-            this.getRouter().shutdown();
-        } catch (RouterException var3) {
-            Throwable cause = Exceptions.unwrap(var3);
-            if (cause instanceof InterruptedException) {
-                Timber.e(cause, "Router shutdown was interrupted: %s", var3);
+            getRouter().shutdown()
+        } catch (var3: RouterException) {
+            val cause = Exceptions.unwrap(var3)
+            if (cause is InterruptedException) {
+                Timber.e(cause, "Router shutdown was interrupted: %s", var3)
             } else {
-                Timber.e(cause, "Router error on shutdown: " + var3);
+                Timber.e(cause, "Router error on shutdown: $var3")
             }
         }
-
     }
 
-    protected void shutdownConfiguration() {
-        this.getConfiguration().shutdown();
+    private fun shutdownConfiguration() {
+        getConfiguration().shutdown()
     }
 }
