@@ -1,10 +1,11 @@
-package com.m3sv.plainupnp.presentation.onboarding
+package com.m3sv.plainupnp.presentation.onboarding.selecttheme
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.compose.widgets.*
@@ -12,8 +13,8 @@ import com.m3sv.plainupnp.compose.widgets.*
 @Composable
 fun SelectThemeScreen(
     titleText: String,
+    buttonText: String,
     selectedTheme: ThemeOption,
-    stringProvider: (ThemeOption) -> String,
     onThemeOptionSelected: (ThemeOption) -> Unit,
     onClick: () -> Unit,
     onBackClick: () -> Unit,
@@ -35,7 +36,7 @@ fun SelectThemeScreen(
                 modifier = Modifier.padding(start = 24.dp),
                 items = ThemeOption.values().toList(),
                 initial = selectedTheme,
-                stringProvider = stringProvider,
+                stringProvider = { stringResource(id = it.text) },
                 onItemSelected = onThemeOptionSelected
             )
 
@@ -45,7 +46,7 @@ fun SelectThemeScreen(
                 .padding(horizontal = 24.dp)
                 .padding(bottom = 24.dp)
             ) {
-                OneContainedButton(text = "Next", onClick = onClick)
+                OneContainedButton(text = buttonText, onClick = onClick)
             }
         }
     }

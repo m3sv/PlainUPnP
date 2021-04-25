@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.presentation.onboarding
+package com.m3sv.plainupnp.presentation.onboarding.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,13 +11,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.m3sv.plainupnp.backgroundmode.BackgroundMode
 import com.m3sv.plainupnp.compose.widgets.*
+import com.m3sv.plainupnp.presentation.onboarding.R
 
 @Composable
 fun SelectBackgroundModeScreen(
     backgroundMode: MutableState<BackgroundMode>,
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
-    stringProvider: (BackgroundMode) -> String,
+    stringProvider: @Composable (BackgroundMode) -> String,
 ) {
     OnePane(viewingContent = {
         OneTitle(text = "Select background mode")

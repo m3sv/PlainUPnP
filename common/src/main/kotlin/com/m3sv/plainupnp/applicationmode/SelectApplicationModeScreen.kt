@@ -16,7 +16,6 @@ fun SelectApplicationModeScreen(
     onNextClick: (() -> Unit)?,
     onBackClick: (() -> Unit)?,
     nextText: String? = null,
-    stringProvider: (Int) -> String,
     onItemSelected: (ApplicationMode) -> Unit,
 ) {
     OnePane(viewingContent = {
@@ -38,7 +37,7 @@ fun SelectApplicationModeScreen(
                 modifier = Modifier.padding(start = 24.dp),
                 items = ApplicationMode.values().toList(),
                 initial = selectedMode,
-                stringProvider = { stringProvider(it.stringValue) },
+                stringProvider = { stringResource(it.stringValue) },
                 onItemSelected = {
                     selectedMode = it
                     onItemSelected(it)

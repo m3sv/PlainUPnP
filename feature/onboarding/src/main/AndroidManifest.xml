@@ -3,6 +3,7 @@
 
     <application>
         <activity android:name=".activity.ConfigureFolderActivity" />
+        <activity android:name=".selecttheme.SelectThemeActivity" />
     </application>
 </manifest>
 

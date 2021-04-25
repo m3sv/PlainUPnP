@@ -18,7 +18,7 @@ fun <T> RadioGroup(
     modifier: Modifier = Modifier,
     items: List<T>,
     initial: T,
-    stringProvider: (T) -> String,
+    stringProvider: @Composable (T) -> String,
     onItemSelected: (T) -> Unit,
 ) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(initial) }

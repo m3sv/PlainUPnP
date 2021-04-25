@@ -11,10 +11,10 @@ import android.provider.Settings
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.animation.Crossfade
+import androidx.compose.material.Surface
 import androidx.compose.runtime.*
+import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
@@ -25,8 +25,10 @@ import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import com.m3sv.plainupnp.presentation.onboarding.*
 import com.m3sv.plainupnp.presentation.onboarding.R
+import com.m3sv.plainupnp.presentation.onboarding.screen.GreetingScreen
+import com.m3sv.plainupnp.presentation.onboarding.screen.StoragePermissionScreen
+import com.m3sv.plainupnp.presentation.onboarding.selecttheme.SelectThemeScreen
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -71,7 +73,6 @@ class OnboardingActivity : AppCompatActivity() {
         Content(
             selectedTheme = viewModel.activeTheme,
             currentScreen = currentScreen,
-            stringProvider = this@OnboardingActivity::getString,
             onSelectTheme = viewModel::onSelectTheme,
             onSelectApplicationMode = viewModel::onSelectMode,
             contentUris = contentUris,
@@ -89,7 +90,6 @@ class OnboardingActivity : AppCompatActivity() {
         selectedTheme: ThemeOption,
         currentScreen: OnboardingScreen,
         contentUris: List<UriWrapper> = listOf(),
-        stringProvider: (Int) -> String,
         onSelectTheme: (ThemeOption) -> Unit,
         onSelectApplicationMode: (ApplicationMode) -> Unit,
         onNextClick: () -> Unit,
@@ -107,8 +107,8 @@ class OnboardingActivity : AppCompatActivity() {
 
                         OnboardingScreen.SelectTheme -> SelectThemeScreen(
                             titleText = getString(R.string.set_theme_label),
+                            buttonText = stringResource(id = R.string.next),
                             selectedTheme = selectedTheme,
-                            stringProvider = { stringProvider(it.text) },
                             onThemeOptionSelected = onSelectTheme,
                             onClick = onNextClick,
                             onBackClick = onBackClick
@@ -118,7 +118,6 @@ class OnboardingActivity : AppCompatActivity() {
                             initialMode = ApplicationMode.Streaming,
                             onNextClick = onNextClick,
                             onBackClick = onBackClick,
-                            stringProvider = stringProvider,
                             onItemSelected = onSelectApplicationMode
                         )
 

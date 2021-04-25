@@ -1,5 +1,6 @@
 package com.m3sv.selectcontentdirectory
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -24,10 +25,9 @@ class SelectApplicationModeActivity : AppCompatActivity() {
             AppTheme {
                 Surface {
                     SelectApplicationModeScreen(
-                        onNextClick = { finish() },
-                        onBackClick = { finish() },
+                        onNextClick = ::onFinish,
+                        onBackClick = ::onFinish,
                         nextText = getString(R.string.done),
-                        stringProvider = { getString(it) },
                         initialMode = applicationModeManager.getApplicationMode()
                     ) { applicationMode ->
                         lifecycleScope.launch { applicationModeManager.setApplicationMode(applicationMode) }
@@ -35,5 +35,11 @@ class SelectApplicationModeActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun onFinish() {
+        startActivity(Intent(applicationContext, SelectContentDirectoryActivity::class.java).apply {
+            flags += Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        })
     }
 }

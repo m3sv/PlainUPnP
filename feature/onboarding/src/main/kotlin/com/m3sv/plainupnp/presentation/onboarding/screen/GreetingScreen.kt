@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.presentation.onboarding
+package com.m3sv.plainupnp.presentation.onboarding.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

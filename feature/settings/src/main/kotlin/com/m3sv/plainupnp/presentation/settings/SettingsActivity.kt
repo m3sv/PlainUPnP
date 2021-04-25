@@ -13,16 +13,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
 import com.m3sv.plainupnp.common.preferences.Preferences
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.common.util.pass
@@ -31,6 +29,8 @@ import com.m3sv.plainupnp.compose.widgets.OnePane
 import com.m3sv.plainupnp.compose.widgets.OneTitle
 import com.m3sv.plainupnp.compose.widgets.OneToolbar
 import com.m3sv.plainupnp.presentation.onboarding.activity.ConfigureFolderActivity
+import com.m3sv.plainupnp.presentation.onboarding.selecttheme.SelectThemeActivity
+import com.m3sv.selectcontentdirectory.SelectApplicationModeActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -41,6 +41,9 @@ class SettingsActivity : AppCompatActivity() {
 
     @Inject
     lateinit var preferences: PreferencesRepository
+
+    @Inject
+    lateinit var applicationModeManager: ApplicationModeManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -120,11 +123,15 @@ class SettingsActivity : AppCompatActivity() {
 
     @Composable
     private fun UpnpSection() {
+        val applicationMode by applicationModeManager.applicationMode.collectAsState()
+
         Section {
             SectionRow(
                 title = stringResource(id = R.string.application_mode_settings),
-                currentValue = "value"
-            ) {}
+                currentValue = applicationMode?.stringValue?.let { stringResource(id = it) }
+            ) {
+                startActivity(Intent(applicationContext, SelectApplicationModeActivity::class.java))
+            }
 
             RowDivider()
 
@@ -175,7 +182,9 @@ class SettingsActivity : AppCompatActivity() {
                 title = stringResource(R.string.set_theme_label),
                 currentValue = stringResource(id = textId),
                 icon = painterResource(id = R.drawable.ic_theme)
-            ) {}
+            ) {
+                startActivity(Intent(applicationContext, SelectThemeActivity::class.java))
+            }
         }
     }
 
