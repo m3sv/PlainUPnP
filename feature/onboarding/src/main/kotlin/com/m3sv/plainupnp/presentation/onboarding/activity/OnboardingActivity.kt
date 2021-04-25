@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.presentation.onboarding
+package com.m3sv.plainupnp.presentation.onboarding.activity
 
 import android.app.Activity
 import android.content.Intent
@@ -23,6 +23,8 @@ import com.m3sv.plainupnp.backgroundmode.BackgroundMode
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
+import com.m3sv.plainupnp.presentation.onboarding.*
+import com.m3sv.plainupnp.presentation.onboarding.R
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject

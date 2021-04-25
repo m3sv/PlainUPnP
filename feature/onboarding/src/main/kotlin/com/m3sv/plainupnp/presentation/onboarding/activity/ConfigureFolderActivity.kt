@@ -1,4 +1,4 @@
-package com.m3sv.plainupnp.presentation.onboarding
+package com.m3sv.plainupnp.presentation.onboarding.activity
 
 import android.app.Activity
 import android.content.Intent
@@ -13,6 +13,8 @@ import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
+import com.m3sv.plainupnp.presentation.onboarding.OnboardingViewModel
+import com.m3sv.plainupnp.presentation.onboarding.SelectFoldersScreen
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 

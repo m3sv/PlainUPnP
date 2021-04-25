@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.presentation.onboarding
 
 import android.app.Activity
 import android.content.SharedPreferences
+import com.m3sv.plainupnp.presentation.onboarding.activity.OnboardingActivity
 
 class OnboardingManager(
     private val preferences: SharedPreferences,

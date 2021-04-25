@@ -2,7 +2,7 @@
     package="com.m3sv.plainupnp.presentation.onboarding">
 
     <application>
-        <activity android:name=".ConfigureFolderActivity" />
+        <activity android:name=".activity.ConfigureFolderActivity" />
     </application>
 </manifest>
 

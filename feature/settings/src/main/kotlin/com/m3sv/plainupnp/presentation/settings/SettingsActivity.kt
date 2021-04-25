@@ -30,7 +30,7 @@ import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OnePane
 import com.m3sv.plainupnp.compose.widgets.OneTitle
 import com.m3sv.plainupnp.compose.widgets.OneToolbar
-import com.m3sv.plainupnp.presentation.onboarding.ConfigureFolderActivity
+import com.m3sv.plainupnp.presentation.onboarding.activity.ConfigureFolderActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
