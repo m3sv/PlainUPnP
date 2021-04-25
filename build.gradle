@@ -15,11 +15,6 @@ buildscript {
 
     ext.buildConfig.version['name'] = "${buildConfig.version.major}.${buildConfig.version.minor}.${buildConfig.version.patch}"
 
-    ext.versions = [
-            detekt                : "1.0.0",
-            sqlDelight            : '1.4.4',
-    ]
-
     repositories {
         google()
         mavenCentral()
@@ -29,8 +24,8 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.0-alpha14'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32"
-        classpath "com.squareup.sqldelight:gradle-plugin:${versions.sqlDelight}"
-        classpath(libs.hilt.android.gradleplugin)
+        classpath(libs.gradle.plugin.sqldelight)
+        classpath(libs.gradle.plugin.hilt)
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.15'
     }
 }

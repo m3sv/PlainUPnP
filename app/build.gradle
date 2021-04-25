@@ -84,8 +84,6 @@ dependencies {
     implementation project(':feature:inappplayer')
     implementation project(':shared:upnp')
 
-    implementation "com.squareup.sqldelight:android-driver:${versions.sqlDelight}"
-
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.cardview)
     implementation(libs.androidx.constraintlayout)
@@ -103,6 +101,7 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.hilt.android.core)
     implementation(libs.material)
+    implementation(libs.sqldelight)
     implementation(libs.timber)
 
     kapt(libs.hilt.compiler)
