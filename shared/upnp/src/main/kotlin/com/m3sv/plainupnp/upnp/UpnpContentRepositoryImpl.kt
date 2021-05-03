@@ -13,10 +13,7 @@ import com.m3sv.plainupnp.upnp.util.*
 import comm3svplainupnpcorepersistence.DirectoryCache
 import comm3svplainupnpcorepersistence.FileCache
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.*
 import timber.log.Timber
 import java.security.SecureRandom
 import javax.inject.Inject
@@ -68,7 +65,12 @@ class UpnpContentRepositoryImpl @Inject constructor(
             }
         }
 
-        launch { preferencesRepository.preferences.collect { refreshContent() } }
+        launch {
+            preferencesRepository
+                .preferences
+                .debounce(2000)
+                .collect { refreshContent() }
+        }
     }
 
     val init by lazy {
