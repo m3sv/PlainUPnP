@@ -7,6 +7,7 @@ import android.provider.MediaStore
 import androidx.documentfile.provider.DocumentFile
 import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ContentRepository
+import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.upnp.mediacontainers.*
 import com.m3sv.plainupnp.upnp.util.*
@@ -35,6 +36,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
     private val application: Application,
     private val database: Database,
     private val contentManager: ContentManager,
+    private val preferencesRepository: PreferencesRepository,
 ) : CoroutineScope, ContentRepository {
 
     override val coroutineContext: CoroutineContext
@@ -91,23 +93,25 @@ class UpnpContentRepositoryImpl @Inject constructor(
 
         val jobs = mutableListOf<Deferred<Unit>>()
 
-        if (contentManager.isImagesEnabled) {
-            jobs += async {
-                getRootImagesContainer()
-                    .also(rootContainer::addContainer)
-                    .addToRegistry()
+        with(requireNotNull(preferencesRepository.preferences.value)) {
+            if (enableImages) {
+                jobs += async {
+                    getRootImagesContainer()
+                        .also(rootContainer::addContainer)
+                        .addToRegistry()
+                }
             }
-        }
 
-        if (contentManager.isAudioEnabled) {
-            jobs += async {
-                getRootAudioContainer(rootContainer).addToRegistry()
+            if (enableAudio) {
+                jobs += async {
+                    getRootAudioContainer(rootContainer).addToRegistry()
+                }
             }
-        }
 
-        if (contentManager.isVideoEnabled) {
-            jobs += async {
-                getRootVideoContainer(rootContainer).addToRegistry()
+            if (enableVideos) {
+                jobs += async {
+                    getRootVideoContainer(rootContainer).addToRegistry()
+                }
             }
         }
 

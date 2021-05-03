@@ -14,8 +14,16 @@ fun AppTheme(content: @Composable () -> Unit) {
     val primaryColor = colorResource(id = R.color.colorPrimary)
 
     val colors = when (isSystemInDarkTheme()) {
-        false -> lightColors(primary = primaryColor)
-        else -> darkColors(primary = primaryColor)
+        false -> lightColors(
+            primary = primaryColor,
+            secondary = primaryColor,
+            secondaryVariant = primaryColor
+        )
+        else -> darkColors(
+            primary = primaryColor,
+            secondary = primaryColor,
+            secondaryVariant = primaryColor
+        )
     }
 
     MaterialTheme(colors, content = content)

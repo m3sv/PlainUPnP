@@ -2,9 +2,6 @@ package com.m3sv.plainupnp
 
 import android.app.Application
 import android.content.Intent
-import android.content.SharedPreferences
-import androidx.core.content.edit
-import com.m3sv.plainupnp.common.R
 import com.m3sv.plainupnp.common.util.StringResolver
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +18,6 @@ import kotlin.coroutines.CoroutineContext
 @Singleton
 class ContentManager @Inject constructor(
     private val application: Application,
-    private val sharedPreferences: SharedPreferences,
     private val stringResolver: StringResolver,
 ) : CoroutineScope, StringResolver by stringResolver {
 
@@ -29,39 +25,6 @@ class ContentManager @Inject constructor(
         get() = Dispatchers.IO + SupervisorJob()
 
     private val persistedUris: MutableStateFlow<List<UriWrapper>> = MutableStateFlow(listOf())
-
-    private val defaultContainerValue = application.resources.getBoolean(R.bool.default_enable_content_directory)
-
-    var isImagesEnabled = false
-        get() = R.string.pref_enable_image_container_key.getContainerValue()
-        set(value) {
-            field = value
-
-            R.string.pref_enable_image_container_key.setContainerValue(value)
-        }
-
-    var isAudioEnabled = false
-        get() = R.string.pref_enable_audio_container_key.getContainerValue()
-        set(value) {
-            field = value
-
-            R.string.pref_enable_audio_container_key.setContainerValue(value)
-        }
-
-    var isVideoEnabled = false
-        get() = R.string.pref_enable_video_container_key.getContainerValue()
-        set(value) {
-            field = value
-
-            R.string.pref_enable_video_container_key.setContainerValue(value)
-        }
-
-    private fun Int.getContainerValue(): Boolean =
-        sharedPreferences.getBoolean(getString(this), defaultContainerValue)
-
-    private fun Int.setContainerValue(value: Boolean) = sharedPreferences.edit {
-        putBoolean(application.getString(this@setContainerValue), value)
-    }
 
     private val _refreshFlow = MutableSharedFlow<Unit>()
 

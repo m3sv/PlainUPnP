@@ -6,7 +6,11 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,7 +22,10 @@ class PreferencesRepository @Inject constructor(private val context: Application
         serializer = PreferencesSerializer
     )
 
-    val preferences: Flow<Preferences> = context.preferencesStore.data
+    val preferences: StateFlow<Preferences?> = context
+        .preferencesStore
+        .data
+        .stateIn(CoroutineScope(Dispatchers.IO), SharingStarted.Eagerly, null)
 
     suspend fun setApplicationMode(applicationMode: ApplicationMode) {
         updatePreferences { builder ->
@@ -43,19 +50,19 @@ class PreferencesRepository @Inject constructor(private val context: Application
         }
     }
 
-    suspend fun updateImageContainerStatus(enable: Boolean) {
+    suspend fun setShareImages(enable: Boolean) {
         updatePreferences { builder ->
             builder.enableImages = enable
         }
     }
 
-    suspend fun updateVideoContainerStatus(enable: Boolean) {
+    suspend fun setShareVideos(enable: Boolean) {
         updatePreferences { builder ->
             builder.enableVideos = enable
         }
     }
 
-    suspend fun updateAudioContainerStatus(enable: Boolean) {
+    suspend fun setShareAudio(enable: Boolean) {
         updatePreferences { builder ->
             builder.enableAudio = enable
         }

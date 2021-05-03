@@ -20,9 +20,10 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
+import androidx.lifecycle.lifecycleScope
 import com.m3sv.plainupnp.common.preferences.Preferences
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
+import com.m3sv.plainupnp.common.util.asApplicationMode
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OnePane
@@ -32,29 +33,25 @@ import com.m3sv.plainupnp.presentation.onboarding.activity.ConfigureFolderActivi
 import com.m3sv.plainupnp.presentation.onboarding.selecttheme.SelectThemeActivity
 import com.m3sv.selectcontentdirectory.SelectApplicationModeActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class SettingsActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var preferences: PreferencesRepository
-
-    @Inject
-    lateinit var applicationModeManager: ApplicationModeManager
+    lateinit var preferencesRepository: PreferencesRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val preferences = preferences.preferences.collectAsState(runBlocking { preferences.preferences.first() })
-            SettingsContent(preferences)
+            val preferences = preferencesRepository.preferences.collectAsState()
+            SettingsContent(preferences = requireNotNull(preferences.value))
         }
     }
 
     @Composable
-    private fun SettingsContent(state: State<Preferences>) {
+    private fun SettingsContent(preferences: Preferences) {
         AppTheme {
             Surface {
                 OnePane(viewingContent = {
@@ -62,8 +59,8 @@ class SettingsActivity : AppCompatActivity() {
                     OneToolbar(onBackClick = { finish() }) {}
                 }) {
                     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                        ThemeSection(state.value.theme)
-                        UpnpSection()
+                        ThemeSection(preferences.theme)
+                        UpnpSection(preferences)
                         AboutSection()
                     }
                 }
@@ -116,19 +113,20 @@ class SettingsActivity : AppCompatActivity() {
 
             SectionRow(
                 title = stringResource(id = R.string.version),
-                currentValue = "1.0",
+                currentValue = BuildConfig.APP_VERSION,
             ) {}
         }
     }
 
     @Composable
-    private fun UpnpSection() {
-        val applicationMode by applicationModeManager.applicationMode.collectAsState()
-
+    private fun UpnpSection(preferences: Preferences) {
         Section {
             SectionRow(
                 title = stringResource(id = R.string.application_mode_settings),
-                currentValue = applicationMode?.stringValue?.let { stringResource(id = it) }
+                currentValue = preferences
+                    .applicationMode
+                    .asApplicationMode()
+                    .stringValue.let { stringResource(id = it) }
             ) {
                 startActivity(Intent(applicationContext, SelectApplicationModeActivity::class.java))
             }
@@ -144,27 +142,39 @@ class SettingsActivity : AppCompatActivity() {
 
             RowDivider()
 
-            SectionRow(
+            SwitchRow(
                 title = stringResource(id = R.string.share_images),
-                currentValue = "value",
+                initialValue = preferences.enableImages,
                 icon = painterResource(id = R.drawable.ic_image)
-            ) {}
+            ) { enabled ->
+                lifecycleScope.launch {
+                    preferencesRepository.setShareImages(enabled)
+                }
+            }
 
             RowDivider()
 
-            SectionRow(
+            SwitchRow(
                 title = stringResource(id = R.string.share_videos),
-                currentValue = "value",
+                initialValue = preferences.enableVideos,
                 icon = painterResource(id = R.drawable.ic_video)
-            ) {}
+            ) { enabled ->
+                lifecycleScope.launch {
+                    preferencesRepository.setShareVideos(enabled)
+                }
+            }
 
             RowDivider()
 
-            SectionRow(
+            SwitchRow(
                 title = stringResource(id = R.string.share_music),
-                currentValue = "value",
+                initialValue = preferences.enableAudio,
                 icon = painterResource(id = R.drawable.ic_music)
-            ) {}
+            ) { enabled ->
+                lifecycleScope.launch {
+                    preferencesRepository.setShareAudio(enabled)
+                }
+            }
         }
     }
 
@@ -234,6 +244,43 @@ class SettingsActivity : AppCompatActivity() {
                         )
                     }
                 }
+            }
+        }
+    }
+
+    @Composable
+    private fun SwitchRow(title: String, initialValue: Boolean, icon: Painter? = null, onSwitch: (Boolean) -> Unit) {
+        val checkedState = remember { mutableStateOf(initialValue) }
+
+        fun flipSwitch() {
+            checkedState.value = !checkedState.value
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    flipSwitch()
+                    onSwitch(checkedState.value)
+                }
+                .padding(vertical = 12.dp, horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (icon != null) {
+                Image(
+                    painter = icon,
+                    contentDescription = null,
+                    Modifier.size(24.dp)
+                )
+            }
+
+            Row(Modifier.padding(start = if (icon != null) 16.dp else 4.dp)) {
+                Text(title)
+                Spacer(modifier = Modifier.weight(1f))
+                Switch(checked = checkedState.value, onCheckedChange = {
+                    checkedState.value = it
+                    onSwitch(it)
+                })
             }
         }
     }

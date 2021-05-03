@@ -5,9 +5,13 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
-import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
 import com.m3sv.plainupnp.applicationmode.SelectApplicationModeScreen
+import com.m3sv.plainupnp.common.preferences.PreferencesRepository
+import com.m3sv.plainupnp.common.util.asApplicationMode
 import com.m3sv.plainupnp.compose.util.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -17,20 +21,23 @@ import javax.inject.Inject
 class SelectApplicationModeActivity : AppCompatActivity() {
 
     @Inject
-    lateinit var applicationModeManager: ApplicationModeManager
+    lateinit var preferencesRepository: PreferencesRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val preferences by preferencesRepository.preferences.collectAsState()
+
+
             AppTheme {
                 Surface {
                     SelectApplicationModeScreen(
                         onNextClick = ::onFinish,
                         onBackClick = ::onFinish,
-                        nextText = getString(R.string.done),
-                        initialMode = applicationModeManager.getApplicationMode()
+                        nextText = stringResource(R.string.done),
+                        initialMode = requireNotNull(preferences).applicationMode.asApplicationMode()
                     ) { applicationMode ->
-                        lifecycleScope.launch { applicationModeManager.setApplicationMode(applicationMode) }
+                        lifecycleScope.launch { preferencesRepository.setApplicationMode(applicationMode) }
                     }
                 }
             }

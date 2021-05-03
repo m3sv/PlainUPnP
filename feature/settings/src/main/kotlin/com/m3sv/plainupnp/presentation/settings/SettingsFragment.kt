@@ -14,8 +14,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.google.android.material.snackbar.Snackbar
+import com.m3sv.plainupnp.ContentRepository
 import com.m3sv.plainupnp.ThemeManager
-import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
 import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.presentation.onboarding.activity.ConfigureFolderActivity
@@ -50,7 +50,7 @@ class SettingsFragment : PreferenceFragmentCompat(),
     lateinit var themeManager: ThemeManager
 
     @Inject
-    lateinit var applicationModeManager: ApplicationModeManager
+    lateinit var preferencesRepository: ContentRepository
 
     @Inject
     lateinit var backgroundModeManager: BackgroundModeManager

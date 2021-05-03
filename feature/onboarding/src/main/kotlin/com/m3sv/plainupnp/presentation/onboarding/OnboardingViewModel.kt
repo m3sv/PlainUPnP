@@ -13,8 +13,9 @@ import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
-import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
 import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
+import com.m3sv.plainupnp.common.preferences.PreferencesRepository
+import com.m3sv.plainupnp.common.util.asApplicationMode
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,8 +32,8 @@ class OnboardingViewModel @Inject constructor(
     private val application: Application,
     private val themeManager: ThemeManager,
     private val contentManager: ContentManager,
-    private val applicationModeManager: ApplicationModeManager,
     private val backgroundModeManager: BackgroundModeManager,
+    private val preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
 
     var activeTheme: ThemeOption by mutableStateOf(themeManager.currentTheme)
@@ -56,9 +57,11 @@ class OnboardingViewModel @Inject constructor(
             if (direction == Direction.Forward) {
                 when (currentScreen) {
                     OnboardingScreen.SelectPreconfiguredContainers -> {
-                        contentManager.isImagesEnabled = imageContainerEnabled.value
-                        contentManager.isVideoEnabled = videoContainerEnabled.value
-                        contentManager.isAudioEnabled = audioContainerEnabled.value
+                        with(preferencesRepository) {
+                            setShareImages(imageContainerEnabled.value)
+                            setShareVideos(videoContainerEnabled.value)
+                            setShareAudio(audioContainerEnabled.value)
+                        }
                     }
                     OnboardingScreen.SelectBackgroundMode ->
                         backgroundModeManager.backgroundMode = backgroundMode.value
@@ -79,7 +82,7 @@ class OnboardingViewModel @Inject constructor(
 
     fun onSelectMode(mode: ApplicationMode) {
         viewModelScope.launch {
-            applicationModeManager.setApplicationMode(mode)
+            preferencesRepository.setApplicationMode(mode)
         }
     }
 
@@ -117,7 +120,8 @@ class OnboardingViewModel @Inject constructor(
         OnboardingScreen.Finish -> error("Can't navigate from finish screen")
     }
 
-    private fun getApplicationMode(): ApplicationMode = applicationModeManager.getApplicationMode()
+    private fun getApplicationMode(): ApplicationMode =
+        requireNotNull(preferencesRepository.preferences.value?.applicationMode?.asApplicationMode())
 
     private fun OnboardingScreen.backward(): OnboardingScreen = when (this) {
         OnboardingScreen.Greeting -> OnboardingScreen.Greeting

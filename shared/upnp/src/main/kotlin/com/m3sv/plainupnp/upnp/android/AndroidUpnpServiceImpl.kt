@@ -3,7 +3,8 @@ package com.m3sv.plainupnp.upnp.android
 import android.app.Application
 import android.content.Context
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
-import com.m3sv.plainupnp.applicationmode.ApplicationModeManager
+import com.m3sv.plainupnp.common.preferences.PreferencesRepository
+import com.m3sv.plainupnp.common.util.asApplicationMode
 import com.m3sv.plainupnp.common.util.getUdn
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import com.m3sv.plainupnp.upnp.PlainUpnpServiceConfiguration
@@ -13,6 +14,7 @@ import com.m3sv.plainupnp.upnp.resourceproviders.LocalServiceResourceProvider
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.fourthline.cling.binding.annotations.AnnotationLocalServiceBinder
 import org.fourthline.cling.model.DefaultServiceManager
@@ -27,7 +29,7 @@ class AndroidUpnpServiceImpl @Inject constructor(
     application: Application,
     resourceProvider: LocalServiceResourceProvider,
     contentRepository: UpnpContentRepositoryImpl,
-    private val applicationModeManager: ApplicationModeManager,
+    private val preferencesRepository: PreferencesRepository,
 ) : UpnpServiceImpl(PlainUpnpServiceConfiguration(), application) {
 
     private val scope = MainScope()
@@ -38,20 +40,20 @@ class AndroidUpnpServiceImpl @Inject constructor(
 
     init {
         scope.launch {
-            applicationModeManager.applicationMode.filterNotNull().collect {
-                try {
-                    when (it) {
-                        ApplicationMode.Streaming -> {
-                            registry.addDevice(localDevice)
+            preferencesRepository
+                .preferences
+                .filterNotNull()
+                .map { it.applicationMode.asApplicationMode() }
+                .collect { applicationMode ->
+                    try {
+                        when (applicationMode) {
+                            ApplicationMode.Streaming -> registry.addDevice(localDevice)
+                            ApplicationMode.Player -> registry.removeDevice(localDevice)
                         }
-                        ApplicationMode.Player -> {
-                            registry.removeDevice(localDevice)
-                        }
+                    } catch (e: Exception) {
+                        Timber.e(e)
                     }
-                } catch (e: Exception) {
-                    Timber.e(e)
                 }
-            }
         }
     }
 
@@ -80,7 +82,7 @@ class AndroidUpnpServiceImpl @Inject constructor(
     }
 
     private fun isStreaming(): Boolean =
-        applicationModeManager.getApplicationMode() == ApplicationMode.Streaming
+        preferencesRepository.preferences.value?.applicationMode?.asApplicationMode() == ApplicationMode.Streaming
 
     override fun shutdown() {
         (router as AndroidRouter).unregisterBroadcastReceiver()

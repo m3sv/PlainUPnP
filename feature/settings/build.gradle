@@ -10,6 +10,11 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion libs.versions.compose.get()
     }
+
+
+    defaultConfig {
+        buildConfigField "String", "APP_VERSION", "\"${buildConfig.version.name}\";"
+    }
 }
 
 dependencies {

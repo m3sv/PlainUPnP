@@ -26,6 +26,7 @@ import com.m3sv.plainupnp.data.upnp.UriWrapper
 import com.m3sv.plainupnp.presentation.onboarding.*
 import com.m3sv.plainupnp.presentation.onboarding.R
 import com.m3sv.plainupnp.presentation.onboarding.screen.GreetingScreen
+import com.m3sv.plainupnp.presentation.onboarding.screen.SelectPreconfiguredContainersScreen
 import com.m3sv.plainupnp.presentation.onboarding.screen.StoragePermissionScreen
 import com.m3sv.plainupnp.presentation.onboarding.selecttheme.SelectThemeScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -106,7 +107,7 @@ class OnboardingActivity : AppCompatActivity() {
                         OnboardingScreen.Greeting -> GreetingScreen(onNextClick)
 
                         OnboardingScreen.SelectTheme -> SelectThemeScreen(
-                            titleText = getString(R.string.set_theme_label),
+                            titleText = stringResource(R.string.set_theme_label),
                             buttonText = stringResource(id = R.string.next),
                             selectedTheme = selectedTheme,
                             onThemeOptionSelected = onSelectTheme,
