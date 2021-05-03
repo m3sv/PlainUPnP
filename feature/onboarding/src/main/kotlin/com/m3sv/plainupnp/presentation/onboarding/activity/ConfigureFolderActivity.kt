@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
@@ -23,9 +22,6 @@ class ConfigureFolderActivity : AppCompatActivity() {
 
     @Inject
     lateinit var themeManager: ThemeManager
-
-    @Inject
-    lateinit var contentManager: ContentManager
 
     private val viewModel: OnboardingViewModel by viewModels()
 

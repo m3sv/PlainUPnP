@@ -5,7 +5,6 @@ import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.documentfile.provider.DocumentFile
-import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ContentRepository
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.core.persistence.Database
@@ -18,6 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
+import timber.log.Timber
 import java.security.SecureRandom
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -35,7 +35,6 @@ sealed class ContentUpdateState {
 class UpnpContentRepositoryImpl @Inject constructor(
     private val application: Application,
     private val database: Database,
-    private val contentManager: ContentManager,
     private val preferencesRepository: PreferencesRepository,
 ) : CoroutineScope, ContentRepository {
 
@@ -62,13 +61,14 @@ class UpnpContentRepositoryImpl @Inject constructor(
     init {
         launch {
             refreshInternal.collect {
+                Timber.d("Updating content")
                 _updateState.value = ContentUpdateState.Loading
                 refreshInternal()
                 _updateState.value = ContentUpdateState.Ready(containerRegistry)
             }
         }
 
-        launch { contentManager.refreshFlow.collect { refreshContent() } }
+        launch { preferencesRepository.preferences.collect { refreshContent() } }
     }
 
     val init by lazy {

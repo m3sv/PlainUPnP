@@ -9,7 +9,6 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.m3sv.plainupnp.ContentManager
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
@@ -31,7 +30,6 @@ private enum class Direction {
 class OnboardingViewModel @Inject constructor(
     private val application: Application,
     private val themeManager: ThemeManager,
-    private val contentManager: ContentManager,
     private val backgroundModeManager: BackgroundModeManager,
     private val preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
@@ -48,7 +46,8 @@ class OnboardingViewModel @Inject constructor(
     val backgroundMode = mutableStateOf(backgroundModeManager.backgroundMode)
 
     val contentUris: StateFlow<List<UriWrapper>> =
-        contentManager.persistedUrisFlow().stateIn(viewModelScope, SharingStarted.Lazily, contentManager.getUris())
+        preferencesRepository.persistedUrisFlow()
+            .stateIn(viewModelScope, SharingStarted.Lazily, preferencesRepository.getUris())
 
     private val _currentScreen: MutableSharedFlow<Direction> = MutableSharedFlow()
 
@@ -99,11 +98,11 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun saveUri() {
-        contentManager.updateUris()
+        preferencesRepository.updateUris()
     }
 
     fun releaseUri(uriWrapper: UriWrapper) {
-        contentManager.releaseUri(uriWrapper)
+        preferencesRepository.releaseUri(uriWrapper)
     }
 
     private fun OnboardingScreen.forward(): OnboardingScreen = when (this) {
