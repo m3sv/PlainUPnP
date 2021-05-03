@@ -5,13 +5,14 @@ import android.view.ViewGroup
 import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.RequestManager
 import com.m3sv.plainupnp.common.ItemsDiffCallback
+import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.presentation.home.databinding.FolderItemBinding
 import com.m3sv.plainupnp.presentation.home.databinding.MediaItemBinding
 import java.util.*
 
 class GalleryContentAdapter(
     private val glide: RequestManager,
-    private val showThumbnails: ShowThumbnailsUseCase,
+    private val preferencesRepository: PreferencesRepository,
     private val onItemClickListener: OnItemClickListener,
     private val onLongItemClickListener: OnItemClickListener,
 ) : BaseAdapter<ContentItem>(diffCallback) {
@@ -68,7 +69,7 @@ class GalleryContentAdapter(
                 ContentType.IMAGE,
                 ContentType.VIDEO,
                 -> {
-                    if (showThumbnails()) {
+                    if (preferencesRepository.preferences.value?.enableThumbnails == true) {
                         glide.load(holder.item.itemUri).into(thumbnail)
                     } else {
                         thumbnail.setImageResource(holder.item.icon)

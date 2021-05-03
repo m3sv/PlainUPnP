@@ -175,6 +175,17 @@ class SettingsActivity : AppCompatActivity() {
                     preferencesRepository.setShareAudio(enabled)
                 }
             }
+
+            RowDivider()
+
+            SwitchRow(
+                title = stringResource(id = R.string.enable_thumbnails),
+                initialValue = preferences.enableThumbnails,
+                icon = painterResource(id = R.drawable.ic_thumbnail)) { enabled ->
+                lifecycleScope.launch {
+                    preferencesRepository.setShowThumbnails(enabled)
+                }
+            }
         }
     }
 
@@ -218,7 +229,12 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     @Composable
-    private fun SectionRow(title: String, currentValue: String? = null, icon: Painter? = null, onClick: () -> Unit) {
+    private fun SectionRow(
+        title: String,
+        currentValue: String? = null,
+        icon: Painter? = null,
+        onClick: () -> Unit,
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

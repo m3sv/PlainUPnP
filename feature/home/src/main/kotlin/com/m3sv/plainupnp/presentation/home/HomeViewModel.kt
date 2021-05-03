@@ -20,17 +20,21 @@ class HomeViewModel @Inject constructor(
     filterDelegate: FilterDelegate,
 ) : ViewModel() {
 
+    val filterText: LiveData<String> = filterDelegate
+        .state
+        .asLiveData()
+
     private val _currentFolderContents = MutableLiveData<List<ContentItem>>()
+    val currentFolderContents: LiveData<List<ContentItem>> = _currentFolderContents
+
     private var clingContents: List<ClingDIDLObject> = listOf()
 
     private var folders: List<ClingContainer> = listOf()
     private var media: List<ClingMedia> = listOf()
 
-    val currentFolderContents: LiveData<List<ContentItem>> = _currentFolderContents
-
-    val filterText: LiveData<String> = filterDelegate
-        .state
-        .asLiveData()
+    init {
+        refreshFolderContents()
+    }
 
     fun itemClick(clickPosition: Int) {
         viewModelScope.launch {
@@ -70,7 +74,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun refreshFolderContents() {
+    private fun refreshFolderContents() {
         viewModelScope.launch {
             val folderContents = getFolderContentUseCase.get()
             clingContents = folderContents.contents.map { it.clingItem }

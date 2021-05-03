@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
+import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.common.util.disappear
 import com.m3sv.plainupnp.presentation.home.databinding.HomeFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +21,7 @@ import javax.inject.Inject
 class HomeFragment : Fragment() {
 
     @Inject
-    lateinit var showThumbnailsUseCase: ShowThumbnailsUseCase
+    lateinit var preferencesRepository: PreferencesRepository
 
     private lateinit var contentAdapter: GalleryContentAdapter
 
@@ -29,12 +30,6 @@ class HomeFragment : Fragment() {
     private lateinit var binding: HomeFragmentBinding
 
     private val viewModel: HomeViewModel by viewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (savedInstanceState == null)
-            viewModel.refreshFolderContents()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -71,7 +66,7 @@ class HomeFragment : Fragment() {
     private fun initRecyclerView() {
         contentAdapter = GalleryContentAdapter(
             glide = Glide.with(this),
-            showThumbnails = showThumbnailsUseCase,
+            preferencesRepository = preferencesRepository,
             onItemClickListener = viewModel::itemClick,
             onLongItemClickListener = viewModel::itemLongClick
         )
