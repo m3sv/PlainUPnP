@@ -23,7 +23,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.m3sv.plainupnp.common.preferences.Preferences
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
-import com.m3sv.plainupnp.common.util.asApplicationMode
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OnePane
@@ -31,6 +30,7 @@ import com.m3sv.plainupnp.compose.widgets.OneTitle
 import com.m3sv.plainupnp.compose.widgets.OneToolbar
 import com.m3sv.plainupnp.presentation.onboarding.activity.ConfigureFolderActivity
 import com.m3sv.plainupnp.presentation.onboarding.selecttheme.SelectThemeActivity
+import com.m3sv.plainupnp.presentation.settings.ratehandler.RateHandler
 import com.m3sv.selectcontentdirectory.SelectApplicationModeActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -41,6 +41,9 @@ class SettingsActivity : AppCompatActivity() {
 
     @Inject
     lateinit var preferencesRepository: PreferencesRepository
+
+    @Inject
+    lateinit var rateHandler: RateHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -86,7 +89,7 @@ class SettingsActivity : AppCompatActivity() {
                 currentValue = stringResource(id = R.string.open_play_store),
                 icon = painterResource(id = R.drawable.ic_play_store)
             ) {
-                rateApplication()
+                rateHandler.rate(this@SettingsActivity)
             }
 
             RowDivider()
@@ -308,21 +311,6 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         startActivity(intent)
-    }
-
-    private fun rateApplication() {
-        try {
-            openPlayStore()
-        } catch (e: ActivityNotFoundException) {
-            openActivity(::openPlayStoreFallback)
-        }
-    }
-
-    private fun openPlayStore() =
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("${getString(R.string.market_prefix)}$packageName")))
-
-    private fun openPlayStoreFallback() {
-        Intent(Intent.ACTION_VIEW, Uri.parse("${getString(R.string.play_prefix)}$packageName")).also(::startActivity)
     }
 
     private fun openPrivacyPolicy() = Intent(

@@ -1,3 +1,4 @@
+apply from: "${rootProject.projectDir}/scripts/flavors.gradle"
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -6,6 +7,8 @@ apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.squareup.sqldelight'
 
 android {
+    with flavorConfig
+
     compileSdkVersion buildConfig.compileSdk
     buildToolsVersion buildConfig.buildTools
 

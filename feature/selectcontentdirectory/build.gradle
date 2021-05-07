@@ -1,9 +1,13 @@
-apply from: "../../scripts/kotlin-android-library.gradle"
+apply from: "${rootProject.projectDir}/scripts/kotlin-android-library.gradle"
+apply from: "${rootProject.projectDir}/scripts/flavors.gradle"
+
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 
 
 android {
+    with flavorConfig
+
     buildFeatures {
         compose true
     }

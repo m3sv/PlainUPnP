@@ -1,0 +1,14 @@
+ext.flavorConfig = {
+    flavorDimensions "store"
+    productFlavors {
+        oss {
+            dimension "store"
+
+        }
+
+        play {
+            dimension "store"
+
+        }
+    }
+}
