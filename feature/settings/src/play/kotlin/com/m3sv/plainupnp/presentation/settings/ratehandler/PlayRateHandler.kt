@@ -3,10 +3,7 @@ package com.m3sv.plainupnp.presentation.settings.ratehandler
 import android.app.Activity
 import android.app.Application
 import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.net.Uri
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.m3sv.plainupnp.presentation.settings.R
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -48,12 +45,5 @@ class PlayRateHandler @Inject constructor(application: Application) : RateHandle
                 Timber.e("Couldn't launch play store fallback")
             }
         }
-    }
-
-    private fun Activity.openPlayStore() =
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("${getString(R.string.market_prefix)}$packageName")))
-
-    private fun Activity.openPlayStoreFallback() {
-        Intent(Intent.ACTION_VIEW, Uri.parse("${getString(R.string.play_prefix)}$packageName")).also(::startActivity)
     }
 }

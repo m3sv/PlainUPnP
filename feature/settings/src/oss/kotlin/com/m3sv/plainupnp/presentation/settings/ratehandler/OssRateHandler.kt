@@ -22,11 +22,4 @@ class OssRateHandler @Inject constructor() : RateHandler {
             }
         }
     }
-
-    private fun Activity.openPlayStore() =
-        startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("${getString(R.string.market_prefix)}$packageName")))
-
-    private fun Activity.openPlayStoreFallback() {
-        Intent(Intent.ACTION_VIEW, Uri.parse("${getString(R.string.play_prefix)}$packageName")).also(::startActivity)
-    }
 }
