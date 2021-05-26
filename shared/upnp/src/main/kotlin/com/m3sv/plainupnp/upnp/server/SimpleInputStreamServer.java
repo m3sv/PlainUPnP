@@ -1,9 +1,8 @@
 package com.m3sv.plainupnp.upnp.server;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +18,7 @@ public class SimpleInputStreamServer extends SimpleWebServer {
      * Serves file from homeDir and its' subdirectories (only). Uses only URI,
      * ignores all headers and HTTP parameters.
      */
-    Response serveFile(String uri, Map<String, String> header, FileDescriptor file, String mime) {
+    Response serveFile(String uri, Map<String, String> header, InputStream file, String mime) {
         Response res;
         try {
             // Calculate etag
@@ -51,11 +50,10 @@ public class SimpleInputStreamServer extends SimpleWebServer {
             String ifNoneMatch = header.get("if-none-match");
             boolean headerIfNoneMatchPresentAndMatching = ifNoneMatch != null && ("*".equals(ifNoneMatch) || ifNoneMatch.equals(etag));
 
-            FileInputStream fileInputStream = new FileInputStream(file);
 
             // Change return code and add Content-Range header when skipping is
             // requested
-            long fileLen = fileInputStream.available();
+            long fileLen = file.available();
 
             if (headerIfRangeMissingOrMatching && range != null && startFrom >= 0 && startFrom < fileLen) {
                 // range request that matches current etag
@@ -66,7 +64,6 @@ public class SimpleInputStreamServer extends SimpleWebServer {
                     // would return range from file
                     // respond with not-modified
                     res = newFixedLengthResponse(Response.Status.NOT_MODIFIED, mime, "");
-                    res.addHeader("ETag", etag);
                 } else {
                     if (endAt < 0) {
                         endAt = fileLen - 1;
@@ -76,17 +73,15 @@ public class SimpleInputStreamServer extends SimpleWebServer {
                         newLen = 0;
                     }
 
-                    FileInputStream fis = new FileInputStream(file);
-                    fis.skip(startFrom);
+                    file.skip(startFrom);
 
-                    res = newFixedLengthResponse(Response.Status.PARTIAL_CONTENT, mime, fis, newLen);
+                    res = newFixedLengthResponse(Response.Status.PARTIAL_CONTENT, mime, file, newLen);
                     res.addHeader("Accept-Ranges", "bytes");
                     res.addHeader("Content-Length", "" + newLen);
                     res.addHeader("Content-Range", "bytes " + startFrom + "-" + endAt + "/" + fileLen);
-                    res.addHeader("ETag", etag);
                 }
+                res.addHeader("ETag", etag);
             } else {
-
                 if (headerIfRangeMissingOrMatching && range != null && startFrom >= fileLen) {
                     // return the size of the file
                     // 4xx responses are not trumped by if-none-match
@@ -108,7 +103,7 @@ public class SimpleInputStreamServer extends SimpleWebServer {
                     res.addHeader("ETag", etag);
                 } else {
                     // supply the file
-                    res = newFixedFileResponse(fileInputStream, mime);
+                    res = newFixedFileResponse(file, mime);
                     res.addHeader("Content-Length", "" + fileLen);
                     res.addHeader("ETag", etag);
                 }
@@ -120,9 +115,9 @@ public class SimpleInputStreamServer extends SimpleWebServer {
         return res;
     }
 
-    private Response newFixedFileResponse(FileInputStream fileInputStream, String mime) throws IOException {
+    private Response newFixedFileResponse(InputStream inputStream, String mime) throws IOException {
         Response res;
-        res = newFixedLengthResponse(Response.Status.OK, mime, fileInputStream, fileInputStream.available());
+        res = newFixedLengthResponse(Response.Status.OK, mime, inputStream, inputStream.available());
         res.addHeader("Accept-Ranges", "bytes");
         return res;
     }

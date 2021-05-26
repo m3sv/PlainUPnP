@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.ContentUris
 import android.net.Uri
 import android.os.Build
-import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.AUDIO_PREFIX
@@ -13,8 +12,15 @@ import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.TREE_PREFIX
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.VIDEO_PREFIX
 import com.m3sv.plainupnp.upnp.util.PORT
 import fi.iki.elonen.NanoHTTPD
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import timber.log.Timber
+import java.io.InputStream
 import java.nio.charset.StandardCharsets
+import java.util.concurrent.Executors
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,6 +30,33 @@ class MediaServer @Inject constructor(private val application: Application, priv
         null,
         PORT, listOf(), true
     ) {
+
+    private val serverScope = CoroutineScope(Executors.newFixedThreadPool(8).asCoroutineDispatcher())
+
+    init {
+        setAsyncRunner(object : AsyncRunner {
+            private val running = mutableListOf<ClientHandler>()
+            private val mutex = Mutex()
+
+            override fun closeAll() {
+                serverScope.launch { mutex.withLock { running.forEach { it.close() } } }
+            }
+
+            override fun closed(clientHandler: ClientHandler) {
+                serverScope.launch {
+                    mutex.withLock { running.remove(clientHandler) }
+                }
+            }
+
+            override fun exec(code: ClientHandler) {
+                serverScope.launch {
+                    mutex.withLock { running.add(code) }
+                    code.run()
+                }
+            }
+        })
+
+    }
 
     override fun serve(session: IHTTPSession): Response = try {
         Timber.i("Received request: ${session.uri}")
@@ -35,7 +68,7 @@ class MediaServer @Inject constructor(private val application: Application, priv
         serveFile(
             obj.fileUri.toString(),
             session.headers,
-            obj.inputStream.fileDescriptor,
+            obj.inputStream,
             obj.mime
         ).apply {
             addHeader("realTimeInfo.dlna.org", "DLNA.ORG_TLAG=*")
@@ -107,7 +140,7 @@ class MediaServer @Inject constructor(private val application: Application, priv
                         cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
 
                     val fileUri = ContentUris.withAppendedId(contentUri, fileId)
-                    val inputStream = application.contentResolver.openFileDescriptor(fileUri, "r")
+                    val inputStream = application.contentResolver.openInputStream(fileUri)
 
                     return ServerObject(
                         fileUri,
@@ -144,7 +177,7 @@ class MediaServer @Inject constructor(private val application: Application, priv
                         cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.MIME_TYPE))
 
                     val fileUri = ContentUris.withAppendedId(contentUri, fileId)
-                    val inputStream = application.contentResolver.openFileDescriptor(fileUri, "r")
+                    val inputStream = application.contentResolver.openInputStream(fileUri)
 
                     return ServerObject(
                         fileUri,
@@ -157,7 +190,7 @@ class MediaServer @Inject constructor(private val application: Application, priv
         error("Object with id $mediaId not found")
     }
 
-    data class ServerObject(val fileUri: Uri, val mime: String, val inputStream: ParcelFileDescriptor)
+    data class ServerObject(val fileUri: Uri, val mime: String, val inputStream: InputStream)
 
     companion object {
         private const val WHERE_CLAUSE = MediaStore.MediaColumns._ID + "=?"
