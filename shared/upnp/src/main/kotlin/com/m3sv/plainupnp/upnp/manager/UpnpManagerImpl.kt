@@ -1,14 +1,18 @@
 package com.m3sv.plainupnp.upnp.manager
 
 
-import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.util.formatTime
 import com.m3sv.plainupnp.core.persistence.Database
-import com.m3sv.plainupnp.data.upnp.*
+import com.m3sv.plainupnp.data.upnp.DeviceDisplay
+import com.m3sv.plainupnp.data.upnp.UpnpDevice
+import com.m3sv.plainupnp.data.upnp.UpnpItemType
+import com.m3sv.plainupnp.data.upnp.UpnpRendererState
+import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import com.m3sv.plainupnp.upnp.CDevice
 import com.m3sv.plainupnp.upnp.ContentUpdateState
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl
 import com.m3sv.plainupnp.upnp.UpnpRepository
+import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.discovery.device.RendererDiscoveryObservable
@@ -18,17 +22,17 @@ import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import com.m3sv.plainupnp.upnp.util.*
 import com.m3sv.plainupnp.upnp.volume.VolumeRepository
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.*
 import org.fourthline.cling.model.meta.Service
 import org.fourthline.cling.model.types.UDAServiceType
+import org.fourthline.cling.support.model.PositionInfo
+import org.fourthline.cling.support.model.TransportInfo
 import org.fourthline.cling.support.model.TransportState
 import org.fourthline.cling.support.model.item.*
 import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
+import kotlin.properties.Delegates
 
 private const val MAX_PROGRESS = 100
 private const val ROOT_FOLDER_ID = "0"
@@ -53,19 +57,17 @@ class UpnpManagerImpl @Inject constructor(
     private val database: Database,
     private val upnpRepository: UpnpRepository,
     private val volumeRepository: VolumeRepository,
-    private val errorReporter: ErrorReporter,
     private val contentRepository: UpnpContentRepositoryImpl,
 ) : UpnpManager,
     CoroutineScope {
 
-    override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.IO
+    override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.Default
 
     private var isLocal: Boolean = false
     private val upnpInnerStateChannel = MutableSharedFlow<UpnpRendererState>()
     override val upnpRendererState: Flow<UpnpRendererState> = upnpInnerStateChannel
     override val contentDirectories: Flow<List<DeviceDisplay>> = contentDirectoryObservable()
     override val renderers: Flow<List<DeviceDisplay>> = rendererDiscoveryObservable()
-    override val actionErrors: Flow<Consumable<String>> = errorReporter.errorFlow
 
     private val folderChange = MutableSharedFlow<Folder>(1)
     override val folderChangeFlow: Flow<Folder> = folderChange
@@ -78,6 +80,8 @@ class UpnpManagerImpl @Inject constructor(
     override val isConnectedToRender: Flow<UpnpDevice?>
         get() = rendererDiscoveryObservable.observeSelectRenderer()
 
+    override val volumeFlow: Flow<Int> = volumeRepository.volumeFlow
+
     init {
         launch {
             updateChannel.scan(launch { }) { accumulator, pair ->
@@ -86,7 +90,7 @@ class UpnpManagerImpl @Inject constructor(
                 if (pair == null)
                     return@scan launch { }
 
-                Timber.d("update: received new pair: ${pair.first}");
+                Timber.d("update: received new pair: ${pair.first}")
                 val didlItem = pair.first
                 val service = pair.second
 
@@ -104,35 +108,40 @@ class UpnpManagerImpl @Inject constructor(
                     while (isActive) {
                         delay(500)
 
-                        val transportInfo =
-                            upnpRepository.getTransportInfo(service) ?: break
+                        val transportInfoAsync = async { upnpRepository.getTransportInfo(service) }
+                        val positionInfoAsync = async { upnpRepository.getPositionInfo(service) }
 
-                        val positionInfo =
-                            upnpRepository.getPositionInfo(service) ?: break
+                        combineResults(
+                            transportInfoAsync.await(),
+                            positionInfoAsync.await()
+                        ) { transportInfo, positionInfo ->
+                            remotePaused =
+                                transportInfo.currentTransportState == TransportState.PAUSED_PLAYBACK
 
-                        remotePaused =
-                            transportInfo.currentTransportState == TransportState.PAUSED_PLAYBACK
+                            val state = UpnpRendererState.Default(
+                                uri = uri,
+                                type = type,
+                                state = transportInfo.currentTransportState,
+                                remainingDuration = positionInfo.remainingDuration,
+                                duration = positionInfo.duration,
+                                position = positionInfo.position,
+                                elapsedPercent = positionInfo.elapsedPercent,
+                                durationSeconds = positionInfo.trackDurationSeconds,
+                                title = title,
+                                artist = artist ?: ""
+                            )
 
-                        val state = UpnpRendererState(
-                            uri = uri,
-                            type = type,
-                            state = transportInfo.currentTransportState,
-                            remainingDuration = positionInfo.remainingDuration,
-                            duration = positionInfo.duration,
-                            position = positionInfo.position,
-                            elapsedPercent = positionInfo.elapsedPercent,
-                            durationSeconds = positionInfo.trackDurationSeconds,
-                            title = title,
-                            artist = artist ?: ""
-                        )
+                            currentDuration = positionInfo.trackDurationSeconds
 
-                        currentDuration = positionInfo.trackDurationSeconds
+                            if (!pauseUpdate) upnpInnerStateChannel.emit(state)
 
-                        if (!pauseUpdate) upnpInnerStateChannel.emit(state)
+                            Timber.d("Got new state: $state")
 
-                        Timber.d("Got new state: $state")
-
-                        if (transportInfo.currentTransportState == TransportState.STOPPED) break
+                            if (transportInfo.currentTransportState == TransportState.STOPPED) {
+                                upnpInnerStateChannel.emit(UpnpRendererState.Empty)
+                                cancel()
+                            }
+                        }
                     }
                 }
             }.collect()
@@ -145,7 +154,6 @@ class UpnpManagerImpl @Inject constructor(
 
                     if (contentDirectory != null) {
                         safeNavigateTo(
-                            errorReason = ErrorReason.BROWSE_FAILED,
                             folderId = ROOT_FOLDER_ID,
                             folderName = contentDirectory.friendlyName
                         )
@@ -154,6 +162,20 @@ class UpnpManagerImpl @Inject constructor(
             }
         }
     }
+
+    private inline fun combineResults(
+        transportInfo: TransportInfo?,
+        positionInfo: PositionInfo?,
+        onResult: (TransportInfo, PositionInfo) -> Unit,
+    ) {
+        if (transportInfo == null || positionInfo == null) {
+            Timber.e("Exiting combine result! TransportInfo is null: ${transportInfo == null}, PositionInfo is null: ${positionInfo == null}")
+            return
+        }
+
+        onResult(transportInfo, positionInfo)
+    }
+
 
     override fun selectContentDirectory(position: Int) {
         launch {
@@ -168,7 +190,6 @@ class UpnpManagerImpl @Inject constructor(
             contentDirectoryObservable.selectedContentDirectory = contentDirectory
 
             safeNavigateTo(
-                errorReason = ErrorReason.BROWSE_FAILED,
                 folderId = ROOT_FOLDER_ID,
                 folderName = contentDirectory.friendlyName
             )
@@ -183,17 +204,16 @@ class UpnpManagerImpl @Inject constructor(
         contentDirectoryObservable.selectedContentDirectory = upnpDevice
 
         safeNavigateTo(
-            errorReason = ErrorReason.BROWSE_FAILED,
             folderId = ROOT_FOLDER_ID,
             folderName = upnpDevice.friendlyName
         )
     }
 
-    override fun selectRenderer(position: Int) {
+    override fun selectRenderer(spinnerItem: SpinnerItem) {
         launch {
-            val renderer = rendererDiscoveryObservable.currentRenderers[position].upnpDevice
+            val renderer: UpnpDevice = spinnerItem.deviceDisplay.upnpDevice
 
-            isLocal = renderer is LocalDevice
+            isLocal = renderer.isLocal
 
             database
                 .selectedDeviceQueries
@@ -218,36 +238,31 @@ class UpnpManagerImpl @Inject constructor(
             return
         }
 
-        try {
-            safeAvAction { service ->
+        getAvService()
+            .flatMapLatest { service ->
                 val didlItem = item.didlItem.didlObject as Item
-                val uri = didlItem.firstResource?.value ?: return
+                val uri = didlItem.firstResource?.value ?: error("First resource or its value is null!")
                 val didlType = didlType(didlItem)
 
-                with(upnpRepository) {
-                    setUri(service, uri, newMetadata(didlItem, didlType))
-                    play(service)
-                }
-
-                when (didlItem) {
-                    is AudioItem,
-                    is VideoItem,
-                    -> {
-                        updateChannel.emit(didlItem to service)
-                    }
-                    is ImageItem -> {
-                        with(didlItem) {
-                            showImageInfo(
-                                uri = uri,
-                                title = title
-                            )
+                upnpRepository
+                    .setUriFlow(service, uri, newMetadata(didlItem, didlType))
+                    .flatMapLatest { upnpRepository.playFlow(service) }
+                    .onEach {
+                        when (didlItem) {
+                            is AudioItem,
+                            is VideoItem,
+                            -> updateChannel.emit(didlItem to service)
+                            is ImageItem -> with(didlItem) {
+                                showImageInfo(
+                                    uri = uri,
+                                    title = title
+                                )
+                            }
                         }
                     }
-                }
             }
-        } catch (e: Exception) {
-            Timber.e(e)
-        }
+            .catch { e -> Timber.e(e) }
+            .collect()
     }
 
     private fun newMetadata(
@@ -289,18 +304,7 @@ class UpnpManagerImpl @Inject constructor(
         uri: String,
         title: String,
     ) {
-        val state = UpnpRendererState(
-            uri = uri,
-            type = UpnpItemType.IMAGE,
-            state = TransportState.STOPPED,
-            remainingDuration = null,
-            duration = null,
-            position = null,
-            elapsedPercent = null,
-            durationSeconds = null,
-            title = title,
-            artist = null
-        )
+        val state = UpnpRendererState.Empty
 
         upnpInnerStateChannel.emit(state)
     }
@@ -323,88 +327,117 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun pausePlayback() {
         launch {
-            safeAvAction { service -> upnpRepository.pause(service) }
+            getAvService()
+                .flatMapLatest { service -> upnpRepository.pauseFlow(service) }
+                .catch("Failed to pause playback")
+                .collect()
         }
     }
 
     override fun stopPlayback() {
         launch {
-            safeAvAction { service -> upnpRepository.stop(service) }
+            getAvService()
+                .flatMapLatest { service -> upnpRepository.stopFlow(service) }
+                .catch("Failed to stop playback").collect()
         }
     }
 
     override fun resumePlayback() {
         launch {
-            safeAvAction { service -> upnpRepository.play(service) }
+            getAvService()
+                .flatMapLatest { service -> upnpRepository.playFlow(service) }
+                .catch("Failed to resume playback")
+                .collect()
         }
     }
 
     override fun seekTo(progress: Int) {
         launch {
-            safeAvAction { service ->
-                pauseUpdate = true
-                upnpRepository.seekTo(
-                    service = service,
-                    time = formatTime(
-                        max = MAX_PROGRESS,
-                        progress = progress,
-                        duration = currentDuration
+            getAvService()
+                .onStart { pauseUpdate = true }
+                .flatMapLatest { service ->
+                    upnpRepository.seekToFlow(
+                        service = service,
+                        time = formatTime(
+                            max = MAX_PROGRESS,
+                            progress = progress,
+                            duration = currentDuration
+                        )
                     )
-                )
-                pauseUpdate = false
-            }
+                }.onEach { pauseUpdate = false }
+                .catch("Failed to seek to progress!")
+                .collect()
         }
     }
 
-    override val volumeFlow: Flow<Int> = volumeRepository.volumeFlow
 
     override suspend fun raiseVolume(step: Int) {
-        safeRcAction { service -> volumeRepository.raiseVolume(service, step) }
+        getRcService()
+            .catch("Failed to raise volume with step $step!")
+            .collect { service -> volumeRepository.raiseVolume(service, step) }
     }
 
     override suspend fun lowerVolume(step: Int) {
-        safeRcAction { service -> volumeRepository.lowerVolume(service, step) }
+        getRcService()
+            .catch("Failed to lower volume with step $step!")
+            .collect { service -> volumeRepository.lowerVolume(service, step) }
     }
 
     override suspend fun muteVolume(mute: Boolean) {
-        safeRcAction { service -> volumeRepository.muteVolume(service, mute) }
+        getRcService()
+            .catch("Failed to set mute to $mute!")
+            .collect { service -> volumeRepository.muteVolume(service, mute) }
     }
 
     override suspend fun setVolume(volume: Int) {
-        safeRcAction { service -> volumeRepository.setVolume(service, volume) }
+        getRcService()
+            .catch("Failed to set volume to $volume!")
+            .collect { service -> volumeRepository.setVolume(service, volume) }
     }
 
-    override suspend fun getVolume(): Int = safeRcAction { service ->
-        volumeRepository.getVolume(service)
-    } ?: 0
+    override suspend fun getVolume(): Flow<Int> = getRcService().map { service -> volumeRepository.getVolume(service) }
 
-    override fun playItem(
-        playItem: PlayItem,
-    ) {
+    override fun playItem(item: ClingDIDLObject) {
         launch {
-            renderItem(RenderItem(playItem.clingDIDLObject))
-            mediaIterator = playItem.listIterator
+            renderItem(RenderItem(item))
+            mediaIterator = currentContent.filter { it !is ClingContainer }.listIterator(currentContent.indexOf(item))
         }
     }
 
-    override fun openFolder(folder: Folder) {
+    override fun navigateTo(folder: Folder) {
+        val index = folderStack.indexOf(folder)
+
+        if (index == -1) {
+            error("Folder isn't found in navigation stack")
+        }
+
+        folderStack = folderStack.subList(0, index + 1)
+    }
+
+    override fun navigateTo(id: String, folderName: String) {
         launch {
             safeNavigateTo(
-                errorReason = ErrorReason.BROWSE_FAILED,
-                folderId = folder.id,
-                folderName = folder.title
+                folderId = id,
+                folderName = folderName
             )
         }
     }
 
+    override fun navigateBack() {
+        folderStack = folderStack.dropLast(1)
+    }
+
     override fun togglePlayback() {
         launch {
-            safeAvAction { service ->
-                if (remotePaused)
-                    upnpRepository.play(service)
-                else
-                    upnpRepository.pause(service)
-            }
+            getAvService()
+                .flatMapLatest { service ->
+                    if (remotePaused)
+                        upnpRepository.playFlow(service)
+                    else
+                        upnpRepository.pauseFlow(service)
+                }
+                .catch("Failed to toggle playback ($remotePaused)!")
+                .collect()
         }
     }
 
@@ -419,8 +452,17 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun getCurrentFolderName(): String = currentFolderName
 
+    private var folderStack: List<Folder> by Delegates.observable(emptyList()) { _, _, new ->
+        launch {
+            _navigationStack.emit(new)
+        }
+    }
+
+    private val _navigationStack: MutableSharedFlow<List<Folder>> = MutableSharedFlow(1)
+
+    override val navigationStack: Flow<List<Folder>> = _navigationStack
+
     private suspend inline fun safeNavigateTo(
-        errorReason: ErrorReason? = null,
         folderId: String,
         folderName: String,
     ): Result = contentDirectoryObservable.selectedContentDirectory
@@ -429,7 +471,6 @@ class UpnpManagerImpl @Inject constructor(
                 (selectedDevice as CDevice).device.findService(UDAServiceType(CONTENT_DIRECTORY))
 
             if (service == null || !service.hasActions()) {
-                errorReason.report()
                 return Result.Error
             }
 
@@ -437,49 +478,52 @@ class UpnpManagerImpl @Inject constructor(
             currentFolderName = folderName.replace(UpnpContentRepositoryImpl.USER_DEFINED_PREFIX, "")
 
             val folder = when (folderId) {
-                ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName)
-                else -> Folder.SubFolder(folderId, currentFolderName)
+                ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName, currentContent)
+                else -> {
+                    Folder.SubFolder(
+                        id = folderId,
+                        title = currentFolderName,
+                        contents = currentContent,
+                    )
+                }
             }
 
-            folderChange.emit(folder)
+            folderStack = when (folder) {
+                is Folder.Root -> listOf(folder)
+                is Folder.SubFolder -> folderStack.toMutableList().apply { add(folder) }
+                is Folder.Empty -> error("You're not supposed to use that here")
+            }
+
             Result.Success
         } ?: Result.Error
 
-    private suspend inline fun safeAvAction(
-        errorReason: ErrorReason? = null,
-        block: (Service<*, *>) -> Unit,
-    ) {
+    private fun getAvService(): Flow<Service<*, *>> = flow {
         rendererDiscoveryObservable.getSelectedRenderer()?.let { renderer ->
-            val service: Service<*, *>? =
-                (renderer as CDevice).device.findService(UDAServiceType(AV_TRANSPORT))
+            val service: Service<*, *> = (renderer as CDevice).device.findService(UDAServiceType(AV_TRANSPORT))
+                ?: error("AvService is not found!")
 
-            if (service != null && service.hasActions())
-                block(service)
-            else
-                errorReason.report()
-        }
-    }
-
-    private suspend inline fun <T> safeRcAction(
-        errorReason: ErrorReason? = null,
-        block: (Service<*, *>) -> T,
-    ): T? {
-        return rendererDiscoveryObservable.getSelectedRenderer()?.let { renderer ->
-            val service: Service<*, *>? =
-                (renderer as CDevice).device.findService(UDAServiceType(RENDERING_CONTROL))
-
-            if (service != null && service.hasActions())
-                block(service)
-            else {
-                errorReason.report()
-                null
+            if (service.hasActions()) {
+                emit(service)
+            } else {
+                error("AvService doesn't have actions!")
             }
-        }
+        } ?: error("getAvTransport: Selected renderer is null!")
     }
 
-    private suspend fun ErrorReason?.report() {
-        if (this != null) errorReporter.report(this)
+    private fun getRcService(): Flow<Service<*, *>> = flow {
+        rendererDiscoveryObservable.getSelectedRenderer()?.let { renderer ->
+            val service: Service<*, *> = (renderer as CDevice).device.findService(UDAServiceType(RENDERING_CONTROL))
+                ?: error("RcService is not found!")
+
+            if (service.hasActions())
+                emit(service)
+            else {
+                error("RcService doesn't have actions!")
+            }
+        } ?: error("getRcService: Selected renderer is null!")
     }
+
+    private fun <T> Flow<T>.catch(message: String): Flow<T> = catch { e -> Timber.e(e, message) }
 }
 
 inline class RenderItem(val didlItem: ClingDIDLObject)

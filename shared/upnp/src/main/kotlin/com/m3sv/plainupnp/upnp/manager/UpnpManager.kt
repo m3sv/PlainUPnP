@@ -1,9 +1,9 @@
 package com.m3sv.plainupnp.upnp.manager
 
-import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
+import com.m3sv.plainupnp.presentation.base.SpinnerItem
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.playback.PlaybackManager
@@ -17,17 +17,20 @@ interface UpnpManager : UpnpVolumeManager, PlaybackManager {
     val renderers: Flow<List<DeviceDisplay>>
     val contentDirectories: Flow<List<DeviceDisplay>>
     val upnpRendererState: Flow<UpnpRendererState>
-    val actionErrors: Flow<Consumable<String>>
     val folderChangeFlow: Flow<Folder>
+    val navigationStack: Flow<List<Folder>>
 
     fun selectContentDirectory(position: Int)
     fun selectContentDirectoryAsync(upnpDevice: UpnpDevice): Deferred<Result>
 
-    fun selectRenderer(position: Int)
+    fun selectRenderer(spinnerItem: SpinnerItem)
 
-    // TODO Split Object into Media and Folder
-    fun playItem(playItem: PlayItem)
-    fun openFolder(folder: Folder)
+    fun playItem(item: ClingDIDLObject)
+
+    fun navigateTo(folder: Folder)
+    fun navigateTo(id: String, folderName: String)
+    fun navigateBack()
+
     fun seekTo(progress: Int)
     fun getCurrentFolderContents(): List<ClingDIDLObject>
     fun getCurrentFolderName(): String

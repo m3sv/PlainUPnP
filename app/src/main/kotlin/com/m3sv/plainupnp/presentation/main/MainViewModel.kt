@@ -1,34 +1,20 @@
 package com.m3sv.plainupnp.presentation.main
 
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.m3sv.plainupnp.common.Consumable
 import com.m3sv.plainupnp.common.FilterDelegate
-import com.m3sv.plainupnp.core.eventbus.subscribe
-import com.m3sv.plainupnp.data.upnp.UpnpDevice
-import com.m3sv.plainupnp.presentation.home.FolderClick
-import com.m3sv.plainupnp.presentation.home.MediaItemClick
-import com.m3sv.plainupnp.presentation.home.MediaItemLongClick
+import com.m3sv.plainupnp.presentation.base.SpinnerItem
+import com.m3sv.plainupnp.upnp.didl.ClingContainer
+import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
 import com.m3sv.plainupnp.upnp.folder.Folder
-import com.m3sv.plainupnp.upnp.manager.PlayItem
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-sealed class MainRoute {
-    object Initial : MainRoute()
-    data class Back(val folder: Folder?) : MainRoute()
-    data class ToFolder(val folder: Folder) : MainRoute()
-    data class PreviewImage(val url: String) : MainRoute()
-    data class PreviewVideo(val url: String) : MainRoute()
-    data class PreviewAudio(val url: String) : MainRoute()
-}
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -36,102 +22,28 @@ class MainViewModel @Inject constructor(
     private val volumeManager: BufferedVolumeManager,
     private val filterDelegate: FilterDelegate,
     private val deviceDisplayMapper: DeviceDisplayMapper,
-    private val folderManager: FolderManager,
     observeRenderersUseCase: ObserveRenderersUseCase,
 ) : ViewModel() {
-
-    private val _finishFlow: MutableStateFlow<Unit?> = MutableStateFlow(null)
-    val finishFlow: Flow<Unit> = _finishFlow.filterNotNull()
-
-    init {
-        if (!upnpManager.isContentDirectorySelected) {
-            _finishFlow.value = Unit
-        }
-
-        viewModelScope.launch {
-            subscribe<MediaItemClick>()
-                .map { it.data as PlayItem }
-                .collect { item -> upnpManager.playItem(item) }
-        }
-
-        viewModelScope.launch {
-            subscribe<FolderClick>()
-                .map { it.data as Folder }
-                .collect { folder -> navigate(MainRoute.ToFolder(folder)) }
-        }
-
-        viewModelScope.launch {
-            subscribe<MediaItemLongClick>()
-                .map { it.data as PlayItem }
-                .collect { item ->
-                    val route: MainRoute = when (item.clingDIDLObject) {
-                        is ClingMedia.Image -> MainRoute.PreviewImage(requireNotNull(item.clingDIDLObject.uri))
-                        is ClingMedia.Video -> MainRoute.PreviewVideo(requireNotNull(item.clingDIDLObject.uri))
-                        is ClingMedia.Audio -> MainRoute.PreviewAudio(requireNotNull(item.clingDIDLObject.uri))
-                        else -> error("Unknown media type")
-                    }
-
-                    navigate(route)
-                }
-        }
-    }
 
     val volume = volumeManager
         .volumeFlow
 
     val upnpState = upnpManager
         .upnpRendererState
-        .asLiveData()
 
     val renderers = observeRenderersUseCase()
         .map { bundle -> deviceDisplayMapper(bundle) }
-        .asLiveData()
 
-    val errors = upnpManager
-        .actionErrors
-        .asLiveData()
+    val navigationStack: Flow<List<Folder>> = upnpManager.navigationStack
 
-    val changeFolder = upnpManager
-        .folderChangeFlow
-        .map { Consumable(it) }
-        .asLiveData()
-
-    val navigationStrip = folderManager
-        .observe()
-        .asLiveData()
-
-    val isConnectedToRenderer: Flow<UpnpDevice?> = upnpManager.isConnectedToRender
-
-    private val navigationChannel: MutableSharedFlow<MainRoute> = MutableSharedFlow()
-
-    val navigation: LiveData<Consumable<MainRoute>> = navigationChannel
-        .scan<MainRoute, MainRoute>(MainRoute.Initial) { previous, next ->
-            when (previous) {
-                is MainRoute.Initial -> {
-                    when (next) {
-                        is MainRoute.ToFolder -> next.apply { upnpManager.openFolder(folder) }
-                        else -> next
-                    }
-                }
-                is MainRoute.Back -> when (next) {
-                    is MainRoute.ToFolder -> next.apply { upnpManager.openFolder(folder) }
-                    is MainRoute.Back -> next.apply { folderManager.backTo(folder) }
-                    else -> next
-                }
-                is MainRoute.ToFolder -> when (next) {
-                    is MainRoute.ToFolder -> next.apply { upnpManager.openFolder(folder) }
-                    is MainRoute.Back -> next.apply { folderManager.backTo(folder) }
-                    else -> next
-                }
-                is MainRoute.PreviewImage,
-                is MainRoute.PreviewAudio,
-                is MainRoute.PreviewVideo,
-                -> next
-            }
-
+    fun itemClick(item: ClingDIDLObject) {
+        when (item) {
+            is ClingContainer -> navigateTo(item.id, item.title)
+            is ClingMedia -> upnpManager.playItem(item)
+            else -> error("Unknown cling item")
         }
-        .map { Consumable(it) }
-        .asLiveData()
+
+    }
 
     fun moveTo(progress: Int) {
         viewModelScope.launch {
@@ -139,7 +51,7 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun selectRenderer(position: Int) {
+    fun selectRenderer(position: SpinnerItem) {
         upnpManager.selectRenderer(position)
     }
 
@@ -160,9 +72,15 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch { filterDelegate.filter(text) }
     }
 
-    fun navigate(route: MainRoute) {
-        viewModelScope.launch {
-            navigationChannel.emit(route)
-        }
+    fun navigateBack() {
+        upnpManager.navigateBack()
+    }
+
+    fun navigateTo(folder: Folder) {
+        upnpManager.navigateTo(folder)
+    }
+
+    private fun navigateTo(id: String, title: String) {
+        upnpManager.navigateTo(id, title)
     }
 }

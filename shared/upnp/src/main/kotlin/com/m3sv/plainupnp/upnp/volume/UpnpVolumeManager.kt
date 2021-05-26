@@ -9,5 +9,5 @@ interface UpnpVolumeManager {
     suspend fun lowerVolume(step: Int)
     suspend fun muteVolume(mute: Boolean)
     suspend fun setVolume(volume: Int)
-    suspend fun getVolume(): Int
+    suspend fun getVolume(): Flow<Int>
 }

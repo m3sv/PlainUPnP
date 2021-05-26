@@ -1,19 +1,40 @@
 package com.m3sv.plainupnp.upnp.folder
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 
-sealed class Folder(open val id: String, open val title: String) : Parcelable {
+sealed class Folder(
+    val id: String,
+    val title: String,
+    val contents: List<ClingDIDLObject>,
+) {
+    class Root(
+        id: String,
+        title: String,
+        contents: List<ClingDIDLObject>,
+    ) : Folder(id, title, contents)
 
-    @Parcelize
-    data class Root(
-        override val id: String,
-        override val title: String,
-    ) : Folder(id, title)
+    class SubFolder(
+        id: String,
+        title: String,
+        contents: List<ClingDIDLObject>,
+    ) : Folder(id, title, contents)
 
-    @Parcelize
-    data class SubFolder(
-        override val id: String,
-        override val title: String,
-    ) : Folder(id, title)
+    object Empty : Folder("-1", "", listOf())
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+
+        other as Folder
+
+        if (id != other.id) return false
+        if (title != other.title) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + title.hashCode()
+        return result
+    }
 }

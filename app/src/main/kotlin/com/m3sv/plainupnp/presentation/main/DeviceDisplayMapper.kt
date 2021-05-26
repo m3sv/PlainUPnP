@@ -7,7 +7,7 @@ import javax.inject.Inject
 class DeviceDisplayMapper @Inject constructor() : (DeviceDisplayBundle) -> SpinnerItemsBundle {
 
     override fun invoke(input: DeviceDisplayBundle): SpinnerItemsBundle {
-        val items = input.devices.map { SpinnerItem(it.upnpDevice.friendlyName) }
+        val items = input.devices.map { SpinnerItem(it.upnpDevice.friendlyName, it) }
         return SpinnerItemsBundle(
             items,
             input.selectedDeviceIndex,
