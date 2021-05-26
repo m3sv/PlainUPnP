@@ -16,6 +16,8 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
+data class PreferencesUpdate(val refreshContent: Boolean, val preferences: Preferences?)
+
 @Singleton
 class PreferencesRepository @Inject constructor(private val context: Application) {
 
@@ -26,7 +28,7 @@ class PreferencesRepository @Inject constructor(private val context: Application
         serializer = PreferencesSerializer
     )
 
-    private val updateFlow = MutableSharedFlow<Unit>()
+    private val updateFlow = MutableSharedFlow<Boolean>()
 
     private val persistedUris: MutableStateFlow<List<UriWrapper>> = MutableStateFlow(listOf())
 
@@ -34,18 +36,23 @@ class PreferencesRepository @Inject constructor(private val context: Application
         scope.launch { updateUris() }
     }
 
-    val preferences: StateFlow<Preferences?> = context
+    val preferences: StateFlow<PreferencesUpdate> = context
         .preferencesStore
         .data
-        .combine(updateFlow) { _, _ -> context.preferencesStore.data.first() }
+        .combine(updateFlow) { _, refreshContent ->
+            PreferencesUpdate(
+                refreshContent,
+                context.preferencesStore.data.first()
+            )
+        }
         .stateIn(
             CoroutineScope(Dispatchers.IO),
             SharingStarted.Eagerly,
-            runBlocking { context.preferencesStore.data.first() }
+            runBlocking { PreferencesUpdate(true, context.preferencesStore.data.first()) }
         )
 
     suspend fun setApplicationMode(applicationMode: ApplicationMode) {
-        updatePreferences { builder ->
+        updatePreferences(true) { builder ->
             val newApplicationMode = when (applicationMode) {
                 ApplicationMode.Streaming -> Preferences.ApplicationMode.STREAMING
                 ApplicationMode.Player -> Preferences.ApplicationMode.PLAYER
@@ -56,7 +63,7 @@ class PreferencesRepository @Inject constructor(private val context: Application
     }
 
     suspend fun setApplicationTheme(themeOption: ThemeOption) {
-        updatePreferences { builder ->
+        updatePreferences(false) { builder ->
             val newTheme = when (themeOption) {
                 ThemeOption.System -> Preferences.Theme.SYSTEM
                 ThemeOption.Light -> Preferences.Theme.LIGHT
@@ -68,25 +75,25 @@ class PreferencesRepository @Inject constructor(private val context: Application
     }
 
     suspend fun setShareImages(enable: Boolean) {
-        updatePreferences { builder ->
+        updatePreferences(true) { builder ->
             builder.enableImages = enable
         }
     }
 
     suspend fun setShareVideos(enable: Boolean) {
-        updatePreferences { builder ->
+        updatePreferences(true) { builder ->
             builder.enableVideos = enable
         }
     }
 
     suspend fun setShareAudio(enable: Boolean) {
-        updatePreferences { builder ->
+        updatePreferences(true) { builder ->
             builder.enableAudio = enable
         }
     }
 
     suspend fun setShowThumbnails(enable: Boolean) {
-        updatePreferences { builder -> builder.enableThumbnails = enable }
+        updatePreferences(false) { builder -> builder.enableThumbnails = enable }
     }
 
     fun persistedUrisFlow(): Flow<List<UriWrapper>> = persistedUris
@@ -101,18 +108,21 @@ class PreferencesRepository @Inject constructor(private val context: Application
     fun updateUris() {
         scope.launch {
             persistedUris.value = getUris()
-            updateFlow.emit(Unit)
+            updateFlow.emit(true)
         }
     }
 
     fun getUris(): List<UriWrapper> = context.contentResolver.persistedUriPermissions.map(::UriWrapper)
 
-    private suspend fun updatePreferences(updateFunction: suspend (t: Preferences.Builder) -> Unit) {
+    private suspend inline fun updatePreferences(
+        refreshContent: Boolean,
+        crossinline updateFunction: (t: Preferences.Builder) -> Unit,
+    ) {
         context.preferencesStore.updateData { preferences ->
             preferences.toBuilder().apply { updateFunction(this) }.build()
         }
 
-        updateFlow.emit(Unit)
+        updateFlow.emit(refreshContent)
     }
 
     companion object {

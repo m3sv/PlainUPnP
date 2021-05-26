@@ -28,14 +28,13 @@ class SelectApplicationModeActivity : AppCompatActivity() {
         setContent {
             val preferences by preferencesRepository.preferences.collectAsState()
 
-
             AppTheme {
                 Surface {
                     SelectApplicationModeScreen(
                         onNextClick = ::onFinish,
                         onBackClick = ::onFinish,
                         nextText = stringResource(R.string.done),
-                        initialMode = requireNotNull(preferences).applicationMode.asApplicationMode()
+                        initialMode = requireNotNull(preferences.preferences).applicationMode.asApplicationMode()
                     ) { applicationMode ->
                         lifecycleScope.launch { preferencesRepository.setApplicationMode(applicationMode) }
                     }

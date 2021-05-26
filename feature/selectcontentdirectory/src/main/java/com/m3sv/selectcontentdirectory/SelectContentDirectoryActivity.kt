@@ -31,6 +31,7 @@ import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -93,10 +94,15 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
                                             Column(modifier = Modifier
                                                 .clickable(enabled = loadingDeviceDisplay == null) {
                                                     loadingDeviceDisplay = item
+
                                                     lifecycleScope.launch(Dispatchers.IO) {
-                                                        when (upnpManager.selectContentDirectoryAsync(item.upnpDevice)
-                                                            .await()) {
-                                                            Result.Error -> handleSelectDirectoryError()
+                                                        when (upnpManager
+                                                            .selectContentDirectoryAsync(item.upnpDevice)
+                                                            .await()
+                                                        ) {
+                                                            Result.Error -> withContext(Dispatchers.Main) {
+                                                                handleSelectDirectoryError()
+                                                            }
                                                             Result.Success -> handleSelectDirectorySuccess()
                                                         }
 
