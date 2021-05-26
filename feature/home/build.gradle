@@ -26,7 +26,8 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.bundles.coroutines)
     implementation(libs.fastScroll)
-    implementation(libs.glide)
+    implementation(libs.coil.core)
+    implementation(libs.coil.video)
     implementation(libs.hilt.android.core)
     implementation(libs.material)
 

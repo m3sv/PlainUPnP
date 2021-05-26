@@ -16,7 +16,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.ktx.viewmodel)
     implementation(libs.bundles.coroutines)
     implementation(libs.exoPlayer)
-    implementation(libs.glide)
+    implementation(libs.coil.core)
     implementation(libs.photoView)
 
     testImplementation(libs.test.junit)
