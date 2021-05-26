@@ -2,6 +2,10 @@ package com.m3sv.plainupnp.upnp.actions.avtransport
 
 import com.m3sv.plainupnp.upnp.actions.Action
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -15,15 +19,42 @@ import kotlin.coroutines.suspendCoroutine
 class SetUriAction @Inject constructor(controlPoint: ControlPoint) :
     Action<String, Boolean>(controlPoint) {
 
+    fun setUri(
+        service: Service<*, *>,
+        uri: String,
+        trackMetadata: TrackMetadata,
+    ): Flow<Unit> = callbackFlow {
+        val tag = "AV"
+        Timber.tag(tag).d("Set uri: $uri")
+        val action = object : SetAVTransportURI(service, uri, trackMetadata.xml) {
+
+            override fun success(invocation: ActionInvocation<out Service<*, *>>?) {
+                Timber.tag(tag).d("Set uri: $uri success")
+                sendBlocking(Unit)
+            }
+
+            override fun failure(
+                p0: ActionInvocation<out Service<*, *>>?,
+                p1: UpnpResponse?,
+                p2: String?,
+            ) {
+                error("Set uri $uri failed")
+            }
+        }
+        controlPoint.execute(action)
+
+        awaitClose()
+    }
+
     suspend operator fun invoke(
         service: Service<*, *>,
         uri: String,
-        trackMetadata: TrackMetadata
+        trackMetadata: TrackMetadata,
     ): Boolean = invoke(service, uri, trackMetadata.xml)
 
     override suspend fun invoke(
         service: Service<*, *>,
-        vararg arguments: String
+        vararg arguments: String,
     ): Boolean = suspendCoroutine { continuation ->
         val tag = "AV"
         Timber.tag(tag).d("Set uri: ${arguments[0]}")
@@ -37,7 +68,7 @@ class SetUriAction @Inject constructor(controlPoint: ControlPoint) :
             override fun failure(
                 p0: ActionInvocation<out Service<*, *>>?,
                 p1: UpnpResponse?,
-                p2: String?
+                p2: String?,
             ) {
                 Timber.tag(tag).e("Failed to set uri: ${arguments[0]}")
                 continuation.resume(false)

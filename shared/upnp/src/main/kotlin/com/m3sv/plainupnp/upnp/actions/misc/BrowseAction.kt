@@ -4,6 +4,9 @@ import com.m3sv.plainupnp.upnp.actions.Action
 import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
+import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -22,9 +25,41 @@ import kotlin.coroutines.suspendCoroutine
 class BrowseAction @Inject constructor(controlPoint: ControlPoint) :
     Action<String?, List<ClingDIDLObject>>(controlPoint) {
 
+    fun browse(
+        service: Service<*, *>,
+        objectId: String,
+    ): Flow<List<ClingDIDLObject>> = callbackFlow {
+        controlPoint.execute(object : Browse(
+            service,
+            objectId,
+            BrowseFlag.DIRECT_CHILDREN,
+            "*",
+            0,
+            null
+        ) {
+            override fun received(actionInvocation: ActionInvocation<*>, didl: DIDLContent) {
+                Timber.d("Received browse response")
+                sendBlocking(buildContentList(didl))
+            }
+
+            override fun updateStatus(status: Status) {
+                // TODO Add support for progress
+                Timber.d("Update browse status $status")
+            }
+
+            override fun failure(
+                invocation: ActionInvocation<*>,
+                operation: UpnpResponse,
+                defaultMsg: String,
+            ) {
+                error("Failed to browse $objectId! Message: $defaultMsg")
+            }
+        })
+    }
+
     override suspend fun invoke(
         service: Service<*, *>,
-        vararg arguments: String?
+        vararg arguments: String?,
     ): List<ClingDIDLObject> = suspendCoroutine { continuation ->
         controlPoint.execute(object : Browse(
             service,
@@ -46,7 +81,7 @@ class BrowseAction @Inject constructor(controlPoint: ControlPoint) :
             override fun failure(
                 invocation: ActionInvocation<*>,
                 operation: UpnpResponse,
-                defaultMsg: String
+                defaultMsg: String,
             ) {
                 Timber.w("Fail to browse! $defaultMsg")
                 continuation.resume(listOf())

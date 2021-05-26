@@ -1,6 +1,10 @@
 package com.m3sv.plainupnp.upnp.actions.avtransport
 
 import com.m3sv.plainupnp.upnp.actions.Action
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -14,9 +18,37 @@ import kotlin.coroutines.suspendCoroutine
 class PlayAction @Inject constructor(controlPoint: ControlPoint) :
     Action<Unit, Boolean>(controlPoint) {
 
+    fun play(
+        service: Service<*, *>,
+    ): Flow<Unit> {
+        return callbackFlow {
+            val tag = "AV"
+            Timber.tag(tag).d("Play called")
+
+            val action = object : Play(service) {
+                override fun success(invocation: ActionInvocation<out Service<*, *>>?) {
+                    Timber.tag(tag).d("Play success")
+                    sendBlocking(Unit)
+                }
+
+                override fun failure(
+                    p0: ActionInvocation<out Service<*, *>>?,
+                    p1: UpnpResponse?,
+                    p2: String?,
+                ) {
+                    error("Play failed")
+                }
+            }
+
+            controlPoint.execute(action)
+
+            awaitClose()
+        }
+    }
+
     override suspend fun invoke(
         service: Service<*, *>,
-        vararg arguments: Unit
+        vararg arguments: Unit,
     ): Boolean = suspendCoroutine { continuation ->
         val tag = "AV"
         Timber.tag(tag).d("Play called")
@@ -30,7 +62,7 @@ class PlayAction @Inject constructor(controlPoint: ControlPoint) :
             override fun failure(
                 p0: ActionInvocation<out Service<*, *>>?,
                 p1: UpnpResponse?,
-                p2: String?
+                p2: String?,
             ) {
                 Timber.tag(tag).d("Play failed")
                 continuation.resume(false)

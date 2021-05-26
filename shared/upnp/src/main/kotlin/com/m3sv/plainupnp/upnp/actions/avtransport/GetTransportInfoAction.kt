@@ -1,6 +1,10 @@
 package com.m3sv.plainupnp.upnp.actions.avtransport
 
 import com.m3sv.plainupnp.upnp.actions.Action
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
@@ -15,9 +19,35 @@ import kotlin.coroutines.suspendCoroutine
 class GetTransportInfoAction @Inject constructor(controlPoint: ControlPoint) :
     Action<Unit, TransportInfo?>(controlPoint) {
 
+    fun getTransportInfo(service: Service<*, *>): Flow<TransportInfo> = callbackFlow {
+        val tag = "AV"
+        Timber.tag(tag).d("Get transport info")
+
+        val action = object : GetTransportInfo(service) {
+            override fun received(
+                invocation: ActionInvocation<out Service<*, *>>?,
+                transportInfo: TransportInfo,
+            ) {
+                Timber.tag(tag).d("Received transport info")
+                sendBlocking(transportInfo)
+            }
+
+            override fun failure(
+                p0: ActionInvocation<out Service<*, *>>?,
+                p1: UpnpResponse?,
+                p2: String?,
+            ) {
+                error("Failed to get transport info")
+            }
+        }
+
+        controlPoint.execute(action)
+        awaitClose()
+    }
+
     override suspend fun invoke(
         service: Service<*, *>,
-        vararg arguments: Unit
+        vararg arguments: Unit,
     ): TransportInfo? = suspendCoroutine { continuation ->
         val tag = "AV"
         Timber.tag(tag).d("Get transport info")
@@ -25,7 +55,7 @@ class GetTransportInfoAction @Inject constructor(controlPoint: ControlPoint) :
         val action = object : GetTransportInfo(service) {
             override fun received(
                 invocation: ActionInvocation<out Service<*, *>>?,
-                transportInfo: TransportInfo?
+                transportInfo: TransportInfo?,
             ) {
                 Timber.tag(tag).d("Received transport info")
                 continuation.resume(transportInfo)
@@ -34,7 +64,7 @@ class GetTransportInfoAction @Inject constructor(controlPoint: ControlPoint) :
             override fun failure(
                 p0: ActionInvocation<out Service<*, *>>?,
                 p1: UpnpResponse?,
-                p2: String?
+                p2: String?,
             ) {
                 Timber.tag(tag).e("Failed to get transport info")
                 continuation.resume(null)
