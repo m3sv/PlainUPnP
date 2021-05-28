@@ -1,7 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <bool name="default_enable_content_directory">false</bool>
-    <bool name="default_enable_dark_theme">false</bool>
-    <bool name="default_enable_thumbnails">false</bool>
-    <bool name="default_allow_run_in_background">true</bool>
-</resources>
+<resources></resources>

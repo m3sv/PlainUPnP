@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="version">Версия</string>
-    <string name="home">Главная</string>
-    <string name="active_content_directory_description">Activate a local Content Directory server</string>
-    <string name="content_directory_title">Content Directory</string>
-    <string name="switch_theme">Изменить тему</string>
-    <string name="to_exit">Нажмите назад два раза чтобы выйти</string>
-    <string name="general_category">Общие</string>
-    <string name="upnp_category">UPnP</string>
     <string name="set_theme_label">Выбрать тему</string>
     <string name="share_images">Включить изображения</string>
     <string name="share_music">Включить аудио</string>
     <string name="share_videos">Включить видео</string>
     <string name="search">Поиск…</string>
     <string name="play_locally">Воспроизвести локально</string>
-    <string name="about">О приложении</string>
     <string name="rate">Нравится Plain UPnP?</string>
     <string name="open_play_store">Нажмите чтобы оставить отзыв на Google Play</string>
     <string name="github_link_title">Исходный код на Github</string>
@@ -26,28 +18,15 @@
     <string name="artist">Автор</string>
     <string name="privacy_policy">Политика конфиденциальности</string>
     <string name="open_privacy_policy">Открыть политику конфиденциальности</string>
-    <string name="cant_launch_locally">Невозможно воспроизвести локально</string>
     <string name="enable_thumbnails">Показывать превью</string>
-    <string name="play_with">Воспроизвести с помощью</string>
-    <string name="cancel">Отменить</string>
-    <string name="exit">Завершить</string>
-    <string name="dialog_exit_body">Вы уверены, что хотите заверишть работу программы?</string>
-    <string name="dialog_exit_title">Выход</string>
-    <string name="menu_item_search">Поиск</string>
-    <string name="menu_item_settings">Настройки</string>
-    <string name="navigation_controls">Управление</string>
     <string name="notification_body">PlainUPnP сервер запущен</string>
     <string name="notification_title">PlainUPnP Сервер</string>
     <string name="shut_down">Выключить</string>
-    <string name="start_here">Начните здесь</string>
     <string name="contact_us_title">Свяжитесь с нами</string>
     <string name="contact_us_body">Нет желаемой функции или проблемы с приложением?</string>
-    <string name="control_volume">Управляйте громкостью с помощью боковых кнопок</string>
     <string name="dark_theme_label">Тёмная</string>
     <string name="light_theme_label">Светлая</string>
     <string name="system_theme_label">В зависимости от системы</string>
-    <string name="battery_saver_theme_label">Тёмная на энергосберегающем режиме</string>
     <string name="browse_failed">"Произошла ошибка при открытии содержимого устройства, попробуйте повторно выбрать устройство. Если это не поможет перезагрузите устройство и приложение. "</string>
     <string name="by_folder">По папкам</string>
-    <string name="pref_title_allow_run_in_background">Запустить сервер в фоновом режиме</string>
 </resources>

@@ -2,10 +2,4 @@
 <resources>
     <color name="colorPrimary">#81c784</color>
     <color name="colorPrimaryDark">#519657</color>
-    <color name="colorPrimaryLight">#b2fab4</color>
-    <color name="colorAccent">@color/colorPrimary</color>
-    <color name="transparent">#00000000</color>
-    <color name="whiteHalfTransparent">#66E2E2E2</color>
-    <color name="darkBackground">#ff303030</color>
-    <color name="lightBackground">#FFFFFF</color>
 </resources>

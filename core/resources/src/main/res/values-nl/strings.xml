@@ -1,20 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="version">Versie</string>
-    <string name="home">Home</string>
-    <string name="active_content_directory_description">Een lokale Content Directory-server activeren</string>
-    <string name="content_directory_title">Inhoud Directory</string>
-    <string name="switch_theme">Thema wijzigen</string>
-    <string name="to_exit">Dubbeltik op de terugknop om af te sluiten</string>
-    <string name="general_category">Algemeen</string>
-    <string name="upnp_category">UPnP</string>
     <string name="set_theme_label">Thema instellen</string>
     <string name="share_images">Beelden inschakelen</string>
     <string name="share_music">Muziek inschakelen</string>
     <string name="share_videos">Videos inschakelen</string>
     <string name="search">Filter…</string>
     <string name="play_locally">Lokaal spelen</string>
-    <string name="about">Over</string>
     <string name="rate">Geniet u van het gebruik van Plain UPnP?</string>
     <string name="open_play_store">Klik hier om een recensie te geven over Google Play</string>
     <string name="github_link_title">Broncode op Github</string>
@@ -26,28 +18,15 @@
     <string name="audio">Muziek</string>
     <string name="open_privacy_policy">Open privacybeleid</string>
     <string name="privacy_policy">Privacybeleid</string>
-    <string name="cant_launch_locally">Kan niet lokaal lanceren</string>
     <string name="enable_thumbnails">Miniaturen inschakelen</string>
-    <string name="play_with">Speel met</string>
-    <string name="cancel">Annuleren</string>
-    <string name="exit">Uitgang</string>
-    <string name="dialog_exit_body">Weet u zeker dat u de toepassing wilt verlaten?</string>
-    <string name="dialog_exit_title">Uitgang</string>
-    <string name="menu_item_search">Zoeken</string>
-    <string name="menu_item_settings">Instellingen</string>
-    <string name="navigation_controls">Controls</string>
     <string name="notification_body">PlainUPnP Server werkt</string>
     <string name="notification_title">PlainUPnP Server</string>
     <string name="shut_down">Dichtgaan</string>
-    <string name="start_here">Begin hier</string>
     <string name="contact_us_title">Contacteer ons</string>
     <string name="contact_us_body">Functie ontbreekt? Stuur ons een e-mail!</string>
-    <string name="control_volume">Regel het volume met zijknoppen</string>
     <string name="dark_theme_label">Donker</string>
     <string name="light_theme_label">Licht</string>
     <string name="system_theme_label">Systeemgebaseerd</string>
-    <string name="battery_saver_theme_label">Donker op batterijbesparing</string>
     <string name="browse_failed">Bladeren door inhoud is mislukt. Probeer het apparaat opnieuw te selecteren. Als dat niet helpt, herstart apparaat en app.</string>
     <string name="by_folder">Per map</string>
-    <string name="pref_title_allow_run_in_background">Draai server op de achtergrond</string>
 </resources>

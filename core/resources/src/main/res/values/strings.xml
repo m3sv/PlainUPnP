@@ -1,26 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_feature_home" translatable="false">Home</string>
     <string name="title_feature_settings" translatable="false">Settings</string>
 
     <string name="app_name" translatable="false">PlainUPnP</string>
-    <string name="duration" translatable="false">00:00:00</string>
-    <string name="separator" translatable="false"> : </string>
-    <string name="about_license" translatable="false">GPLv3</string>
-    <string name="link_license" translatable="false">http://www.gnu.org/licenses/gpl-3.0.html</string>
     <string name="source_url" translatable="false">https://github.com/m3sv/PlainUPnP</string>
-    <string name="empty_content" translatable="false">-</string>
-    <string name="udn" translatable="false">UDN</string>
-    <string name="desc_xml" translatable="false">Description XML</string>
-    <string name="manufacturer" translatable="false">Manufacturer</string>
-    <string name="manufacturer_url" translatable="false">Manufacturer URL</string>
-    <string name="model_name" translatable="false">Model name</string>
-    <string name="copyright" translatable="false">Copyright</string>
-    <string name="model_url" translatable="false">Model URL</string>
-    <string name="presention_url" translatable="false">Presentation URL</string>
     <string name="model_number" translatable="false">2.1.0</string>
-    <string name="model_desc" translatable="false">Model description</string>
-    <string name="about_copyright" translatable="false">Copyright © 2019 Vadym Shavalda</string>
     <string name="notification_channel_name" translatable="false">PlainUPnP server</string>
     <string name="notification_channel_description" translatable="false">Indicates that PlainUPnP server is running</string>
     <string name="dev_email" translatable="false">m3sv.dev@gmail.com</string>
@@ -32,20 +16,12 @@
 
     <string name="version">Application Version</string>
     <string name="app_url" translatable="false">https://github.com/m3sv/PlainUPnP</string>
-    <string name="home">Home</string>
-    <string name="active_content_directory_description">Activate a local Content Directory server</string>
-    <string name="content_directory_title">Content Directory</string>
-    <string name="switch_theme">Switch theme</string>
-    <string name="to_exit">Double tap back button to exit</string>
-    <string name="general_category">General</string>
-    <string name="upnp_category">UPnP</string>
     <string name="set_theme_label">Set theme</string>
     <string name="share_images">Enable images</string>
     <string name="share_music">Enable music</string>
     <string name="share_videos">Enable videos</string>
     <string name="search">Filter…</string>
     <string name="play_locally">Play locally</string>
-    <string name="about">About</string>
     <string name="rate">Enjoy using Plain UPnP?</string>
     <string name="open_play_store">Click here to give a review on Google Play</string>
     <string name="github_link_title">Source code on Github</string>
@@ -57,30 +33,17 @@
     <string name="audio">Music</string>
     <string name="open_privacy_policy">Open privacy policy</string>
     <string name="privacy_policy">Privacy policy</string>
-    <string name="cant_launch_locally">Can\'t launch locally</string>
     <string name="enable_thumbnails">Enable thumbnails</string>
-    <string name="play_with">Play with</string>
-    <string name="exit">Exit</string>
-    <string name="cancel">Cancel</string>
-    <string name="dialog_exit_title">Exit</string>
-    <string name="dialog_exit_body">Are you sure you want to exit the application?</string>
-    <string name="menu_item_search">Search</string>
-    <string name="menu_item_settings">Settings</string>
-    <string name="navigation_controls">Controls</string>
     <string name="notification_title">PlainUPnP Server</string>
     <string name="notification_body">PlainUPnP Server is running</string>
     <string name="shut_down">Shut down</string>
-    <string name="start_here">Start here</string>
-    <string name="control_volume">Control volume with side buttons</string>
     <string name="contact_us_title">Contact us</string>
     <string name="contact_us_body">Feature is missing? Send us an email!</string>
     <string name="dark_theme_label">Dark</string>
     <string name="light_theme_label">Light</string>
     <string name="system_theme_label">System-based</string>
-    <string name="battery_saver_theme_label">Dark on battery saver</string>
     <string name="browse_failed">Browsing content failed, try re-selecting the device. If that doesn\'t help restart device and app.</string>
     <string name="by_folder">By folder</string>
-    <string name="pref_title_allow_run_in_background">Allow run in background</string>
     <string name="selected_folders">Selected folders</string>
     <string name="application_mode_player">Player</string>
     <string name="application_mode_streaming">Streaming</string>
