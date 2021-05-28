@@ -6,8 +6,6 @@ include(
     ":core:eventbus",
     ":core:persistence",
     ":core:resources",
-    ":feature:home",
-    ":feature:inappplayer",
     ":feature:onboarding",
     ":feature:selectcontentdirectory",
     ":feature:settings",

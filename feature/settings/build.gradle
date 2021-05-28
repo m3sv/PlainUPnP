@@ -29,7 +29,6 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.bundles.coroutines)
     implementation(libs.hilt.android.core)
-    implementation(libs.material)
     implementation(libs.timber)
 
     playImplementation(libs.bundles.play.core)

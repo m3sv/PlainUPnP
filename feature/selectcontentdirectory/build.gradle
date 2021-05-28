@@ -27,7 +27,6 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.bundles.nanohttpd)
     implementation(libs.hilt.android.core)
-    implementation(libs.material)
 
     kapt(libs.hilt.compiler)
 

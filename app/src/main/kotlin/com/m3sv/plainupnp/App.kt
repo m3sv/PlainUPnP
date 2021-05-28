@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.StrictMode
 import com.m3sv.plainupnp.common.util.generateUdn
 import com.m3sv.plainupnp.presentation.main.MainActivity
+import com.m3sv.plainupnp.presentation.splash.SplashActivity
 import com.m3sv.plainupnp.upnp.UpnpScopeProvider
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -13,7 +14,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import timber.log.Timber
 import java.util.concurrent.Executors
-import javax.inject.Inject
 
 @HiltAndroidApp
 class App : Application(), Router, UpnpScopeProvider {
@@ -27,15 +27,11 @@ class App : Application(), Router, UpnpScopeProvider {
 //    @Inject
 //    lateinit var backgroundModeManager: BackgroundModeManager
 
-    @Inject
-    lateinit var themeManager: ThemeManager
-
     override val upnpScope =
         CoroutineScope(SupervisorJob() + Executors.newSingleThreadExecutor().asCoroutineDispatcher())
 
     override fun onCreate() {
         super.onCreate()
-        themeManager.setDefaultNightMode()
         generateUdn()
 
         if (BuildConfig.DEBUG) {
@@ -75,5 +71,7 @@ class App : Application(), Router, UpnpScopeProvider {
 //        })
     }
 
-    override fun getNextIntent(context: Context): Intent = Intent(context, MainActivity::class.java)
+    override fun getMainActivityIntent(context: Context): Intent = Intent(context, MainActivity::class.java)
+
+    override fun getSplashActivityIntent(context: Context): Intent = Intent(context, SplashActivity::class.java)
 }

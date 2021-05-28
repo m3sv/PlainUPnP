@@ -4,9 +4,9 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -48,51 +48,47 @@ import com.m3sv.plainupnp.upnp.folder.Folder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.fourthline.cling.support.model.TransportState
-import kotlin.LazyThreadSafetyMode.NONE
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
-
-    private val volumeIndicator: VolumeIndicator by lazy(NONE) { VolumeIndicator(this) }
 
     private var isConnectedToRenderer: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        lifecycleScope.launchWhenCreated {
+            viewModel.finishActivityFlow.collect { finish() }
+        }
+
         setContent {
-            AppTheme {
-                var showControls by remember { mutableStateOf(false) }
+            var showControls by rememberSaveable { mutableStateOf(false) }
 
-                val renderers by viewModel.renderers.collectAsState(SpinnerItemsBundle.empty)
+            var selectedRenderer by rememberSaveable { mutableStateOf("Stream to") }
+            var isDialogExpanded by rememberSaveable { mutableStateOf(false) }
+            var isButtonExpanded by rememberSaveable { mutableStateOf(true) }
 
-                val upnpState by viewModel.upnpState
-                    .onEach { showControls = it !is UpnpRendererState.Empty }
-                    .collectAsState(initial = UpnpRendererState.Empty)
+            val viewState by viewModel.viewState.collectAsState()
 
-                val navigationStack by viewModel.navigationStack.collectAsState(listOf(Folder.Empty))
+            showControls = viewState.upnpRendererState !is UpnpRendererState.Empty
 
-                var selectedRenderer by rememberSaveable { mutableStateOf("Stream to") }
-                var isDialogExpanded by rememberSaveable { mutableStateOf(false) }
-                var isButtonExpanded by rememberSaveable { mutableStateOf(true) }
-
+            AppTheme(viewState.activeTheme) {
                 fun collapseExpandedButton() {
                     isButtonExpanded = false
                     isDialogExpanded = false
                 }
 
                 @Composable
-                fun BoxScope.createFloatingActionButton() {
+                fun createFloatingActionButton() {
                     RendererFloatingActionButton(
                         isButtonExpanded = isButtonExpanded,
                         isDialogExpanded = isDialogExpanded,
                         selectedRenderer = selectedRenderer,
-                        renderers = renderers,
+                        renderers = viewState.spinnerItemsBundle,
                         onDismissDialog = {
                             isDialogExpanded = false
                             collapseExpandedButton()
@@ -105,39 +101,23 @@ class MainActivity : AppCompatActivity() {
                         })
                 }
 
-
-                if (navigationStack.isEmpty()) {
-                    finish()
-                }
-
                 val configuration = LocalConfiguration.current
 
-                when (configuration.orientation) {
-                    Configuration.ORIENTATION_LANDSCAPE -> Landscape(
-                        navigationStack = navigationStack,
-                        floatingActionButton = { createFloatingActionButton() },
-                        controls = {
-                            AnimatedVisibility(
-                                visible = showControls,
-                                enter = fadeIn() + expandHorizontally(Alignment.Start),
-                                exit = fadeOut() + shrinkHorizontally(Alignment.Start),
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .weight(1f)
-                                    .align(Alignment.Top)
-                            ) {
-                                Controls(upnpState, 0.dp, 8.dp)
-                            }
-                        })
-                    else -> Portrait(
-                        navigationStack = navigationStack,
-                        floatingActionButton = { createFloatingActionButton() },
-                        controls = {
-                            AnimatedVisibility(visible = showControls) {
-                                Controls(upnpState, 16.dp, 16.dp)
-                            }
-                        }
-                    )
+                Surface {
+                    when (configuration.orientation) {
+                        Configuration.ORIENTATION_LANDSCAPE -> Landscape(
+                            upnpState = viewState.upnpRendererState,
+                            showControls = showControls,
+                            navigationStack = viewState.navigationStack,
+                            floatingActionButton = { createFloatingActionButton() },
+                        )
+                        else -> Portrait(
+                            upnpState = viewState.upnpRendererState,
+                            showControls = showControls,
+                            navigationStack = viewState.navigationStack,
+                            floatingActionButton = { createFloatingActionButton() },
+                        )
+                    }
                 }
             }
         }
@@ -158,38 +138,65 @@ class MainActivity : AppCompatActivity() {
 
     @Composable
     private fun Portrait(
+        upnpState: UpnpRendererState,
+        showControls: Boolean,
         navigationStack: List<Folder>,
-        controls: @Composable ColumnScope.() -> Unit,
         floatingActionButton: @Composable BoxScope.() -> Unit,
     ) {
         Screen(navigationStack) {
             Row(modifier = Modifier.weight(1f)) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     Folder(navigationStack.lastOrNull()?.contents ?: listOf())
-                    floatingActionButton()
+
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = !showControls,
+                        modifier = Modifier.align(Alignment.BottomEnd)
+                    ) {
+                        floatingActionButton()
+                    }
                 }
             }
 
-            controls()
+            AnimatedVisibility(visible = showControls) {
+                Controls(upnpState, 16.dp, 16.dp)
+            }
         }
     }
 
     @Composable
     private fun Landscape(
+        upnpState: UpnpRendererState,
+        showControls: Boolean,
         navigationStack: List<Folder>,
-        controls: @Composable RowScope.() -> Unit,
         floatingActionButton: @Composable BoxScope.() -> Unit,
     ) {
         Screen(navigationStack) {
             Row {
-                Box(modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                ) {
                     Folder(navigationStack.lastOrNull()?.contents ?: listOf())
-                    floatingActionButton()
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = !showControls,
+                        modifier = Modifier.align(Alignment.BottomEnd)
+                    ) {
+                        floatingActionButton()
+                    }
                 }
 
-                controls()
+                AnimatedVisibility(
+                    visible = showControls,
+                    enter = fadeIn() + expandHorizontally(Alignment.Start),
+                    exit = fadeOut() + shrinkHorizontally(Alignment.Start),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f)
+                        .align(Alignment.Top)
+                ) {
+                    Controls(upnpState, 0.dp, 8.dp)
+                }
             }
         }
     }
@@ -215,15 +222,19 @@ class MainActivity : AppCompatActivity() {
                     ) {
                         Text(defaultState?.title ?: "")
 
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_close),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(24.dp)
-                                .clickable {
-                                    viewModel.playerButtonClick(PlayerButton.STOP)
-                                }
-                        )
+                        Surface {
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_close),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clickable {
+                                        viewModel.playerButtonClick(PlayerButton.STOP)
+                                    }
+                            )
+                        }
+
                     }
 
 //                    upnpState.artist
@@ -277,7 +288,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     @Composable
-    private fun BoxScope.RendererFloatingActionButton(
+    private fun RendererFloatingActionButton(
         isButtonExpanded: Boolean,
         isDialogExpanded: Boolean,
         selectedRenderer: String,
@@ -287,7 +298,7 @@ class MainActivity : AppCompatActivity() {
         onSelectRenderer: (String) -> Unit,
         onExpandDialog: () -> Unit,
     ) {
-        Box(modifier = Modifier.Companion.align(Alignment.BottomEnd)) {
+        Box {
             FloatingActionButton(onClick = {
                 if (isButtonExpanded)
                     onExpandDialog()
@@ -495,116 +506,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-//
-//    private fun navigateToFolder(folder: Folder) {
-//        when (folder) {
-//            is Folder.Root -> viewModel.navigate(MainRoute.ToFolder(folder))
-//            is Folder.SubFolder -> viewModel.navigate(MainRoute.Back(folder))
-//        }
-//    }
-//
-//    private fun hideSearchContainer() {
-//        with(binding) {
-//            val currentFocus = currentFocus
-//            if (inputMethodManager.isActive(searchInput) && currentFocus != null) {
-//                inputMethodManager.hideSoftInputFromWindow(currentFocus.windowToken, 0)
-//            }
-//            searchInput.clearFocus()
-//            searchContainer.visibility = View.INVISIBLE
-//            searchInput.setText("")
-//        }
-//    }
-
-    private fun observeState() {
-
-        lifecycleScope.launchWhenCreated {
-            viewModel.volume.collect { volume: Int ->
-                volumeIndicator.volume = volume
-            }
-        }
-
-//        viewModel
-//            .changeFolder
-//            .observe(this) { changeEvent ->
-////                areControlsVisible = true
-//                changeEvent.consume { folderType ->
-//                    when (folderType) {
-//                        is Folder.Root -> {
-//                            supportFragmentManager.popBackStack(
-//                                null,
-//                                POP_BACK_STACK_INCLUSIVE
-//                            )
-//                            replaceFragment(HomeFragment(), folderType.id)
-//                        }
-//
-//                        is Folder.SubFolder -> replaceFragment(
-//                            HomeFragment(),
-//                            folderType.id,
-//                            true
-//                        )
-//                    }
-//                }
-//            }
-
-//        viewModel
-//            .navigationStrip
-//            .observe(this) { folders ->
-//                binding.navigationStrip.replaceItems(folders)
-//
-//                val clickListener = folders
-//                    .firstOrNull()
-//                    ?.let { folder -> View.OnClickListener { navigateToFolder(folder) } }
-//
-//                binding.navigateHome.setOnClickListener(clickListener)
-//            }
-//        viewModel.isConnectedToRenderer.asLiveData().observe(this) {
-//            isConnectedToRenderer = it != null
-//        }
-
-//        viewModel.navigation.observe(this) { navigationEvent ->
-//            navigationEvent.consume { route ->
-//                when (route) {
-//                    is MainRoute.Back -> {
-//                        supportFragmentManager.popBackStack(route.folder?.id, 0)
-//                        areControlsVisible = true
-//                    }
-//                    is MainRoute.ToFolder -> pass
-//                    is MainRoute.PreviewImage -> {
-//                        areControlsVisible = false
-//                        replaceFragment(ImageFragment.newInstance(route.url),
-//                            addToBackStack = true)
-//                    }
-//                    is MainRoute.PreviewVideo -> {
-//                        areControlsVisible = false
-//                        replaceFragment(PlayerFragment.newInstance(route.url),
-//                            addToBackStack = true)
-//                    }
-//                    is MainRoute.PreviewAudio -> {
-//                        areControlsVisible = false
-//                        replaceFragment(PlayerFragment.newInstance(route.url),
-//                            addToBackStack = true)
-//                    }
-//                    is MainRoute.Initial -> pass
-//                }.exhaustive
-//            }
-//        }
-    }
-
-//    private var areControlsVisible: Boolean by Delegates.observable(true) { _, _, visible ->
-//        if (visible) {
-//            with(binding) {
-//                bottomBar.performShow()
-//                navigationStripContainer.visibility = View.VISIBLE
-//            }
-//        } else {
-//            hideSearchContainer()
-//            with(binding) {
-//                controlsFragment.close()
-//                bottomBar.performHide()
-//                navigationStripContainer.visibility = View.GONE
-//            }
-//        }
-//    }
 
     private fun openSettings() {
         lifecycleScope.launch(Dispatchers.IO) {
@@ -628,47 +529,6 @@ class MainActivity : AppCompatActivity() {
             }
         } else super.onKeyDown(keyCode, event)
     }
-
-//    private fun animateBottomDrawChanges() {
-//        controlsFragment.addOnStateChangedAction(TriggerOnceStateAction(this@MainActivity::animateChevronArrow))
-//    }
-//
-//    private val arrowUpAnimator by lazy(mode = NONE) {
-//        ObjectAnimator
-//            .ofFloat(binding.bottomAppBarChevron, ROTATION, 0f)
-//            .apply { duration = 200 }
-//    }
-//
-//    private val arrowDownAnimator by lazy(mode = NONE) {
-//        ObjectAnimator
-//            .ofFloat(binding.bottomAppBarChevron, ROTATION, 180f)
-//            .apply { duration = 200 }
-//    }
-
-//    private fun animateChevronArrow(isHidden: Boolean) {
-//        val animator = if (isHidden) {
-//            arrowUpAnimator
-//        } else {
-//            arrowDownAnimator
-//        }
-//
-//        animator.start()
-//    }
-//
-//    private fun Bundle.restoreChevronState() {
-//        binding.bottomAppBarChevron.rotation = getFloat(CHEVRON_ROTATION_ANGLE_KEY, 0f)
-//    }
-//
-//    private fun Bundle.restoreSearchContainerVisibility() {
-//        val isSearchContainerVisible = getBoolean(IS_SEARCH_CONTAINER_VISIBLE, false)
-//        binding
-//            .searchContainer
-//            .visibility = if (isSearchContainerVisible) View.VISIBLE else View.INVISIBLE
-//    }
-//
-//    private fun Bundle.restoreControlsVisibility() {
-//        areControlsVisible = getBoolean(ARE_CONTROLS_VISIBLE, false)
-//    }
 
     override fun onBackPressed() {
         viewModel.navigateBack()

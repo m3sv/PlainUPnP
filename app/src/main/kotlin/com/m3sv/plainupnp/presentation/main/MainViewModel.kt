@@ -2,8 +2,11 @@ package com.m3sv.plainupnp.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.m3sv.plainupnp.ThemeManager
+import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.common.FilterDelegate
-import com.m3sv.plainupnp.presentation.base.SpinnerItem
+import com.m3sv.plainupnp.data.upnp.UpnpRendererState
+import com.m3sv.plainupnp.presentation.SpinnerItem
 import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
@@ -11,30 +14,59 @@ import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
 import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+data class MainViewState(
+    val upnpRendererState: UpnpRendererState = UpnpRendererState.Empty,
+    val spinnerItemsBundle: SpinnerItemsBundle = SpinnerItemsBundle.empty,
+    val navigationStack: List<Folder> = listOf(Folder.Empty),
+    val activeTheme: ThemeOption = ThemeOption.System
+)
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val upnpManager: UpnpManager,
     private val volumeManager: BufferedVolumeManager,
     private val filterDelegate: FilterDelegate,
-    private val deviceDisplayMapper: DeviceDisplayMapper,
+    themeManager: ThemeManager,
     observeRenderersUseCase: ObserveRenderersUseCase,
 ) : ViewModel() {
 
     val volume = volumeManager
         .volumeFlow
 
-    val upnpState = upnpManager
-        .upnpRendererState
+    private val upnpState = upnpManager.upnpRendererState.onStart { emit(UpnpRendererState.Empty) }
 
-    val renderers = observeRenderersUseCase()
-        .map { bundle -> deviceDisplayMapper(bundle) }
+    private val renderers = observeRenderersUseCase()
+        .map { bundle ->
+            val items = bundle.devices.map { SpinnerItem(it.upnpDevice.friendlyName, it) }
+            SpinnerItemsBundle(
+                items,
+                bundle.selectedDeviceIndex,
+                bundle.selectedDeviceText
+            )
+        }
 
-    val navigationStack: Flow<List<Folder>> = upnpManager.navigationStack
+    private val navigationStack: Flow<List<Folder>> = upnpManager.navigationStack
+
+    val finishActivityFlow: Flow<Unit> = navigationStack.filter { it.isEmpty() }.map { }
+
+    val viewState: StateFlow<MainViewState> =
+        combine(
+            upnpState,
+            renderers,
+            navigationStack.filterNot { it.isEmpty() },
+            themeManager.theme
+        ) { upnpRendererState, spinnerItemsBundle, navigationStack, activeTheme ->
+            MainViewState(
+                upnpRendererState = upnpRendererState,
+                spinnerItemsBundle = spinnerItemsBundle,
+                navigationStack = navigationStack,
+                activeTheme = activeTheme
+            )
+        }.stateIn(viewModelScope, SharingStarted.Lazily, MainViewState(activeTheme = themeManager.theme.value))
 
     fun itemClick(item: ClingDIDLObject) {
         when (item) {

@@ -8,9 +8,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.Crossfade
 import androidx.compose.material.Surface
 import androidx.compose.runtime.*
@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class OnboardingActivity : AppCompatActivity() {
+class OnboardingActivity : ComponentActivity() {
 
     @Inject
     lateinit var onboardingManager: OnboardingManager
@@ -65,6 +65,7 @@ class OnboardingActivity : AppCompatActivity() {
 
         val contentUris by viewModel.contentUris.collectAsState()
         val currentScreen by viewModel.currentScreen.collectAsState()
+        val activeTheme by viewModel.activeTheme.collectAsState(ThemeOption.System)
 
         val imageContainerEnabled = remember { viewModel.imageContainerEnabled }
         val videoContainerEnabled = remember { viewModel.videoContainerEnabled }
@@ -72,7 +73,7 @@ class OnboardingActivity : AppCompatActivity() {
         val backgroundMode = remember { viewModel.backgroundMode }
 
         Content(
-            selectedTheme = viewModel.activeTheme,
+            selectedTheme = activeTheme,
             currentScreen = currentScreen,
             onSelectTheme = viewModel::onSelectTheme,
             onSelectApplicationMode = viewModel::onSelectMode,
@@ -100,7 +101,7 @@ class OnboardingActivity : AppCompatActivity() {
         audioContainerEnabled: MutableState<Boolean>,
         backgroundMode: MutableState<BackgroundMode>,
     ) {
-        AppTheme {
+        AppTheme(selectedTheme) {
             Crossfade(targetState = currentScreen) { screen ->
                 Surface {
                     when (screen) {
@@ -210,8 +211,10 @@ class OnboardingActivity : AppCompatActivity() {
                 // include a "cancel" or "no thanks" button that allows the user to
                 // continue using your app without granting the permission.
                 // TODO explain why we need storage permission
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    Uri.parse("package:$packageName"))
+                val intent = Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:$packageName")
+                )
                 intent.addCategory(Intent.CATEGORY_DEFAULT)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)

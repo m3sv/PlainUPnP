@@ -3,9 +3,7 @@ package com.m3sv.plainupnp.presentation.onboarding
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Application
 import android.content.pm.PackageManager
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -34,20 +32,17 @@ class OnboardingViewModel @Inject constructor(
     private val preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
 
-    var activeTheme: ThemeOption by mutableStateOf(themeManager.currentTheme)
-        private set
-
     val imageContainerEnabled = mutableStateOf(false)
-
     val audioContainerEnabled = mutableStateOf(false)
-
     val videoContainerEnabled = mutableStateOf(false)
 
     val backgroundMode = mutableStateOf(backgroundModeManager.backgroundMode)
 
-    val contentUris: StateFlow<List<UriWrapper>> =
-        preferencesRepository.persistedUrisFlow()
-            .stateIn(viewModelScope, SharingStarted.Lazily, preferencesRepository.getUris())
+    val activeTheme: Flow<ThemeOption> = themeManager.theme
+
+    val contentUris: StateFlow<List<UriWrapper>> = preferencesRepository
+        .persistedUrisFlow()
+        .stateIn(viewModelScope, SharingStarted.Lazily, preferencesRepository.getUris())
 
     private val _currentScreen: MutableSharedFlow<Direction> = MutableSharedFlow()
 
@@ -75,8 +70,7 @@ class OnboardingViewModel @Inject constructor(
         }.stateIn(viewModelScope, SharingStarted.Lazily, OnboardingScreen.Greeting)
 
     fun onSelectTheme(themeOption: ThemeOption) {
-        activeTheme = themeOption
-        themeManager.setNightMode(themeOption)
+        themeManager.setTheme(themeOption)
     }
 
     fun onSelectMode(mode: ApplicationMode) {

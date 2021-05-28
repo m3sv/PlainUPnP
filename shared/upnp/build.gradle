@@ -20,7 +20,6 @@ dependencies {
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.nanohttpd)
     implementation(libs.hilt.android.core)
-    implementation(libs.material)
     implementation(libs.timber)
 
     kapt(libs.hilt.compiler)

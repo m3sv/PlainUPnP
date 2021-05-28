@@ -4,8 +4,8 @@ import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,6 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import com.m3sv.plainupnp.ThemeManager
+import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.common.preferences.Preferences
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.common.util.asApplicationMode
@@ -38,7 +40,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : ComponentActivity() {
 
     @Inject
     lateinit var preferencesRepository: PreferencesRepository
@@ -46,31 +48,32 @@ class SettingsActivity : AppCompatActivity() {
     @Inject
     lateinit var rateHandler: RateHandler
 
+    @Inject
+    lateinit var themeManager: ThemeManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val preferences = preferencesRepository.preferences.collectAsState()
-            SettingsContent(preferences = requireNotNull(preferences.value.preferences))
-        }
-    }
+            val preferencesUpdate by preferencesRepository.preferences.collectAsState()
+            val activeTheme by themeManager.collectTheme()
 
-    @Composable
-    private fun SettingsContent(preferences: Preferences) {
-        AppTheme {
-            Surface {
-                OnePane(viewingContent = {
-                    OneTitle(stringResource(id = R.string.title_feature_settings))
-                    OneToolbar(onBackClick = { finish() }) {}
-                }) {
-                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                        ThemeSection(preferences.theme)
-                        UpnpSection(preferences)
-                        AboutSection()
+            AppTheme(activeTheme) {
+                Surface {
+                    OnePane(viewingContent = {
+                        OneTitle(stringResource(id = R.string.title_feature_settings))
+                        OneToolbar(onBackClick = { finish() }) {}
+                    }) {
+                        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                            ThemeSection(activeTheme)
+                            UpnpSection(preferencesUpdate.preferences)
+                            AboutSection()
+                        }
                     }
                 }
             }
         }
     }
+
 
     @Composable
     fun AboutSection() {
@@ -185,7 +188,8 @@ class SettingsActivity : AppCompatActivity() {
             SwitchRow(
                 title = stringResource(id = R.string.enable_thumbnails),
                 initialValue = preferences.enableThumbnails,
-                icon = painterResource(id = R.drawable.ic_thumbnail)) { enabled ->
+                icon = painterResource(id = R.drawable.ic_thumbnail)
+            ) { enabled ->
                 lifecycleScope.launch {
                     preferencesRepository.setShowThumbnails(enabled)
                 }
@@ -194,11 +198,11 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     @Composable
-    private fun ThemeSection(currentTheme: Preferences.Theme) {
-        val textId = when (currentTheme) {
-            Preferences.Theme.SYSTEM -> R.string.system_theme_label
-            Preferences.Theme.LIGHT -> R.string.light_theme_label
-            Preferences.Theme.DARK -> R.string.dark_theme_label
+    private fun ThemeSection(themeOption: ThemeOption) {
+        val textId = when (themeOption) {
+            ThemeOption.System -> R.string.system_theme_label
+            ThemeOption.Light -> R.string.light_theme_label
+            ThemeOption.Dark -> R.string.dark_theme_label
             else -> error("Theme is not set")
         }
 

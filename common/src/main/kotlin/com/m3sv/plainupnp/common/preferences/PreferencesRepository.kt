@@ -16,7 +16,7 @@ import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 import javax.inject.Singleton
 
-data class PreferencesUpdate(val refreshContent: Boolean, val preferences: Preferences?)
+data class PreferencesUpdate(val refreshContent: Boolean, val preferences: Preferences)
 
 @Singleton
 class PreferencesRepository @Inject constructor(private val context: Application) {
@@ -50,6 +50,15 @@ class PreferencesRepository @Inject constructor(private val context: Application
             SharingStarted.Eagerly,
             runBlocking { PreferencesUpdate(true, context.preferencesStore.data.first()) }
         )
+
+    val theme: Flow<ThemeOption> = preferences.map { update ->
+        when (update.preferences.theme) {
+            Preferences.Theme.LIGHT -> ThemeOption.Light
+            Preferences.Theme.DARK -> ThemeOption.Dark
+            Preferences.Theme.SYSTEM,
+            Preferences.Theme.UNRECOGNIZED -> ThemeOption.System
+        }
+    }
 
     suspend fun setApplicationMode(applicationMode: ApplicationMode) {
         updatePreferences(true) { builder ->

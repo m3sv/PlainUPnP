@@ -1,34 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Plain" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="primaryTextColor">@color/colorPrimary</item>
-        <item name="secondaryTextColor">@color/colorPrimary</item>
-        <item name="dividerColor">@color/colorPrimaryLight</item>
-        <item name="colorControlActivated">@color/colorPrimary</item>
-        <item name="iconPlaceholder">@drawable/ic_video</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="toolbarColor">@android:color/transparent</item>
-        <item name="android:spinnerStyle">@style/Theme.Plain.SpinnerItem</item>
-        <item name="android:switchPreferenceStyle">@style/Theme.Plain.SwitchPreference</item>
-    </style>
+    <style name="Theme.Plain" parent="@android:style/Theme.Material.Light.NoActionBar" />
 
     <style name="Theme.Plain.Splash">
         <item name="android:windowBackground">@drawable/splash_background</item>
-    </style>
-
-    <style name="ThemeOverlay.Plain.ActionBar" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
-
-    <style name="Theme.Plain.SpinnerItem" parent="Widget.AppCompat.Spinner">
-        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Caption</item>
-        <item name="maxLines">1</item>
-        <item name="android:ellipsize">end</item>
-    </style>
-
-    <style name="Theme.Plain.SwitchPreference" parent="">
-        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Display1</item>
     </style>
 
 </resources>

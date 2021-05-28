@@ -4,5 +4,6 @@ import android.content.Context
 import android.content.Intent
 
 interface Router {
-    fun getNextIntent(context: Context): Intent
+    fun getMainActivityIntent(context: Context): Intent
+    fun getSplashActivityIntent(context: Context): Intent
 }

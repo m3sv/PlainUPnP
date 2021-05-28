@@ -7,7 +7,7 @@ import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpItemType
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
-import com.m3sv.plainupnp.presentation.base.SpinnerItem
+import com.m3sv.plainupnp.presentation.SpinnerItem
 import com.m3sv.plainupnp.upnp.CDevice
 import com.m3sv.plainupnp.upnp.ContentUpdateState
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl
@@ -465,8 +465,13 @@ class UpnpManagerImpl @Inject constructor(
     private suspend inline fun safeNavigateTo(
         folderId: String,
         folderName: String,
-    ): Result = contentDirectoryObservable.selectedContentDirectory
-        ?.let { selectedDevice ->
+    ): Result {
+        val selectedDevice = contentDirectoryObservable.selectedContentDirectory
+
+        return if (selectedDevice == null) {
+            Timber.e("Selected content directory is null!")
+            Result.Error
+        } else {
             val service: Service<*, *>? =
                 (selectedDevice as CDevice).device.findService(UDAServiceType(CONTENT_DIRECTORY))
 
@@ -495,7 +500,8 @@ class UpnpManagerImpl @Inject constructor(
             }
 
             Result.Success
-        } ?: Result.Error
+        }
+    }
 
     private fun getAvService(): Flow<Service<*, *>> = flow {
         rendererDiscoveryObservable.getSelectedRenderer()?.let { renderer ->

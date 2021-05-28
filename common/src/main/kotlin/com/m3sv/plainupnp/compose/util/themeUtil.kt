@@ -10,32 +10,33 @@ import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.common.R
 
 @Composable
-fun AppTheme(content: @Composable () -> Unit) {
-    val primaryColor = colorResource(id = R.color.colorPrimary)
-
-    val colors = when (isSystemInDarkTheme()) {
-        false -> lightColors(
-            primary = primaryColor,
-            secondary = primaryColor,
-            secondaryVariant = primaryColor
-        )
-        else -> darkColors(
-            primary = primaryColor,
-            secondary = primaryColor,
-            secondaryVariant = primaryColor
-        )
-    }
-
-    MaterialTheme(colors, content = content)
-}
-
-@Composable
 fun AppTheme(themeOption: ThemeOption, content: @Composable () -> Unit) {
     val primaryColor = colorResource(id = R.color.colorPrimary)
 
     val colors = when (themeOption) {
-        ThemeOption.Light, ThemeOption.System -> lightColors(primary = primaryColor)
-        ThemeOption.Dark -> darkColors(primary = primaryColor)
+        ThemeOption.System -> if (isSystemInDarkTheme()) {
+            darkColors(
+                primary = primaryColor,
+                secondary = primaryColor,
+                secondaryVariant = primaryColor
+            )
+        } else {
+            lightColors(
+                primary = primaryColor,
+                secondary = primaryColor,
+                secondaryVariant = primaryColor
+            )
+        }
+        ThemeOption.Light -> lightColors(
+            primary = primaryColor,
+            secondary = primaryColor,
+            secondaryVariant = primaryColor
+        )
+        ThemeOption.Dark -> darkColors(
+            primary = primaryColor,
+            secondary = primaryColor,
+            secondaryVariant = primaryColor
+        )
     }
 
     MaterialTheme(colors, content = content)

@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.presentation.splash
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.ComponentActivity
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingManager
 import com.m3sv.plainupnp.presentation.onboarding.activity.OnboardingActivity
 import com.m3sv.selectcontentdirectory.SelectContentDirectoryActivity
@@ -10,7 +10,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SplashActivity : AppCompatActivity() {
+class SplashActivity : ComponentActivity() {
 
     @Inject
     lateinit var onboardingManager: OnboardingManager

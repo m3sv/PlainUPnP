@@ -20,7 +20,6 @@ android {
 
 dependencies {
     implementation(libs.androidx.lifecycle.extensions)
-    implementation(libs.material)
     implementation libs.androidx.ktx.preference
     implementation(libs.bundles.coroutines)
     implementation(libs.hilt.android.core)

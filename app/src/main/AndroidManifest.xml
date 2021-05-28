@@ -46,7 +46,7 @@
         <activity
             android:name=".presentation.onboarding.activity.OnboardingActivity"
             android:exported="false"
-            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
 
         <service
             android:name=".upnp.PlainUpnpAndroidService"

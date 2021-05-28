@@ -3,9 +3,9 @@ package com.m3sv.selectcontentdirectory
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.m3sv.plainupnp.Router
+import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OnePane
@@ -35,10 +36,13 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SelectContentDirectoryActivity : AppCompatActivity() {
+class SelectContentDirectoryActivity : ComponentActivity() {
 
     @Inject
     lateinit var upnpManager: UpnpManager
+
+    @Inject
+    lateinit var themeManager: ThemeManager
 
     private val presenter: SelectContentDirectoryPresenter by viewModels()
 
@@ -50,10 +54,11 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
         setContent {
             val contentDirectories by upnpManager.contentDirectories.collectAsState(initial = listOf())
             var loadingDeviceDisplay: DeviceDisplay? by remember { mutableStateOf(null) }
+            val activeTheme by themeManager.collectTheme()
 
             fun DeviceDisplay.isLoading(): Boolean = loadingDeviceDisplay != null && loadingDeviceDisplay == this
 
-            AppTheme {
+            AppTheme(activeTheme) {
                 Surface {
                     OnePane(viewingContent = {
                         OneTitle(text = "Select content directory")
@@ -68,9 +73,11 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
                         }
                     }
                     ) {
-                        Card(modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        ) {
                             if (contentDirectories.isEmpty())
                                 Row(
                                     modifier = Modifier.padding(
@@ -140,7 +147,7 @@ class SelectContentDirectoryActivity : AppCompatActivity() {
     }
 
     private fun handleSelectDirectorySuccess() {
-        startActivity((application as Router).getNextIntent(this))
+        startActivity((application as Router).getMainActivityIntent(this))
     }
 
     private fun handleSelectDirectoryError() {
