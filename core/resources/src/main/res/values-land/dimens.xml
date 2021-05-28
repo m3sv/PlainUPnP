@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="media_controls_sheet_art_margin">32dp</dimen>
-    <dimen name="media_item_height">56dp</dimen>
-    <dimen name="media_controls_sheet_handle_margin">16dp</dimen>
-    <dimen name="media_controls_sheet_spinner_top_margin">16dp</dimen>
-</resources>
