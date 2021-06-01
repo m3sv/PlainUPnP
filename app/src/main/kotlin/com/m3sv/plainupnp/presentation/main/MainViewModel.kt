@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.common.FilterDelegate
+import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.SpinnerItem
 import com.m3sv.plainupnp.upnp.didl.ClingContainer
@@ -22,16 +23,18 @@ data class MainViewState(
     val upnpRendererState: UpnpRendererState = UpnpRendererState.Empty,
     val spinnerItemsBundle: SpinnerItemsBundle = SpinnerItemsBundle.empty,
     val navigationStack: List<Folder> = listOf(Folder.Empty),
-    val activeTheme: ThemeOption = ThemeOption.System
+    val activeTheme: ThemeOption = ThemeOption.System,
+    val enableThumbnails: Boolean = false
 )
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    observeRenderersUseCase: ObserveRenderersUseCase,
+    preferencesRepository: PreferencesRepository,
+    themeManager: ThemeManager,
+    private val filterDelegate: FilterDelegate,
     private val upnpManager: UpnpManager,
     private val volumeManager: BufferedVolumeManager,
-    private val filterDelegate: FilterDelegate,
-    themeManager: ThemeManager,
-    observeRenderersUseCase: ObserveRenderersUseCase,
 ) : ViewModel() {
 
     val volume = volumeManager
@@ -58,13 +61,15 @@ class MainViewModel @Inject constructor(
             upnpState,
             renderers,
             navigationStack.filterNot { it.isEmpty() },
-            themeManager.theme
-        ) { upnpRendererState, spinnerItemsBundle, navigationStack, activeTheme ->
+            themeManager.theme,
+            preferencesRepository.preferences
+        ) { upnpRendererState, spinnerItemsBundle, navigationStack, activeTheme, preferences ->
             MainViewState(
                 upnpRendererState = upnpRendererState,
                 spinnerItemsBundle = spinnerItemsBundle,
                 navigationStack = navigationStack,
-                activeTheme = activeTheme
+                activeTheme = activeTheme,
+                enableThumbnails = preferences.preferences.enableThumbnails
             )
         }.stateIn(viewModelScope, SharingStarted.Lazily, MainViewState(activeTheme = themeManager.theme.value))
 

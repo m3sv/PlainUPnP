@@ -185,13 +185,39 @@ class SettingsActivity : ComponentActivity() {
 
             RowDivider()
 
-            SwitchRow(
-                title = stringResource(id = R.string.enable_thumbnails),
-                initialValue = preferences.enableThumbnails,
-                icon = painterResource(id = R.drawable.ic_thumbnail)
-            ) { enabled ->
-                lifecycleScope.launch {
-                    preferencesRepository.setShowThumbnails(enabled)
+            Row {
+                Column {
+                    SwitchRow(
+                        title = stringResource(id = R.string.enable_thumbnails),
+                        initialValue = preferences.enableThumbnails,
+                        icon = painterResource(id = R.drawable.ic_thumbnail),
+                    ) { enabled ->
+                        lifecycleScope.launch {
+                            preferencesRepository.setShowThumbnails(enabled)
+                        }
+                    }
+
+                    Row(
+                        Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Spacer(modifier = Modifier.width(24.dp))
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_warning),
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+
+                        Text(
+                            text = stringResource(id = R.string.enable_thumbnails_note),
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier.padding(start = 8.dp, end = 16.dp)
+                        )
+                    }
                 }
             }
         }
@@ -254,7 +280,7 @@ class SettingsActivity : ComponentActivity() {
                 Image(
                     painter = icon,
                     contentDescription = null,
-                    Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
 
@@ -273,7 +299,12 @@ class SettingsActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun SwitchRow(title: String, initialValue: Boolean, icon: Painter? = null, onSwitch: (Boolean) -> Unit) {
+    private fun SwitchRow(
+        title: String,
+        initialValue: Boolean,
+        icon: Painter? = null,
+        onSwitch: (Boolean) -> Unit
+    ) {
         val checkedState = remember { mutableStateOf(initialValue) }
 
         fun flipSwitch() {

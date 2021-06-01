@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.bundles.compose)
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.nanohttpd)
+    implementation(libs.accompanist.glide)
     implementation(libs.coil.core)
     implementation(libs.hilt.android.core)
     implementation(libs.sqldelight)

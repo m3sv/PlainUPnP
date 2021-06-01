@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
+import com.google.accompanist.glide.rememberGlidePainter
 import com.m3sv.plainupnp.R
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OneToolbar
@@ -109,12 +110,14 @@ class MainActivity : ComponentActivity() {
                             upnpState = viewState.upnpRendererState,
                             showControls = showControls,
                             navigationStack = viewState.navigationStack,
+                            showThumbnails = viewState.enableThumbnails,
                             floatingActionButton = { createFloatingActionButton() },
                         )
                         else -> Portrait(
                             upnpState = viewState.upnpRendererState,
                             showControls = showControls,
                             navigationStack = viewState.navigationStack,
+                            showThumbnails = viewState.enableThumbnails,
                             floatingActionButton = { createFloatingActionButton() },
                         )
                     }
@@ -141,12 +144,13 @@ class MainActivity : ComponentActivity() {
         upnpState: UpnpRendererState,
         showControls: Boolean,
         navigationStack: List<Folder>,
+        showThumbnails: Boolean,
         floatingActionButton: @Composable BoxScope.() -> Unit,
     ) {
         Screen(navigationStack) {
             Row(modifier = Modifier.weight(1f)) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    Folder(navigationStack.lastOrNull()?.contents ?: listOf())
+                    Folder(navigationStack.lastOrNull()?.contents ?: listOf(), showThumbnails)
 
                     androidx.compose.animation.AnimatedVisibility(
                         visible = !showControls,
@@ -168,6 +172,7 @@ class MainActivity : ComponentActivity() {
         upnpState: UpnpRendererState,
         showControls: Boolean,
         navigationStack: List<Folder>,
+        showThumbnails: Boolean,
         floatingActionButton: @Composable BoxScope.() -> Unit,
     ) {
         Screen(navigationStack) {
@@ -177,7 +182,7 @@ class MainActivity : ComponentActivity() {
                         .fillMaxHeight()
                         .weight(1f)
                 ) {
-                    Folder(navigationStack.lastOrNull()?.contents ?: listOf())
+                    Folder(navigationStack.lastOrNull()?.contents ?: listOf(), showThumbnails)
                     androidx.compose.animation.AnimatedVisibility(
                         visible = !showControls,
                         modifier = Modifier.align(Alignment.BottomEnd)
@@ -413,7 +418,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun Folder(contents: List<ClingDIDLObject>) {
+    private fun Folder(contents: List<ClingDIDLObject>, showThumbnails: Boolean) {
         Surface {
             LazyColumn {
                 items(contents) { item ->
@@ -426,7 +431,6 @@ class MainActivity : ComponentActivity() {
                             }
                     ) {
                         Spacer(modifier = Modifier.padding(8.dp))
-
                         val imageModifier = Modifier.size(32.dp)
                         when (item) {
                             is ClingContainer -> {
@@ -444,12 +448,20 @@ class MainActivity : ComponentActivity() {
                                         imageModifier
                                     )
                                     is ClingMedia.Image -> Image(
-                                        painterResource(id = R.drawable.ic_image),
+                                        if (showThumbnails) {
+                                            rememberGlidePainter(item.uri)
+                                        } else {
+                                            painterResource(id = R.drawable.ic_image)
+                                        },
                                         contentDescription = null,
                                         imageModifier
                                     )
                                     is ClingMedia.Video -> Image(
-                                        painterResource(id = R.drawable.ic_video),
+                                        if (showThumbnails) {
+                                            rememberGlidePainter(item.uri)
+                                        } else {
+                                            painterResource(id = R.drawable.ic_video)
+                                        },
                                         contentDescription = null,
                                         imageModifier
                                     )
