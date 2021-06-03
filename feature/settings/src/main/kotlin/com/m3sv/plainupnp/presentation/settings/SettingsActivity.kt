@@ -54,7 +54,7 @@ class SettingsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val preferencesUpdate by preferencesRepository.preferences.collectAsState()
+            val preferences by preferencesRepository.preferences.collectAsState()
             val activeTheme by themeManager.collectTheme()
 
             AppTheme(activeTheme) {
@@ -65,7 +65,7 @@ class SettingsActivity : ComponentActivity() {
                     }) {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             ThemeSection(activeTheme)
-                            UpnpSection(preferencesUpdate.preferences)
+                            UpnpSection(preferences)
                             AboutSection()
                         }
                     }

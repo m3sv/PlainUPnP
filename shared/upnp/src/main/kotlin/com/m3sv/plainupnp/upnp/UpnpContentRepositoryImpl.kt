@@ -67,9 +67,8 @@ class UpnpContentRepositoryImpl @Inject constructor(
 
         launch {
             preferencesRepository
-                .preferences
+                .updateFlow
                 .debounce(2000)
-                .filter { it.refreshContent }
                 .collect { refreshContent() }
         }
     }
@@ -96,7 +95,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
 
         val jobs = mutableListOf<Deferred<Unit>>()
 
-        with(requireNotNull(preferencesRepository.preferences.value.preferences)) {
+        with(requireNotNull(preferencesRepository.preferences.value)) {
             if (enableImages) {
                 jobs += async {
                     getRootImagesContainer()

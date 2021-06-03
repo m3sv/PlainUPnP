@@ -114,7 +114,13 @@ class OnboardingViewModel @Inject constructor(
     }
 
     private fun getApplicationMode(): ApplicationMode =
-        requireNotNull(preferencesRepository.preferences.value.preferences?.applicationMode?.asApplicationMode())
+        requireNotNull(
+            preferencesRepository
+                .preferences
+                .value
+                .applicationMode
+                ?.asApplicationMode()
+        )
 
     private fun OnboardingScreen.backward(): OnboardingScreen = when (this) {
         OnboardingScreen.Greeting -> OnboardingScreen.Greeting

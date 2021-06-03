@@ -69,7 +69,7 @@ class MainViewModel @Inject constructor(
                 spinnerItemsBundle = spinnerItemsBundle,
                 navigationStack = navigationStack,
                 activeTheme = activeTheme,
-                enableThumbnails = preferences.preferences.enableThumbnails
+                enableThumbnails = preferences.enableThumbnails
             )
         }.stateIn(viewModelScope, SharingStarted.Lazily, MainViewState(activeTheme = themeManager.theme.value))
 

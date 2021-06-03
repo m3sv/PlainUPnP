@@ -28,7 +28,7 @@ class PreferencesRepository @Inject constructor(private val context: Application
         serializer = PreferencesSerializer
     )
 
-    private val updateFlow = MutableSharedFlow<Boolean>()
+    private val _updateFlow = MutableSharedFlow<Boolean>()
 
     private val persistedUris: MutableStateFlow<List<UriWrapper>> = MutableStateFlow(listOf())
 
@@ -36,23 +36,19 @@ class PreferencesRepository @Inject constructor(private val context: Application
         scope.launch { updateUris() }
     }
 
-    val preferences: StateFlow<PreferencesUpdate> = context
+    val updateFlow: Flow<Boolean> = _updateFlow
+
+    val preferences: StateFlow<Preferences> = context
         .preferencesStore
         .data
-        .combine(updateFlow) { _, refreshContent ->
-            PreferencesUpdate(
-                refreshContent,
-                context.preferencesStore.data.first()
-            )
-        }
         .stateIn(
             CoroutineScope(Dispatchers.IO),
             SharingStarted.Eagerly,
-            runBlocking { PreferencesUpdate(true, context.preferencesStore.data.first()) }
+            runBlocking { context.preferencesStore.data.first() }
         )
 
-    val theme: Flow<ThemeOption> = preferences.map { update ->
-        when (update.preferences.theme) {
+    val theme: Flow<ThemeOption> = preferences.map { preferences ->
+        when (preferences.theme) {
             Preferences.Theme.LIGHT -> ThemeOption.Light
             Preferences.Theme.DARK -> ThemeOption.Dark
             Preferences.Theme.SYSTEM,
@@ -117,7 +113,7 @@ class PreferencesRepository @Inject constructor(private val context: Application
     fun updateUris() {
         scope.launch {
             persistedUris.value = getUris()
-            updateFlow.emit(true)
+            _updateFlow.emit(true)
         }
     }
 
@@ -131,7 +127,7 @@ class PreferencesRepository @Inject constructor(private val context: Application
             preferences.toBuilder().apply { updateFunction(this) }.build()
         }
 
-        updateFlow.emit(refreshContent)
+        _updateFlow.emit(refreshContent)
     }
 
     companion object {

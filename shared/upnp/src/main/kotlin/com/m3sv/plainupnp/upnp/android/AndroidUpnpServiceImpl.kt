@@ -42,7 +42,6 @@ class AndroidUpnpServiceImpl @Inject constructor(
         scope.launch {
             preferencesRepository
                 .preferences
-                .map { it.preferences }
                 .filterNotNull()
                 .map { it.applicationMode.asApplicationMode() }
                 .collect { applicationMode ->
@@ -83,7 +82,11 @@ class AndroidUpnpServiceImpl @Inject constructor(
     }
 
     private fun isStreaming(): Boolean =
-        preferencesRepository.preferences.value.preferences?.applicationMode?.asApplicationMode() == ApplicationMode.Streaming
+        preferencesRepository
+            .preferences
+            .value
+            .applicationMode
+            ?.asApplicationMode() == ApplicationMode.Streaming
 
     override fun shutdown() {
         (router as AndroidRouter).unregisterBroadcastReceiver()

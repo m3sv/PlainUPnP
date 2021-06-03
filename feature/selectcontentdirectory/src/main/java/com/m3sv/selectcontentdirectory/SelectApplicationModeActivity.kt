@@ -40,7 +40,7 @@ class SelectApplicationModeActivity : ComponentActivity() {
                         onNextClick = ::onFinish,
                         onBackClick = ::onFinish,
                         nextText = stringResource(R.string.done),
-                        initialMode = requireNotNull(preferences.preferences).applicationMode.asApplicationMode()
+                        initialMode = preferences.applicationMode.asApplicationMode()
                     ) { applicationMode ->
                         lifecycleScope.launch { preferencesRepository.setApplicationMode(applicationMode) }
                     }
