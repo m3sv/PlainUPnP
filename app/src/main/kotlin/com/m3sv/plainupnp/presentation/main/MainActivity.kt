@@ -43,6 +43,7 @@ import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
 import com.m3sv.plainupnp.core.eventbus.subscribe
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.settings.SettingsActivity
+import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.USER_DEFINED_PREFIX
 import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
@@ -523,8 +524,14 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
+                        val title = if (item is ClingContainer) {
+                            item.title.replace(USER_DEFINED_PREFIX, "")
+                        } else {
+                            item.title
+                        }
+
                         Text(
-                            text = item.title,
+                            text = title,
                             maxLines = 1,
                             modifier = Modifier.padding(8.dp),
                             style = MaterialTheme.typography.subtitle1,
