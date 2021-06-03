@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -68,14 +69,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             var showControls by rememberSaveable { mutableStateOf(false) }
-
             var selectedRenderer by rememberSaveable { mutableStateOf("Stream to") }
             var isDialogExpanded by rememberSaveable { mutableStateOf(false) }
             var isButtonExpanded by rememberSaveable { mutableStateOf(true) }
+            var showFilter by rememberSaveable { mutableStateOf(false) }
+            var filterText by rememberSaveable { mutableStateOf("") }
 
             val viewState by viewModel.viewState.collectAsState()
 
             showControls = viewState.upnpRendererState !is UpnpRendererState.Empty
+
+            fun clearFilterText() {
+                filterText = ""
+            }
 
             AppTheme(viewState.activeTheme) {
                 fun collapseExpandedButton() {
@@ -102,24 +108,66 @@ class MainActivity : ComponentActivity() {
                         })
                 }
 
-                val configuration = LocalConfiguration.current
-
                 Surface {
+                    val configuration = LocalConfiguration.current
+                    val floatingActionButtonFactory: @Composable BoxScope.() -> Unit = { createFloatingActionButton() }
+                    val onFilterClick: () -> Unit = {
+                        showFilter = !showFilter
+
+                        if (!showFilter) {
+                            clearFilterText()
+                        }
+                    }
+
+                    val filterFactory: @Composable () -> Unit = {
+                        AnimatedVisibility(visible = showFilter) {
+                            Filter(
+                                initialValue = filterText,
+                                onValueChange = { filterText = it },
+                            ) {
+                                showFilter = false
+                                clearFilterText()
+                            }
+                        }
+                    }
+
+                    val navigationStack = viewState.navigationStack
+
+                    val folderFactory: @Composable () -> Unit = {
+                        Folder(
+                            contents = navigationStack
+                                .lastOrNull()
+                                ?.contents
+                                ?.filter { it.title.contains(filterText, ignoreCase = true) }
+                                ?: listOf(),
+                            showThumbnails = viewState.enableThumbnails)
+                    }
+
                     when (configuration.orientation) {
-                        Configuration.ORIENTATION_LANDSCAPE -> Landscape(
-                            upnpState = viewState.upnpRendererState,
-                            showControls = showControls,
-                            navigationStack = viewState.navigationStack,
-                            showThumbnails = viewState.enableThumbnails,
-                            floatingActionButton = { createFloatingActionButton() },
-                        )
-                        else -> Portrait(
-                            upnpState = viewState.upnpRendererState,
-                            showControls = showControls,
-                            navigationStack = viewState.navigationStack,
-                            showThumbnails = viewState.enableThumbnails,
-                            floatingActionButton = { createFloatingActionButton() },
-                        )
+                        Configuration.ORIENTATION_LANDSCAPE -> {
+                            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+                            Landscape(
+                                upnpState = viewState.upnpRendererState,
+                                showControls = showControls,
+                                navigationStack = navigationStack,
+                                floatingActionButton = floatingActionButtonFactory,
+                                filter = filterFactory,
+                                onFilterClick = onFilterClick,
+                                folder = folderFactory
+                            )
+                        }
+                        else -> {
+                            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+                            Portrait(
+                                upnpState = viewState.upnpRendererState,
+                                showControls = showControls,
+                                navigationStack = navigationStack,
+                                floatingActionButton = floatingActionButtonFactory,
+                                filter = filterFactory,
+                                onFilterClick = onFilterClick,
+                                folder = folderFactory
+                            )
+                        }
                     }
                 }
             }
@@ -131,9 +179,16 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun Screen(navigationStack: List<Folder>, body: @Composable ColumnScope.() -> Unit) {
+    private fun Screen(
+        navigationStack: List<Folder>,
+        onFilterClick: () -> Unit,
+        body: @Composable ColumnScope.() -> Unit
+    ) {
         Column {
-            Toolbar()
+            Toolbar(
+                onSettingsClick = { openSettings() },
+                onFilterClick = onFilterClick
+            )
             NavigationBar(navigationStack)
             body()
         }
@@ -144,14 +199,15 @@ class MainActivity : ComponentActivity() {
         upnpState: UpnpRendererState,
         showControls: Boolean,
         navigationStack: List<Folder>,
-        showThumbnails: Boolean,
+        onFilterClick: () -> Unit,
         floatingActionButton: @Composable BoxScope.() -> Unit,
+        filter: @Composable () -> Unit,
+        folder: @Composable () -> Unit,
     ) {
-        Screen(navigationStack) {
+        Screen(navigationStack, onFilterClick = onFilterClick) {
             Row(modifier = Modifier.weight(1f)) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    Folder(navigationStack.lastOrNull()?.contents ?: listOf(), showThumbnails)
-
+                    folder()
                     androidx.compose.animation.AnimatedVisibility(
                         visible = !showControls,
                         modifier = Modifier.align(Alignment.BottomEnd)
@@ -160,6 +216,8 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+
+            filter()
 
             AnimatedVisibility(visible = showControls) {
                 Controls(upnpState, 16.dp, 16.dp)
@@ -172,17 +230,19 @@ class MainActivity : ComponentActivity() {
         upnpState: UpnpRendererState,
         showControls: Boolean,
         navigationStack: List<Folder>,
-        showThumbnails: Boolean,
+        onFilterClick: () -> Unit,
         floatingActionButton: @Composable BoxScope.() -> Unit,
+        filter: @Composable () -> Unit,
+        folder: @Composable () -> Unit,
     ) {
-        Screen(navigationStack) {
-            Row {
+        Screen(navigationStack, onFilterClick = onFilterClick) {
+            Row(modifier = Modifier.weight(1f)) {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
                         .weight(1f)
                 ) {
-                    Folder(navigationStack.lastOrNull()?.contents ?: listOf(), showThumbnails)
+                    folder()
                     androidx.compose.animation.AnimatedVisibility(
                         visible = !showControls,
                         modifier = Modifier.align(Alignment.BottomEnd)
@@ -203,6 +263,8 @@ class MainActivity : ComponentActivity() {
                     Controls(upnpState, 0.dp, 8.dp)
                 }
             }
+
+            filter()
         }
     }
 
@@ -241,10 +303,6 @@ class MainActivity : ComponentActivity() {
                         }
 
                     }
-
-//                    upnpState.artist
-//                        ?.takeIf { it.isNotBlank() }
-//                        ?.let { artist -> Row { Text(artist) } }
 
                     Row {
                         Slider(value = (defaultState?.elapsedPercent ?: 0).toFloat() / 100, onValueChange = {
@@ -396,19 +454,15 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun Toolbar() {
+    private fun Toolbar(onSettingsClick: () -> Unit, onFilterClick: () -> Unit) {
         Row {
             Surface {
                 Box {
                     OneToolbar(onBackClick = { onBackPressed() }) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             SettingsMenu(
-                                onSettingsClick = {
-                                    openSettings()
-                                },
-                                onFilterClick = {
-                                    //                                            showSearch()
-                                }
+                                onSettingsClick = onSettingsClick,
+                                onFilterClick = onFilterClick
                             )
                         }
                     }
@@ -516,6 +570,32 @@ class MainActivity : ComponentActivity() {
             ) {
                 Text(stringResource(R.string.title_feature_settings))
             }
+        }
+    }
+
+    @Composable
+    private fun Filter(
+        initialValue: String,
+        onValueChange: (String) -> Unit,
+        onCloseClick: () -> Unit
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(8.dp)) {
+            OutlinedTextField(
+                value = initialValue,
+                onValueChange = onValueChange,
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_close),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable {
+                                onCloseClick()
+                            }
+                    )
+                }
+            )
         }
     }
 
