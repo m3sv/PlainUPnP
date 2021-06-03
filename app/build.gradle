@@ -6,6 +6,12 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'com.squareup.sqldelight'
 
+if (isPlay) {
+    apply plugin: 'com.google.gms.google-services'
+    apply plugin: 'com.google.firebase.crashlytics'
+}
+
+
 android {
     with flavorConfig
 
@@ -100,6 +106,13 @@ dependencies {
     implementation(libs.hilt.android.core)
     implementation(libs.sqldelight)
     implementation(libs.timber)
+
+    if (isPlay) {
+        playImplementation platform('com.google.firebase:firebase-bom:28.0.1')
+        playImplementation 'com.google.firebase:firebase-analytics-ktx'
+        playImplementation 'com.google.firebase:firebase-crashlytics-ktx'
+        playImplementation 'com.google.firebase:firebase-analytics-ktx'
+    }
 
     kapt(libs.hilt.compiler)
 
