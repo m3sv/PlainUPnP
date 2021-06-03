@@ -65,11 +65,27 @@ class SettingsActivity : ComponentActivity() {
                     }) {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             ThemeSection(activeTheme)
+                            ApplicationModeSection(preferences)
                             UpnpSection(preferences)
                             AboutSection()
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @Composable
+    private fun ApplicationModeSection(preferences: Preferences) {
+        Section {
+            SectionRow(
+                title = stringResource(id = R.string.application_mode_settings),
+                currentValue = preferences
+                    .applicationMode
+                    .asApplicationMode()
+                    .stringValue.let { stringResource(id = it) }
+            ) {
+                startActivity(Intent(applicationContext, SelectApplicationModeActivity::class.java))
             }
         }
     }
@@ -128,18 +144,6 @@ class SettingsActivity : ComponentActivity() {
     @Composable
     private fun UpnpSection(preferences: Preferences) {
         Section {
-            SectionRow(
-                title = stringResource(id = R.string.application_mode_settings),
-                currentValue = preferences
-                    .applicationMode
-                    .asApplicationMode()
-                    .stringValue.let { stringResource(id = it) }
-            ) {
-                startActivity(Intent(applicationContext, SelectApplicationModeActivity::class.java))
-            }
-
-            RowDivider()
-
             SectionRow(
                 title = stringResource(R.string.selected_folders),
                 icon = painterResource(id = R.drawable.ic_folder_24dp)
