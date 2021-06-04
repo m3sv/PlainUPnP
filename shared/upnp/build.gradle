@@ -8,11 +8,9 @@ android {
     with flavorConfig
 }
 
-
 dependencies {
     compileOnly libs.javax.cdi
 
-    implementation libs.androidx.ktx.preference
     implementation libs.okHttp
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.documentfile)
@@ -29,5 +27,5 @@ dependencies {
 
     implementation project(":common")
     implementation project(':core:eventbus')
-    implementation project(':core:persistence')
+    implementation project(':persistence')
 }

@@ -17,15 +17,15 @@ buildscript {
     ext.buildConfig.version['name'] = "${buildConfig.version.major}.${buildConfig.version.minor}.${buildConfig.version.patch}"
 
     repositories {
-        google()
         mavenCentral()
+        google()
         mavenLocal()
     }
 
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.0-beta02'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32"
         classpath(libs.gradle.plugin.sqldelight)
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.10"
         classpath(libs.gradle.plugin.hilt)
         classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.15'
         if (isPlay) {
@@ -34,7 +34,6 @@ buildscript {
         }
     }
 }
-
 
 allprojects {
     repositories {

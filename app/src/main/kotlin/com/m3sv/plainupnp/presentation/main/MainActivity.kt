@@ -405,49 +405,47 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun NavigationBar(stack: List<Folder>) {
-        Surface {
-            LazyRow(verticalAlignment = Alignment.CenterVertically) {
-                itemsIndexed(stack) { index, item ->
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable {
-                            viewModel.navigateTo(item)
-                        }
-                    ) {
-                        val labelColor: Color
-                        val arrowColor: Color
+        LazyRow(verticalAlignment = Alignment.CenterVertically) {
+            itemsIndexed(stack) { index, item ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+                        viewModel.navigateTo(item)
+                    }
+                ) {
+                    val labelColor: Color
+                    val arrowColor: Color
 
-                        if (index == stack.size - 1) {
-                            labelColor = MaterialTheme.colors.primary
-                            arrowColor = MaterialTheme.colors.primary
-                        } else {
-                            labelColor = Color.Unspecified
-                            arrowColor = MaterialTheme.colors.onSurface
-                        }
+                    if (index == stack.size - 1) {
+                        labelColor = MaterialTheme.colors.primary
+                        arrowColor = MaterialTheme.colors.primary
+                    } else {
+                        labelColor = Color.Unspecified
+                        arrowColor = MaterialTheme.colors.onSurface
+                    }
 
-                        if (index == 0) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_folder_home),
-                                contentDescription = null,
-                                modifier = Modifier.padding(start = 16.dp, end = 4.dp)
-                            )
-                        } else {
-                            Image(
-                                painterResource(id = R.drawable.ic_next_folder),
-                                null,
-                                colorFilter = ColorFilter.tint(arrowColor)
-                            )
-                        }
+                    if (index == 0) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_folder_home),
+                            contentDescription = null,
+                            modifier = Modifier.padding(start = 16.dp, end = 4.dp)
+                        )
+                    } else {
+                        Image(
+                            painterResource(id = R.drawable.ic_next_folder),
+                            null,
+                            colorFilter = ColorFilter.tint(arrowColor)
+                        )
+                    }
 
-                        Box {
-                            Text(
-                                text = item.title,
-                                style = MaterialTheme.typography.caption,
-                                fontWeight = FontWeight.Bold,
-                                color = labelColor,
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
+                    Box {
+                        Text(
+                            text = item.title,
+                            style = MaterialTheme.typography.caption,
+                            fontWeight = FontWeight.Bold,
+                            color = labelColor,
+                            modifier = Modifier.padding(8.dp)
+                        )
                     }
                 }
             }

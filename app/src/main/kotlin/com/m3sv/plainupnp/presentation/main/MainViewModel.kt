@@ -22,7 +22,7 @@ import javax.inject.Inject
 data class MainViewState(
     val upnpRendererState: UpnpRendererState = UpnpRendererState.Empty,
     val spinnerItemsBundle: SpinnerItemsBundle = SpinnerItemsBundle.empty,
-    val navigationStack: List<Folder> = listOf(Folder.Empty),
+    val navigationStack: List<Folder> = listOf(),
     val activeTheme: ThemeOption = ThemeOption.System,
     val enableThumbnails: Boolean = false
 )

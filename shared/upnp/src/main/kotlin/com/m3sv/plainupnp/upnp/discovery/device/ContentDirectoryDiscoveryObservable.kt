@@ -1,7 +1,6 @@
 package com.m3sv.plainupnp.upnp.discovery.device
 
-import com.m3sv.plainupnp.backgroundmode.BackgroundMode
-import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
+import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.DeviceType
@@ -15,10 +14,9 @@ import org.fourthline.cling.model.meta.LocalDevice
 import timber.log.Timber
 import javax.inject.Inject
 
-
 class ContentDirectoryDiscoveryObservable @Inject constructor(
     private val contentDirectoryDiscovery: ContentDirectoryDiscovery,
-    private val backgroundModeManager: BackgroundModeManager,
+    private val preferences: PreferencesRepository,
 ) {
     var selectedContentDirectory: UpnpDevice? = null
 
@@ -66,7 +64,7 @@ class ContentDirectoryDiscoveryObservable @Inject constructor(
                             contentDirectories -= device
 
                         when {
-                            (backgroundModeManager.backgroundMode == BackgroundMode.DENIED)
+                            (preferences.pauseInBackground)
                                     && (event.upnpDevice as CDevice).device is LocalDevice
                                     && event.upnpDevice == selectedContentDirectory
                             -> pass

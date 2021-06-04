@@ -19,7 +19,6 @@ import androidx.core.app.ActivityCompat
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
 import com.m3sv.plainupnp.applicationmode.SelectApplicationModeScreen
-import com.m3sv.plainupnp.backgroundmode.BackgroundMode
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
@@ -70,7 +69,7 @@ class OnboardingActivity : ComponentActivity() {
         val imageContainerEnabled = remember { viewModel.imageContainerEnabled }
         val videoContainerEnabled = remember { viewModel.videoContainerEnabled }
         val audioContainerEnabled = remember { viewModel.audioContainerEnabled }
-        val backgroundMode = remember { viewModel.backgroundMode }
+        val pauseInBackground = remember { viewModel.pauseInBackground }
 
         Content(
             selectedTheme = activeTheme,
@@ -83,7 +82,7 @@ class OnboardingActivity : ComponentActivity() {
             imageContainerEnabled = imageContainerEnabled,
             videoContainerEnabled = videoContainerEnabled,
             audioContainerEnabled = audioContainerEnabled,
-            backgroundMode = backgroundMode
+            backgroundMode = pauseInBackground
         )
     }
 
@@ -99,7 +98,7 @@ class OnboardingActivity : ComponentActivity() {
         imageContainerEnabled: MutableState<Boolean>,
         videoContainerEnabled: MutableState<Boolean>,
         audioContainerEnabled: MutableState<Boolean>,
-        backgroundMode: MutableState<BackgroundMode>,
+        backgroundMode: MutableState<Boolean>,
     ) {
         AppTheme(selectedTheme) {
             Crossfade(targetState = currentScreen) { screen ->

@@ -1,23 +1,21 @@
 package com.m3sv.plainupnp.presentation.onboarding
 
 import android.app.Activity
-import android.content.SharedPreferences
+import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.presentation.onboarding.activity.OnboardingActivity
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class OnboardingManager(
-    private val preferences: SharedPreferences,
+    private val preferencesRepository: PreferencesRepository,
     private val onboardingCompletedListener: (Activity) -> Unit,
 ) {
     val isOnboardingCompleted
-        get() = preferences.getBoolean(FINISHED_ONBOARDING_KEY, false)
+        get() = preferencesRepository.preferences.value.finishedOnboarding
 
     fun completeOnboarding(activity: OnboardingActivity) {
-        preferences.edit().putBoolean(FINISHED_ONBOARDING_KEY, true).apply()
+        GlobalScope.launch { preferencesRepository.finishOnboarding() }
         onboardingCompletedListener(activity)
         activity.finish()
-    }
-
-    companion object {
-        private const val FINISHED_ONBOARDING_KEY = "finished_onboarding"
     }
 }

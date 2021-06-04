@@ -13,10 +13,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.fourthline.cling.model.types.UDN
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
-
-data class PreferencesUpdate(val refreshContent: Boolean, val preferences: Preferences)
 
 @Singleton
 class PreferencesRepository @Inject constructor(private val context: Application) {
@@ -31,10 +31,6 @@ class PreferencesRepository @Inject constructor(private val context: Application
     private val _updateFlow = MutableSharedFlow<Boolean>()
 
     private val persistedUris: MutableStateFlow<List<UriWrapper>> = MutableStateFlow(listOf())
-
-    init {
-        scope.launch { updateUris() }
-    }
 
     val updateFlow: Flow<Boolean> = _updateFlow
 
@@ -55,6 +51,19 @@ class PreferencesRepository @Inject constructor(private val context: Application
             Preferences.Theme.UNRECOGNIZED -> ThemeOption.System
         }
     }
+
+    init {
+        scope.launch {
+            if (preferences.value.udn == null) {
+                initUdn()
+            }
+
+            updateUris()
+        }
+    }
+
+    val pauseInBackground: Boolean
+        get() = preferences.value.pauseInBackground
 
     suspend fun setApplicationMode(applicationMode: ApplicationMode) {
         updatePreferences(true) { builder ->
@@ -100,6 +109,20 @@ class PreferencesRepository @Inject constructor(private val context: Application
     suspend fun setShowThumbnails(enable: Boolean) {
         updatePreferences(false) { builder -> builder.enableThumbnails = enable }
     }
+
+    suspend fun finishOnboarding() {
+        updatePreferences(false) { builder -> builder.finishedOnboarding = true }
+    }
+
+    suspend fun setPauseInBackground(pause: Boolean) {
+        updatePreferences(false) { builder -> builder.pauseInBackground = pause }
+    }
+
+    private suspend fun initUdn() {
+        updatePreferences(false) { builder -> builder.udn = UDN(UUID.randomUUID()).toString() }
+    }
+
+    fun getUdn(): UDN = UDN.valueOf(preferences.value.udn)
 
     fun persistedUrisFlow(): Flow<List<UriWrapper>> = persistedUris
 

@@ -5,8 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.content.ContextCompat
-import com.m3sv.plainupnp.backgroundmode.BackgroundMode
-import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
+import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
 import com.m3sv.plainupnp.core.eventbus.post
 import com.m3sv.plainupnp.upnp.android.AndroidUpnpServiceImpl
@@ -25,7 +24,7 @@ class PlainUpnpAndroidService : Service() {
     lateinit var upnpService: UpnpService
 
     @Inject
-    lateinit var backgroundModeManager: BackgroundModeManager
+    lateinit var preferences: PreferencesRepository
 
     @Inject
     lateinit var mediaServer: MediaServer
@@ -33,7 +32,7 @@ class PlainUpnpAndroidService : Service() {
     override fun onCreate() {
         super.onCreate()
         (application as UpnpScopeProvider).upnpScope.launch(Dispatchers.IO) {
-            if (backgroundModeManager.backgroundMode == BackgroundMode.ALLOWED) {
+            if (!preferences.pauseInBackground) {
                 (upnpService as AndroidUpnpServiceImpl).resume()
                 mediaServer.start()
             }

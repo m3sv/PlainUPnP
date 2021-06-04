@@ -9,16 +9,15 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.m3sv.plainupnp.backgroundmode.BackgroundMode
 import com.m3sv.plainupnp.compose.widgets.*
 import com.m3sv.plainupnp.presentation.onboarding.R
 
 @Composable
 fun SelectBackgroundModeScreen(
-    backgroundMode: MutableState<BackgroundMode>,
+    backgroundMode: MutableState<Boolean>,
     onBackClick: () -> Unit,
     onNextClick: () -> Unit,
-    stringProvider: @Composable (BackgroundMode) -> String,
+    stringProvider: @Composable (Boolean) -> String,
 ) {
     OnePane(viewingContent = {
         OneTitle(text = "Select background mode")
@@ -32,7 +31,7 @@ fun SelectBackgroundModeScreen(
 
             RadioGroup(
                 modifier = Modifier.padding(start = 24.dp),
-                items = BackgroundMode.values().toList(),
+                items = listOf(true, false),
                 initial = backgroundMode.value,
                 stringProvider = stringProvider
             ) {
@@ -41,9 +40,10 @@ fun SelectBackgroundModeScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Row(Modifier
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 24.dp)
+            Row(
+                Modifier
+                    .padding(horizontal = 24.dp)
+                    .padding(bottom = 24.dp)
             ) {
                 OneContainedButton(
                     text = stringResource(id = R.string.finish_onboarding),

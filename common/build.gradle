@@ -10,7 +10,6 @@ android {
 
     buildFeatures {
         compose true
-        viewBinding true
     }
 
     composeOptions {
@@ -20,7 +19,6 @@ android {
 
 dependencies {
     implementation(libs.androidx.lifecycle.extensions)
-    implementation libs.androidx.ktx.preference
     implementation(libs.bundles.coroutines)
     implementation(libs.hilt.android.core)
     implementation(libs.timber)

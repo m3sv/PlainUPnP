@@ -19,15 +19,15 @@ sealed class Folder(
         contents: List<ClingDIDLObject>,
     ) : Folder(id, title, contents)
 
-    object Empty : Folder("-1", "", listOf())
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
+        if (javaClass != other?.javaClass) return false
 
         other as Folder
 
         if (id != other.id) return false
         if (title != other.title) return false
+        if (contents != other.contents) return false
 
         return true
     }
@@ -35,6 +35,8 @@ sealed class Folder(
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + title.hashCode()
+        result = 31 * result + contents.hashCode()
         return result
     }
+
 }

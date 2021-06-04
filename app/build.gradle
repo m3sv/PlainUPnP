@@ -4,7 +4,6 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-parcelize'
 apply plugin: 'dagger.hilt.android.plugin'
-apply plugin: 'com.squareup.sqldelight'
 
 if (isPlay) {
     apply plugin: 'com.google.gms.google-services'
@@ -34,7 +33,6 @@ android {
     }
 
     buildFeatures {
-        viewBinding true
         compose true
     }
 
@@ -83,7 +81,7 @@ android {
 
 dependencies {
     implementation project(':common')
-    implementation project(':core:persistence')
+    implementation project(':persistence')
     implementation project(':core:eventbus')
     implementation project(':core:resources')
     implementation project(':feature:onboarding')
@@ -91,9 +89,7 @@ dependencies {
     implementation project(':feature:settings')
     implementation project(':shared:upnp')
 
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.ktx.preference)
     implementation(libs.androidx.lifecycle.extensions)
     implementation(libs.androidx.lifecycle.ktx.runtime)
     implementation(libs.androidx.lifecycle.ktx.viewmodel)
@@ -102,7 +98,6 @@ dependencies {
     implementation(libs.bundles.coroutines)
     implementation(libs.bundles.nanohttpd)
     implementation(libs.accompanist.glide)
-    implementation(libs.coil.core)
     implementation(libs.hilt.android.core)
     implementation(libs.sqldelight)
     implementation(libs.timber)

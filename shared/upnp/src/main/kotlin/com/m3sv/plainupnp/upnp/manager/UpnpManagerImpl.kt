@@ -30,6 +30,7 @@ import org.fourthline.cling.support.model.TransportInfo
 import org.fourthline.cling.support.model.TransportState
 import org.fourthline.cling.support.model.item.*
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlin.properties.Delegates
@@ -39,11 +40,6 @@ private const val ROOT_FOLDER_ID = "0"
 private const val AV_TRANSPORT = "AVTransport"
 private const val RENDERING_CONTROL = "RenderingControl"
 private const val CONTENT_DIRECTORY = "ContentDirectory"
-
-data class PlayItem(
-    val clingDIDLObject: ClingDIDLObject,
-    val listIterator: ListIterator<ClingDIDLObject>,
-)
 
 sealed class Result {
     object Success : Result()
@@ -495,8 +491,11 @@ class UpnpManagerImpl @Inject constructor(
 
             folderStack = when (folder) {
                 is Folder.Root -> listOf(folder)
-                is Folder.SubFolder -> folderStack.toMutableList().apply { add(folder) }
-                is Folder.Empty -> error("You're not supposed to use that here")
+                is Folder.SubFolder -> folderStack
+                    .toMutableList()
+                    .apply { add(folder) }
+                    .toSet()
+                    .toList()
             }
 
             Result.Success
@@ -532,5 +531,6 @@ class UpnpManagerImpl @Inject constructor(
     private fun <T> Flow<T>.catch(message: String): Flow<T> = catch { e -> Timber.e(e, message) }
 }
 
-inline class RenderItem(val didlItem: ClingDIDLObject)
+@JvmInline
+value class RenderItem(val didlItem: ClingDIDLObject)
 

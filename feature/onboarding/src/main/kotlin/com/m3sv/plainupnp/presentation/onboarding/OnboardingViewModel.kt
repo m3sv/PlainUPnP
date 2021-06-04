@@ -10,7 +10,6 @@ import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
-import com.m3sv.plainupnp.backgroundmode.BackgroundModeManager
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.common.util.asApplicationMode
 import com.m3sv.plainupnp.common.util.pass
@@ -28,21 +27,20 @@ private enum class Direction {
 class OnboardingViewModel @Inject constructor(
     private val application: Application,
     private val themeManager: ThemeManager,
-    private val backgroundModeManager: BackgroundModeManager,
-    private val preferencesRepository: PreferencesRepository,
+    private val preferences: PreferencesRepository,
 ) : ViewModel() {
 
     val imageContainerEnabled = mutableStateOf(false)
     val audioContainerEnabled = mutableStateOf(false)
     val videoContainerEnabled = mutableStateOf(false)
 
-    val backgroundMode = mutableStateOf(backgroundModeManager.backgroundMode)
+    val pauseInBackground = mutableStateOf(preferences.pauseInBackground)
 
     val activeTheme: Flow<ThemeOption> = themeManager.theme
 
-    val contentUris: StateFlow<List<UriWrapper>> = preferencesRepository
+    val contentUris: StateFlow<List<UriWrapper>> = preferences
         .persistedUrisFlow()
-        .stateIn(viewModelScope, SharingStarted.Lazily, preferencesRepository.getUris())
+        .stateIn(viewModelScope, SharingStarted.Lazily, preferences.getUris())
 
     private val _currentScreen: MutableSharedFlow<Direction> = MutableSharedFlow()
 
@@ -51,14 +49,13 @@ class OnboardingViewModel @Inject constructor(
             if (direction == Direction.Forward) {
                 when (currentScreen) {
                     OnboardingScreen.SelectPreconfiguredContainers -> {
-                        with(preferencesRepository) {
+                        with(preferences) {
                             setShareImages(imageContainerEnabled.value)
                             setShareVideos(videoContainerEnabled.value)
                             setShareAudio(audioContainerEnabled.value)
                         }
                     }
-                    OnboardingScreen.SelectBackgroundMode ->
-                        backgroundModeManager.backgroundMode = backgroundMode.value
+                    OnboardingScreen.SelectBackgroundMode -> preferences.setPauseInBackground(pauseInBackground.value)
                     else -> pass
                 }
             }
@@ -75,7 +72,7 @@ class OnboardingViewModel @Inject constructor(
 
     fun onSelectMode(mode: ApplicationMode) {
         viewModelScope.launch {
-            preferencesRepository.setApplicationMode(mode)
+            preferences.setApplicationMode(mode)
         }
     }
 
@@ -92,11 +89,11 @@ class OnboardingViewModel @Inject constructor(
     }
 
     fun saveUri() {
-        preferencesRepository.updateUris()
+        preferences.updateUris()
     }
 
     fun releaseUri(uriWrapper: UriWrapper) {
-        preferencesRepository.releaseUri(uriWrapper)
+        preferences.releaseUri(uriWrapper)
     }
 
     private fun OnboardingScreen.forward(): OnboardingScreen = when (this) {
@@ -115,7 +112,7 @@ class OnboardingViewModel @Inject constructor(
 
     private fun getApplicationMode(): ApplicationMode =
         requireNotNull(
-            preferencesRepository
+            preferences
                 .preferences
                 .value
                 .applicationMode

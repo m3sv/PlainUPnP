@@ -44,12 +44,9 @@ class SelectContentDirectoryActivity : ComponentActivity() {
     @Inject
     lateinit var themeManager: ThemeManager
 
-    private val presenter: SelectContentDirectoryPresenter by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Trigger lazy initialization
-        presenter.pass
+        initUpnpService()
 
         setContent {
             val contentDirectories by upnpManager.contentDirectories.collectAsState(initial = listOf())
@@ -140,6 +137,11 @@ class SelectContentDirectoryActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun initUpnpService() {
+        val viewModel: SelectContentDirectoryPresenter by viewModels()
+        viewModel.pass
     }
 
     private fun handleGearClick() {

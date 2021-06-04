@@ -23,4 +23,7 @@ message Preferences {
   bool enableVideos = 4;
   bool enableAudio = 5;
   bool enableThumbnails = 6;
+  bool finishedOnboarding = 7;
+  bool pauseInBackground = 8;
+  string udn = 9;
 }

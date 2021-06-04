@@ -5,7 +5,6 @@ import android.content.Context
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.common.util.asApplicationMode
-import com.m3sv.plainupnp.common.util.getUdn
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import com.m3sv.plainupnp.upnp.PlainUpnpServiceConfiguration
 import com.m3sv.plainupnp.upnp.R
@@ -92,75 +91,72 @@ class AndroidUpnpServiceImpl @Inject constructor(
         (router as AndroidRouter).unregisterBroadcastReceiver()
         super.shutdown(false)
     }
-}
 
-private fun getLocalDevice(
-    serviceResourceProvider: LocalServiceResourceProvider,
-    context: Context,
-    contentRepository: UpnpContentRepositoryImpl,
-): LocalDevice {
-    val details = DeviceDetails(
-        serviceResourceProvider.settingContentDirectoryName,
-        ManufacturerDetails(
-            serviceResourceProvider.appName,
-            serviceResourceProvider.appUrl
-        ),
-        ModelDetails(
-            serviceResourceProvider.appName,
-            serviceResourceProvider.appUrl,
-            serviceResourceProvider.modelNumber,
-            serviceResourceProvider.appUrl
-        ),
-        serviceResourceProvider.appVersion,
-        serviceResourceProvider.appVersion
-    )
+    private fun getLocalDevice(
+        serviceResourceProvider: LocalServiceResourceProvider,
+        context: Context,
+        contentRepository: UpnpContentRepositoryImpl,
+    ): LocalDevice {
+        val details = DeviceDetails(
+            serviceResourceProvider.settingContentDirectoryName,
+            ManufacturerDetails(
+                serviceResourceProvider.appName,
+                serviceResourceProvider.appUrl
+            ),
+            ModelDetails(
+                serviceResourceProvider.appName,
+                serviceResourceProvider.appUrl,
+                serviceResourceProvider.modelNumber,
+                serviceResourceProvider.appUrl
+            ),
+            serviceResourceProvider.appVersion,
+            serviceResourceProvider.appVersion
+        )
 
-    val validationErrors = details.validate()
+        val validationErrors = details.validate()
 
-    for (error in validationErrors) {
-        Timber.e("Validation pb for property %s", error.propertyName)
-        Timber.e("Error is %s", error.message)
+        for (error in validationErrors) {
+            Timber.e("Validation pb for property %s", error.propertyName)
+            Timber.e("Error is %s", error.message)
+        }
+
+        val type = UDADeviceType("MediaServer", 1)
+
+        val iconInputStream = context.resources.openRawResource(R.raw.ic_launcher_round)
+
+        val icon = Icon(
+            "image/png",
+            128,
+            128,
+            32,
+            "plainupnp-icon",
+            iconInputStream
+        )
+
+        return LocalDevice(
+            DeviceIdentity(preferencesRepository.getUdn()),
+            type,
+            details,
+            icon,
+            getLocalService(contentRepository)
+        )
     }
 
-    val type = UDADeviceType("MediaServer", 1)
+    private fun getLocalService(contentRepository: UpnpContentRepositoryImpl): LocalService<ContentDirectoryService> {
+        val serviceBinder = AnnotationLocalServiceBinder()
+        val contentDirectoryService =
+            serviceBinder.read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>
 
-    val iconInputStream = context.resources.openRawResource(R.raw.ic_launcher_round)
+        val serviceManager = DefaultServiceManager(
+            contentDirectoryService,
+            ContentDirectoryService::class.java
+        ).apply {
+            (implementation as ContentDirectoryService).contentRepository = contentRepository
+        }
 
-    val icon = Icon(
-        "image/png",
-        128,
-        128,
-        32,
-        "plainupnp-icon",
-        iconInputStream
-    )
+        contentDirectoryService.manager = serviceManager
 
-    val udn = context.getUdn() ?: error("Empty UDN")
-
-    return LocalDevice(
-        DeviceIdentity(udn),
-        type,
-        details,
-        icon,
-        getLocalService(contentRepository)
-    )
-}
-
-private fun getLocalService(contentRepository: UpnpContentRepositoryImpl): LocalService<ContentDirectoryService> {
-    val serviceBinder = AnnotationLocalServiceBinder()
-    val contentDirectoryService =
-        serviceBinder.read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>
-
-    val serviceManager = DefaultServiceManager(
-        contentDirectoryService,
-        ContentDirectoryService::class.java
-    ).apply {
-        (implementation as ContentDirectoryService).contentRepository = contentRepository
+        return contentDirectoryService
     }
-
-    contentDirectoryService.manager = serviceManager
-
-    return contentDirectoryService
 }
-
 

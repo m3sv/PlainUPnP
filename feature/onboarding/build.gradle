@@ -8,7 +8,6 @@ android {
 
     buildFeatures {
         compose true
-        viewBinding = true
     }
 
     composeOptions {
@@ -19,7 +18,6 @@ android {
 dependencies {
     implementation project(':common')
 
-    implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.documentfile)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.coroutines)

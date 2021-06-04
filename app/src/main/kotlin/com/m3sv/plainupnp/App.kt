@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.os.StrictMode
-import com.m3sv.plainupnp.common.util.generateUdn
 import com.m3sv.plainupnp.presentation.main.MainActivity
 import com.m3sv.plainupnp.presentation.splash.SplashActivity
 import com.m3sv.plainupnp.upnp.UpnpScopeProvider
@@ -23,16 +22,12 @@ class App : Application(), Router, UpnpScopeProvider {
 //
 //    @Inject
 //    lateinit var upnpService: UpnpService
-//
-//    @Inject
-//    lateinit var backgroundModeManager: BackgroundModeManager
 
     override val upnpScope =
         CoroutineScope(SupervisorJob() + Executors.newSingleThreadExecutor().asCoroutineDispatcher())
 
     override fun onCreate() {
         super.onCreate()
-        generateUdn()
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
