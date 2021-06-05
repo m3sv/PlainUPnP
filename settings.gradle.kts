@@ -9,6 +9,6 @@ include(
     ":feature:selectcontentdirectory",
     ":feature:settings",
     ":persistence",
-    ":shared:upnp",
+    ":upnp",
 )
 

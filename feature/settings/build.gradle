@@ -23,7 +23,7 @@ dependencies {
     implementation project(':common')
     implementation project(':feature:onboarding')
     implementation project(':feature:selectcontentdirectory')
-    implementation project(':shared:upnp')
+    implementation project(':upnp')
 
     implementation(libs.bundles.compose)
     implementation(libs.bundles.coroutines)

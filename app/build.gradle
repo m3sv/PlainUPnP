@@ -10,7 +10,6 @@ if (isPlay) {
     apply plugin: 'com.google.firebase.crashlytics'
 }
 
-
 android {
     with flavorConfig
 
@@ -87,7 +86,7 @@ dependencies {
     implementation project(':feature:onboarding')
     implementation project(':feature:selectcontentdirectory')
     implementation project(':feature:settings')
-    implementation project(':shared:upnp')
+    implementation project(':upnp')
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.extensions)
