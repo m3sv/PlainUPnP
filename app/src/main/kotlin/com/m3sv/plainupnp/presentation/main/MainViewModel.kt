@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
-import com.m3sv.plainupnp.common.FilterDelegate
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.SpinnerItem
@@ -30,7 +29,6 @@ data class MainViewState(
 class MainViewModel @Inject constructor(
     preferencesRepository: PreferencesRepository,
     themeManager: ThemeManager,
-    private val filterDelegate: FilterDelegate,
     private val upnpManager: UpnpManager,
     private val volumeManager: BufferedVolumeManager,
 ) : ViewModel() {
@@ -97,10 +95,6 @@ class MainViewModel @Inject constructor(
                 PlayerButton.STOP -> upnpManager.stopPlayback()
             }
         }
-    }
-
-    fun filterText(text: String) {
-        viewModelScope.launch { filterDelegate.filter(text) }
     }
 
     fun navigateBack() {
