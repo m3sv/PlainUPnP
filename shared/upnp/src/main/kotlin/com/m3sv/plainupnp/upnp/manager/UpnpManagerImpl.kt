@@ -71,8 +71,8 @@ class UpnpManagerImpl @Inject constructor(
     override val isContentDirectorySelected: Boolean
         get() = contentDirectoryObservable.selectedContentDirectory != null
 
-    override val isConnectedToRender: Flow<UpnpDevice?>
-        get() = rendererDiscoveryObservable.observeSelectRenderer()
+    override val isConnectedToRenderer: Boolean
+        get() = rendererDiscoveryObservable.observeSelectRenderer().value != null
 
     override val volumeFlow: Flow<Int> = volumeRepository.volumeFlow
 

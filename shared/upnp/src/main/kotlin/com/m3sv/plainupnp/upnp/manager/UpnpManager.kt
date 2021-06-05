@@ -12,7 +12,7 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
 
 interface UpnpManager : UpnpVolumeManager, PlaybackManager {
-    val isConnectedToRender: Flow<UpnpDevice?>
+    val isConnectedToRenderer: Boolean
     val isContentDirectorySelected: Boolean
     val renderers: Flow<List<DeviceDisplay>>
     val contentDirectories: Flow<List<DeviceDisplay>>

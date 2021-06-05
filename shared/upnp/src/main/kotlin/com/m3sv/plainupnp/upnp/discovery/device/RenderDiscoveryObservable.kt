@@ -5,8 +5,8 @@ import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.resourceproviders.UpnpResourceProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import timber.log.Timber
 import javax.inject.Inject
@@ -30,7 +30,7 @@ class RendererDiscoveryObservable @Inject constructor(
 
     fun getSelectedRenderer(): UpnpDevice? = selectedRenderer.value
 
-    fun observeSelectRenderer(): Flow<UpnpDevice?> = selectedRenderer
+    fun observeSelectRenderer(): StateFlow<UpnpDevice?> = selectedRenderer
 
     operator fun invoke() = callbackFlow {
         rendererDiscovery.startObserving()
