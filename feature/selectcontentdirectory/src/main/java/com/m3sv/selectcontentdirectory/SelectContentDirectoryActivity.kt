@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -75,28 +76,28 @@ class SelectContentDirectoryActivity : ComponentActivity() {
                                 .fillMaxWidth()
                                 .padding(8.dp)
                         ) {
-                            if (contentDirectories.isEmpty())
-                                Row(
-                                    modifier = Modifier.padding(
-                                        horizontal = 24.dp,
-                                        vertical = 24.dp
-                                    ),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        getString(R.string.content_directory_search_message),
-                                        Modifier.weight(1f),
-                                        style = MaterialTheme.typography.body1
-                                    )
-                                    CircularProgressIndicator(Modifier.size(32.dp))
-                                }
-                            else
-                                LazyColumn(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    content = {
-                                        itemsIndexed(contentDirectories) { index, item ->
-                                            Column(modifier = Modifier
-                                                .clickable(enabled = loadingDeviceDisplay == null) {
+                            Crossfade(targetState = contentDirectories.isEmpty()) { isEmpty ->
+                                if (isEmpty)
+                                    Row(
+                                        modifier = Modifier.padding(
+                                            horizontal = 24.dp,
+                                            vertical = 24.dp
+                                        ),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            getString(R.string.content_directory_search_message),
+                                            Modifier.weight(1f),
+                                            style = MaterialTheme.typography.body1
+                                        )
+                                        CircularProgressIndicator(Modifier.size(32.dp))
+                                    }
+                                else
+                                    LazyColumn(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        content = {
+                                            itemsIndexed(contentDirectories) { index, item ->
+                                                Column(modifier = Modifier.clickable(enabled = loadingDeviceDisplay == null) {
                                                     loadingDeviceDisplay = item
 
                                                     lifecycleScope.launch(Dispatchers.IO) {
@@ -111,25 +112,25 @@ class SelectContentDirectoryActivity : ComponentActivity() {
                                                         loadingDeviceDisplay = null
                                                     }
                                                 }) {
+                                                    Text(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .padding(16.dp),
+                                                        text = item.upnpDevice.friendlyName
+                                                    )
 
-                                                Text(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(16.dp),
-                                                    text = item.upnpDevice.friendlyName
-                                                )
+                                                    AnimatedVisibility(visible = item.isLoading()) {
+                                                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                                                    }
 
-                                                AnimatedVisibility(visible = item.isLoading()) {
-                                                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                                                }
-
-                                                if (contentDirectories.size > 1 && index != contentDirectories.size - 1) {
-                                                    Divider(modifier = Modifier.fillMaxWidth())
+                                                    if (contentDirectories.size > 1 && index != contentDirectories.size - 1) {
+                                                        Divider(modifier = Modifier.fillMaxWidth())
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                )
+                                    )
+                            }
                         }
                     }
                 }

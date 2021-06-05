@@ -271,6 +271,7 @@ class UpnpManagerImpl @Inject constructor(
     private var remotePaused = false
 
     private suspend fun stopUpdate() {
+        stopPlayback()
         updateChannel.emit(null)
     }
 
@@ -425,7 +426,12 @@ class UpnpManagerImpl @Inject constructor(
 
     private val _navigationStack: MutableSharedFlow<List<Folder>> = MutableSharedFlow(1)
 
-    override val navigationStack: Flow<List<Folder>> = _navigationStack
+    override val navigationStack: Flow<List<Folder>> = _navigationStack.onEach { folders ->
+        if (folders.isEmpty()) {
+            stopUpdate()
+            rendererDiscoveryObservable.selectRenderer(null)
+        }
+    }
 
     private suspend inline fun safeNavigateTo(
         folderId: String,
