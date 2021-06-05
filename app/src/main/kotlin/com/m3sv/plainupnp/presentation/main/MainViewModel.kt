@@ -33,8 +33,9 @@ class MainViewModel @Inject constructor(
     private val volumeManager: BufferedVolumeManager,
 ) : ViewModel() {
 
-    val volume = volumeManager
-        .volumeFlow
+    val isConnectedToRenderer: Flow<Boolean> = upnpManager.isConnectedToRenderer
+
+    val volume = volumeManager.volumeFlow
 
     private val upnpState = upnpManager.upnpRendererState.onStart { emit(UpnpRendererState.Empty) }
 
@@ -71,7 +72,6 @@ class MainViewModel @Inject constructor(
             is ClingMedia -> upnpManager.playItem(item.id)
             else -> error("Unknown cling item")
         }
-
     }
 
     fun moveTo(progress: Int) {

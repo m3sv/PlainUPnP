@@ -68,6 +68,10 @@ class MainActivity : ComponentActivity() {
             viewModel.finishActivityFlow.collect { finish() }
         }
 
+        lifecycleScope.launchWhenCreated {
+            viewModel.isConnectedToRenderer.collect { isConnectedToRenderer = it }
+        }
+
         setContent {
             var showControls by rememberSaveable { mutableStateOf(false) }
             var selectedRenderer by rememberSaveable { mutableStateOf("Stream to") }

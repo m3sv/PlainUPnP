@@ -68,11 +68,8 @@ class UpnpManagerImpl @Inject constructor(
 
     private val updateChannel = MutableSharedFlow<Pair<Item, Service<*, *>>?>()
 
-    override val isContentDirectorySelected: Boolean
-        get() = contentDirectoryObservable.selectedContentDirectory != null
-
-    override val isConnectedToRenderer: Boolean
-        get() = rendererDiscoveryObservable.observeSelectRenderer().value != null
+    override val isConnectedToRenderer: Flow<Boolean>
+        get() = rendererDiscoveryObservable.observeSelectRenderer().map { it != null }
 
     override val volumeFlow: Flow<Int> = volumeRepository.volumeFlow
 
