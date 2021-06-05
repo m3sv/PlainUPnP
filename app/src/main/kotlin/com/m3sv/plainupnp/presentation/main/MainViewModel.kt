@@ -76,7 +76,7 @@ class MainViewModel @Inject constructor(
     fun itemClick(item: ClingDIDLObject) {
         when (item) {
             is ClingContainer -> navigateTo(item.id, item.title)
-            is ClingMedia -> upnpManager.playItem(item)
+            is ClingMedia -> upnpManager.playItem(item.id)
             else -> error("Unknown cling item")
         }
 

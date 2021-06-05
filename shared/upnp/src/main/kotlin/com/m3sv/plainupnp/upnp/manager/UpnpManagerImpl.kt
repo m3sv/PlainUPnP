@@ -60,6 +60,7 @@ class UpnpManagerImpl @Inject constructor(
     override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.Default
 
     private var isLocal: Boolean = false
+
     private val upnpInnerStateChannel = MutableSharedFlow<UpnpRendererState>()
     override val upnpRendererState: Flow<UpnpRendererState> = upnpInnerStateChannel
     override val contentDirectories: Flow<List<DeviceDisplay>> = contentDirectoryObservable()
@@ -248,12 +249,7 @@ class UpnpManagerImpl @Inject constructor(
                             is AudioItem,
                             is VideoItem,
                             -> updateChannel.emit(didlItem to service)
-                            is ImageItem -> with(didlItem) {
-                                showImageInfo(
-                                    uri = uri,
-                                    title = title
-                                )
-                            }
+                            is ImageItem -> upnpInnerStateChannel.emit(UpnpRendererState.Empty)
                         }
                     }
             }
@@ -294,15 +290,6 @@ class UpnpManagerImpl @Inject constructor(
 
     private suspend fun stopUpdate() {
         updateChannel.emit(null)
-    }
-
-    private suspend fun showImageInfo(
-        uri: String,
-        title: String,
-    ) {
-        val state = UpnpRendererState.Empty
-
-        upnpInnerStateChannel.emit(state)
     }
 
     override fun playNext() {
@@ -393,8 +380,10 @@ class UpnpManagerImpl @Inject constructor(
 
     override suspend fun getVolume(): Flow<Int> = getRcService().map { service -> volumeRepository.getVolume(service) }
 
-    override fun playItem(item: ClingDIDLObject) {
+    override fun playItem(id: String) {
         launch {
+            val item = currentContent.find { it.id == id } ?: return@launch
+
             renderItem(RenderItem(item))
             mediaIterator = currentContent.filter { it !is ClingContainer }.listIterator(currentContent.indexOf(item))
         }
@@ -437,14 +426,14 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private var currentContent = listOf<ClingDIDLObject>()
+    private var currentContent = setOf<ClingDIDLObject>()
 
     private var currentFolderName: String = ""
 
     private var mediaIterator: ListIterator<ClingDIDLObject> =
         emptyList<ClingDIDLObject>().listIterator()
 
-    override fun getCurrentFolderContents(): List<ClingDIDLObject> = currentContent
+    override fun getCurrentFolderContents(): Set<ClingDIDLObject> = currentContent
 
     override fun getCurrentFolderName(): String = currentFolderName
 
@@ -475,16 +464,16 @@ class UpnpManagerImpl @Inject constructor(
                 return Result.Error
             }
 
-            currentContent = upnpRepository.browse(service, folderId)
+            currentContent = upnpRepository.browse(service, folderId).toSet()
             currentFolderName = folderName.replace(UpnpContentRepositoryImpl.USER_DEFINED_PREFIX, "")
 
             val folder = when (folderId) {
-                ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName, currentContent)
+                ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName, currentContent.toList())
                 else -> {
                     Folder.SubFolder(
                         id = folderId,
                         title = currentFolderName,
-                        contents = currentContent,
+                        contents = currentContent.toList(),
                     )
                 }
             }

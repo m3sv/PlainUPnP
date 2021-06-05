@@ -65,8 +65,8 @@ class SettingsActivity : ComponentActivity() {
                     }) {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             ThemeSection(activeTheme)
-                            ApplicationModeSection(preferences)
                             UpnpSection(preferences)
+                            ApplicationModeSection(preferences)
                             AboutSection()
                         }
                     }
