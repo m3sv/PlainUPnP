@@ -20,7 +20,7 @@ interface UpnpManager : UpnpVolumeManager, PlaybackManager {
     val folderChangeFlow: Flow<Folder>
     val navigationStack: Flow<List<Folder>>
 
-    fun getCurrentFolderContents(): Set<ClingDIDLObject>
+    fun getCurrentFolderContents(): List<ClingDIDLObject>
     fun getCurrentFolderName(): String
     fun navigateBack()
     fun navigateTo(folder: Folder)

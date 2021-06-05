@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.upnp.manager
 
 
 import com.m3sv.plainupnp.common.util.formatTime
-import com.m3sv.plainupnp.core.persistence.Database
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpItemType
@@ -12,7 +11,6 @@ import com.m3sv.plainupnp.upnp.CDevice
 import com.m3sv.plainupnp.upnp.ContentUpdateState
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl
 import com.m3sv.plainupnp.upnp.UpnpRepository
-import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.discovery.device.RendererDiscoveryObservable
@@ -50,7 +48,6 @@ class UpnpManagerImpl @Inject constructor(
     private val rendererDiscoveryObservable: RendererDiscoveryObservable,
     private val contentDirectoryObservable: ContentDirectoryDiscoveryObservable,
     private val launchLocally: LaunchLocallyUseCase,
-    private val database: Database,
     private val upnpRepository: UpnpRepository,
     private val volumeRepository: VolumeRepository,
     private val contentRepository: UpnpContentRepositoryImpl,
@@ -215,7 +212,7 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private suspend fun renderItem(item: RenderItem) {
+    private suspend inline fun renderItem(item: RenderItem) {
         stopUpdate()
 
         if (isLocal) {
@@ -280,19 +277,27 @@ class UpnpManagerImpl @Inject constructor(
         updateChannel.emit(null)
     }
 
+    private var currentIndex: Int = -1
+
     override fun playNext() {
         launch {
-            if (mediaIterator.hasNext()) {
-                renderItem(RenderItem(mediaIterator.next()))
-            }
+            if (currentIndex in 0 until currentContent.size - 1)
+                renderItem(RenderItem(currentContent[++currentIndex]))
+        }
+    }
+
+    override fun playItem(id: String) {
+        launch {
+            val item = currentContent.find { it.id == id } ?: return@launch
+            currentIndex = currentContent.indexOf(item)
+            renderItem(RenderItem(item))
         }
     }
 
     override fun playPrevious() {
         launch {
-            if (mediaIterator.hasPrevious()) {
-                renderItem(RenderItem(mediaIterator.previous()))
-            }
+            if (currentIndex in 1 until currentContent.size)
+                renderItem(RenderItem(currentContent[--currentIndex]))
         }
     }
 
@@ -368,14 +373,6 @@ class UpnpManagerImpl @Inject constructor(
 
     override suspend fun getVolume(): Flow<Int> = getRcService().map { service -> volumeRepository.getVolume(service) }
 
-    override fun playItem(id: String) {
-        launch {
-            val item = currentContent.find { it.id == id } ?: return@launch
-
-            renderItem(RenderItem(item))
-            mediaIterator = currentContent.filter { it !is ClingContainer }.listIterator(currentContent.indexOf(item))
-        }
-    }
 
     override fun navigateTo(folder: Folder) {
         val index = folderStack.indexOf(folder)
@@ -414,14 +411,11 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private var currentContent = setOf<ClingDIDLObject>()
+    private var currentContent = listOf<ClingDIDLObject>()
 
     private var currentFolderName: String = ""
 
-    private var mediaIterator: ListIterator<ClingDIDLObject> =
-        emptyList<ClingDIDLObject>().listIterator()
-
-    override fun getCurrentFolderContents(): Set<ClingDIDLObject> = currentContent
+    override fun getCurrentFolderContents(): List<ClingDIDLObject> = currentContent
 
     override fun getCurrentFolderName(): String = currentFolderName
 
@@ -452,16 +446,16 @@ class UpnpManagerImpl @Inject constructor(
                 return Result.Error
             }
 
-            currentContent = upnpRepository.browse(service, folderId).toSet()
+            currentContent = upnpRepository.browse(service, folderId)
             currentFolderName = folderName.replace(UpnpContentRepositoryImpl.USER_DEFINED_PREFIX, "")
 
             val folder = when (folderId) {
-                ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName, currentContent.toList())
+                ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName, currentContent)
                 else -> {
                     Folder.SubFolder(
                         id = folderId,
                         title = currentFolderName,
-                        contents = currentContent.toList(),
+                        contents = currentContent,
                     )
                 }
             }
