@@ -644,7 +644,7 @@ class MainActivity : ComponentActivity() {
                 onValueChange = onValueChange,
                 modifier = Modifier.fillMaxWidth(),
                 trailingIcon = {
-                    Image(
+                    Icon(
                         painter = painterResource(id = R.drawable.ic_close),
                         contentDescription = null,
                         modifier = Modifier

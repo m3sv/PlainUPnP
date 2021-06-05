@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,7 +16,6 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
@@ -104,9 +104,7 @@ class SelectContentDirectoryActivity : ComponentActivity() {
                                                             .selectContentDirectoryAsync(item.upnpDevice)
                                                             .await()
                                                         ) {
-                                                            Result.Error -> withContext(Dispatchers.Main) {
-                                                                handleSelectDirectoryError()
-                                                            }
+                                                            Result.Error -> withContext(Dispatchers.Main) { handleSelectDirectoryError() }
                                                             Result.Success -> handleSelectDirectorySuccess()
                                                         }
 
@@ -121,12 +119,12 @@ class SelectContentDirectoryActivity : ComponentActivity() {
                                                     text = item.upnpDevice.friendlyName
                                                 )
 
-                                                if (item.isLoading()) {
+                                                AnimatedVisibility(visible = item.isLoading()) {
                                                     LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                                                 }
 
                                                 if (contentDirectories.size > 1 && index != contentDirectories.size - 1) {
-                                                    Divider(color = Color.DarkGray)
+                                                    Divider(modifier = Modifier.fillMaxWidth())
                                                 }
                                             }
                                         }
