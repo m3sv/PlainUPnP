@@ -5,8 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.Surface
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
 import com.m3sv.plainupnp.Router
@@ -31,17 +30,28 @@ class SelectApplicationModeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            var modeChanged by remember { mutableStateOf(false) }
+
             val preferences by preferencesRepository.preferences.collectAsState()
             val activeTheme by themeManager.collectTheme()
 
             AppTheme(activeTheme) {
                 Surface {
+                    val clickListener = {
+                        if (modeChanged)
+                            toSplash()
+                        else {
+                            finish()
+                        }
+                    }
+
                     SelectApplicationModeScreen(
-                        onNextClick = ::onFinish,
-                        onBackClick = ::onFinish,
+                        onNextClick = clickListener,
+                        onBackClick = clickListener,
                         nextText = stringResource(R.string.done),
                         initialMode = preferences.applicationMode.asApplicationMode()
                     ) { applicationMode ->
+                        modeChanged = true
                         lifecycleScope.launch { preferencesRepository.setApplicationMode(applicationMode) }
                     }
                 }
@@ -49,7 +59,7 @@ class SelectApplicationModeActivity : ComponentActivity() {
         }
     }
 
-    private fun onFinish() {
+    private fun toSplash() {
         startActivity((application as Router).getSplashActivityIntent(this).apply {
             flags += Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         })
