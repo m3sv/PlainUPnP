@@ -90,7 +90,6 @@ class SettingsActivity : ComponentActivity() {
         }
     }
 
-
     @Composable
     fun AboutSection() {
         Section {

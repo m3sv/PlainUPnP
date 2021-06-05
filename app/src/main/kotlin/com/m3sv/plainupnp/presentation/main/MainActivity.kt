@@ -136,6 +136,7 @@ class MainActivity : ComponentActivity() {
 
                     val folderFactory: @Composable () -> Unit = {
                         Folder(
+                            // TODO move filtering to UpnpManager
                             contents = navigationStack
                                 .lastOrNull()
                                 ?.contents
