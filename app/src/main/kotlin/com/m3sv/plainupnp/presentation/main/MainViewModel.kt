@@ -11,7 +11,6 @@ import com.m3sv.plainupnp.presentation.SpinnerItem
 import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
-import com.m3sv.plainupnp.upnp.discovery.device.ObserveRenderersUseCase
 import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,7 +28,6 @@ data class MainViewState(
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    observeRenderersUseCase: ObserveRenderersUseCase,
     preferencesRepository: PreferencesRepository,
     themeManager: ThemeManager,
     private val filterDelegate: FilterDelegate,
@@ -42,14 +40,10 @@ class MainViewModel @Inject constructor(
 
     private val upnpState = upnpManager.upnpRendererState.onStart { emit(UpnpRendererState.Empty) }
 
-    private val renderers = observeRenderersUseCase()
-        .map { bundle ->
-            val items = bundle.devices.map { SpinnerItem(it.upnpDevice.friendlyName, it) }
-            SpinnerItemsBundle(
-                items,
-                bundle.selectedDeviceIndex,
-                bundle.selectedDeviceText
-            )
+    private val renderers = upnpManager.renderers
+        .map { devices ->
+            val items = devices.map { SpinnerItem(it.upnpDevice.friendlyName, it) }
+            SpinnerItemsBundle(items)
         }
 
     private val navigationStack: Flow<List<Folder>> = upnpManager.navigationStack

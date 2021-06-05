@@ -180,10 +180,6 @@ class UpnpManagerImpl @Inject constructor(
                 .currentContentDirectories[position]
                 .upnpDevice
 
-            database
-                .selectedDeviceQueries
-                .insertSelectedDevice(CONTENT_DIRECTORY_TYPE, contentDirectory.fullIdentity)
-
             contentDirectoryObservable.selectedContentDirectory = contentDirectory
 
             safeNavigateTo(
@@ -194,10 +190,6 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override fun selectContentDirectoryAsync(upnpDevice: UpnpDevice): Deferred<Result> = async {
-        database
-            .selectedDeviceQueries
-            .insertSelectedDevice(CONTENT_DIRECTORY_TYPE, upnpDevice.fullIdentity)
-
         contentDirectoryObservable.selectedContentDirectory = upnpDevice
 
         safeNavigateTo(
@@ -211,10 +203,6 @@ class UpnpManagerImpl @Inject constructor(
             val renderer: UpnpDevice = spinnerItem.deviceDisplay.upnpDevice
 
             isLocal = renderer.isLocal
-
-            database
-                .selectedDeviceQueries
-                .insertSelectedDevice(RENDERER_TYPE, renderer.fullIdentity)
 
             if (isLocal || renderer != rendererDiscoveryObservable.getSelectedRenderer())
                 stopUpdate()
