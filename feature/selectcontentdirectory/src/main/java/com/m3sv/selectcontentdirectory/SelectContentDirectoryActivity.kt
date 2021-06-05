@@ -157,4 +157,8 @@ class SelectContentDirectoryActivity : ComponentActivity() {
             .show()
     }
 
+    override fun onBackPressed() {
+        finishAndRemoveTask()
+    }
+
 }
