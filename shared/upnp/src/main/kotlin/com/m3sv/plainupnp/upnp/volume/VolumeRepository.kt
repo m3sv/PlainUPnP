@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.upnp.volume
 
 import com.m3sv.plainupnp.upnp.actions.renderingcontrol.*
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.fourthline.cling.model.meta.Service
 import javax.inject.Inject
 
@@ -13,7 +13,7 @@ class VolumeRepository @Inject constructor(
     private val setVolumeAction: SetVolumeAction,
     private val muteVolumeAction: MuteVolumeAction,
 ) {
-    private val volumeChannel = MutableStateFlow(-1)
+    private val volumeChannel = MutableSharedFlow<Int>()
 
     val volumeFlow: Flow<Int> = volumeChannel
 

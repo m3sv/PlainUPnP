@@ -2,7 +2,6 @@ package com.m3sv.plainupnp.upnp.volume
 
 import kotlinx.coroutines.flow.Flow
 
-
 interface UpnpVolumeManager {
     val volumeFlow: Flow<Int>
     suspend fun raiseVolume(step: Int)

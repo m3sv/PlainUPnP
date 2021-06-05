@@ -13,6 +13,7 @@ import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,6 +26,11 @@ data class MainViewState(
     val enableThumbnails: Boolean = false
 )
 
+sealed class VolumeUpdate(val volume: Int) {
+    class Show(volume: Int) : VolumeUpdate(volume)
+    class Hide(volume: Int) : VolumeUpdate(volume)
+}
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
     preferencesRepository: PreferencesRepository,
@@ -35,11 +41,22 @@ class MainViewModel @Inject constructor(
 
     val isConnectedToRenderer: Flow<Boolean> = upnpManager.isConnectedToRenderer
 
-    val volume = volumeManager.volumeFlow
+    val volume = volumeManager
+        .volumeFlow
+        .flatMapLatest { volume ->
+            flow {
+                emit(VolumeUpdate.Show(volume))
+                delay(2500)
+                emit(VolumeUpdate.Hide(volume))
+            }
+        }
 
-    private val upnpState = upnpManager.upnpRendererState.onStart { emit(UpnpRendererState.Empty) }
+    private val upnpState = upnpManager
+        .upnpRendererState
+        .onStart { emit(UpnpRendererState.Empty) }
 
-    private val renderers = upnpManager.renderers
+    private val renderers = upnpManager
+        .renderers
         .map { devices ->
             val items = devices.map { SpinnerItem(it.upnpDevice.friendlyName, it) }
             SpinnerItemsBundle(items)
@@ -55,16 +72,20 @@ class MainViewModel @Inject constructor(
             renderers,
             navigationStack.filterNot { it.isEmpty() },
             themeManager.theme,
-            preferencesRepository.preferences
-        ) { upnpRendererState, spinnerItemsBundle, navigationStack, activeTheme, preferences ->
+            preferencesRepository.preferences.map { it.enableThumbnails }
+        ) { upnpRendererState, spinnerItemsBundle, navigationStack, activeTheme, enableThumbnails ->
             MainViewState(
                 upnpRendererState = upnpRendererState,
                 spinnerItemsBundle = spinnerItemsBundle,
                 navigationStack = navigationStack,
                 activeTheme = activeTheme,
-                enableThumbnails = preferences.enableThumbnails
+                enableThumbnails = enableThumbnails
             )
-        }.stateIn(viewModelScope, SharingStarted.Lazily, MainViewState(activeTheme = themeManager.theme.value))
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = MainViewState(activeTheme = themeManager.theme.value)
+        )
 
     fun itemClick(item: ClingDIDLObject) {
         when (item) {

@@ -2,9 +2,9 @@ package com.m3sv.plainupnp.presentation.main
 
 import com.m3sv.plainupnp.upnp.volume.UpnpVolumeManager
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.properties.Delegates
 
@@ -30,15 +30,15 @@ class BufferedVolumeManager @Inject constructor(volumeManager: UpnpVolumeManager
 
     private suspend fun triggerStep() = coroutineScope {
         timeoutJob?.cancel()
-        timeoutJob = async {
+        timeoutJob = launch {
             delay(2000)
             currentStep = 1
         }
 
-        ++currentStep
+        currentStep++
     }
 
     companion object {
-        private const val MAX_STEP = 5
+        private const val MAX_STEP = 3
     }
 }

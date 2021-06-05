@@ -375,7 +375,8 @@ class UpnpManagerImpl @Inject constructor(
         val index = folderStack.indexOf(folder)
 
         if (index == -1) {
-            error("Folder isn't found in navigation stack")
+            Timber.e("Folder $folder isn't found in navigation stack!")
+            return
         }
 
         folderStack = folderStack.subList(0, index + 1)

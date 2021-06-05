@@ -81,6 +81,7 @@ class MainActivity : ComponentActivity() {
             var filterText by rememberSaveable { mutableStateOf("") }
 
             val viewState by viewModel.viewState.collectAsState()
+            val volume by viewModel.volume.collectAsState(VolumeUpdate.Hide(-1))
 
             showControls = viewState.upnpRendererState !is UpnpRendererState.Empty
 
@@ -149,31 +150,38 @@ class MainActivity : ComponentActivity() {
                             showThumbnails = viewState.enableThumbnails)
                     }
 
-                    when (configuration.orientation) {
-                        Configuration.ORIENTATION_LANDSCAPE -> {
-                            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-                            Landscape(
-                                upnpState = viewState.upnpRendererState,
-                                showControls = showControls,
-                                navigationStack = navigationStack,
-                                floatingActionButton = floatingActionButtonFactory,
-                                filter = filterFactory,
-                                onFilterClick = onFilterClick,
-                                folder = folderFactory
-                            )
+                    Box {
+                        when (configuration.orientation) {
+                            Configuration.ORIENTATION_LANDSCAPE -> {
+                                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+                                Landscape(
+                                    upnpState = viewState.upnpRendererState,
+                                    showControls = showControls,
+                                    navigationStack = navigationStack,
+                                    floatingActionButton = floatingActionButtonFactory,
+                                    filter = filterFactory,
+                                    onFilterClick = onFilterClick,
+                                    folder = folderFactory
+                                )
+                            }
+                            else -> {
+                                window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+                                Portrait(
+                                    upnpState = viewState.upnpRendererState,
+                                    showControls = showControls,
+                                    navigationStack = navigationStack,
+                                    floatingActionButton = floatingActionButtonFactory,
+                                    filter = filterFactory,
+                                    onFilterClick = onFilterClick,
+                                    folder = folderFactory
+                                )
+                            }
                         }
-                        else -> {
-                            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-                            Portrait(
-                                upnpState = viewState.upnpRendererState,
-                                showControls = showControls,
-                                navigationStack = navigationStack,
-                                floatingActionButton = floatingActionButtonFactory,
-                                filter = filterFactory,
-                                onFilterClick = onFilterClick,
-                                folder = folderFactory
-                            )
-                        }
+
+                        Volume(
+                            volumeUpdate = volume,
+                            modifier = Modifier.align(Alignment.CenterStart)
+                        )
                     }
                 }
             }
@@ -181,6 +189,42 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launchWhenCreated {
             subscribe<ExitApplication>().collect { finishAffinity() }
+        }
+    }
+
+    @Composable
+    private fun Volume(volumeUpdate: VolumeUpdate, modifier: Modifier = Modifier) {
+        AnimatedVisibility(
+            modifier = modifier,
+            visible = volumeUpdate is VolumeUpdate.Show
+        ) {
+            Card(
+                shape = RoundedCornerShape(
+                    topEnd = 32.dp,
+                    bottomEnd = 32.dp
+                ),
+                elevation = 8.dp
+            ) {
+                Surface(modifier = Modifier.padding(16.dp)) {
+                    Row {
+                        val volume = volumeUpdate.volume
+                        val icon = when {
+                            volume < 5 -> R.drawable.ic_volume_mute
+                            volume < 35 -> R.drawable.ic_volume_down
+                            volume >= 35 -> R.drawable.ic_volume_up
+                            else -> R.drawable.ic_volume_up
+                        }
+
+                        Icon(
+                            painter = painterResource(id = icon),
+                            contentDescription = null
+                        )
+
+                        Text("Volume", Modifier.padding(horizontal = 8.dp))
+                        Text("$volume", modifier = Modifier.defaultMinSize(minWidth = 24.dp))
+                    }
+                }
+            }
         }
     }
 
@@ -242,31 +286,36 @@ class MainActivity : ComponentActivity() {
         folder: @Composable () -> Unit,
     ) {
         Screen(navigationStack, onFilterClick = onFilterClick) {
-            Row(modifier = Modifier.weight(1f)) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                ) {
-                    folder()
+            Row {
+                Box {
+                    Row(modifier = Modifier.fillMaxSize()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f)
+                        ) {
+                            folder()
+                        }
+
+                        AnimatedVisibility(
+                            visible = showControls,
+                            enter = fadeIn() + expandHorizontally(Alignment.Start),
+                            exit = fadeOut() + shrinkHorizontally(Alignment.Start),
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f)
+                                .align(Alignment.Top)
+                        ) {
+                            Controls(upnpState, 0.dp, 8.dp)
+                        }
+                    }
+
                     androidx.compose.animation.AnimatedVisibility(
                         visible = !showControls,
                         modifier = Modifier.align(Alignment.BottomEnd)
                     ) {
                         floatingActionButton()
                     }
-                }
-
-                AnimatedVisibility(
-                    visible = showControls,
-                    enter = fadeIn() + expandHorizontally(Alignment.Start),
-                    exit = fadeOut() + shrinkHorizontally(Alignment.Start),
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .align(Alignment.Top)
-                ) {
-                    Controls(upnpState, 0.dp, 8.dp)
                 }
             }
 

@@ -36,6 +36,7 @@ import com.m3sv.plainupnp.presentation.onboarding.selecttheme.SelectThemeActivit
 import com.m3sv.plainupnp.presentation.settings.ratehandler.RateHandler
 import com.m3sv.selectcontentdirectory.SelectApplicationModeActivity
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -241,7 +242,9 @@ class SettingsActivity : ComponentActivity() {
                 currentValue = stringResource(id = textId),
                 icon = painterResource(id = R.drawable.ic_theme)
             ) {
-                startActivity(Intent(applicationContext, SelectThemeActivity::class.java))
+                lifecycleScope.launch(Dispatchers.IO) {
+                    startActivity(Intent(applicationContext, SelectThemeActivity::class.java))
+                }
             }
         }
     }

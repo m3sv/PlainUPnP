@@ -22,7 +22,7 @@ class SetVolumeAction @Inject constructor(controlPoint: ControlPoint) :
     }
 
     suspend operator fun invoke(service: Service<*, *>, vararg arguments: Int): Int =
-        suspendCoroutine<Int> { continuation ->
+        suspendCoroutine { continuation ->
             val volume = arguments[0]
 
             val action = object : SetVolume(service, volume.toLong()) {
