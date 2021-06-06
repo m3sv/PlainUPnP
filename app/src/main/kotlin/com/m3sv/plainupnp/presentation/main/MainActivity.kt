@@ -51,6 +51,8 @@ import com.m3sv.plainupnp.upnp.folder.Folder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.fourthline.cling.support.model.TransportState
 
@@ -74,11 +76,14 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             var showControls by rememberSaveable { mutableStateOf(false) }
+
             var selectedRenderer by rememberSaveable { mutableStateOf("Stream to") }
             var isDialogExpanded by rememberSaveable { mutableStateOf(false) }
             var isButtonExpanded by rememberSaveable { mutableStateOf(true) }
+
             var showFilter by rememberSaveable { mutableStateOf(false) }
             var filterText by rememberSaveable { mutableStateOf("") }
+            var loading by rememberSaveable { mutableStateOf(false) }
 
             val viewState by viewModel.viewState.collectAsState()
             val volume by viewModel.volume.collectAsState(VolumeUpdate.Hide(-1))
@@ -147,7 +152,28 @@ class MainActivity : ComponentActivity() {
                                 ?.contents
                                 ?.filter { it.title.contains(filterText, ignoreCase = true) }
                                 ?: listOf(),
-                            showThumbnails = viewState.enableThumbnails)
+                            showThumbnails = viewState.enableThumbnails,
+                            showLoading = {
+                                loading = true
+                            }, hideLoading = {
+                                loading = false
+                            })
+                    }
+
+                    val progressBar: @Composable ColumnScope.() -> Unit = {
+                        val height = 4.dp
+
+                        Box(modifier = Modifier
+                            .padding(top = 4.dp)
+                            .height(height)) {
+                            androidx.compose.animation.AnimatedVisibility(visible = loading) {
+                                LinearProgressIndicator(
+                                    modifier = Modifier
+                                        .height(height)
+                                        .fillMaxWidth()
+                                )
+                            }
+                        }
                     }
 
                     Box {
@@ -161,7 +187,8 @@ class MainActivity : ComponentActivity() {
                                     floatingActionButton = floatingActionButtonFactory,
                                     filter = filterFactory,
                                     onFilterClick = onFilterClick,
-                                    folder = folderFactory
+                                    folder = folderFactory,
+                                    progressBar = progressBar
                                 )
                             }
                             else -> {
@@ -173,7 +200,8 @@ class MainActivity : ComponentActivity() {
                                     floatingActionButton = floatingActionButtonFactory,
                                     filter = filterFactory,
                                     onFilterClick = onFilterClick,
-                                    folder = folderFactory
+                                    folder = folderFactory,
+                                    progressBar = progressBar
                                 )
                             }
                         }
@@ -232,6 +260,7 @@ class MainActivity : ComponentActivity() {
     private fun Screen(
         navigationStack: List<Folder>,
         onFilterClick: () -> Unit,
+        progressBar: @Composable ColumnScope.() -> Unit,
         body: @Composable ColumnScope.() -> Unit
     ) {
         Column {
@@ -240,6 +269,7 @@ class MainActivity : ComponentActivity() {
                 onFilterClick = onFilterClick
             )
             NavigationBar(navigationStack)
+            progressBar()
             body()
         }
     }
@@ -253,8 +283,13 @@ class MainActivity : ComponentActivity() {
         floatingActionButton: @Composable BoxScope.() -> Unit,
         filter: @Composable () -> Unit,
         folder: @Composable () -> Unit,
+        progressBar: @Composable ColumnScope.() -> Unit
     ) {
-        Screen(navigationStack, onFilterClick = onFilterClick) {
+        Screen(
+            navigationStack = navigationStack,
+            onFilterClick = onFilterClick,
+            progressBar = progressBar
+        ) {
             Row(modifier = Modifier.weight(1f)) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     folder()
@@ -284,8 +319,13 @@ class MainActivity : ComponentActivity() {
         floatingActionButton: @Composable BoxScope.() -> Unit,
         filter: @Composable () -> Unit,
         folder: @Composable () -> Unit,
+        progressBar: @Composable ColumnScope.() -> Unit
     ) {
-        Screen(navigationStack, onFilterClick = onFilterClick) {
+        Screen(
+            navigationStack = navigationStack,
+            onFilterClick = onFilterClick,
+            progressBar = progressBar
+        ) {
             Row {
                 Box {
                     Row(modifier = Modifier.fillMaxSize()) {
@@ -525,7 +565,12 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun Folder(contents: List<ClingDIDLObject>, showThumbnails: Boolean) {
+    private fun Folder(
+        contents: List<ClingDIDLObject>,
+        showThumbnails: Boolean,
+        showLoading: () -> Unit,
+        hideLoading: () -> Unit
+    ) {
         Surface {
             LazyColumn {
                 items(contents) { item ->
@@ -534,7 +579,13 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                viewModel.itemClick(item)
+                                lifecycleScope.launch {
+                                    viewModel
+                                        .itemClick(item)
+                                        .onStart { showLoading() }
+                                        .onCompletion { hideLoading() }
+                                        .collect()
+                                }
                             }
                     ) {
                         Spacer(modifier = Modifier.padding(8.dp))

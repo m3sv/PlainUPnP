@@ -11,6 +11,7 @@ import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import com.m3sv.plainupnp.upnp.folder.Folder
+import com.m3sv.plainupnp.upnp.manager.Result
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -87,12 +88,10 @@ class MainViewModel @Inject constructor(
             initialValue = MainViewState(activeTheme = themeManager.theme.value)
         )
 
-    fun itemClick(item: ClingDIDLObject) {
-        when (item) {
-            is ClingContainer -> navigateTo(item.id, item.title)
-            is ClingMedia -> upnpManager.playItem(item.id)
-            else -> error("Unknown cling item")
-        }
+    fun itemClick(item: ClingDIDLObject): Flow<Result> = when (item) {
+        is ClingContainer -> navigateTo(item.id, item.title)
+        is ClingMedia -> upnpManager.playItem(item.id)
+        else -> error("Unknown cling item")
     }
 
     fun moveTo(progress: Int) {
@@ -126,7 +125,5 @@ class MainViewModel @Inject constructor(
         upnpManager.navigateTo(folder)
     }
 
-    private fun navigateTo(id: String, title: String) {
-        upnpManager.navigateTo(id, title)
-    }
+    private fun navigateTo(id: String, title: String): Flow<Result> = upnpManager.navigateTo(id, title)
 }

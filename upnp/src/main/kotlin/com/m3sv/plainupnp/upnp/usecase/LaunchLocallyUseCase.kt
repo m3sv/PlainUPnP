@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class LaunchLocallyUseCase @Inject constructor(private val application: Application) {
 
-    suspend operator fun invoke(item: RenderItem) {
+    operator fun invoke(item: RenderItem) {
         val uri = item.didlItem.uri
         if (uri != null) {
             val contentType = when (item.didlItem) {

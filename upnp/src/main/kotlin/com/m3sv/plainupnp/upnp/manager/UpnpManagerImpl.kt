@@ -193,15 +193,15 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private suspend inline fun renderItem(item: RenderItem) {
+    private fun renderItem(item: RenderItem): Flow<Result> {
         stopUpdate()
 
         if (isLocal) {
             launchLocally(item)
-            return
+            return flowOf(Result.Success)
         }
 
-        getAvService()
+        return getAvService()
             .flatMapLatest { service ->
                 val didlItem = item.didlItem.didlObject as Item
                 val uri = didlItem.firstResource?.value ?: error("First resource or its value is null!")
@@ -218,9 +218,12 @@ class UpnpManagerImpl @Inject constructor(
                             is ImageItem -> upnpInnerStateChannel.emit(UpnpRendererState.Empty)
                         }
                     }
+                    .map<Any, Result> { Result.Success }
             }
-            .catch { e -> Timber.e(e) }
-            .collect()
+            .catch { e ->
+                Timber.e(e)
+                emit(Result.Error)
+            }
     }
 
     private fun newMetadata(
@@ -254,9 +257,11 @@ class UpnpManagerImpl @Inject constructor(
 
     private var remotePaused = false
 
-    private suspend fun stopUpdate() {
-        stopPlayback()
-        updateChannel.emit(null)
+    private fun stopUpdate() {
+        launch {
+            stopPlayback()
+            updateChannel.emit(null)
+        }
     }
 
     private var currentIndex: Int = -1
@@ -264,22 +269,24 @@ class UpnpManagerImpl @Inject constructor(
     override fun playNext() {
         launch {
             if (currentIndex in 0 until currentContent.size - 1)
-                renderItem(RenderItem(currentContent[++currentIndex]))
+                renderItem(RenderItem(currentContent[++currentIndex])).collect()
         }
     }
 
-    override fun playItem(id: String) {
-        launch {
-            val item = currentContent.find { it.id == id } ?: return@launch
+    override fun playItem(id: String): Flow<Result> = flow {
+        val item = currentContent.find { it.id == id }
+        if (item == null) {
+            emit(Result.Error)
+        } else {
             currentIndex = currentContent.indexOf(item)
             renderItem(RenderItem(item))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     override fun playPrevious() {
         launch {
             if (currentIndex in 1 until currentContent.size)
-                renderItem(RenderItem(currentContent[--currentIndex]))
+                renderItem(RenderItem(currentContent[--currentIndex])).collect()
         }
     }
 
@@ -355,7 +362,6 @@ class UpnpManagerImpl @Inject constructor(
 
     override suspend fun getVolume(): Flow<Int> = getRcService().map { service -> volumeRepository.getVolume(service) }
 
-
     override fun navigateTo(folder: Folder) {
         val index = folderStack.indexOf(folder)
 
@@ -367,14 +373,14 @@ class UpnpManagerImpl @Inject constructor(
         folderStack = folderStack.subList(0, index + 1)
     }
 
-    override fun navigateTo(id: String, folderName: String) {
-        launch {
+    override fun navigateTo(id: String, folderName: String): Flow<Result> = flow {
+        emit(
             safeNavigateTo(
                 folderId = id,
                 folderName = folderName
             )
-        }
-    }
+        )
+    }.flowOn(Dispatchers.IO)
 
     override fun navigateBack() {
         folderStack = folderStack.dropLast(1)

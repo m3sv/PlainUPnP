@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -111,8 +110,15 @@ class SelectContentDirectoryActivity : ComponentActivity() {
                                                         text = item.upnpDevice.friendlyName
                                                     )
 
-                                                    AnimatedVisibility(visible = item.isLoading()) {
-                                                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                                                    val height = 4.dp
+                                                    Box(modifier = Modifier.height(height)) {
+                                                        androidx.compose.animation.AnimatedVisibility(visible = item.isLoading()) {
+                                                            LinearProgressIndicator(
+                                                                modifier = Modifier
+                                                                    .height(height)
+                                                                    .fillMaxWidth()
+                                                            )
+                                                        }
                                                     }
 
                                                     if (state.contentDirectories.size > 1 && index != state.contentDirectories.size - 1) {
