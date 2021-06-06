@@ -43,14 +43,14 @@ class PreferencesRepository @Inject constructor(private val context: Application
             runBlocking { context.preferencesStore.data.first() }
         )
 
-    val theme: Flow<ThemeOption> = preferences.map { preferences ->
+    val theme: StateFlow<ThemeOption> = preferences.map { preferences ->
         when (preferences.theme) {
             Preferences.Theme.LIGHT -> ThemeOption.Light
             Preferences.Theme.DARK -> ThemeOption.Dark
             Preferences.Theme.SYSTEM,
             Preferences.Theme.UNRECOGNIZED -> ThemeOption.System
         }
-    }
+    }.stateIn(scope, SharingStarted.Lazily, ThemeOption.System)
 
     init {
         scope.launch {

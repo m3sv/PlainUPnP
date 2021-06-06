@@ -26,7 +26,6 @@ interface UpnpManager : UpnpVolumeManager, PlaybackManager {
     fun navigateTo(id: String, folderName: String)
     fun playItem(id: String)
     fun seekTo(progress: Int)
-    fun selectContentDirectory(position: Int)
     fun selectContentDirectoryAsync(upnpDevice: UpnpDevice): Deferred<Result>
     fun selectRenderer(spinnerItem: SpinnerItem)
 }

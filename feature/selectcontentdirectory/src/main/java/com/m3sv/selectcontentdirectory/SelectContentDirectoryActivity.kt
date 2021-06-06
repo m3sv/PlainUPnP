@@ -21,7 +21,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.m3sv.plainupnp.Router
-import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OnePane
@@ -29,34 +28,27 @@ import com.m3sv.plainupnp.compose.widgets.OneTitle
 import com.m3sv.plainupnp.compose.widgets.OneToolbar
 import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.upnp.manager.Result
-import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class SelectContentDirectoryActivity : ComponentActivity() {
 
-    @Inject
-    lateinit var upnpManager: UpnpManager
-
-    @Inject
-    lateinit var themeManager: ThemeManager
+    private val viewModel by viewModels<SelectContentDirectoryViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initUpnpService()
 
         setContent {
-            val contentDirectories by upnpManager.contentDirectories.collectAsState(initial = listOf())
+            val state by viewModel.state.collectAsState()
             var loadingDeviceDisplay: DeviceDisplay? by remember { mutableStateOf(null) }
-            val activeTheme by themeManager.collectTheme()
 
             fun DeviceDisplay.isLoading(): Boolean = loadingDeviceDisplay != null && loadingDeviceDisplay == this
 
-            AppTheme(activeTheme) {
+            AppTheme(state.activeTheme) {
                 Surface {
                     OnePane(viewingContent = {
                         OneTitle(text = "Select content directory")
@@ -76,7 +68,7 @@ class SelectContentDirectoryActivity : ComponentActivity() {
                                 .fillMaxWidth()
                                 .padding(8.dp)
                         ) {
-                            Crossfade(targetState = contentDirectories.isEmpty()) { isEmpty ->
+                            Crossfade(targetState = state.contentDirectories.isEmpty()) { isEmpty ->
                                 if (isEmpty)
                                     Row(
                                         modifier = Modifier.padding(
@@ -96,12 +88,12 @@ class SelectContentDirectoryActivity : ComponentActivity() {
                                     LazyColumn(
                                         modifier = Modifier.fillMaxWidth(),
                                         content = {
-                                            itemsIndexed(contentDirectories) { index, item ->
+                                            itemsIndexed(state.contentDirectories) { index, item ->
                                                 Column(modifier = Modifier.clickable(enabled = loadingDeviceDisplay == null) {
                                                     loadingDeviceDisplay = item
 
                                                     lifecycleScope.launch(Dispatchers.IO) {
-                                                        when (upnpManager
+                                                        when (viewModel
                                                             .selectContentDirectoryAsync(item.upnpDevice)
                                                             .await()
                                                         ) {
@@ -123,7 +115,7 @@ class SelectContentDirectoryActivity : ComponentActivity() {
                                                         LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                                                     }
 
-                                                    if (contentDirectories.size > 1 && index != contentDirectories.size - 1) {
+                                                    if (state.contentDirectories.size > 1 && index != state.contentDirectories.size - 1) {
                                                         Divider(modifier = Modifier.fillMaxWidth())
                                                     }
                                                 }
@@ -160,5 +152,4 @@ class SelectContentDirectoryActivity : ComponentActivity() {
     override fun onBackPressed() {
         finishAndRemoveTask()
     }
-
 }

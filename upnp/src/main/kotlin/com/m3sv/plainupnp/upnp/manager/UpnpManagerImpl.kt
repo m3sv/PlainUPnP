@@ -167,22 +167,6 @@ class UpnpManagerImpl @Inject constructor(
         onResult(transportInfo, positionInfo)
     }
 
-
-    override fun selectContentDirectory(position: Int) {
-        launch {
-            val contentDirectory = contentDirectoryObservable
-                .currentContentDirectories[position]
-                .upnpDevice
-
-            contentDirectoryObservable.selectedContentDirectory = contentDirectory
-
-            safeNavigateTo(
-                folderId = ROOT_FOLDER_ID,
-                folderName = contentDirectory.friendlyName
-            )
-        }
-    }
-
     override fun selectContentDirectoryAsync(upnpDevice: UpnpDevice): Deferred<Result> = async {
         contentDirectoryObservable.selectedContentDirectory = upnpDevice
 
