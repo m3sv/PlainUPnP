@@ -6,7 +6,7 @@ import org.fourthline.cling.support.model.item.ImageItem
 import org.fourthline.cling.support.model.item.VideoItem
 
 sealed class ClingMedia(item: DIDLObject) : ClingDIDLObject(item) {
-    class Video(item: VideoItem) : ClingMedia(item)
-    class Image(item: ImageItem) : ClingMedia(item)
-    class Audio(item: AudioItem) : ClingMedia(item)
+    data class Video(private val item: VideoItem) : ClingMedia(item)
+    data class Image(private val item: ImageItem) : ClingMedia(item)
+    data class Audio(private val item: AudioItem) : ClingMedia(item)
 }

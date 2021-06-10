@@ -25,4 +25,6 @@ package com.m3sv.plainupnp.upnp.didl
 
 import org.fourthline.cling.support.model.container.Container
 
-class ClingContainer(item: Container) : ClingDIDLObject(item)
+data class ClingContainer(private val item: Container) : ClingDIDLObject(item) {
+    override fun toString(): String = super.toString()
+}

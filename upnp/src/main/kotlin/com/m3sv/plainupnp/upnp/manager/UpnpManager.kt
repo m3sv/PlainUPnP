@@ -4,7 +4,6 @@ import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.SpinnerItem
-import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.playback.PlaybackManager
 import com.m3sv.plainupnp.upnp.volume.UpnpVolumeManager
@@ -16,11 +15,8 @@ interface UpnpManager : UpnpVolumeManager, PlaybackManager {
     val renderers: Flow<List<DeviceDisplay>>
     val contentDirectories: Flow<List<DeviceDisplay>>
     val upnpRendererState: Flow<UpnpRendererState>
-    val folderChangeFlow: Flow<Folder>
     val navigationStack: Flow<List<Folder>>
 
-    fun getCurrentFolderContents(): List<ClingDIDLObject>
-    fun getCurrentFolderName(): String
     fun navigateBack()
     fun navigateTo(folder: Folder)
     fun navigateTo(id: String, folderName: String): Flow<Result>

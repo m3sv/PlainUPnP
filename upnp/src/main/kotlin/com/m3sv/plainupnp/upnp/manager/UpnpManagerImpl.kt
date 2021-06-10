@@ -15,6 +15,7 @@ import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.discovery.device.RendererDiscoveryObservable
 import com.m3sv.plainupnp.upnp.folder.Folder
+import com.m3sv.plainupnp.upnp.folder.FolderModel
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import com.m3sv.plainupnp.upnp.usecase.LaunchLocallyUseCase
 import com.m3sv.plainupnp.upnp.util.*
@@ -31,7 +32,6 @@ import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
-import kotlin.properties.Delegates
 
 private const val MAX_PROGRESS = 100
 private const val ROOT_FOLDER_ID = "0"
@@ -59,12 +59,10 @@ class UpnpManagerImpl @Inject constructor(
     private var isLocal: Boolean = false
 
     private val upnpInnerStateChannel = MutableSharedFlow<UpnpRendererState>()
+
     override val upnpRendererState: Flow<UpnpRendererState> = upnpInnerStateChannel
     override val contentDirectories: Flow<List<DeviceDisplay>> = contentDirectoryObservable()
     override val renderers: Flow<List<DeviceDisplay>> = rendererDiscoveryObservable()
-
-    private val folderChange = MutableSharedFlow<Folder>(1)
-    override val folderChangeFlow: Flow<Folder> = folderChange
 
     private val updateChannel = MutableSharedFlow<Pair<Item, Service<*, *>>?>()
 
@@ -168,6 +166,7 @@ class UpnpManagerImpl @Inject constructor(
     }
 
     override fun selectContentDirectoryAsync(upnpDevice: UpnpDevice): Deferred<Result> = async {
+        folderStack.value = listOf()
         contentDirectoryObservable.selectedContentDirectory = upnpDevice
 
         safeNavigateTo(
@@ -268,25 +267,25 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun playNext() {
         launch {
-            if (currentIndex in 0 until currentContent.size - 1)
-                renderItem(RenderItem(currentContent[++currentIndex])).collect()
+            if (currentIndex in 0 until currentContent.value.size - 1)
+                renderItem(RenderItem(currentContent.value[++currentIndex])).collect()
         }
     }
 
     override fun playItem(id: String): Flow<Result> = flow {
-        val item = currentContent.find { it.id == id }
+        val item = currentContent.value.find { it.id == id }
         if (item == null) {
             emit(Result.Error)
         } else {
-            currentIndex = currentContent.indexOf(item)
+            currentIndex = currentContent.value.indexOf(item)
             renderItem(RenderItem(item))
         }
     }.flowOn(Dispatchers.IO)
 
     override fun playPrevious() {
         launch {
-            if (currentIndex in 1 until currentContent.size)
-                renderItem(RenderItem(currentContent[--currentIndex])).collect()
+            if (currentIndex in 1 until currentContent.value.size)
+                renderItem(RenderItem(currentContent.value[--currentIndex])).collect()
         }
     }
 
@@ -363,14 +362,14 @@ class UpnpManagerImpl @Inject constructor(
     override suspend fun getVolume(): Flow<Int> = getRcService().map { service -> volumeRepository.getVolume(service) }
 
     override fun navigateTo(folder: Folder) {
-        val index = folderStack.indexOf(folder)
+        val index = folderStack.value.indexOf(folder)
 
         if (index == -1) {
             Timber.e("Folder $folder isn't found in navigation stack!")
             return
         }
 
-        folderStack = folderStack.subList(0, index + 1)
+        folderStack.value = folderStack.value.subList(0, index + 1)
     }
 
     override fun navigateTo(id: String, folderName: String): Flow<Result> = flow {
@@ -383,7 +382,7 @@ class UpnpManagerImpl @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override fun navigateBack() {
-        folderStack = folderStack.dropLast(1)
+        folderStack.value = folderStack.value.dropLast(1)
     }
 
     override fun togglePlayback() {
@@ -400,23 +399,11 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    private var currentContent = listOf<ClingDIDLObject>()
+    private var currentContent: MutableStateFlow<List<ClingDIDLObject>> = MutableStateFlow(listOf())
 
-    private var currentFolderName: String = ""
+    private val folderStack: MutableStateFlow<List<Folder>> = MutableStateFlow(listOf())
 
-    override fun getCurrentFolderContents(): List<ClingDIDLObject> = currentContent
-
-    override fun getCurrentFolderName(): String = currentFolderName
-
-    private var folderStack: List<Folder> by Delegates.observable(emptyList()) { _, _, new ->
-        launch {
-            _navigationStack.emit(new)
-        }
-    }
-
-    private val _navigationStack: MutableSharedFlow<List<Folder>> = MutableSharedFlow(1)
-
-    override val navigationStack: Flow<List<Folder>> = _navigationStack.onEach { folders ->
+    override val navigationStack: Flow<List<Folder>> = folderStack.onEach { folders ->
         if (folders.isEmpty()) {
             stopUpdate()
             rendererDiscoveryObservable.selectRenderer(null)
@@ -427,6 +414,8 @@ class UpnpManagerImpl @Inject constructor(
         folderId: String,
         folderName: String,
     ): Result {
+        Timber.d("Navigating to $folderId with name $folderName")
+
         val selectedDevice = contentDirectoryObservable.selectedContentDirectory
 
         return if (selectedDevice == null) {
@@ -440,26 +429,32 @@ class UpnpManagerImpl @Inject constructor(
                 return Result.Error
             }
 
-            currentContent = upnpRepository.browse(service, folderId)
-            currentFolderName = folderName.replace(UpnpContentRepositoryImpl.USER_DEFINED_PREFIX, "")
+            currentContent.value = upnpRepository.browse(service, folderId)
+            val currentFolderName = folderName.replace(UpnpContentRepositoryImpl.USER_DEFINED_PREFIX, "")
 
             val folder = when (folderId) {
-                ROOT_FOLDER_ID -> Folder.Root(folderId, currentFolderName, currentContent)
-                else -> {
-                    Folder.SubFolder(
+                ROOT_FOLDER_ID -> Folder.Root(
+                    FolderModel(
                         id = folderId,
                         title = currentFolderName,
-                        contents = currentContent,
+                        contents = currentContent.value
                     )
-                }
+                )
+                else -> Folder.SubFolder(
+                    FolderModel(
+                        id = folderId,
+                        title = currentFolderName,
+                        contents = currentContent.value
+                    )
+                )
             }
 
-            folderStack = when (folder) {
+            folderStack.value = when (folder) {
                 is Folder.Root -> listOf(folder)
                 is Folder.SubFolder -> folderStack
+                    .value
                     .toMutableList()
                     .apply { add(folder) }
-                    .toSet()
                     .toList()
             }
 
@@ -496,6 +491,5 @@ class UpnpManagerImpl @Inject constructor(
     private fun <T> Flow<T>.catch(message: String): Flow<T> = catch { e -> Timber.e(e, message) }
 }
 
-@JvmInline
-value class RenderItem(val didlItem: ClingDIDLObject)
+inline class RenderItem(val didlItem: ClingDIDLObject)
 

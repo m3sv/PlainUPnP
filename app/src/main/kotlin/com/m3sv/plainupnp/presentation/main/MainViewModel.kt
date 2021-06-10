@@ -22,14 +22,18 @@ import javax.inject.Inject
 data class MainViewState(
     val upnpRendererState: UpnpRendererState = UpnpRendererState.Empty,
     val spinnerItemsBundle: SpinnerItemsBundle = SpinnerItemsBundle.empty,
-    val navigationStack: List<Folder> = listOf(),
     val activeTheme: ThemeOption = ThemeOption.System,
-    val enableThumbnails: Boolean = false
+    val enableThumbnails: Boolean = false,
 )
 
 sealed class VolumeUpdate(val volume: Int) {
     class Show(volume: Int) : VolumeUpdate(volume)
     class Hide(volume: Int) : VolumeUpdate(volume)
+}
+
+sealed class Navigation {
+    data class Folders(val folders: List<Folder>) : Navigation()
+    object Empty : Navigation()
 }
 
 @HiltViewModel
@@ -42,7 +46,7 @@ class MainViewModel @Inject constructor(
 
     val isConnectedToRenderer: Flow<Boolean> = upnpManager.isConnectedToRenderer
 
-    val volume = volumeManager
+    val volume: StateFlow<VolumeUpdate> = volumeManager
         .volumeFlow
         .flatMapLatest { volume ->
             flow {
@@ -50,7 +54,27 @@ class MainViewModel @Inject constructor(
                 delay(2500)
                 emit(VolumeUpdate.Hide(volume))
             }
-        }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = VolumeUpdate.Hide(-1)
+        )
+
+    private val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
+
+    private val _filterText: MutableStateFlow<String> = MutableStateFlow("")
+    val filterText: StateFlow<String> = _filterText
+
+    val navigation: StateFlow<Navigation> = upnpManager
+        .navigationStack
+        .filterNot { it.isEmpty() }
+        .map { folders -> Navigation.Folders(folders) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = Navigation.Empty
+        )
 
     private val upnpState = upnpManager
         .upnpRendererState
@@ -63,22 +87,21 @@ class MainViewModel @Inject constructor(
             SpinnerItemsBundle(items)
         }
 
-    private val navigationStack: Flow<List<Folder>> = upnpManager.navigationStack
-
-    val finishActivityFlow: Flow<Unit> = navigationStack.filter { it.isEmpty() }.map { }
+    val finishActivityFlow: Flow<Unit> = upnpManager
+        .navigationStack
+        .filter { it.isEmpty() }
+        .map { }
 
     val viewState: StateFlow<MainViewState> =
         combine(
             upnpState,
             renderers,
-            navigationStack.filterNot { it.isEmpty() },
             themeManager.theme,
             preferencesRepository.preferences.map { it.enableThumbnails }
-        ) { upnpRendererState, spinnerItemsBundle, navigationStack, activeTheme, enableThumbnails ->
+        ) { upnpRendererState, spinnerItemsBundle, activeTheme, enableThumbnails ->
             MainViewState(
                 upnpRendererState = upnpRendererState,
                 spinnerItemsBundle = spinnerItemsBundle,
-                navigationStack = navigationStack,
                 activeTheme = activeTheme,
                 enableThumbnails = enableThumbnails
             )
@@ -88,10 +111,17 @@ class MainViewModel @Inject constructor(
             initialValue = MainViewState(activeTheme = themeManager.theme.value)
         )
 
-    fun itemClick(item: ClingDIDLObject): Flow<Result> = when (item) {
-        is ClingContainer -> navigateTo(item.id, item.title)
-        is ClingMedia -> upnpManager.playItem(item.id)
-        else -> error("Unknown cling item")
+    fun itemClick(item: ClingDIDLObject) {
+        viewModelScope.launch {
+            when (item) {
+                is ClingContainer -> navigateTo(item.id, item.title)
+                    .onStart { _loading.value = true }
+                    .onCompletion { _loading.value = false }
+                    .collect()
+                is ClingMedia -> upnpManager.playItem(item.id).collect()
+                else -> error("Unknown cling item")
+            }
+        }
     }
 
     fun moveTo(progress: Int) {
@@ -123,6 +153,12 @@ class MainViewModel @Inject constructor(
 
     fun navigateTo(folder: Folder) {
         upnpManager.navigateTo(folder)
+    }
+
+    fun filterInput(text: String) {
+        viewModelScope.launch {
+            _filterText.emit(text)
+        }
     }
 
     private fun navigateTo(id: String, title: String): Flow<Result> = upnpManager.navigateTo(id, title)
