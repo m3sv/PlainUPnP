@@ -14,7 +14,7 @@ import com.m3sv.plainupnp.common.R
 fun BoxScope.OneToolbar(
     modifier: Modifier = Modifier,
     onBackClick: (() -> Unit)? = null,
-    content: @Composable BoxScope.() -> Unit,
+    content: @Composable RowScope.() -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -24,7 +24,12 @@ fun BoxScope.OneToolbar(
         horizontalArrangement = Arrangement.End
     ) {
         if (onBackClick != null) {
-            IconButton(modifier = Modifier.padding(8.dp), onClick = onBackClick) {
+            IconButton(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .padding(vertical = 8.dp),
+                onClick = onBackClick
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_back),
                     contentDescription = null
@@ -32,9 +37,12 @@ fun BoxScope.OneToolbar(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        Box(modifier = Modifier.padding(8.dp)) {
+        Row(
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = 8.dp)
+                .padding(end = 8.dp)
+        ) {
             content()
         }
     }

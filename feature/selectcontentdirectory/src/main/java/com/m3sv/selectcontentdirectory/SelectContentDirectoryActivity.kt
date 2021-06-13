@@ -57,6 +57,8 @@ class SelectContentDirectoryActivity : ComponentActivity() {
                     OnePane(viewingContent = {
                         OneTitle(text = "Select content directory")
                         OneToolbar {
+                            Spacer(modifier = Modifier.weight(1f))
+
                             Image(
                                 modifier = Modifier
                                     .clickable { handleGearClick() }

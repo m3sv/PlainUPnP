@@ -5,11 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.SpinnerItem
-import com.m3sv.plainupnp.upnp.didl.ClingContainer
-import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
-import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import com.m3sv.plainupnp.upnp.folder.Folder
-import com.m3sv.plainupnp.upnp.manager.Result
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -26,11 +22,6 @@ data class MainViewState(
 sealed class VolumeUpdate(val volume: Int) {
     class Show(volume: Int) : VolumeUpdate(volume)
     class Hide(volume: Int) : VolumeUpdate(volume)
-}
-
-sealed class Navigation {
-    data class Folders(val folders: List<Folder>) : Navigation()
-    object Empty : Navigation()
 }
 
 @HiltViewModel
@@ -60,16 +51,16 @@ class MainViewModel @Inject constructor(
     val loading: StateFlow<Boolean> = _loading
 
     private val _filterText: MutableStateFlow<String> = MutableStateFlow("")
+
     val filterText: StateFlow<String> = _filterText
 
-    val navigation: StateFlow<Navigation> = upnpManager
+    val navigation: StateFlow<List<Folder>> = upnpManager
         .navigationStack
         .filterNot { it.isEmpty() }
-        .map { folders -> Navigation.Folders(folders) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
-            initialValue = Navigation.Empty
+            initialValue = listOf()
         )
 
     private val upnpState = upnpManager
@@ -105,18 +96,13 @@ class MainViewModel @Inject constructor(
             initialValue = MainViewState()
         )
 
-    fun itemClick(item: ClingDIDLObject) {
-        when (item) {
-            is ClingContainer -> viewModelScope.launch {
-                navigateTo(item.id, item.title)
-                    .onStart { _loading.value = true }
-                    .onCompletion { _loading.value = false }
-                    .collect()
-            }
-            is ClingMedia -> viewModelScope.launch {
-                upnpManager.playItem(item.id).collect()
-            }
-            else -> error("Unknown cling item")
+    fun itemClick(id: String) {
+        viewModelScope.launch {
+            upnpManager
+                .itemClick(id)
+                .onStart { _loading.value = true }
+                .onCompletion { _loading.value = false }
+                .collect()
         }
     }
 
@@ -156,6 +142,4 @@ class MainViewModel @Inject constructor(
             _filterText.emit(text)
         }
     }
-
-    private fun navigateTo(id: String, title: String): Flow<Result> = upnpManager.navigateTo(id, title)
 }

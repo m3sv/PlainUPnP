@@ -11,7 +11,10 @@ import com.m3sv.plainupnp.upnp.CDevice
 import com.m3sv.plainupnp.upnp.ContentUpdateState
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl
 import com.m3sv.plainupnp.upnp.UpnpRepository
+import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
+import com.m3sv.plainupnp.upnp.didl.ClingMedia
+import com.m3sv.plainupnp.upnp.didl.MiscItem
 import com.m3sv.plainupnp.upnp.discovery.device.ContentDirectoryDiscoveryObservable
 import com.m3sv.plainupnp.upnp.discovery.device.RendererDiscoveryObservable
 import com.m3sv.plainupnp.upnp.folder.Folder
@@ -167,6 +170,7 @@ class UpnpManagerImpl @Inject constructor(
 
     override fun selectContentDirectoryAsync(upnpDevice: UpnpDevice): Deferred<Result> = async {
         folderStack.value = listOf()
+        contentCache.clear()
         contentDirectoryObservable.selectedContentDirectory = upnpDevice
 
         safeNavigateTo(
@@ -200,29 +204,35 @@ class UpnpManagerImpl @Inject constructor(
             return flowOf(Result.Success)
         }
 
-        return getAvService()
-            .flatMapLatest { service ->
-                val didlItem = item.didlItem.didlObject as Item
-                val uri = didlItem.firstResource?.value ?: error("First resource or its value is null!")
-                val didlType = didlType(didlItem)
+        return flow<Result> {
+            getAvService()
+                .flatMapLatest { service ->
+                    val didlItem = item.didlItem.didlObject as Item
+                    val uri = didlItem.firstResource?.value ?: error("First resource or its value is null!")
+                    val didlType = didlType(didlItem)
 
-                upnpRepository
-                    .setUriFlow(service, uri, newMetadata(didlItem, didlType))
-                    .flatMapLatest { upnpRepository.playFlow(service) }
-                    .onEach {
-                        when (didlItem) {
-                            is AudioItem,
-                            is VideoItem,
-                            -> updateChannel.emit(didlItem to service)
-                            is ImageItem -> upnpInnerStateChannel.emit(UpnpRendererState.Empty)
+                    upnpRepository
+                        .setUriFlow(service, uri, newMetadata(didlItem, didlType))
+                        .flatMapLatest { upnpRepository.playFlow(service) }
+                        .onEach {
+                            when (didlItem) {
+                                is AudioItem,
+                                is VideoItem,
+                                -> updateChannel.emit(didlItem to service)
+                                is ImageItem -> upnpInnerStateChannel.emit(UpnpRendererState.Empty)
+                            }
                         }
-                    }
-                    .map<Any, Result> { Result.Success }
-            }
-            .catch { e ->
-                Timber.e(e)
-                emit(Result.Error)
-            }
+                }
+                .onCompletion { cause ->
+                    if (cause == null)
+                        emit(Result.Success)
+                    else
+                        emit(Result.Error)
+                }.collect()
+        }.catch { e ->
+            Timber.e(e)
+            emit(Result.Error)
+        }
     }
 
     private fun newMetadata(
@@ -272,14 +282,19 @@ class UpnpManagerImpl @Inject constructor(
         }
     }
 
-    override fun playItem(id: String): Flow<Result> = flow {
-        val item = currentContent.value.find { it.id == id }
-        if (item == null) {
-            emit(Result.Error)
-        } else {
-            currentIndex = currentContent.value.indexOf(item)
-            emitAll(renderItem(RenderItem(item)))
+    override fun itemClick(id: String): Flow<Result> {
+        val item: ClingDIDLObject = contentCache[id] ?: return flowOf(Result.Error)
+
+        return when (item) {
+            is ClingContainer -> navigateTo(item.id, item.title)
+            is ClingMedia -> playItem(item)
+            is MiscItem -> flowOf(Result.Error)
         }
+    }
+
+    private fun playItem(item: ClingDIDLObject): Flow<Result> = flow {
+        currentIndex = currentContent.value.indexOf(item)
+        emitAll(renderItem(RenderItem(item)))
     }.flowOn(Dispatchers.IO)
 
     override fun playPrevious() {
@@ -373,7 +388,7 @@ class UpnpManagerImpl @Inject constructor(
         folderStack.value = folderStack.value.subList(0, index + 1)
     }
 
-    override fun navigateTo(id: String, folderName: String): Flow<Result> = flow {
+    private fun navigateTo(id: String, folderName: String): Flow<Result> = flow {
         emit(
             safeNavigateTo(
                 folderId = id,
@@ -399,6 +414,8 @@ class UpnpManagerImpl @Inject constructor(
                 .collect()
         }
     }
+
+    private val contentCache: MutableMap<String, ClingDIDLObject> = mutableMapOf()
 
     private var currentContent: MutableStateFlow<List<ClingDIDLObject>> = MutableStateFlow(listOf())
 
@@ -431,6 +448,7 @@ class UpnpManagerImpl @Inject constructor(
             }
 
             currentContent.value = upnpRepository.browse(service, folderId)
+            contentCache.putAll(currentContent.value.associateBy { it.id })
             val currentFolderName = folderName.replace(UpnpContentRepositoryImpl.USER_DEFINED_PREFIX, "")
 
             val folder = when (folderId) {
