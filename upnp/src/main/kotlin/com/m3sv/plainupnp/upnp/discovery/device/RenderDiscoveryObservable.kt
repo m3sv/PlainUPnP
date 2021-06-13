@@ -5,6 +5,7 @@ import com.m3sv.plainupnp.data.upnp.*
 import com.m3sv.plainupnp.upnp.resourceproviders.UpnpResourceProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
@@ -76,7 +77,7 @@ class RendererDiscoveryObservable @Inject constructor(
             }
 
             private fun sendRenderers() {
-                if (!isClosedForSend) sendBlocking(currentRenderers)
+                if (!isClosedForSend) trySendBlocking(currentRenderers)
             }
         }
 
