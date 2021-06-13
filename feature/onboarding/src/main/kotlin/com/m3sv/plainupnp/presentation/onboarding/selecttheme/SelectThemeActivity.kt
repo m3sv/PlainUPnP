@@ -21,14 +21,14 @@ class SelectThemeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val activeTheme by themeManager.collectTheme()
+            val currentTheme by themeManager.collectTheme()
 
-            AppTheme(activeTheme) {
+            AppTheme(currentTheme.isDarkTheme()) {
                 Surface {
                     SelectThemeScreen(
                         titleText = stringResource(R.string.set_theme_label),
                         buttonText = stringResource(id = R.string.done),
-                        selectedTheme = activeTheme,
+                        selectedTheme = currentTheme,
                         onThemeOptionSelected = themeManager::setTheme,
                         onClick = { finish() },
                         onBackClick = { finish() }

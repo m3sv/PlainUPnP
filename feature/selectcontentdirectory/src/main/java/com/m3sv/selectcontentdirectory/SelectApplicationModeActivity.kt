@@ -33,9 +33,9 @@ class SelectApplicationModeActivity : ComponentActivity() {
             var modeChanged by remember { mutableStateOf(false) }
 
             val preferences by preferencesRepository.preferences.collectAsState()
-            val activeTheme by themeManager.collectTheme()
+            val currentTheme by themeManager.collectTheme()
 
-            AppTheme(activeTheme) {
+            AppTheme(currentTheme.isDarkTheme()) {
                 Surface {
                     val clickListener = {
                         if (modeChanged)

@@ -278,7 +278,7 @@ class UpnpManagerImpl @Inject constructor(
             emit(Result.Error)
         } else {
             currentIndex = currentContent.value.indexOf(item)
-            renderItem(RenderItem(item))
+            emitAll(renderItem(RenderItem(item)))
         }
     }.flowOn(Dispatchers.IO)
 
@@ -328,7 +328,8 @@ class UpnpManagerImpl @Inject constructor(
                             duration = currentDuration
                         )
                     )
-                }.onEach { pauseUpdate = false }
+                }
+                .onEach { pauseUpdate = false }
                 .catch("Failed to seek to progress!")
                 .collect()
         }

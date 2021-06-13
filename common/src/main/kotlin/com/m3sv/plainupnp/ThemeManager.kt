@@ -17,8 +17,10 @@ class ThemeManager @Inject constructor(private val preferencesRepository: Prefer
 
     private val scope = MainScope()
 
-    val theme: StateFlow<ThemeOption> =
-        preferencesRepository.theme.stateIn(scope, SharingStarted.Eagerly, ThemeOption.System)
+    private val theme: StateFlow<ThemeOption> =
+        preferencesRepository
+            .theme
+            .stateIn(scope, SharingStarted.Eagerly, ThemeOption.System)
 
     fun setTheme(mode: ThemeOption) {
         scope.launch { preferencesRepository.setApplicationTheme(mode) }

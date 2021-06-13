@@ -4,6 +4,7 @@ import com.m3sv.plainupnp.upnp.actions.Action
 import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
+import com.m3sv.plainupnp.upnp.didl.MiscItem
 import kotlinx.coroutines.channels.sendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -101,7 +102,7 @@ class BrowseAction @Inject constructor(controlPoint: ControlPoint) :
                 is VideoItem -> ClingMedia.Video(item)
                 is AudioItem -> ClingMedia.Audio(item)
                 is ImageItem -> ClingMedia.Image(item)
-                else -> ClingDIDLObject(item)
+                else -> MiscItem(item)
             }
 
             result.add(clingItem)

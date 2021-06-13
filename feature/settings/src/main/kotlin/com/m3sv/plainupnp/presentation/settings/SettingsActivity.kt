@@ -56,16 +56,16 @@ class SettingsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val preferences by preferencesRepository.preferences.collectAsState()
-            val activeTheme by themeManager.collectTheme()
+            val currentTheme by themeManager.collectTheme()
 
-            AppTheme(activeTheme) {
+            AppTheme(currentTheme.isDarkTheme()) {
                 Surface {
                     OnePane(viewingContent = {
                         OneTitle(stringResource(id = R.string.title_feature_settings))
                         OneToolbar(onBackClick = { finish() }) {}
                     }) {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                            ThemeSection(activeTheme)
+                            ThemeSection(currentTheme)
                             ApplicationModeSection(preferences)
                             UpnpSection(preferences)
                             AboutSection()

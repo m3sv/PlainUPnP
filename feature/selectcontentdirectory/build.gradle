@@ -21,12 +21,11 @@ dependencies {
     implementation project(':common')
     implementation project(':upnp')
 
-    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.hilt.android.core)
     implementation(libs.bundles.cling)
     implementation(libs.bundles.compose)
     implementation(libs.bundles.nanohttpd)
-    implementation(libs.hilt.android.core)
 
     kapt(libs.hilt.compiler)
 

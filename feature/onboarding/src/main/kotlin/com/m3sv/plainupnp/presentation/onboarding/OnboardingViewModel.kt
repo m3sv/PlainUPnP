@@ -36,8 +36,6 @@ class OnboardingViewModel @Inject constructor(
 
     val pauseInBackground = mutableStateOf(preferences.pauseInBackground)
 
-    val activeTheme: Flow<ThemeOption> = themeManager.theme
-
     val contentUris: StateFlow<List<UriWrapper>> = preferences
         .persistedUrisFlow()
         .stateIn(viewModelScope, SharingStarted.Lazily, preferences.getUris())

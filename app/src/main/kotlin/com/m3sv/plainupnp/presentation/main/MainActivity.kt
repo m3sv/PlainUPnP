@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.glide.rememberGlidePainter
 import com.m3sv.plainupnp.R
+import com.m3sv.plainupnp.ThemeManager
+import com.m3sv.plainupnp.common.util.pass
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.compose.widgets.OneToolbar
 import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
@@ -51,9 +53,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.fourthline.cling.support.model.TransportState
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var themeManager: ThemeManager
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -85,6 +91,7 @@ class MainActivity : ComponentActivity() {
             val navigation: Navigation by viewModel.navigation.collectAsState()
             val filterText by viewModel.filterText.collectAsState()
             val loading by viewModel.loading.collectAsState()
+            val currentTheme by themeManager.collectTheme()
 
             fun clearFilterText() {
                 viewModel.filterInput("")
@@ -113,7 +120,7 @@ class MainActivity : ComponentActivity() {
                     isButtonExpanded = isButtonExpanded,
                     isDialogExpanded = isDialogExpanded,
                     selectedRenderer = selectedRenderer,
-                    renderers = viewState.spinnerItemsBundle,
+                    renderers = viewState.renderers,
                     onDismissDialog = {
                         isDialogExpanded = false
                         collapseExpandedButton()
@@ -140,146 +147,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            val folder: @Composable () -> Unit = {
-                when (val navigationState = navigation) {
-                    is Navigation.Folders -> {
-                        LazyColumn {
-                            items(navigationState.folders.last().folderModel.contents) { item ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { viewModel.itemClick(item) }
-                                ) {
-                                    Spacer(modifier = Modifier.padding(8.dp))
-                                    val imageModifier = Modifier.size(32.dp)
-                                    when (item) {
-                                        is ClingContainer -> {
-                                            Image(
-                                                painterResource(id = R.drawable.ic_folder_24dp),
-                                                contentDescription = null,
-                                                modifier = imageModifier
-                                            )
-                                        }
-                                        is ClingMedia -> {
-                                            when (item) {
-                                                is ClingMedia.Audio -> Image(
-                                                    painterResource(id = R.drawable.ic_music),
-                                                    contentDescription = null,
-                                                    imageModifier
-                                                )
-                                                is ClingMedia.Image -> Image(
-                                                    if (viewState.enableThumbnails) {
-                                                        rememberGlidePainter(item.uri)
-                                                    } else {
-                                                        painterResource(id = R.drawable.ic_image)
-                                                    },
-                                                    contentDescription = null,
-                                                    imageModifier
-                                                )
-                                                is ClingMedia.Video -> Image(
-                                                    if (viewState.enableThumbnails) {
-                                                        rememberGlidePainter(item.uri)
-                                                    } else {
-                                                        painterResource(id = R.drawable.ic_video)
-                                                    },
-                                                    contentDescription = null,
-                                                    imageModifier
-                                                )
-                                            }
-                                        }
-                                    }
-
-                                    val title = if (item is ClingContainer) {
-                                        item.title.replace(USER_DEFINED_PREFIX, "")
-                                    } else {
-                                        item.title
-                                    }
-
-                                    Text(
-                                        text = title,
-                                        maxLines = 1,
-                                        modifier = Modifier.padding(8.dp),
-                                        style = MaterialTheme.typography.subtitle1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            val navigationBar: @Composable ColumnScope.() -> Unit = {
-                val height = 4.dp
-
-                when (val navigationState = navigation) {
-                    is Navigation.Folders -> {
-                        LazyRow(verticalAlignment = Alignment.CenterVertically) {
-                            val contents = navigationState.folders
-                            itemsIndexed(contents) { index, item ->
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.clickable {
-                                        viewModel.navigateTo(item)
-                                    }
-                                ) {
-                                    val labelColor: Color
-                                    val arrowColor: Color
-
-                                    if (index == contents.size - 1) {
-                                        labelColor = MaterialTheme.colors.primary
-                                        arrowColor = MaterialTheme.colors.primary
-                                    } else {
-                                        labelColor = Color.Unspecified
-                                        arrowColor = MaterialTheme.colors.onSurface
-                                    }
-
-                                    if (index == 0) {
-                                        Image(
-                                            painter = painterResource(id = R.drawable.ic_folder_home),
-                                            contentDescription = null,
-                                            modifier = Modifier.padding(start = 16.dp, end = 4.dp)
-                                        )
-                                    } else {
-                                        Image(
-                                            painterResource(id = R.drawable.ic_next_folder),
-                                            null,
-                                            colorFilter = ColorFilter.tint(arrowColor)
-                                        )
-                                    }
-
-                                    Box {
-                                        Text(
-                                            text = item.folderModel.title,
-                                            style = MaterialTheme.typography.caption,
-                                            fontWeight = FontWeight.Bold,
-                                            color = labelColor,
-                                            modifier = Modifier.padding(8.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Box(
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .height(height)
-                ) {
-                    androidx.compose.animation.AnimatedVisibility(visible = loading) {
-                        LinearProgressIndicator(
-                            modifier = Modifier
-                                .height(height)
-                                .fillMaxWidth()
-                        )
-                    }
-                }
-            }
-
-            AppTheme(viewState.activeTheme) {
+            AppTheme(currentTheme.isDarkTheme()) {
                 val configuration = LocalConfiguration.current
 
                 Surface {
@@ -289,26 +157,28 @@ class MainActivity : ComponentActivity() {
                                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
                                 Landscape(
                                     upnpState = viewState.upnpRendererState,
+                                    navigation = navigation,
+                                    loading = loading,
+                                    showThumbnails = viewState.enableThumbnails,
                                     showControls = viewState.upnpRendererState !is UpnpRendererState.Empty,
                                     floatingActionButton = floatingActionButtonFactory,
                                     filter = filterFactory,
                                     onFilterClick = onFilterClick,
                                     onSettingsClick = onSettingsClick,
-                                    folder = folder,
-                                    navigationBar = navigationBar
                                 )
                             }
                             else -> {
                                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                                 Portrait(
                                     upnpState = viewState.upnpRendererState,
+                                    navigation = navigation,
+                                    loading = loading,
+                                    showThumbnails = viewState.enableThumbnails,
                                     showControls = viewState.upnpRendererState !is UpnpRendererState.Empty,
                                     floatingActionButton = floatingActionButtonFactory,
                                     filter = filterFactory,
                                     onFilterClick = onFilterClick,
                                     onSettingsClick = onSettingsClick,
-                                    folder = folder,
-                                    navigationBar = navigationBar
                                 )
                             }
                         }
@@ -360,41 +230,167 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun Screen(
+    private fun Portrait(
+        upnpState: UpnpRendererState,
+        navigation: Navigation,
+        showControls: Boolean,
+        loading: Boolean,
+        showThumbnails: Boolean,
         onFilterClick: () -> Unit,
         onSettingsClick: () -> Unit,
-        navigationBar: @Composable ColumnScope.() -> Unit,
-        body: @Composable ColumnScope.() -> Unit
+        floatingActionButton: @Composable BoxScope.() -> Unit,
+        filter: @Composable () -> Unit,
     ) {
         Column {
             Toolbar(
                 onSettingsClick = onSettingsClick,
                 onFilterClick = onFilterClick
             )
-            navigationBar()
-            body()
-        }
-    }
 
-    @Composable
-    private fun Portrait(
-        upnpState: UpnpRendererState,
-        showControls: Boolean,
-        onFilterClick: () -> Unit,
-        onSettingsClick: () -> Unit,
-        floatingActionButton: @Composable BoxScope.() -> Unit,
-        filter: @Composable () -> Unit,
-        folder: @Composable () -> Unit,
-        navigationBar: @Composable ColumnScope.() -> Unit,
-    ) {
-        Screen(
-            onFilterClick = onFilterClick,
-            onSettingsClick = onSettingsClick,
-            navigationBar = navigationBar
-        ) {
+            Row {
+                when (navigation) {
+                    is Navigation.Folders -> {
+                        LazyRow(verticalAlignment = Alignment.CenterVertically) {
+                            val contents = navigation.folders
+                            itemsIndexed(contents) { index, item ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.clickable {
+                                        viewModel.navigateTo(item)
+                                    }
+                                ) {
+                                    val labelColor: Color
+                                    val arrowColor: Color
+
+                                    if (index == contents.size - 1) {
+                                        labelColor = MaterialTheme.colors.primary
+                                        arrowColor = MaterialTheme.colors.primary
+                                    } else {
+                                        labelColor = Color.Unspecified
+                                        arrowColor = MaterialTheme.colors.onSurface
+                                    }
+
+                                    if (index == 0) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.ic_folder_home),
+                                            contentDescription = null,
+                                            modifier = Modifier.padding(start = 16.dp, end = 4.dp)
+                                        )
+                                    } else {
+                                        Image(
+                                            painterResource(id = R.drawable.ic_next_folder),
+                                            null,
+                                            colorFilter = ColorFilter.tint(arrowColor)
+                                        )
+                                    }
+
+                                    Box {
+                                        Text(
+                                            text = item.folderModel.title,
+                                            style = MaterialTheme.typography.caption,
+                                            fontWeight = FontWeight.Bold,
+                                            color = labelColor,
+                                            modifier = Modifier.padding(8.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Navigation.Empty -> pass
+                }
+            }
+
+            Row {
+                val height = 4.dp
+
+                Box(
+                    modifier = Modifier
+                        .padding(top = 4.dp)
+                        .height(height)
+                ) {
+                    androidx.compose.animation.AnimatedVisibility(visible = loading) {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .height(height)
+                                .fillMaxWidth()
+                        )
+                    }
+                }
+            }
+
             Row(modifier = Modifier.weight(1f)) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    folder()
+                    when (navigation) {
+                        is Navigation.Folders -> {
+                            LazyColumn {
+                                items(navigation.folders.last().folderModel.contents) { item ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { viewModel.itemClick(item) }
+                                    ) {
+                                        Spacer(modifier = Modifier.padding(8.dp))
+                                        val imageModifier = Modifier.size(32.dp)
+                                        when (item) {
+                                            is ClingContainer -> {
+                                                Image(
+                                                    painterResource(id = R.drawable.ic_folder_24dp),
+                                                    contentDescription = null,
+                                                    modifier = imageModifier
+                                                )
+                                            }
+                                            is ClingMedia -> {
+                                                when (item) {
+                                                    is ClingMedia.Audio -> Image(
+                                                        painterResource(id = R.drawable.ic_music),
+                                                        contentDescription = null,
+                                                        imageModifier
+                                                    )
+                                                    is ClingMedia.Image -> Image(
+                                                        if (showThumbnails) {
+                                                            rememberGlidePainter(item.uri)
+                                                        } else {
+                                                            painterResource(id = R.drawable.ic_image)
+                                                        },
+                                                        contentDescription = null,
+                                                        imageModifier
+                                                    )
+                                                    is ClingMedia.Video -> Image(
+                                                        if (showThumbnails) {
+                                                            rememberGlidePainter(item.uri)
+                                                        } else {
+                                                            painterResource(id = R.drawable.ic_video)
+                                                        },
+                                                        contentDescription = null,
+                                                        imageModifier
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                        val title = if (item is ClingContainer) {
+                                            item.title.replace(USER_DEFINED_PREFIX, "")
+                                        } else {
+                                            item.title
+                                        }
+
+                                        Text(
+                                            text = title,
+                                            maxLines = 1,
+                                            modifier = Modifier.padding(8.dp),
+                                            style = MaterialTheme.typography.subtitle1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        Navigation.Empty -> pass
+                    }
+
                     androidx.compose.animation.AnimatedVisibility(
                         visible = !showControls,
                         modifier = Modifier.align(Alignment.BottomEnd)
@@ -415,50 +411,187 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun Landscape(
         upnpState: UpnpRendererState,
+        navigation: Navigation,
         showControls: Boolean,
+        loading: Boolean,
+        showThumbnails: Boolean,
         onFilterClick: () -> Unit,
         onSettingsClick: () -> Unit,
         floatingActionButton: @Composable BoxScope.() -> Unit,
         filter: @Composable () -> Unit,
-        folder: @Composable () -> Unit,
-        navigationBar: @Composable ColumnScope.() -> Unit
     ) {
-        Screen(
-            onFilterClick = onFilterClick,
-            onSettingsClick = onSettingsClick,
-            navigationBar = navigationBar,
-        ) {
-            Row {
-                Box {
-                    Row(modifier = Modifier.fillMaxSize()) {
+        Column {
+            Toolbar(
+                onSettingsClick = onSettingsClick,
+                onFilterClick = onFilterClick
+            )
+
+            when (navigation) {
+                is Navigation.Folders -> {
+                    val folders = navigation.folders
+
+                    Row {
+                        LazyRow(verticalAlignment = Alignment.CenterVertically) {
+                            itemsIndexed(folders) { index, item ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.clickable {
+                                        viewModel.navigateTo(item)
+                                    }
+                                ) {
+                                    val labelColor: Color
+                                    val arrowColor: Color
+
+                                    if (index == folders.size - 1) {
+                                        labelColor = MaterialTheme.colors.primary
+                                        arrowColor = MaterialTheme.colors.primary
+                                    } else {
+                                        labelColor = Color.Unspecified
+                                        arrowColor = MaterialTheme.colors.onSurface
+                                    }
+
+                                    if (index == 0) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.ic_folder_home),
+                                            contentDescription = null,
+                                            modifier = Modifier.padding(start = 16.dp, end = 4.dp)
+                                        )
+                                    } else {
+                                        Image(
+                                            painterResource(id = R.drawable.ic_next_folder),
+                                            null,
+                                            colorFilter = ColorFilter.tint(arrowColor)
+                                        )
+                                    }
+
+                                    Box {
+                                        Text(
+                                            text = item.folderModel.title,
+                                            style = MaterialTheme.typography.caption,
+                                            fontWeight = FontWeight.Bold,
+                                            color = labelColor,
+                                            modifier = Modifier.padding(8.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Row {
+                        val height = 4.dp
+
                         Box(
                             modifier = Modifier
-                                .fillMaxHeight()
-                                .weight(1f)
+                                .padding(top = 4.dp)
+                                .height(height)
                         ) {
-                            folder()
-                        }
-
-                        AnimatedVisibility(
-                            visible = showControls,
-                            enter = fadeIn() + expandHorizontally(Alignment.Start),
-                            exit = fadeOut() + shrinkHorizontally(Alignment.Start),
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .weight(1f)
-                                .align(Alignment.Top)
-                        ) {
-                            Controls(upnpState, 0.dp, 8.dp)
+                            androidx.compose.animation.AnimatedVisibility(visible = loading) {
+                                LinearProgressIndicator(
+                                    modifier = Modifier
+                                        .height(height)
+                                        .fillMaxWidth()
+                                )
+                            }
                         }
                     }
 
-                    androidx.compose.animation.AnimatedVisibility(
-                        visible = !showControls,
-                        modifier = Modifier.align(Alignment.BottomEnd)
-                    ) {
-                        floatingActionButton()
+                    Row {
+                        Box {
+                            Row(modifier = Modifier.fillMaxSize()) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .weight(1f)
+                                ) {
+                                    LazyColumn {
+                                        items(folders.last().folderModel.contents) { item ->
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable { viewModel.itemClick(item) }
+                                            ) {
+                                                Spacer(modifier = Modifier.padding(8.dp))
+                                                val imageModifier = Modifier.size(32.dp)
+                                                when (item) {
+                                                    is ClingContainer -> {
+                                                        Image(
+                                                            painterResource(id = R.drawable.ic_folder_24dp),
+                                                            contentDescription = null,
+                                                            modifier = imageModifier
+                                                        )
+                                                    }
+                                                    is ClingMedia -> {
+                                                        when (item) {
+                                                            is ClingMedia.Audio -> Image(
+                                                                painterResource(id = R.drawable.ic_music),
+                                                                contentDescription = null,
+                                                                imageModifier
+                                                            )
+                                                            is ClingMedia.Image -> Image(
+                                                                if (showThumbnails) {
+                                                                    rememberGlidePainter(item.uri)
+                                                                } else {
+                                                                    painterResource(id = R.drawable.ic_image)
+                                                                },
+                                                                contentDescription = null,
+                                                                imageModifier
+                                                            )
+                                                            is ClingMedia.Video -> Image(
+                                                                if (showThumbnails) {
+                                                                    rememberGlidePainter(item.uri)
+                                                                } else {
+                                                                    painterResource(id = R.drawable.ic_video)
+                                                                },
+                                                                contentDescription = null,
+                                                                imageModifier
+                                                            )
+                                                        }
+                                                    }
+                                                }
+
+                                                val title = if (item is ClingContainer) {
+                                                    item.title.replace(USER_DEFINED_PREFIX, "")
+                                                } else {
+                                                    item.title
+                                                }
+
+                                                Text(
+                                                    text = title,
+                                                    maxLines = 1,
+                                                    modifier = Modifier.padding(8.dp),
+                                                    style = MaterialTheme.typography.subtitle1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
+                                /*AnimatedVisibility(
+                                    visible = showControls,
+                                    enter = fadeIn() + expandHorizontally(Alignment.Start),
+                                    exit = fadeOut() + shrinkHorizontally(Alignment.Start),
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .weight(1f)
+                                        .align(Alignment.Top)
+                                ) {
+                                    Controls(upnpState, 0.dp, 8.dp)
+                                }*/
+                            }
+
+                            androidx.compose.animation.AnimatedVisibility(
+                                visible = !showControls,
+                                modifier = Modifier.align(Alignment.BottomEnd)
+                            ) {
+                                floatingActionButton()
+                            }
+                        }
                     }
                 }
+                Navigation.Empty -> pass
             }
 
             filter()

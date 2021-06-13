@@ -10,7 +10,6 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.m3sv.plainupnp.ThemeManager
-import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.compose.util.AppTheme
 import com.m3sv.plainupnp.data.upnp.UriWrapper
 import com.m3sv.plainupnp.presentation.onboarding.OnboardingViewModel
@@ -30,9 +29,9 @@ class ConfigureFolderActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val contentUris: List<UriWrapper> by viewModel.contentUris.collectAsState()
-            val activeTheme by viewModel.activeTheme.collectAsState(ThemeOption.System)
+            val theme by themeManager.collectTheme()
 
-            AppTheme(activeTheme) {
+            AppTheme(theme.isDarkTheme()) {
                 Surface {
                     SelectFoldersScreen(
                         contentUris = contentUris,

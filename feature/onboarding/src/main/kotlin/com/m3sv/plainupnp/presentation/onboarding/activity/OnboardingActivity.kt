@@ -16,6 +16,7 @@ import androidx.compose.material.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.core.app.ActivityCompat
+import com.m3sv.plainupnp.ThemeManager
 import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
 import com.m3sv.plainupnp.applicationmode.SelectApplicationModeScreen
@@ -36,6 +37,9 @@ class OnboardingActivity : ComponentActivity() {
 
     @Inject
     lateinit var onboardingManager: OnboardingManager
+
+    @Inject
+    lateinit var themeManager: ThemeManager
 
     private var onPermissionResult by mutableStateOf(-1)
 
@@ -64,7 +68,7 @@ class OnboardingActivity : ComponentActivity() {
 
         val contentUris by viewModel.contentUris.collectAsState()
         val currentScreen by viewModel.currentScreen.collectAsState()
-        val activeTheme by viewModel.activeTheme.collectAsState(ThemeOption.System)
+        val currentTheme by themeManager.collectTheme()
 
         val imageContainerEnabled = remember { viewModel.imageContainerEnabled }
         val videoContainerEnabled = remember { viewModel.videoContainerEnabled }
@@ -72,7 +76,7 @@ class OnboardingActivity : ComponentActivity() {
         val pauseInBackground = remember { viewModel.pauseInBackground }
 
         Content(
-            selectedTheme = activeTheme,
+            currentTheme = currentTheme,
             currentScreen = currentScreen,
             onSelectTheme = viewModel::onSelectTheme,
             onSelectApplicationMode = viewModel::onSelectMode,
@@ -88,7 +92,7 @@ class OnboardingActivity : ComponentActivity() {
 
     @Composable
     private fun Content(
-        selectedTheme: ThemeOption,
+        currentTheme: ThemeOption,
         currentScreen: OnboardingScreen,
         contentUris: List<UriWrapper> = listOf(),
         onSelectTheme: (ThemeOption) -> Unit,
@@ -100,7 +104,7 @@ class OnboardingActivity : ComponentActivity() {
         audioContainerEnabled: MutableState<Boolean>,
         backgroundMode: MutableState<Boolean>,
     ) {
-        AppTheme(selectedTheme) {
+        AppTheme(currentTheme.isDarkTheme()) {
             Crossfade(targetState = currentScreen) { screen ->
                 Surface {
                     when (screen) {
@@ -109,7 +113,7 @@ class OnboardingActivity : ComponentActivity() {
                         OnboardingScreen.SelectTheme -> SelectThemeScreen(
                             titleText = stringResource(R.string.set_theme_label),
                             buttonText = stringResource(id = R.string.next),
-                            selectedTheme = selectedTheme,
+                            selectedTheme = currentTheme,
                             onThemeOptionSelected = onSelectTheme,
                             onClick = onNextClick,
                             onBackClick = onBackClick

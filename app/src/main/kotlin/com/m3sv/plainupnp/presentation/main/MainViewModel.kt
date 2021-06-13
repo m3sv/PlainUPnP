@@ -2,8 +2,6 @@ package com.m3sv.plainupnp.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.m3sv.plainupnp.ThemeManager
-import com.m3sv.plainupnp.ThemeOption
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.SpinnerItem
@@ -21,8 +19,7 @@ import javax.inject.Inject
 
 data class MainViewState(
     val upnpRendererState: UpnpRendererState = UpnpRendererState.Empty,
-    val spinnerItemsBundle: SpinnerItemsBundle = SpinnerItemsBundle.empty,
-    val activeTheme: ThemeOption = ThemeOption.System,
+    val renderers: SpinnerItemsBundle = SpinnerItemsBundle.empty,
     val enableThumbnails: Boolean = false,
 )
 
@@ -39,7 +36,6 @@ sealed class Navigation {
 @HiltViewModel
 class MainViewModel @Inject constructor(
     preferencesRepository: PreferencesRepository,
-    themeManager: ThemeManager,
     private val upnpManager: UpnpManager,
     private val volumeManager: BufferedVolumeManager,
 ) : ViewModel() {
@@ -96,31 +92,31 @@ class MainViewModel @Inject constructor(
         combine(
             upnpState,
             renderers,
-            themeManager.theme,
             preferencesRepository.preferences.map { it.enableThumbnails }
-        ) { upnpRendererState, spinnerItemsBundle, activeTheme, enableThumbnails ->
+        ) { upnpRendererState, spinnerItemsBundle, enableThumbnails ->
             MainViewState(
                 upnpRendererState = upnpRendererState,
-                spinnerItemsBundle = spinnerItemsBundle,
-                activeTheme = activeTheme,
+                renderers = spinnerItemsBundle,
                 enableThumbnails = enableThumbnails
             )
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
-            initialValue = MainViewState(activeTheme = themeManager.theme.value)
+            initialValue = MainViewState()
         )
 
     fun itemClick(item: ClingDIDLObject) {
-        viewModelScope.launch {
-            when (item) {
-                is ClingContainer -> navigateTo(item.id, item.title)
+        when (item) {
+            is ClingContainer -> viewModelScope.launch {
+                navigateTo(item.id, item.title)
                     .onStart { _loading.value = true }
                     .onCompletion { _loading.value = false }
                     .collect()
-                is ClingMedia -> upnpManager.playItem(item.id).collect()
-                else -> error("Unknown cling item")
             }
+            is ClingMedia -> viewModelScope.launch {
+                upnpManager.playItem(item.id).collect()
+            }
+            else -> error("Unknown cling item")
         }
     }
 
