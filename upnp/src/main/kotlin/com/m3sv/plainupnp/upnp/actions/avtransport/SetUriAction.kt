@@ -3,7 +3,7 @@ package com.m3sv.plainupnp.upnp.actions.avtransport
 import com.m3sv.plainupnp.upnp.actions.Action
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.fourthline.cling.controlpoint.ControlPoint
@@ -30,7 +30,8 @@ class SetUriAction @Inject constructor(controlPoint: ControlPoint) :
 
             override fun success(invocation: ActionInvocation<out Service<*, *>>?) {
                 Timber.tag(tag).d("Set uri: $uri success")
-                sendBlocking(Unit)
+                trySendBlocking(Unit)
+                close()
             }
 
             override fun failure(

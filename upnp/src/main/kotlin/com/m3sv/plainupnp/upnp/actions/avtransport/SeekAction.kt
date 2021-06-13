@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.upnp.actions.avtransport
 
 import com.m3sv.plainupnp.upnp.actions.Action
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.fourthline.cling.controlpoint.ControlPoint
@@ -25,7 +25,8 @@ class SeekAction @Inject constructor(controlPoint: ControlPoint) :
         val action = object : Seek(service, time) {
             override fun success(invocation: ActionInvocation<*>?) {
                 Timber.tag(tag).v("Seek to $time success")
-                sendBlocking(Unit)
+                trySendBlocking(Unit)
+                close()
             }
 
             override fun failure(

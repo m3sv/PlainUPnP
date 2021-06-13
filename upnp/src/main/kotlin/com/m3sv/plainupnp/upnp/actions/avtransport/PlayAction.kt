@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.upnp.actions.avtransport
 
 import com.m3sv.plainupnp.upnp.actions.Action
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.fourthline.cling.controlpoint.ControlPoint
@@ -28,7 +28,8 @@ class PlayAction @Inject constructor(controlPoint: ControlPoint) :
             val action = object : Play(service) {
                 override fun success(invocation: ActionInvocation<out Service<*, *>>?) {
                     Timber.tag(tag).d("Play success")
-                    sendBlocking(Unit)
+                    trySendBlocking(Unit)
+                    close()
                 }
 
                 override fun failure(

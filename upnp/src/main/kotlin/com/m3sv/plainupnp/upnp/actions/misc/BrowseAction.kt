@@ -5,7 +5,7 @@ import com.m3sv.plainupnp.upnp.didl.ClingContainer
 import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import com.m3sv.plainupnp.upnp.didl.MiscItem
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.fourthline.cling.controlpoint.ControlPoint
@@ -40,7 +40,8 @@ class BrowseAction @Inject constructor(controlPoint: ControlPoint) :
         ) {
             override fun received(actionInvocation: ActionInvocation<*>, didl: DIDLContent) {
                 Timber.d("Received browse response")
-                sendBlocking(buildContentList(didl))
+                trySendBlocking(buildContentList(didl))
+                close()
             }
 
             override fun updateStatus(status: Status) {

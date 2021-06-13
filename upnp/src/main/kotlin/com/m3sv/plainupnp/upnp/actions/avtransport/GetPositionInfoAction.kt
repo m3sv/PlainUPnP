@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.upnp.actions.avtransport
 
 import com.m3sv.plainupnp.upnp.actions.Action
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.fourthline.cling.controlpoint.ControlPoint
@@ -31,7 +31,8 @@ class GetPositionInfoAction @Inject constructor(controlPoint: ControlPoint) :
                 positionInfo: PositionInfo,
             ) {
                 Timber.tag(tag).d("Received position info")
-                sendBlocking(positionInfo)
+                trySendBlocking(positionInfo)
+                close()
             }
 
             override fun failure(

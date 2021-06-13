@@ -2,7 +2,7 @@ package com.m3sv.plainupnp.upnp.actions.avtransport
 
 import com.m3sv.plainupnp.upnp.actions.Action
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.sendBlocking
+import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import org.fourthline.cling.controlpoint.ControlPoint
@@ -29,7 +29,8 @@ class GetTransportInfoAction @Inject constructor(controlPoint: ControlPoint) :
                 transportInfo: TransportInfo,
             ) {
                 Timber.tag(tag).d("Received transport info")
-                sendBlocking(transportInfo)
+                trySendBlocking(transportInfo)
+                close()
             }
 
             override fun failure(
