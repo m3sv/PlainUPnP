@@ -39,14 +39,14 @@
 
         <activity
             android:name=".presentation.settings.SettingsActivity"
-            android:label="@string/app_name"
             android:exported="false"
+            android:label="@string/app_name"
             android:resizeableActivity="true" />
 
         <activity
             android:name=".presentation.onboarding.activity.OnboardingActivity"
             android:exported="false"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar" />
+            android:resizeableActivity="true" />
 
         <service
             android:name=".upnp.PlainUpnpAndroidService"
