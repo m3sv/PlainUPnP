@@ -13,12 +13,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class MainViewState(
-    val upnpRendererState: UpnpRendererState = UpnpRendererState.Empty,
-    val renderers: SpinnerItemsBundle = SpinnerItemsBundle.empty,
-    val enableThumbnails: Boolean = false,
-)
-
 sealed class VolumeUpdate(val volume: Int) {
     class Show(volume: Int) : VolumeUpdate(volume)
     class Hide(volume: Int) : VolumeUpdate(volume)
@@ -63,37 +57,27 @@ class MainViewModel @Inject constructor(
             initialValue = listOf()
         )
 
-    private val upnpState = upnpManager
+    val upnpState: StateFlow<UpnpRendererState> = upnpManager
         .upnpRendererState
-        .onStart { emit(UpnpRendererState.Empty) }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, UpnpRendererState.Empty)
 
-    private val renderers = upnpManager
+    val renderers: StateFlow<List<SpinnerItem>> = upnpManager
         .renderers
-        .map { devices ->
-            val items = devices.map { SpinnerItem(it.upnpDevice.friendlyName, it) }
-            SpinnerItemsBundle(items)
-        }
+        .map { devices -> devices.map { SpinnerItem(it.upnpDevice.friendlyName, it) } }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, listOf())
 
     val finishActivityFlow: Flow<Unit> = upnpManager
         .navigationStack
         .filter { it.isEmpty() }
         .map { }
 
-    val viewState: StateFlow<MainViewState> =
-        combine(
-            upnpState,
-            renderers,
-            preferencesRepository.preferences.map { it.enableThumbnails }
-        ) { upnpRendererState, spinnerItemsBundle, enableThumbnails ->
-            MainViewState(
-                upnpRendererState = upnpRendererState,
-                renderers = spinnerItemsBundle,
-                enableThumbnails = enableThumbnails
-            )
-        }.stateIn(
+    val showThumbnails: StateFlow<Boolean> = preferencesRepository
+        .preferences
+        .map { it.enableThumbnails }
+        .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
-            initialValue = MainViewState()
+            initialValue = false
         )
 
     fun itemClick(id: String) {

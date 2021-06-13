@@ -45,6 +45,7 @@ import com.m3sv.plainupnp.compose.widgets.OneToolbar
 import com.m3sv.plainupnp.core.eventbus.events.ExitApplication
 import com.m3sv.plainupnp.core.eventbus.subscribe
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
+import com.m3sv.plainupnp.presentation.SpinnerItem
 import com.m3sv.plainupnp.presentation.settings.SettingsActivity
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.USER_DEFINED_PREFIX
 import com.m3sv.plainupnp.upnp.didl.ClingContainer
@@ -78,11 +79,13 @@ class MainActivity : ComponentActivity() {
             var isButtonExpanded by rememberSaveable { mutableStateOf(true) }
             var showFilter by rememberSaveable { mutableStateOf(false) }
 
-            val viewState by viewModel.viewState.collectAsState()
             val volume by viewModel.volume.collectAsState()
             val folders: List<Folder> by viewModel.navigation.collectAsState()
             val filterText by viewModel.filterText.collectAsState()
             val loading by viewModel.loading.collectAsState()
+            val renderers by viewModel.renderers.collectAsState()
+            val upnpState by viewModel.upnpState.collectAsState()
+            val showThumbnails by viewModel.showThumbnails.collectAsState()
             val currentTheme by themeManager.collectTheme()
 
             fun clearFilterText() {
@@ -112,7 +115,7 @@ class MainActivity : ComponentActivity() {
                     isButtonExpanded = isButtonExpanded,
                     isDialogExpanded = isDialogExpanded,
                     selectedRenderer = selectedRenderer,
-                    renderers = viewState.renderers,
+                    renderers = renderers,
                     onDismissDialog = {
                         isDialogExpanded = false
                         collapseExpandedButton()
@@ -140,7 +143,7 @@ class MainActivity : ComponentActivity() {
             val configuration = LocalConfiguration.current
 
             AppTheme(currentTheme.isDarkTheme()) {
-                val showControls = viewState.upnpRendererState !is UpnpRendererState.Empty
+                val showControls = upnpState !is UpnpRendererState.Empty
 
                 Surface {
                     Box {
@@ -148,10 +151,10 @@ class MainActivity : ComponentActivity() {
                             Configuration.ORIENTATION_LANDSCAPE -> {
                                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
                                 Landscape(
-                                    upnpState = viewState.upnpRendererState,
+                                    upnpState = upnpState,
                                     folders = folders,
                                     loading = loading,
-                                    showThumbnails = viewState.enableThumbnails,
+                                    showThumbnails = showThumbnails,
                                     showControls = showControls,
                                     floatingActionButton = { createFloatingActionButton() },
                                     filter = filter,
@@ -162,10 +165,10 @@ class MainActivity : ComponentActivity() {
                             else -> {
                                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                                 Portrait(
-                                    upnpState = viewState.upnpRendererState,
+                                    upnpState = upnpState,
                                     folders = folders,
                                     loading = loading,
-                                    showThumbnails = viewState.enableThumbnails,
+                                    showThumbnails = showThumbnails,
                                     showControls = showControls,
                                     floatingActionButton = { createFloatingActionButton() },
                                     filter = filter,
@@ -579,7 +582,7 @@ class MainActivity : ComponentActivity() {
         isButtonExpanded: Boolean,
         isDialogExpanded: Boolean,
         selectedRenderer: String,
-        renderers: SpinnerItemsBundle,
+        renderers: List<SpinnerItem>,
         onDismissDialog: () -> Unit,
         onExpandButton: () -> Unit,
         onSelectRenderer: (String) -> Unit,
@@ -612,7 +615,7 @@ class MainActivity : ComponentActivity() {
                 onDismissRequest = onDismissDialog,
                 offset = DpOffset((16).dp, (0).dp),
             ) {
-                for (item in renderers.devices) {
+                for (item in renderers) {
                     DropdownMenuItem(onClick = {
                         onDismissDialog()
                         onSelectRenderer(item.name)
