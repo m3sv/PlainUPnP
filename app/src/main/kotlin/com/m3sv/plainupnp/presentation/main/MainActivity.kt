@@ -48,9 +48,6 @@ import com.m3sv.plainupnp.data.upnp.UpnpRendererState
 import com.m3sv.plainupnp.presentation.SpinnerItem
 import com.m3sv.plainupnp.presentation.settings.SettingsActivity
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.USER_DEFINED_PREFIX
-import com.m3sv.plainupnp.upnp.didl.ClingContainer
-import com.m3sv.plainupnp.upnp.didl.ClingDIDLObject
-import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import com.m3sv.plainupnp.upnp.folder.Folder
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -58,6 +55,9 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.fourthline.cling.support.model.TransportState
 import javax.inject.Inject
+
+typealias ComposableFactory = @Composable () -> Unit
+typealias ModifierComposableFactory = @Composable (Modifier) -> Unit
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -80,13 +80,18 @@ class MainActivity : ComponentActivity() {
             var showFilter by rememberSaveable { mutableStateOf(false) }
 
             val volume by viewModel.volume.collectAsState()
-            val folders: List<Folder> by viewModel.navigation.collectAsState()
+            val navigationBarState: List<Folder> by viewModel.navigation.collectAsState()
+            val folderContentsState: FolderContents by viewModel.folderContents.collectAsState()
             val filterText by viewModel.filterText.collectAsState()
             val loading by viewModel.loading.collectAsState()
             val renderers by viewModel.renderers.collectAsState()
             val upnpState by viewModel.upnpState.collectAsState()
             val showThumbnails by viewModel.showThumbnails.collectAsState()
             val currentTheme by themeManager.collectTheme()
+
+            val showControls = upnpState !is UpnpRendererState.Empty
+
+            val configuration = LocalConfiguration.current
 
             fun clearFilterText() {
                 viewModel.filterInput("")
@@ -128,7 +133,7 @@ class MainActivity : ComponentActivity() {
                     })
             }
 
-            val filter: @Composable () -> Unit = {
+            val filter: ComposableFactory = {
                 AnimatedVisibility(visible = showFilter) {
                     Filter(
                         initialValue = filterText,
@@ -140,11 +145,22 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            val configuration = LocalConfiguration.current
+            val folderContents: ModifierComposableFactory = { modifier ->
+                Folders(
+                    contents = folderContentsState,
+                    showThumbnails = showThumbnails,
+                    modifier = modifier
+                )
+            }
+
+            val navigationBar: ModifierComposableFactory = { modifier ->
+                NavigationBar(
+                    folders = navigationBarState,
+                    modifier = modifier
+                )
+            }
 
             AppTheme(currentTheme.isDarkTheme()) {
-                val showControls = upnpState !is UpnpRendererState.Empty
-
                 Surface {
                     Box {
                         when (configuration.orientation) {
@@ -152,26 +168,26 @@ class MainActivity : ComponentActivity() {
                                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
                                 Landscape(
                                     upnpState = upnpState,
-                                    folders = folders,
                                     loading = loading,
-                                    showThumbnails = showThumbnails,
                                     showControls = showControls,
                                     floatingActionButton = { createFloatingActionButton() },
                                     filter = filter,
+                                    navigationBar = navigationBar,
                                     onFilterClick = onFilterClick,
                                     onSettingsClick = onSettingsClick,
+                                    folderContents = folderContents
                                 )
                             }
                             else -> {
                                 window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                                 Portrait(
                                     upnpState = upnpState,
-                                    folders = folders,
+                                    folderContents = folderContents,
                                     loading = loading,
-                                    showThumbnails = showThumbnails,
                                     showControls = showControls,
                                     floatingActionButton = { createFloatingActionButton() },
                                     filter = filter,
+                                    navigationBar = navigationBar,
                                     onFilterClick = onFilterClick,
                                     onSettingsClick = onSettingsClick,
                                 )
@@ -239,14 +255,14 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun Portrait(
         upnpState: UpnpRendererState,
-        folders: List<Folder>,
         showControls: Boolean,
         loading: Boolean,
-        showThumbnails: Boolean,
         onFilterClick: () -> Unit,
         onSettingsClick: () -> Unit,
+        navigationBar: ModifierComposableFactory,
+        folderContents: ModifierComposableFactory,
         floatingActionButton: @Composable BoxScope.() -> Unit,
-        filter: @Composable () -> Unit,
+        filter: ComposableFactory,
     ) {
         Column {
             Toolbar(
@@ -254,20 +270,12 @@ class MainActivity : ComponentActivity() {
                 onFilterClick = onFilterClick
             )
 
-            AnimatedVisibility(visible = folders.isNotEmpty()) {
-                NavigationBar(folders, modifier = Modifier.padding(start = 16.dp))
-            }
-
+            navigationBar(Modifier.padding(start = 16.dp))
             LoadingIndicator(loading)
 
             Row(modifier = Modifier.weight(1f)) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    if (folders.isNotEmpty()) {
-                        Folders(
-                            contents = folders.last().folderModel.contents,
-                            showThumbnails = showThumbnails
-                        )
-                    }
+                    folderContents(Modifier)
 
                     androidx.compose.animation.AnimatedVisibility(
                         visible = !showControls,
@@ -289,21 +297,21 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun Landscape(
         upnpState: UpnpRendererState,
-        folders: List<Folder>,
         showControls: Boolean,
         loading: Boolean,
-        showThumbnails: Boolean,
         onFilterClick: () -> Unit,
         onSettingsClick: () -> Unit,
-        floatingActionButton: @Composable () -> Unit,
-        filter: @Composable () -> Unit,
+        folderContents: ModifierComposableFactory,
+        navigationBar: ModifierComposableFactory,
+        floatingActionButton: ComposableFactory,
+        filter: ComposableFactory,
     ) {
         Column {
             Toolbar(
                 onSettingsClick = onSettingsClick,
                 onFilterClick = onFilterClick
             ) {
-                NavigationBar(folders)
+                navigationBar(Modifier)
             }
 
             LoadingIndicator(loading)
@@ -325,16 +333,7 @@ class MainActivity : ComponentActivity() {
 
             Row(modifier = Modifier.fillMaxSize()) {
                 Column(modifier = Modifier.weight(folderWeight)) {
-                    AnimatedVisibility(
-                        visible = folders.isNotEmpty(),
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Folders(
-                            contents = folders.last().folderModel.contents,
-                            showThumbnails = showThumbnails
-                        )
-                    }
-
+                    folderContents(Modifier.weight(1f))
                     filter()
                 }
 
@@ -372,76 +371,78 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun Folders(
-        contents: List<ClingDIDLObject>,
+        contents: FolderContents,
         showThumbnails: Boolean,
+        modifier: Modifier = Modifier
     ) {
-        LazyColumn {
-            items(contents) { item ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { viewModel.itemClick(item.id) }
-                ) {
-                    Spacer(
-                        modifier = Modifier.padding(8.dp)
-                    )
-                    val imageModifier = Modifier.size(32.dp)
-                    when (item) {
-                        is ClingContainer -> {
-                            Image(
-                                painterResource(id = R.drawable.ic_folder_24dp),
-                                contentDescription = null,
-                                modifier = imageModifier
+        when (contents) {
+            is FolderContents.Contents -> {
+                LazyColumn(modifier = modifier) {
+                    items(contents.items) { item ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { viewModel.itemClick(item.id) }
+                        ) {
+                            Spacer(
+                                modifier = Modifier.padding(8.dp)
                             )
-                        }
-                        is ClingMedia -> {
-                            when (item) {
-                                is ClingMedia.Audio -> Image(
+                            val imageModifier = Modifier.size(32.dp)
+                            when (item.type) {
+                                ItemType.CONTAINER -> {
+                                    Image(
+                                        painterResource(id = R.drawable.ic_folder_24dp),
+                                        contentDescription = null,
+                                        modifier = imageModifier
+                                    )
+                                }
+                                ItemType.AUDIO -> Image(
                                     painterResource(id = R.drawable.ic_music),
                                     contentDescription = null,
                                     imageModifier
                                 )
-                                is ClingMedia.Image -> Image(
+                                ItemType.IMAGE -> Image(
                                     if (showThumbnails) {
-                                        rememberGlidePainter(
-                                            item.uri
-                                        )
+                                        rememberGlidePainter(item.uri)
                                     } else {
                                         painterResource(id = R.drawable.ic_image)
                                     },
                                     contentDescription = null,
                                     imageModifier
                                 )
-                                is ClingMedia.Video -> Image(
+                                ItemType.VIDEO -> Image(
                                     if (showThumbnails) {
-                                        rememberGlidePainter(
-                                            item.uri
-                                        )
+                                        rememberGlidePainter(item.uri)
                                     } else {
                                         painterResource(id = R.drawable.ic_video)
                                     },
                                     contentDescription = null,
                                     imageModifier
                                 )
+                                ItemType.MISC -> {
+                                    // TODO Handle misc type
+                                }
                             }
+
+                            val title = if (item.type == ItemType.CONTAINER) {
+                                item.title.replace(USER_DEFINED_PREFIX, "")
+                            } else {
+                                item.title
+                            }
+
+                            Text(
+                                text = title,
+                                maxLines = 1,
+                                modifier = Modifier.padding(8.dp),
+                                style = MaterialTheme.typography.subtitle1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
                     }
-
-                    val title = if (item is ClingContainer) {
-                        item.title.replace(USER_DEFINED_PREFIX, "")
-                    } else {
-                        item.title
-                    }
-
-                    Text(
-                        text = title,
-                        maxLines = 1,
-                        modifier = Modifier.padding(8.dp),
-                        style = MaterialTheme.typography.subtitle1,
-                        overflow = TextOverflow.Ellipsis
-                    )
                 }
+            }
+            is FolderContents.Empty -> {
             }
         }
     }

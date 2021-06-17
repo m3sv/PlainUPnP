@@ -8,6 +8,7 @@ import com.m3sv.plainupnp.presentation.SpinnerItem
 import com.m3sv.plainupnp.upnp.folder.Folder
 import com.m3sv.plainupnp.upnp.manager.UpnpManager
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -55,6 +56,34 @@ class MainViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
             initialValue = listOf()
+        )
+
+
+    val folderContents: StateFlow<FolderContents> = combine(
+        navigation.filterNot { it.isEmpty() },
+        filterText
+    ) { folders, filterText ->
+        val newContents = folders
+            .last()
+            .folderModel
+            .contents
+            .filter { it.title.contains(filterText, ignoreCase = true) }
+            .map { clingObject ->
+                ItemViewModel(
+                    id = clingObject.id,
+                    title = clingObject.title,
+                    type = clingObject.toItemType(),
+                    uri = clingObject.uri
+                )
+            }
+
+        FolderContents.Contents(newContents)
+    }
+        .flowOn(Dispatchers.Default)
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Eagerly,
+            FolderContents.Empty
         )
 
     val upnpState: StateFlow<UpnpRendererState> = upnpManager
