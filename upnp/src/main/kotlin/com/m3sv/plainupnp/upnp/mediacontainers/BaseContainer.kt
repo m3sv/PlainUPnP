@@ -22,14 +22,15 @@
  */
 package com.m3sv.plainupnp.upnp.mediacontainers
 
-
-import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl
 import org.fourthline.cling.support.model.WriteStatus
 import org.fourthline.cling.support.model.container.Container
 
+private fun isRoot(parentId: String?) =
+    parentId?.compareTo(UpnpContentRepositoryImpl.ROOT_ID.toString()) == 0
+
 private fun getRelativeId(id: String, parentId: String?): String =
-    if (ContentDirectoryService.isRoot(parentId))
+    if (isRoot(parentId))
         id
     else
         parentId + UpnpContentRepositoryImpl.SEPARATOR + id
@@ -53,8 +54,6 @@ abstract class BaseContainer(
         isRestricted = true
         isSearchable = true
     }
-
-    val relativeId: String = getRelativeId(id, parentID)
 
     val rawId: String = id
 

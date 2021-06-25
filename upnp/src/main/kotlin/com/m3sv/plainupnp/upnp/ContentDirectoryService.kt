@@ -3,7 +3,6 @@ package com.m3sv.plainupnp.upnp
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ALL_ALBUMS
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ALL_ARTISTS
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.AUDIO_ID
-import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ROOT_ID
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.SEPARATOR
 import com.m3sv.plainupnp.upnp.mediacontainers.BaseContainer
 import org.fourthline.cling.support.contentdirectory.AbstractContentDirectoryService
@@ -138,8 +137,5 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
     companion object {
         private val noSuchObject
             get() = ContentDirectoryException(ContentDirectoryErrorCode.NO_SUCH_OBJECT)
-
-        fun isRoot(parentId: String?) =
-            parentId?.compareTo(ROOT_ID.toString()) == 0
     }
 }
