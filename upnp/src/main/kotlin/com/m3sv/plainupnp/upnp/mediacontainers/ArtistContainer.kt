@@ -25,6 +25,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 
 import android.content.ContentResolver
 import android.provider.MediaStore
+import com.m3sv.plainupnp.logging.Log
 import org.fourthline.cling.support.model.container.Container
 
 class ArtistContainer(
@@ -32,6 +33,7 @@ class ArtistContainer(
     parentID: String,
     title: String,
     creator: String,
+    private val log: Log,
     private val baseUrl: String,
     private val contentResolver: ContentResolver
 ) : BaseContainer(
@@ -42,7 +44,7 @@ class ArtistContainer(
 ) {
     private val uri = MediaStore.Audio.Artists.EXTERNAL_CONTENT_URI
 
-    override fun getChildCount(): Int? {
+    override fun getChildCount(): Int {
         val columns = arrayOf(MediaStore.Audio.Artists._ID)
 
         contentResolver
@@ -84,6 +86,7 @@ class ArtistContainer(
                             id,
                             artist,
                             artist,
+                            log,
                             baseUrl,
                             contentResolver,
                             artistId

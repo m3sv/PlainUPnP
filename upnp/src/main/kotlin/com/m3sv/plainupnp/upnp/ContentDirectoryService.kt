@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.upnp
 
+import com.m3sv.plainupnp.logging.Log
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ALL_ALBUMS
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.ALL_ARTISTS
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.AUDIO_ID
@@ -16,8 +17,8 @@ import org.fourthline.cling.support.model.SortCriterion
 import timber.log.Timber
 
 class ContentDirectoryService : AbstractContentDirectoryService() {
-
     lateinit var contentRepository: UpnpContentRepositoryImpl
+    lateinit var log: Log
 
     override fun browse(
         objectID: String,
@@ -53,7 +54,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
 
             return getBrowseResult(container ?: throw noSuchObject)
         } catch (ex: Exception) {
-            Timber.e(ex)
+            log.e(ex, "Couldn't browse $objectID")
             throw ContentDirectoryException(
                 ContentDirectoryErrorCode.CANNOT_PROCESS,
                 ex.toString()
@@ -127,7 +128,7 @@ class ContentDirectoryService : AbstractContentDirectoryService() {
         try {
             answer = DIDLParser().generate(didl)
         } catch (ex: Exception) {
-            Timber.e(ex)
+            log.e(ex, "getBrowseResult failed")
             throw ContentDirectoryException(ContentDirectoryErrorCode.CANNOT_PROCESS, ex.toString())
         }
 

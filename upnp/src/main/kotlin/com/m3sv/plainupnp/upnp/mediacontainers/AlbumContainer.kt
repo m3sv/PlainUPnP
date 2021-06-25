@@ -3,6 +3,7 @@ package com.m3sv.plainupnp.upnp.mediacontainers
 import android.content.ContentResolver
 import android.net.Uri
 import android.provider.MediaStore
+import com.m3sv.plainupnp.logging.Log
 import org.fourthline.cling.support.model.container.Container
 import timber.log.Timber
 
@@ -11,6 +12,7 @@ class AlbumContainer(
     parentID: String,
     title: String,
     creator: String,
+    private val log: Log,
     private val baseUrl: String,
     private val contentResolver: ContentResolver,
     private val artistId: String?
@@ -95,7 +97,7 @@ class AlbumContainer(
                         )
                     )
                 } else {
-                    Timber.e("Unable to get albumId or album")
+                    log.e("Unable to get albumId or album")
                 }
             }
         }

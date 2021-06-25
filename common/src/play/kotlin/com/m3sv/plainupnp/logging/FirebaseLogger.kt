@@ -15,10 +15,16 @@ private fun Throwable.recordException() {
 
 @Singleton
 class Logger @Inject constructor() : Log {
-    override fun e(e: Throwable, remote: Boolean) {
-        Timber.e(e)
-        if (remote) {
-            e.recordException()
+    override fun e(e: Throwable, message: String?, remote: Boolean) {
+        if (message == null) {
+            Timber.e(e)
+            if (remote) {
+                e.recordException()
+            }
+        } else {
+            val throwable = IllegalStateException(message, e)
+            Timber.e(throwable)
+            throwable.recordException()
         }
     }
 

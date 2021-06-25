@@ -3,13 +3,15 @@ package com.m3sv.plainupnp.upnp.usecase
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
+import com.m3sv.plainupnp.logging.Log
 import com.m3sv.plainupnp.upnp.didl.ClingMedia
 import com.m3sv.plainupnp.upnp.manager.RenderItem
-import timber.log.Timber
 import javax.inject.Inject
 
-class LaunchLocallyUseCase @Inject constructor(private val application: Application) {
-
+class LaunchLocallyUseCase @Inject constructor(
+    private val application: Application,
+    private val log: Log
+) {
     operator fun invoke(item: RenderItem) {
         val uri = item.didlItem.uri
         if (uri != null) {
@@ -30,7 +32,7 @@ class LaunchLocallyUseCase @Inject constructor(private val application: Applicat
                         application.startActivity(intent)
                     }
                 } catch (e: Exception) {
-                    Timber.e(e)
+                    log.e(e, "Failed to launch locally")
                 }
             }
         }

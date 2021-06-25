@@ -8,6 +8,7 @@ import androidx.documentfile.provider.DocumentFile
 import com.m3sv.plainupnp.ContentRepository
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.core.persistence.Database
+import com.m3sv.plainupnp.logging.Log
 import com.m3sv.plainupnp.upnp.mediacontainers.*
 import com.m3sv.plainupnp.upnp.util.*
 import comm3svplainupnpcorepersistence.DirectoryCache
@@ -33,6 +34,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
     private val application: Application,
     private val database: Database,
     private val preferencesRepository: PreferencesRepository,
+    private val log: Log
 ) : CoroutineScope, ContentRepository {
 
     override val coroutineContext: CoroutineContext
@@ -46,7 +48,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
         get() = abs(random.nextLong())
 
     private val appName by lazy { application.getString(R.string.app_name) }
-    private val baseUrl: String by lazy { "${getLocalIpAddress(application).hostAddress}:$PORT" }
+    private val baseUrl: String by lazy { "${getLocalIpAddress(application, log).hostAddress}:$PORT" }
 
     private val refreshInternal = MutableSharedFlow<Unit>()
 
@@ -140,12 +142,13 @@ class UpnpContentRepositoryImpl @Inject constructor(
         artistId: String,
         parentId: String,
     ): AlbumContainer = AlbumContainer(
-        artistId,
-        parentId,
-        "",
-        appName,
-        baseUrl,
-        application.contentResolver,
+        id = artistId,
+        parentID = parentId,
+        title = "",
+        creator = appName,
+        log = log,
+        baseUrl = baseUrl,
+        contentResolver = application.contentResolver,
         artistId = artistId
     )
 
@@ -188,7 +191,8 @@ class UpnpContentRepositoryImpl @Inject constructor(
             generateContainerStructure(
                 column,
                 container,
-                externalContentUri) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
+                externalContentUri
+            ) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
                 ImageDirectoryContainer(
                     id = id,
                     parentID = parentID,
@@ -232,6 +236,7 @@ class UpnpContentRepositoryImpl @Inject constructor(
                 AUDIO_ID.toString(),
                 application.getString(R.string.artist),
                 appName,
+                log,
                 baseUrl,
                 application.contentResolver
             ).also { container ->
@@ -240,13 +245,14 @@ class UpnpContentRepositoryImpl @Inject constructor(
             }
 
             AlbumContainer(
-                ALL_ALBUMS.toString(),
-                AUDIO_ID.toString(),
-                application.getString(R.string.album),
-                appName,
-                baseUrl,
-                application.contentResolver,
-                null
+                id = ALL_ALBUMS.toString(),
+                parentID = AUDIO_ID.toString(),
+                title = application.getString(R.string.album),
+                creator = appName,
+                log = log,
+                baseUrl = baseUrl,
+                contentResolver = application.contentResolver,
+                artistId = null
             ).also { container ->
                 addContainer(container)
                 container.addToRegistry()
@@ -267,7 +273,8 @@ class UpnpContentRepositoryImpl @Inject constructor(
                 generateContainerStructure(
                     column,
                     container,
-                    externalContentUri) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
+                    externalContentUri
+                ) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
                     AudioDirectoryContainer(
                         id = id,
                         parentID = parentID,
@@ -317,7 +324,8 @@ class UpnpContentRepositoryImpl @Inject constructor(
                 generateContainerStructure(
                     column,
                     container,
-                    externalContentUri) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
+                    externalContentUri
+                ) { id, parentID, title, creator, baseUrl, contentDirectory, contentResolver ->
                     VideoDirectoryContainer(
                         id = id,
                         parentID = parentID,
@@ -385,7 +393,8 @@ class UpnpContentRepositoryImpl @Inject constructor(
 
     private fun createFolderContainer(uri: Uri, parentId: String): Container? = application
         .contentResolver
-        .query(uri,
+        .query(
+            uri,
             arrayOf(MediaStore.MediaColumns.DISPLAY_NAME),
             null,
             null,
@@ -438,7 +447,8 @@ class UpnpContentRepositoryImpl @Inject constructor(
                         size = size,
                         duration = duration ?: 0L,
                         album = album ?: "",
-                        creator = creator ?: "")
+                        creator = creator ?: ""
+                    )
                 }
                 mime.startsWith("video") -> {
                     parentContainer.addVideoItem(
@@ -455,11 +465,13 @@ class UpnpContentRepositoryImpl @Inject constructor(
             }
         } ?: application
             .contentResolver
-            .query(uri,
+            .query(
+                uri,
                 arrayOf(
                     MediaStore.MediaColumns._ID,
                     MediaStore.MediaColumns.MIME_TYPE
-                ), null, null, null)
+                ), null, null, null
+            )
             ?.use { cursor ->
                 val mimeTypeColumn = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
 
@@ -492,7 +504,8 @@ class UpnpContentRepositoryImpl @Inject constructor(
                                 mime = mimeType,
                                 width = width,
                                 height = height,
-                                size = size)
+                                size = size
+                            )
 
                         }
 

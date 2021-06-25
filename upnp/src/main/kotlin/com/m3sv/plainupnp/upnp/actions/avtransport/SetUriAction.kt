@@ -1,5 +1,6 @@
 package com.m3sv.plainupnp.upnp.actions.avtransport
 
+import com.m3sv.plainupnp.logging.Log
 import com.m3sv.plainupnp.upnp.actions.Action
 import com.m3sv.plainupnp.upnp.trackmetadata.TrackMetadata
 import kotlinx.coroutines.channels.awaitClose
@@ -16,7 +17,7 @@ import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-class SetUriAction @Inject constructor(controlPoint: ControlPoint) :
+class SetUriAction @Inject constructor(controlPoint: ControlPoint, private val log: Log) :
     Action<String, Boolean>(controlPoint) {
 
     fun setUri(
@@ -26,7 +27,7 @@ class SetUriAction @Inject constructor(controlPoint: ControlPoint) :
     ): Flow<Unit> = callbackFlow {
         val tag = "AV"
         Timber.tag(tag).d("Set uri: $uri")
-        val action = object : SetAVTransportURI(service, uri, trackMetadata.xml) {
+        val action = object : SetAVTransportURI(service, uri, trackMetadata.getXml(log)) {
 
             override fun success(invocation: ActionInvocation<out Service<*, *>>?) {
                 Timber.tag(tag).d("Set uri: $uri success")
@@ -51,7 +52,7 @@ class SetUriAction @Inject constructor(controlPoint: ControlPoint) :
         service: Service<*, *>,
         uri: String,
         trackMetadata: TrackMetadata,
-    ): Boolean = invoke(service, uri, trackMetadata.xml)
+    ): Boolean = invoke(service, uri, trackMetadata.getXml(log))
 
     override suspend fun invoke(
         service: Service<*, *>,

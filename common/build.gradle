@@ -5,11 +5,6 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: "com.google.protobuf"
 
-if (isPlay) {
-    apply plugin: 'com.google.gms.google-services'
-    apply plugin: 'com.google.firebase.crashlytics'
-}
-
 android {
     with flavorConfig
 

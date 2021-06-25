@@ -6,6 +6,7 @@ import com.m3sv.plainupnp.data.upnp.DeviceDisplay
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpItemType
 import com.m3sv.plainupnp.data.upnp.UpnpRendererState
+import com.m3sv.plainupnp.logging.Log
 import com.m3sv.plainupnp.presentation.SpinnerItem
 import com.m3sv.plainupnp.upnp.CDevice
 import com.m3sv.plainupnp.upnp.ContentUpdateState
@@ -54,6 +55,7 @@ class UpnpManagerImpl @Inject constructor(
     private val upnpRepository: UpnpRepository,
     private val volumeRepository: VolumeRepository,
     private val contentRepository: UpnpContentRepositoryImpl,
+    private val log: Log
 ) : UpnpManager,
     CoroutineScope {
 
@@ -161,7 +163,7 @@ class UpnpManagerImpl @Inject constructor(
         onResult: (TransportInfo, PositionInfo) -> Unit,
     ) {
         if (transportInfo == null || positionInfo == null) {
-            Timber.e("Exiting combine result! TransportInfo is null: ${transportInfo == null}, PositionInfo is null: ${positionInfo == null}")
+            log.e("Exiting combine result! TransportInfo is null: ${transportInfo == null}, PositionInfo is null: ${positionInfo == null}")
             return
         }
 
@@ -230,7 +232,7 @@ class UpnpManagerImpl @Inject constructor(
                         emit(Result.Error)
                 }.collect()
         }.catch { e ->
-            Timber.e(e)
+            log.e(e)
             emit(Result.Error)
         }
     }
@@ -381,7 +383,7 @@ class UpnpManagerImpl @Inject constructor(
         val index = folderStack.value.indexOf(folder)
 
         if (index == -1) {
-            Timber.e("Folder $folder isn't found in navigation stack!")
+            log.e("Folder $folder isn't found in navigation stack!")
             return
         }
 
@@ -437,7 +439,7 @@ class UpnpManagerImpl @Inject constructor(
         val selectedDevice = contentDirectoryObservable.selectedContentDirectory
 
         return if (selectedDevice == null) {
-            Timber.e("Selected content directory is null!")
+            log.e("Selected content directory is null!")
             Result.Error
         } else {
             val service: Service<*, *>? =
@@ -507,7 +509,7 @@ class UpnpManagerImpl @Inject constructor(
         } ?: error("getRcService: Selected renderer is null!")
     }
 
-    private fun <T> Flow<T>.catch(message: String): Flow<T> = catch { e -> Timber.e(e, message) }
+    private fun <T> Flow<T>.catch(message: String): Flow<T> = catch { e -> log.e(e, message) }
 }
 
 inline class RenderItem(val didlItem: ClingDIDLObject)

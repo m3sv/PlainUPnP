@@ -5,6 +5,7 @@ import android.content.Context
 import com.m3sv.plainupnp.applicationmode.ApplicationMode
 import com.m3sv.plainupnp.common.preferences.PreferencesRepository
 import com.m3sv.plainupnp.common.util.asApplicationMode
+import com.m3sv.plainupnp.logging.Log
 import com.m3sv.plainupnp.upnp.ContentDirectoryService
 import com.m3sv.plainupnp.upnp.PlainUpnpServiceConfiguration
 import com.m3sv.plainupnp.upnp.R
@@ -28,8 +29,9 @@ class AndroidUpnpServiceImpl @Inject constructor(
     application: Application,
     resourceProvider: LocalServiceResourceProvider,
     contentRepository: UpnpContentRepositoryImpl,
+    private val log: Log,
     private val preferencesRepository: PreferencesRepository,
-) : UpnpServiceImpl(PlainUpnpServiceConfiguration(), application) {
+) : UpnpServiceImpl(application, PlainUpnpServiceConfiguration(), log) {
 
     private val scope = MainScope()
 
@@ -50,7 +52,7 @@ class AndroidUpnpServiceImpl @Inject constructor(
                             ApplicationMode.Player -> registry.removeDevice(localDevice)
                         }
                     } catch (e: Exception) {
-                        Timber.e(e)
+                        log.e(e)
                     }
                 }
         }
@@ -64,7 +66,7 @@ class AndroidUpnpServiceImpl @Inject constructor(
             }
             controlPoint.search()
         } catch (e: Exception) {
-            Timber.e(e)
+            log.e(e)
         }
     }
 
@@ -75,7 +77,7 @@ class AndroidUpnpServiceImpl @Inject constructor(
             try {
                 registry.removeDevice(localDevice)
             } catch (e: Exception) {
-                Timber.e(e)
+                log.e(e)
             }
         }
     }
@@ -116,8 +118,7 @@ class AndroidUpnpServiceImpl @Inject constructor(
         val validationErrors = details.validate()
 
         for (error in validationErrors) {
-            Timber.e("Validation pb for property %s", error.propertyName)
-            Timber.e("Error is %s", error.message)
+            log.e("Validation pb for property ${error.propertyName}, error is ${error.message}")
         }
 
         val type = UDADeviceType("MediaServer", 1)
@@ -147,14 +148,15 @@ class AndroidUpnpServiceImpl @Inject constructor(
         val contentDirectoryService =
             serviceBinder.read(ContentDirectoryService::class.java) as LocalService<ContentDirectoryService>
 
-        val serviceManager = DefaultServiceManager(
+        contentDirectoryService.manager = DefaultServiceManager(
             contentDirectoryService,
             ContentDirectoryService::class.java
-        ).apply {
-            (implementation as ContentDirectoryService).contentRepository = contentRepository
+        ).also { serviceManager ->
+            (serviceManager.implementation as ContentDirectoryService).let { service ->
+                service.contentRepository = contentRepository
+                service.log = log
+            }
         }
-
-        contentDirectoryService.manager = serviceManager
 
         return contentDirectoryService
     }

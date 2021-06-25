@@ -2,11 +2,14 @@ package com.m3sv.plainupnp.upnp.resourceproviders
 
 import android.app.Application
 import android.content.pm.PackageManager
+import com.m3sv.plainupnp.logging.Log
 import com.m3sv.plainupnp.upnp.R
-import timber.log.Timber
 import javax.inject.Inject
 
-class LocalServiceResourceProvider @Inject constructor(private val application: Application) {
+class LocalServiceResourceProvider @Inject constructor(
+    private val application: Application,
+    private val log: Log
+) {
     val appName: String = application.getString(R.string.app_name)
     val appUrl: String = application.getString(R.string.app_url)
     val settingContentDirectoryName: String = android.os.Build.MODEL
@@ -19,7 +22,7 @@ class LocalServiceResourceProvider @Inject constructor(private val application: 
             try {
                 result = application.packageManager.getPackageInfo(application.packageName, 0).versionName
             } catch (e: PackageManager.NameNotFoundException) {
-                Timber.e(e, "Application version name not found")
+                log.e("Couldn't find application version")
             }
             return result
         }

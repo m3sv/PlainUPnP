@@ -1,18 +1,21 @@
 package com.m3sv.plainupnp.upnp.actions.renderingcontrol
 
+import com.m3sv.plainupnp.logging.Log
 import com.m3sv.plainupnp.upnp.actions.Action
 import org.fourthline.cling.controlpoint.ControlPoint
 import org.fourthline.cling.model.action.ActionInvocation
 import org.fourthline.cling.model.message.UpnpResponse
 import org.fourthline.cling.model.meta.Service
 import org.fourthline.cling.support.renderingcontrol.callback.SetVolume
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 
-class SetVolumeAction @Inject constructor(controlPoint: ControlPoint) :
+class SetVolumeAction @Inject constructor(
+    controlPoint: ControlPoint,
+    private val log: Log
+) :
     Action<Unit, Unit>(controlPoint) {
 
     // Don't know what is happening here, but Kotlin compiler complains about this
@@ -31,7 +34,7 @@ class SetVolumeAction @Inject constructor(controlPoint: ControlPoint) :
                     operation: UpnpResponse?,
                     defaultMsg: String?
                 ) {
-                    Timber.e("Failed to raise volume")
+                    log.e("Failed to raise volume")
                     continuation.resume(volume)
                 }
 

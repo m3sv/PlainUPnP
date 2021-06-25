@@ -1,6 +1,7 @@
 package com.m3sv.plainupnp.upnp.android
 
 import android.content.Context
+import com.m3sv.plainupnp.logging.Log
 import org.fourthline.cling.UpnpService
 import org.fourthline.cling.UpnpServiceConfiguration
 import org.fourthline.cling.controlpoint.ControlPoint
@@ -16,8 +17,9 @@ import org.seamless.util.Exceptions
 import timber.log.Timber
 
 abstract class UpnpServiceImpl(
-    private val configuration: UpnpServiceConfiguration,
     context: Context,
+    private val configuration: UpnpServiceConfiguration,
+    private val log: Log,
     vararg registryListeners: RegistryListener?,
 ) : UpnpService {
 
@@ -92,9 +94,9 @@ abstract class UpnpServiceImpl(
         } catch (var3: RouterException) {
             val cause = Exceptions.unwrap(var3)
             if (cause is InterruptedException) {
-                Timber.e(cause, "Router shutdown was interrupted: %s", var3.stackTrace)
+                log.e(cause, "Router shutdown was interrupted: ${var3.stackTrace}")
             } else {
-                Timber.e(cause, "Router error on shutdown: $var3")
+                log.e(cause, "Router error on shutdown: $var3")
             }
         }
     }

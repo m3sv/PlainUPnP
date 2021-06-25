@@ -2,6 +2,7 @@ package com.m3sv.plainupnp.upnp.util
 
 import android.content.Context
 import android.net.wifi.WifiManager
+import com.m3sv.plainupnp.logging.Log
 import timber.log.Timber
 import java.net.*
 
@@ -29,7 +30,7 @@ private fun getLocalIpAddressFromIntf(intfName: String): InetAddress? {
 }
 
 @Throws(UnknownHostException::class)
-fun getLocalIpAddress(context: Context): InetAddress {
+fun getLocalIpAddress(context: Context, log: Log): InetAddress {
     val wifiManager =
         context.applicationContext.getSystemService(Context.WIFI_SERVICE) as? WifiManager
 
@@ -47,7 +48,7 @@ fun getLocalIpAddress(context: Context): InetAddress {
                 )
 
             } catch (e: Exception) {
-                Timber.e("Could not retrieve InetAddress by name")
+                log.e("Could not retrieve InetAddress by name")
             }
         }
 

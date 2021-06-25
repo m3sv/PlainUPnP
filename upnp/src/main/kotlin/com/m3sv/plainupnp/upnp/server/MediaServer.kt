@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import com.m3sv.plainupnp.core.persistence.Database
+import com.m3sv.plainupnp.logging.Log
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.AUDIO_PREFIX
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.IMAGE_PREFIX
 import com.m3sv.plainupnp.upnp.UpnpContentRepositoryImpl.Companion.TREE_PREFIX
@@ -25,11 +26,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MediaServer @Inject constructor(private val application: Application, private val database: Database) :
-    SimpleInputStreamServer(
-        null,
-        PORT, listOf(), true
-    ) {
+class MediaServer @Inject constructor(
+    private val application: Application,
+    private val database: Database,
+    private val log: Log
+) : SimpleInputStreamServer(null, PORT, listOf(), true) {
 
     private val serverScope = CoroutineScope(Executors.newFixedThreadPool(8).asCoroutineDispatcher())
 
@@ -100,21 +101,24 @@ class MediaServer @Inject constructor(private val application: Application, priv
                 id.startsWith(AUDIO_PREFIX) -> handleGeneric(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, mediaId)
                 id.startsWith(VIDEO_PREFIX) -> handleGeneric(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, mediaId)
                 id.startsWith(IMAGE_PREFIX) -> handleGeneric(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, mediaId)
-                id.startsWith(TREE_PREFIX) -> handleTree(Uri.parse(database
-                    .fileCacheQueries
-                    .selectById(mediaId.toLong())
-                    .executeAsOneOrNull()
-                    ?.uri
-                    ?: error("Not found")
-                ), mediaId)
+                id.startsWith(TREE_PREFIX) -> handleTree(
+                    Uri.parse(
+                        database
+                            .fileCacheQueries
+                            .selectById(mediaId.toLong())
+                            .executeAsOneOrNull()
+                            ?.uri
+                            ?: error("Not found")
+                    ), mediaId
+                )
                 else -> error("Unknown content type")
             }
 
         } catch (e: Exception) {
-            Timber.e(e, "Error while parsing $uri")
+            log.e(e, "Error while parsing $uri")
         }
 
-        throw InvalidIdentifierException("$uri was not found in media database")
+        throw InvalidIdentifierException("$uri was not found in media database").apply(log::e)
     }
 
     private fun handleGeneric(contentUri: Uri, mediaId: String): ServerObject {

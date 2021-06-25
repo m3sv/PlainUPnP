@@ -26,6 +26,7 @@ package com.m3sv.plainupnp.upnp.discovery.device
 
 import com.m3sv.plainupnp.data.upnp.UpnpDevice
 import com.m3sv.plainupnp.data.upnp.UpnpDeviceEvent
+import com.m3sv.plainupnp.logging.Log
 import com.m3sv.plainupnp.upnp.CDevice
 import com.m3sv.plainupnp.upnp.CRegistryListener
 import com.m3sv.plainupnp.upnp.RegistryListener
@@ -33,7 +34,7 @@ import org.fourthline.cling.UpnpService
 import timber.log.Timber
 import java.util.concurrent.CopyOnWriteArrayList
 
-abstract class DeviceDiscovery(val upnpService: UpnpService) {
+abstract class DeviceDiscovery(val upnpService: UpnpService, val log: Log) {
 
     private val browsingRegistryListener: BrowsingRegistryListener = BrowsingRegistryListener()
 
@@ -83,7 +84,7 @@ abstract class DeviceDiscovery(val upnpService: UpnpService) {
                 if (filter.call()) deviceList.add(device)
             }
         } catch (e: Exception) {
-            Timber.e(e)
+            log.e(e)
         }
 
         return deviceList
@@ -110,7 +111,7 @@ abstract class DeviceDiscovery(val upnpService: UpnpService) {
         try {
             return callableFilter.call()
         } catch (e: Exception) {
-            Timber.e(e)
+            log.e(e)
         }
 
         return false
