@@ -75,8 +75,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             var selectedRenderer by rememberSaveable { mutableStateOf("Stream to") }
-            var isDialogExpanded by rememberSaveable { mutableStateOf(false) }
-            var isButtonExpanded by rememberSaveable { mutableStateOf(true) }
             var showFilter by rememberSaveable { mutableStateOf(false) }
 
             val volume by viewModel.volume.collectAsState()
@@ -87,6 +85,9 @@ class MainActivity : ComponentActivity() {
             val renderers by viewModel.renderers.collectAsState()
             val upnpState by viewModel.upnpState.collectAsState()
             val showThumbnails by viewModel.showThumbnails.collectAsState()
+            val isSelectRendererButtonExpanded by viewModel.isSelectRendererButtonExpanded.collectAsState()
+            val isSelectRendererDialogExpanded by viewModel.isSelectRendererDialogExpanded.collectAsState()
+
             val currentTheme by themeManager.collectTheme()
 
             val showControls = upnpState !is UpnpRendererState.Empty
@@ -105,32 +106,24 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            val onSettingsClick: () -> Unit = {
-                openSettings()
-            }
+            val onSettingsClick: () -> Unit = { openSettings() }
 
             fun collapseExpandedButton() {
-                isButtonExpanded = false
-                isDialogExpanded = false
+                lifecycleScope.launch { viewModel.collapseSelectRendererButton() }
+                viewModel.collapseSelectRendererDialog()
             }
 
             @Composable
             fun createFloatingActionButton() {
                 RendererFloatingActionButton(
-                    isButtonExpanded = isButtonExpanded,
-                    isDialogExpanded = isDialogExpanded,
+                    isButtonExpanded = isSelectRendererButtonExpanded,
+                    isDialogExpanded = isSelectRendererDialogExpanded,
                     selectedRenderer = selectedRenderer,
                     renderers = renderers,
-                    onDismissDialog = {
-                        isDialogExpanded = false
-                        collapseExpandedButton()
-                    },
-                    onExpandButton = { isButtonExpanded = true },
-                    onSelectRenderer = { name ->
-                        selectedRenderer = name
-                    }, onExpandDialog = {
-                        isDialogExpanded = true
-                    })
+                    onDismissDialog = { collapseExpandedButton() },
+                    onExpandButton = { lifecycleScope.launch { viewModel.expandSelectRendererButton() } },
+                    onSelectRenderer = { name -> selectedRenderer = name },
+                    onExpandDialog = { viewModel.expandSelectRendererDialog() })
             }
 
             val filter: ComposableFactory = {

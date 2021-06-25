@@ -30,12 +30,10 @@ class MainViewModel @Inject constructor(
 
     val volume: StateFlow<VolumeUpdate> = volumeManager
         .volumeFlow
-        .flatMapLatest { volume ->
-            flow {
-                emit(VolumeUpdate.Show(volume))
-                delay(2500)
-                emit(VolumeUpdate.Hide(volume))
-            }
+        .transform { volume ->
+            emit(VolumeUpdate.Show(volume))
+            delay(2500)
+            emit(VolumeUpdate.Hide(volume))
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.Lazily,
@@ -43,6 +41,7 @@ class MainViewModel @Inject constructor(
         )
 
     private val _loading: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
     val loading: StateFlow<Boolean> = _loading
 
     private val _filterText: MutableStateFlow<String> = MutableStateFlow("")
@@ -57,7 +56,6 @@ class MainViewModel @Inject constructor(
             started = SharingStarted.Lazily,
             initialValue = listOf()
         )
-
 
     val folderContents: StateFlow<FolderContents> = combine(
         navigation.filterNot { it.isEmpty() },
@@ -109,6 +107,23 @@ class MainViewModel @Inject constructor(
             initialValue = false
         )
 
+    private val _isSelectRendererButtonExpanded = MutableSharedFlow<Boolean>()
+
+    val isSelectRendererButtonExpanded: StateFlow<Boolean> = _isSelectRendererButtonExpanded
+        .transformLatest { visible ->
+            emit(visible)
+            if (visible) {
+                delay(5000)
+                emit(false)
+                collapseSelectRendererDialog()
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    private val _isSelectRendererDialogExpanded = MutableStateFlow(false)
+
+    val isSelectRendererDialogExpanded: StateFlow<Boolean> = _isSelectRendererDialogExpanded
+
     fun itemClick(id: String) {
         viewModelScope.launch {
             upnpManager
@@ -117,6 +132,22 @@ class MainViewModel @Inject constructor(
                 .onCompletion { _loading.value = false }
                 .collect()
         }
+    }
+
+    suspend fun expandSelectRendererButton() {
+        _isSelectRendererButtonExpanded.emit(true)
+    }
+
+    suspend fun collapseSelectRendererButton() {
+        _isSelectRendererButtonExpanded.emit(false)
+    }
+
+    fun expandSelectRendererDialog() {
+        _isSelectRendererDialogExpanded.value = true
+    }
+
+    fun collapseSelectRendererDialog() {
+        _isSelectRendererDialogExpanded.value = false
     }
 
     fun moveTo(progress: Int) {
